@@ -253,7 +253,7 @@ namespace LogisticsService.FixedCourierService
                 // 2. Захватываем mutex
                 checkingQueueTimer.Enabled = false;
                 isCatched = syncMutex.WaitOne(300000);
-                Helper.WriteInfoToLog($"CheckingQueueTimer_Elapsed CheckingItemCount = {checkingQueue.Count}");
+                //Helper.WriteInfoToLog($"CheckingQueueTimer_Elapsed CheckingItemCount = {checkingQueue.Count}");
 
                 // 3. Запускаем обработчик очереди
                 CheckingQueueHandler(checkingQueue, queue);
@@ -1886,9 +1886,9 @@ namespace LogisticsService.FixedCourierService
                         Array.Resize(ref sendDelivery, sendDeliveryCount);
                     }
 
-                    Helper.WriteInfoToLog("(((( Send delivery command from checkin queue");
+                    Helper.WriteInfoToLog("(((( Send delivery command from checking queue");
                     SendDeliveryCommand(sendDelivery);
-                    Helper.WriteInfoToLog(")))) Send delivery command from checkin queue");
+                    Helper.WriteInfoToLog(")))) Send delivery command from checking queue");
                 }
 
                 // 6. Отправляем команды об отмене
@@ -1900,9 +1900,9 @@ namespace LogisticsService.FixedCourierService
                         Array.Resize(ref rejectDelivery, rejectDeliveryCount);
                     }
 
-                    Helper.WriteInfoToLog("(((( Send reject command from checkin queue");
+                    Helper.WriteInfoToLog("(((( Send reject command from checking queue");
                     SendRejectCommand(rejectDelivery);
-                    Helper.WriteInfoToLog(")))) Send reject command from checkin queue");
+                    Helper.WriteInfoToLog(")))) Send reject command from checking queue");
                 }
 
                 //// 6. Удаляем отработанные элементы
