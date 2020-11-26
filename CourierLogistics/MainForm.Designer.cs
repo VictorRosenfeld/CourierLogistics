@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.butStart = new System.Windows.Forms.Button();
             this.butRealModel = new System.Windows.Forms.Button();
             this.butFloatCouriers = new System.Windows.Forms.Button();
@@ -112,6 +113,7 @@
             this.Controls.Add(this.butFloatCouriers);
             this.Controls.Add(this.butRealModel);
             this.Controls.Add(this.butStart);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Анализ и построение логистики курьеров";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
