@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CourierLogistics.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ShopsFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">shops.csv</Value>
+    </Setting>
+    <Setting Name="OrdersFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">orders.csv</Value>
+    </Setting>
+    <Setting Name="shopDeliveryTypesFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">shopDeliveryTypes.csv</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1169
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CourierLogistics", "CourierLogistics\CourierLogistics.csproj", "{060CF60C-1BC7-4E46-A178-B112053601E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticsService", "LogisticsService\LogisticsService.csproj", "{42C6787F-D998-429C-B50B-EE03163D47AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{060CF60C-1BC7-4E46-A178-B112053601E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{060CF60C-1BC7-4E46-A178-B112053601E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{060CF60C-1BC7-4E46-A178-B112053601E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{060CF60C-1BC7-4E46-A178-B112053601E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42C6787F-D998-429C-B50B-EE03163D47AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42C6787F-D998-429C-B50B-EE03163D47AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42C6787F-D998-429C-B50B-EE03163D47AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42C6787F-D998-429C-B50B-EE03163D47AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {25A09888-2BFF-48C4-9932-722F83DF7F19}
+	EndGlobalSection
+EndGlobal

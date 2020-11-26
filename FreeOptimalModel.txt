@@ -1,0 +1,546 @@
+﻿22.09.2020 6:47:44 > couriers = 1, deliveries = 52, car oreder cost =  52,88
+22.09.2020 6:53:50 > couriers = 2, deliveries = 104, car oreder cost =  52,88
+22.09.2020 6:56:33 > couriers = 3, deliveries = 154, car oreder cost =  55,00
+22.09.2020 6:57:21 > couriers = 4, deliveries = 204, car oreder cost =  55,00
+22.09.2020 6:57:30 > couriers = 5, deliveries = 253, car oreder cost =  56,12
+Managed Debugging Assistant 'ContextSwitchDeadlock' 
+CLR не удалось перейти из COM-контекста 0x14ee8c8 в COM-контекст 0x14ee810 за 60 секунд. Наиболее вероятно, что поток, владеющий контекстом/апартаментом назначения, находится в режиме ожидания или выполнения очень длительной операции без прокачки сообщений Windows. Обычно эта ситуация отрицательно влияет на производительность и даже может привести к зависанию приложения или чрезмерному расходованию памяти. Чтобы избежать этой проблемы, все потоки однопоточного апартамента (STA) должны использовать примитивы ожидания для прокачки (например, CoWaitForMultipleHandles) и периодически прокачивать сообщения во время длительных операций.
+
+22.09.2020 6:58:01 > couriers = 6, deliveries = 302, car oreder cost =  51,02
+22.09.2020 6:58:11 > couriers = 7, deliveries = 350, car oreder cost =  57,29
+The thread 0x4730 has exited with code 0 (0x0).
+The thread 0x26c has exited with code 0 (0x0).
+The thread 0x5c20 has exited with code 0 (0x0).
+The thread 0x4b78 has exited with code 0 (0x0).
+The thread 0x6144 has exited with code 0 (0x0).
+The thread 0x2b4c has exited with code 0 (0x0).
+22.09.2020 6:58:20 > couriers = 8, deliveries = 399, car oreder cost =  51,02
+22.09.2020 6:58:29 > couriers = 9, deliveries = 447, car oreder cost =  52,08
+22.09.2020 6:58:38 > couriers = 10, deliveries = 495, car oreder cost =  57,29
+22.09.2020 6:58:48 > couriers = 11, deliveries = 543, car oreder cost =  52,08
+22.09.2020 6:58:58 > couriers = 12, deliveries = 592, car oreder cost =  56,12
+22.09.2020 6:59:07 > couriers = 13, deliveries = 639, car oreder cost =  53,19
+22.09.2020 6:59:17 > couriers = 14, deliveries = 688, car oreder cost =  51,02
+22.09.2020 6:59:26 > couriers = 15, deliveries = 735, car oreder cost =  58,51
+22.09.2020 6:59:36 > couriers = 16, deliveries = 782, car oreder cost =  53,19
+22.09.2020 6:59:45 > couriers = 17, deliveries = 833, car oreder cost =  53,92
+22.09.2020 6:59:55 > couriers = 18, deliveries = 879, car oreder cost =  54,35
+22.09.2020 7:00:05 > couriers = 19, deliveries = 926, car oreder cost =  53,19
+22.09.2020 7:00:14 > couriers = 20, deliveries = 974, car oreder cost =  57,29
+22.09.2020 7:00:24 > couriers = 21, deliveries = 1021, car oreder cost =  53,19
+22.09.2020 7:00:33 > couriers = 22, deliveries = 1067, car oreder cost =  54,35
+22.09.2020 7:00:43 > couriers = 23, deliveries = 1114, car oreder cost =  53,19
+22.09.2020 7:00:52 > couriers = 24, deliveries = 1160, car oreder cost =  54,35
+22.09.2020 7:01:02 > couriers = 25, deliveries = 1210, car oreder cost =  55,00
+22.09.2020 7:01:12 > couriers = 26, deliveries = 1260, car oreder cost =  50,00
+22.09.2020 7:01:22 > couriers = 27, deliveries = 1306, car oreder cost =  54,35
+22.09.2020 7:03:28 > couriers = 27, deliveries = 1403, car oreder cost =  54,35
+22.09.2020 7:03:46 > couriers = 28, deliveries = 1449, car oreder cost =  59,78
+22.09.2020 7:03:56 > couriers = 29, deliveries = 1495, car oreder cost =  59,78
+22.09.2020 7:04:05 > couriers = 30, deliveries = 1531, car oreder cost =  48,61
+22.09.2020 7:04:15 > couriers = 31, deliveries = 1576, car oreder cost =  55,56
+22.09.2020 7:04:25 > couriers = 32, deliveries = 1623, car oreder cost =  53,19
+22.09.2020 7:04:34 > couriers = 33, deliveries = 1668, car oreder cost =  55,56
+22.09.2020 7:04:44 > couriers = 34, deliveries = 1714, car oreder cost =  54,35
+22.09.2020 7:04:54 > couriers = 35, deliveries = 1759, car oreder cost =  61,11
+22.09.2020 7:05:04 > couriers = 36, deliveries = 1804, car oreder cost =  55,56
+22.09.2020 7:05:13 > couriers = 37, deliveries = 1854, car oreder cost =  55,00
+22.09.2020 7:05:23 > couriers = 38, deliveries = 1899, car oreder cost =  61,11
+22.09.2020 7:05:33 > couriers = 39, deliveries = 1945, car oreder cost =  59,78
+22.09.2020 7:05:43 > couriers = 40, deliveries = 1990, car oreder cost =  55,56
+22.09.2020 7:05:52 > couriers = 41, deliveries = 2035, car oreder cost =  55,56
+22.09.2020 7:06:02 > couriers = 42, deliveries = 2080, car oreder cost =  55,56
+22.09.2020 7:06:11 > couriers = 43, deliveries = 2125, car oreder cost =  55,56
+22.09.2020 7:06:21 > couriers = 44, deliveries = 2169, car oreder cost =  56,82
+22.09.2020 7:06:31 > couriers = 45, deliveries = 2213, car oreder cost =  56,82
+22.09.2020 7:06:41 > couriers = 46, deliveries = 2257, car oreder cost =  56,82
+22.09.2020 7:06:50 > couriers = 47, deliveries = 2301, car oreder cost =  56,82
+22.09.2020 7:07:00 > couriers = 48, deliveries = 2349, car oreder cost =  57,29
+22.09.2020 7:07:10 > couriers = 49, deliveries = 2393, car oreder cost =  56,82
+22.09.2020 7:07:20 > couriers = 50, deliveries = 2437, car oreder cost =  62,50
+22.09.2020 7:07:30 > couriers = 51, deliveries = 2485, car oreder cost =  57,29
+22.09.2020 7:07:40 > couriers = 52, deliveries = 2533, car oreder cost =  57,29
+22.09.2020 7:07:50 > couriers = 53, deliveries = 2576, car oreder cost =  63,95
+22.09.2020 7:08:00 > couriers = 54, deliveries = 2619, car oreder cost =  58,14
+22.09.2020 7:08:10 > couriers = 55, deliveries = 2663, car oreder cost =  56,82
+22.09.2020 7:08:20 > couriers = 56, deliveries = 2706, car oreder cost =  58,14
+22.09.2020 7:08:30 > couriers = 57, deliveries = 2749, car oreder cost =  63,95
+22.09.2020 7:08:40 > couriers = 58, deliveries = 2794, car oreder cost =  55,56
+22.09.2020 7:08:50 > couriers = 59, deliveries = 2838, car oreder cost =  62,50
+22.09.2020 7:09:00 > couriers = 60, deliveries = 2881, car oreder cost =  58,14
+22.09.2020 7:09:10 > couriers = 61, deliveries = 2911, car oreder cost =  58,33
+22.09.2020 7:09:20 > couriers = 62, deliveries = 2953, car oreder cost =  59,52
+22.09.2020 7:09:30 > couriers = 63, deliveries = 3000, car oreder cost =  58,51
+22.09.2020 7:09:40 > couriers = 64, deliveries = 3042, car oreder cost =  59,52
+22.09.2020 7:09:50 > couriers = 65, deliveries = 3084, car oreder cost =  59,52
+22.09.2020 7:10:00 > couriers = 66, deliveries = 3130, car oreder cost =  59,78
+22.09.2020 7:10:09 > couriers = 67, deliveries = 3176, car oreder cost =  59,78
+22.09.2020 7:10:19 > couriers = 68, deliveries = 3222, car oreder cost =  59,78
+22.09.2020 7:10:29 > couriers = 69, deliveries = 3263, car oreder cost =  60,98
+22.09.2020 7:10:39 > couriers = 70, deliveries = 3304, car oreder cost =  67,07
+22.09.2020 7:10:49 > couriers = 71, deliveries = 3345, car oreder cost =  67,07
+22.09.2020 7:11:00 > couriers = 72, deliveries = 3385, car oreder cost =  68,75
+22.09.2020 7:11:09 > couriers = 73, deliveries = 3425, car oreder cost =  68,75
+22.09.2020 7:11:19 > couriers = 74, deliveries = 3465, car oreder cost =  62,50
+22.09.2020 7:11:29 > couriers = 75, deliveries = 3509, car oreder cost =  62,50
+22.09.2020 7:11:39 > couriers = 76, deliveries = 3549, car oreder cost =  68,75
+22.09.2020 7:11:49 > couriers = 77, deliveries = 3589, car oreder cost =  62,50
+22.09.2020 7:11:59 > couriers = 78, deliveries = 3629, car oreder cost =  62,50
+22.09.2020 7:12:09 > couriers = 79, deliveries = 3669, car oreder cost =  62,50
+22.09.2020 7:12:19 > couriers = 80, deliveries = 3709, car oreder cost =  68,75
+22.09.2020 7:12:29 > couriers = 81, deliveries = 3749, car oreder cost =  68,75
+22.09.2020 7:12:39 > couriers = 82, deliveries = 3789, car oreder cost =  62,50
+22.09.2020 7:12:49 > couriers = 83, deliveries = 3825, car oreder cost =  62,50
+22.09.2020 7:12:59 > couriers = 84, deliveries = 3865, car oreder cost =  62,50
+22.09.2020 7:13:09 > couriers = 85, deliveries = 3908, car oreder cost =  58,14
+22.09.2020 7:13:19 > couriers = 86, deliveries = 3947, car oreder cost =  64,10
+22.09.2020 7:13:29 > couriers = 87, deliveries = 3987, car oreder cost =  62,50
+22.09.2020 7:13:39 > couriers = 88, deliveries = 4030, car oreder cost =  58,14
+22.09.2020 7:13:49 > couriers = 89, deliveries = 4069, car oreder cost =  64,10
+22.09.2020 7:13:59 > couriers = 90, deliveries = 4112, car oreder cost =  58,14
+22.09.2020 7:14:09 > couriers = 91, deliveries = 4152, car oreder cost =  62,50
+22.09.2020 7:14:20 > couriers = 92, deliveries = 4191, car oreder cost =  64,10
+22.09.2020 7:14:29 > couriers = 93, deliveries = 4234, car oreder cost =  63,95
+22.09.2020 7:14:39 > couriers = 94, deliveries = 4273, car oreder cost =  70,51
+22.09.2020 7:14:49 > couriers = 95, deliveries = 4315, car oreder cost =  59,52
+22.09.2020 7:14:59 > couriers = 96, deliveries = 4354, car oreder cost =  70,51
+22.09.2020 7:15:09 > couriers = 97, deliveries = 4393, car oreder cost =  76,92
+22.09.2020 7:15:19 > couriers = 98, deliveries = 4433, car oreder cost =  62,50
+22.09.2020 7:15:29 > couriers = 99, deliveries = 4473, car oreder cost =  68,75
+22.09.2020 7:15:39 > couriers = 100, deliveries = 4512, car oreder cost =  64,10
+22.09.2020 7:15:49 > couriers = 101, deliveries = 4547, car oreder cost =  64,29
+22.09.2020 7:15:58 > couriers = 102, deliveries = 4586, car oreder cost =  70,51
+22.09.2020 7:16:08 > couriers = 103, deliveries = 4628, car oreder cost =  65,48
+22.09.2020 7:16:18 > couriers = 104, deliveries = 4666, car oreder cost =  65,79
+22.09.2020 7:16:28 > couriers = 105, deliveries = 4704, car oreder cost =  65,79
+22.09.2020 7:16:37 > couriers = 106, deliveries = 4747, car oreder cost =  63,95
+22.09.2020 7:16:47 > couriers = 107, deliveries = 4784, car oreder cost =  67,57
+22.09.2020 7:16:57 > couriers = 108, deliveries = 4821, car oreder cost =  67,57
+22.09.2020 7:17:07 > couriers = 109, deliveries = 4858, car oreder cost =  67,57
+22.09.2020 7:17:17 > couriers = 110, deliveries = 4895, car oreder cost =  67,57
+22.09.2020 7:17:27 > couriers = 111, deliveries = 4933, car oreder cost =  65,79
+22.09.2020 7:17:37 > couriers = 112, deliveries = 4972, car oreder cost =  64,10
+22.09.2020 7:17:47 > couriers = 113, deliveries = 5011, car oreder cost =  64,10
+22.09.2020 7:17:57 > couriers = 114, deliveries = 5053, car oreder cost =  59,52
+22.09.2020 7:18:08 > couriers = 115, deliveries = 5092, car oreder cost =  64,10
+22.09.2020 7:18:18 > couriers = 116, deliveries = 5133, car oreder cost =  67,07
+22.09.2020 7:18:28 > couriers = 117, deliveries = 5174, car oreder cost =  54,88
+22.09.2020 7:18:39 > couriers = 118, deliveries = 5211, car oreder cost =  74,32
+22.09.2020 7:18:49 > couriers = 119, deliveries = 5250, car oreder cost =  64,10
+22.09.2020 7:18:59 > couriers = 120, deliveries = 5287, car oreder cost =  74,32
+22.09.2020 7:19:10 > couriers = 121, deliveries = 5324, car oreder cost =  67,57
+22.09.2020 7:19:20 > couriers = 122, deliveries = 5362, car oreder cost =  65,79
+22.09.2020 7:19:30 > couriers = 123, deliveries = 5399, car oreder cost =  74,32
+22.09.2020 7:19:41 > couriers = 124, deliveries = 5439, car oreder cost =  68,75
+22.09.2020 7:19:51 > couriers = 125, deliveries = 5476, car oreder cost =  67,57
+22.09.2020 7:20:02 > couriers = 126, deliveries = 5520, car oreder cost =  62,50
+22.09.2020 7:20:12 > couriers = 127, deliveries = 5557, car oreder cost =  74,32
+22.09.2020 7:20:23 > couriers = 128, deliveries = 5594, car oreder cost =  74,32
+22.09.2020 7:20:33 > couriers = 129, deliveries = 5632, car oreder cost =  72,37
+22.09.2020 7:20:44 > couriers = 130, deliveries = 5672, car oreder cost =  68,75
+22.09.2020 7:20:55 > couriers = 131, deliveries = 5705, car oreder cost =  68,18
+22.09.2020 7:21:06 > couriers = 132, deliveries = 5742, car oreder cost =  67,57
+22.09.2020 7:21:17 > couriers = 133, deliveries = 5782, car oreder cost =  68,75
+22.09.2020 7:21:27 > couriers = 134, deliveries = 5818, car oreder cost =  69,44
+22.09.2020 7:21:38 > couriers = 135, deliveries = 5854, car oreder cost =  69,44
+22.09.2020 7:21:49 > couriers = 136, deliveries = 5890, car oreder cost =  69,44
+22.09.2020 7:21:59 > couriers = 137, deliveries = 5926, car oreder cost =  69,44
+22.09.2020 7:22:09 > couriers = 138, deliveries = 5961, car oreder cost =  71,43
+22.09.2020 7:22:20 > couriers = 139, deliveries = 5997, car oreder cost =  69,44
+22.09.2020 7:22:30 > couriers = 140, deliveries = 6032, car oreder cost =  71,43
+22.09.2020 7:22:39 > couriers = 141, deliveries = 6069, car oreder cost =  67,57
+22.09.2020 7:22:49 > couriers = 142, deliveries = 6105, car oreder cost =  69,44
+22.09.2020 7:22:59 > couriers = 143, deliveries = 6141, car oreder cost =  69,44
+22.09.2020 7:23:08 > couriers = 144, deliveries = 6177, car oreder cost =  69,44
+22.09.2020 7:23:18 > couriers = 145, deliveries = 6216, car oreder cost =  70,51
+22.09.2020 7:23:28 > couriers = 146, deliveries = 6252, car oreder cost =  69,44
+22.09.2020 7:23:38 > couriers = 147, deliveries = 6289, car oreder cost =  74,32
+22.09.2020 7:23:48 > couriers = 148, deliveries = 6325, car oreder cost =  69,44
+22.09.2020 7:23:57 > couriers = 149, deliveries = 6360, car oreder cost =  78,57
+22.09.2020 7:24:07 > couriers = 150, deliveries = 6384, car oreder cost =  72,92
+22.09.2020 7:24:17 > couriers = 151, deliveries = 6418, car oreder cost =  80,88
+22.09.2020 7:24:27 > couriers = 152, deliveries = 6449, car oreder cost =  64,52
+22.09.2020 7:24:37 > couriers = 153, deliveries = 6485, car oreder cost =  76,39
+22.09.2020 7:24:47 > couriers = 154, deliveries = 6519, car oreder cost =  73,53
+22.09.2020 7:24:56 > couriers = 155, deliveries = 6555, car oreder cost =  69,44
+22.09.2020 7:25:06 > couriers = 156, deliveries = 6590, car oreder cost =  78,57
+22.09.2020 7:25:16 > couriers = 157, deliveries = 6625, car oreder cost =  71,43
+22.09.2020 7:25:25 > couriers = 158, deliveries = 6649, car oreder cost =  72,92
+22.09.2020 7:25:34 > couriers = 159, deliveries = 6683, car oreder cost =  73,53
+22.09.2020 7:25:43 > couriers = 160, deliveries = 6717, car oreder cost =  73,53
+22.09.2020 7:25:52 > couriers = 161, deliveries = 6754, car oreder cost =  74,32
+22.09.2020 7:26:01 > couriers = 162, deliveries = 6787, car oreder cost =  75,76
+22.09.2020 7:26:11 > couriers = 163, deliveries = 6821, car oreder cost =  73,53
+22.09.2020 7:26:20 > couriers = 164, deliveries = 6855, car oreder cost =  73,53
+22.09.2020 7:26:29 > couriers = 165, deliveries = 6893, car oreder cost =  72,37
+22.09.2020 7:26:39 > couriers = 166, deliveries = 6926, car oreder cost =  75,76
+22.09.2020 7:26:48 > couriers = 167, deliveries = 6960, car oreder cost =  73,53
+22.09.2020 7:26:58 > couriers = 168, deliveries = 6994, car oreder cost =  73,53
+22.09.2020 7:27:07 > couriers = 169, deliveries = 7027, car oreder cost =  83,33
+22.09.2020 7:27:17 > couriers = 170, deliveries = 7061, car oreder cost =  73,53
+22.09.2020 7:27:26 > couriers = 171, deliveries = 7094, car oreder cost =  75,76
+22.09.2020 7:27:35 > couriers = 172, deliveries = 7130, car oreder cost =  76,39
+22.09.2020 7:27:45 > couriers = 173, deliveries = 7166, car oreder cost =  69,44
+22.09.2020 7:27:54 > couriers = 174, deliveries = 7199, car oreder cost =  75,76
+22.09.2020 7:28:03 > couriers = 175, deliveries = 7232, car oreder cost =  75,76
+22.09.2020 7:28:12 > couriers = 176, deliveries = 7261, car oreder cost =  77,59
+22.09.2020 7:28:21 > couriers = 177, deliveries = 7293, car oreder cost =  85,94
+22.09.2020 7:28:30 > couriers = 178, deliveries = 7326, car oreder cost =  75,76
+22.09.2020 7:28:39 > couriers = 179, deliveries = 7358, car oreder cost =  78,13
+22.09.2020 7:28:48 > couriers = 180, deliveries = 7392, car oreder cost =  73,53
+22.09.2020 7:28:57 > couriers = 181, deliveries = 7425, car oreder cost =  75,76
+22.09.2020 7:29:07 > couriers = 182, deliveries = 7458, car oreder cost =  75,76
+22.09.2020 7:29:16 > couriers = 183, deliveries = 7491, car oreder cost =  83,33
+22.09.2020 7:29:25 > couriers = 184, deliveries = 7523, car oreder cost =  85,94
+22.09.2020 7:29:34 > couriers = 185, deliveries = 7543, car oreder cost =  62,50
+22.09.2020 7:29:43 > couriers = 186, deliveries = 7576, car oreder cost =  75,76
+22.09.2020 7:29:52 > couriers = 187, deliveries = 7611, car oreder cost =  71,43
+22.09.2020 7:30:02 > couriers = 188, deliveries = 7646, car oreder cost =  71,43
+22.09.2020 7:30:11 > couriers = 189, deliveries = 7663, car oreder cost =  73,53
+22.09.2020 7:30:20 > couriers = 190, deliveries = 7693, car oreder cost =  75,00
+22.09.2020 7:30:29 > couriers = 191, deliveries = 7725, car oreder cost =  78,13
+22.09.2020 7:30:39 > couriers = 192, deliveries = 7757, car oreder cost =  78,13
+22.09.2020 7:30:49 > couriers = 193, deliveries = 7789, car oreder cost =  78,13
+22.09.2020 7:30:58 > couriers = 194, deliveries = 7824, car oreder cost =  71,43
+22.09.2020 7:31:08 > couriers = 195, deliveries = 7859, car oreder cost =  78,57
+22.09.2020 7:31:17 > couriers = 196, deliveries = 7893, car oreder cost =  73,53
+22.09.2020 7:31:27 > couriers = 197, deliveries = 7928, car oreder cost =  78,57
+22.09.2020 7:31:37 > couriers = 198, deliveries = 7950, car oreder cost =  79,55
+22.09.2020 7:32:23 > couriers = 198, deliveries = 7950, car oreder cost =  79,55 work time = 7
+22.09.2020 7:32:38 > couriers = 199, deliveries = 7981, car oreder cost =  80,65 work time = 10
+22.09.2020 7:32:48 > couriers = 200, deliveries = 8012, car oreder cost =  80,65 work time = 10
+22.09.2020 7:32:57 > couriers = 201, deliveries = 8044, car oreder cost =  78,13 work time = 10
+22.09.2020 7:33:06 > couriers = 202, deliveries = 8078, car oreder cost =  73,53 work time = 10
+22.09.2020 7:33:15 > couriers = 203, deliveries = 8106, car oreder cost =  71,43 work time = 8
+22.09.2020 7:33:24 > couriers = 204, deliveries = 8137, car oreder cost =  80,65 work time = 10
+22.09.2020 7:33:33 > couriers = 205, deliveries = 8170, car oreder cost =  83,33 work time = 11
+22.09.2020 7:33:43 > couriers = 206, deliveries = 8200, car oreder cost =  91,67 work time = 11
+22.09.2020 7:33:52 > couriers = 207, deliveries = 8232, car oreder cost =  78,13 work time = 10
+22.09.2020 7:34:02 > couriers = 208, deliveries = 8262, car oreder cost =  91,67 work time = 11
+22.09.2020 7:34:11 > couriers = 209, deliveries = 8293, car oreder cost =  80,65 work time = 10
+22.09.2020 7:34:21 > couriers = 210, deliveries = 8315, car oreder cost =  79,55 work time = 7
+22.09.2020 7:34:31 > couriers = 211, deliveries = 8337, car oreder cost =  79,55 work time = 7
+22.09.2020 7:34:40 > couriers = 212, deliveries = 8365, car oreder cost =  80,36 work time = 9
+22.09.2020 7:34:49 > couriers = 213, deliveries = 8395, car oreder cost =  91,67 work time = 11
+22.09.2020 7:34:59 > couriers = 214, deliveries = 8422, car oreder cost =  83,33 work time = 9
+22.09.2020 7:35:08 > couriers = 215, deliveries = 8455, car oreder cost =  83,33 work time = 11
+22.09.2020 7:35:18 > couriers = 216, deliveries = 8473, car oreder cost =  97,22 work time = 7
+22.09.2020 7:35:27 > couriers = 217, deliveries = 8505, car oreder cost =  85,94 work time = 11
+22.09.2020 7:35:37 > couriers = 218, deliveries = 8535, car oreder cost =  83,33 work time = 10
+22.09.2020 7:35:46 > couriers = 219, deliveries = 8567, car oreder cost =  85,94 work time = 11
+22.09.2020 7:35:56 > couriers = 220, deliveries = 8599, car oreder cost =  85,94 work time = 11
+22.09.2020 7:36:05 > couriers = 221, deliveries = 8628, car oreder cost =  94,83 work time = 11
+22.09.2020 7:36:14 > couriers = 222, deliveries = 8661, car oreder cost =  83,33 work time = 11
+22.09.2020 7:36:23 > couriers = 223, deliveries = 8691, car oreder cost =  83,33 work time = 10
+22.09.2020 7:36:31 > couriers = 224, deliveries = 8723, car oreder cost =  85,94 work time = 11
+22.09.2020 7:36:41 > couriers = 225, deliveries = 8753, car oreder cost =  83,33 work time = 10
+22.09.2020 7:36:49 > couriers = 226, deliveries = 8785, car oreder cost =  85,94 work time = 11
+22.09.2020 7:36:58 > couriers = 227, deliveries = 8817, car oreder cost =  85,94 work time = 11
+22.09.2020 7:37:06 > couriers = 228, deliveries = 8848, car oreder cost =  88,71 work time = 11
+22.09.2020 7:37:14 > couriers = 229, deliveries = 8872, car oreder cost =  62,50 work time = 6
+22.09.2020 7:37:23 > couriers = 230, deliveries = 8905, car oreder cost =  83,33 work time = 11
+22.09.2020 7:37:31 > couriers = 231, deliveries = 8934, car oreder cost =  86,21 work time = 10
+22.09.2020 7:37:39 > couriers = 232, deliveries = 8966, car oreder cost =  85,94 work time = 11
+22.09.2020 7:37:48 > couriers = 233, deliveries = 8997, car oreder cost =  80,65 work time = 10
+22.09.2020 7:37:56 > couriers = 234, deliveries = 9027, car oreder cost =  91,67 work time = 11
+22.09.2020 7:38:05 > couriers = 235, deliveries = 9061, car oreder cost =  73,53 work time = 10
+22.09.2020 7:38:14 > couriers = 236, deliveries = 9091, car oreder cost =  83,33 work time = 10
+22.09.2020 7:38:22 > couriers = 237, deliveries = 9123, car oreder cost =  85,94 work time = 11
+22.09.2020 7:38:31 > couriers = 238, deliveries = 9155, car oreder cost =  85,94 work time = 11
+22.09.2020 7:38:39 > couriers = 239, deliveries = 9186, car oreder cost =  80,65 work time = 10
+22.09.2020 7:38:48 > couriers = 240, deliveries = 9213, car oreder cost =  83,33 work time = 9
+22.09.2020 7:38:56 > couriers = 241, deliveries = 9242, car oreder cost =  86,21 work time = 10
+22.09.2020 7:39:04 > couriers = 242, deliveries = 9271, car oreder cost =  86,21 work time = 10
+22.09.2020 7:39:12 > couriers = 243, deliveries = 9299, car oreder cost =  80,36 work time = 9
+22.09.2020 7:39:21 > couriers = 244, deliveries = 9328, car oreder cost =  86,21 work time = 10
+22.09.2020 7:39:30 > couriers = 245, deliveries = 9357, car oreder cost =  86,21 work time = 10
+22.09.2020 7:39:38 > couriers = 246, deliveries = 9388, car oreder cost =  88,71 work time = 11
+22.09.2020 7:39:46 > couriers = 247, deliveries = 9419, car oreder cost =  88,71 work time = 11
+22.09.2020 7:39:54 > couriers = 248, deliveries = 9450, car oreder cost =  88,71 work time = 11
+22.09.2020 7:40:02 > couriers = 249, deliveries = 9481, car oreder cost =  88,71 work time = 11
+22.09.2020 7:40:10 > couriers = 250, deliveries = 9509, car oreder cost =  80,36 work time = 9
+22.09.2020 7:40:18 > couriers = 251, deliveries = 9537, car oreder cost =  89,29 work time = 10
+22.09.2020 7:40:26 > couriers = 252, deliveries = 9565, car oreder cost =  89,29 work time = 10
+22.09.2020 7:40:34 > couriers = 253, deliveries = 9591, car oreder cost =  76,92 work time = 8
+22.09.2020 7:40:41 > couriers = 254, deliveries = 9619, car oreder cost =  89,29 work time = 10
+22.09.2020 7:40:50 > couriers = 255, deliveries = 9652, car oreder cost =  83,33 work time = 11
+22.09.2020 7:40:58 > couriers = 256, deliveries = 9681, car oreder cost =  86,21 work time = 10
+22.09.2020 7:41:06 > couriers = 257, deliveries = 9709, car oreder cost =  98,21 work time = 11
+22.09.2020 7:41:15 > couriers = 258, deliveries = 9737, car oreder cost =  89,29 work time = 10
+22.09.2020 7:41:23 > couriers = 259, deliveries = 9767, car oreder cost =  91,67 work time = 11
+22.09.2020 7:41:31 > couriers = 260, deliveries = 9793, car oreder cost =  86,54 work time = 9
+22.09.2020 7:41:39 > couriers = 261, deliveries = 9821, car oreder cost =  89,29 work time = 10
+22.09.2020 7:41:46 > couriers = 262, deliveries = 9848, car oreder cost =  83,33 work time = 9
+22.09.2020 7:41:54 > couriers = 263, deliveries = 9878, car oreder cost =  91,67 work time = 11
+22.09.2020 7:42:02 > couriers = 264, deliveries = 9905, car oreder cost =  92,59 work time = 10
+22.09.2020 7:42:10 > couriers = 265, deliveries = 9929, car oreder cost =  83,33 work time = 8
+22.09.2020 7:42:17 > couriers = 266, deliveries = 9961, car oreder cost =  85,94 work time = 11
+22.09.2020 7:42:25 > couriers = 267, deliveries = 9986, car oreder cost =  90,00 work time = 9
+22.09.2020 7:42:33 > couriers = 268, deliveries = 10017, car oreder cost =  80,65 work time = 10
+22.09.2020 7:42:41 > couriers = 269, deliveries = 10041, car oreder cost =  104,17 work time = 10
+22.09.2020 7:42:49 > couriers = 270, deliveries = 10058, car oreder cost =  88,24 work time = 6
+22.09.2020 7:42:57 > couriers = 271, deliveries = 10088, car oreder cost =  83,33 work time = 10
+22.09.2020 7:43:05 > couriers = 272, deliveries = 10104, car oreder cost =  109,38 work time = 7
+22.09.2020 7:43:12 > couriers = 273, deliveries = 10131, car oreder cost =  92,59 work time = 10
+22.09.2020 7:43:20 > couriers = 274, deliveries = 10159, car oreder cost =  89,29 work time = 10
+22.09.2020 7:43:28 > couriers = 275, deliveries = 10188, car oreder cost =  94,83 work time = 11
+22.09.2020 7:43:36 > couriers = 276, deliveries = 10214, car oreder cost =  96,15 work time = 10
+22.09.2020 7:43:43 > couriers = 277, deliveries = 10233, car oreder cost =  92,11 work time = 7
+22.09.2020 7:43:51 > couriers = 278, deliveries = 10256, car oreder cost =  97,83 work time = 9
+22.09.2020 7:43:59 > couriers = 279, deliveries = 10278, car oreder cost =  90,91 work time = 8
+22.09.2020 7:44:07 > couriers = 280, deliveries = 10306, car oreder cost =  98,21 work time = 11
+22.09.2020 7:44:15 > couriers = 281, deliveries = 10333, car oreder cost =  92,59 work time = 10
+22.09.2020 7:44:22 > couriers = 282, deliveries = 10357, car oreder cost =  93,75 work time = 9
+22.09.2020 7:44:31 > couriers = 283, deliveries = 10383, car oreder cost =  96,15 work time = 10
+22.09.2020 7:44:39 > couriers = 284, deliveries = 10411, car oreder cost =  89,29 work time = 10
+22.09.2020 7:44:47 > couriers = 285, deliveries = 10437, car oreder cost =  76,92 work time = 8
+22.09.2020 7:44:55 > couriers = 286, deliveries = 10462, car oreder cost =  100,00 work time = 10
+22.09.2020 7:45:04 > couriers = 287, deliveries = 10482, car oreder cost =  100,00 work time = 8
+22.09.2020 7:45:11 > couriers = 288, deliveries = 10506, car oreder cost =  104,17 work time = 10
+22.09.2020 7:45:19 > couriers = 289, deliveries = 10525, car oreder cost =  92,11 work time = 7
+22.09.2020 7:45:27 > couriers = 290, deliveries = 10548, car oreder cost =  97,83 work time = 9
+22.09.2020 7:45:34 > couriers = 291, deliveries = 10564, car oreder cost =  78,13 work time = 5
+22.09.2020 7:45:42 > couriers = 292, deliveries = 10589, car oreder cost =  100,00 work time = 10
+22.09.2020 7:45:49 > couriers = 293, deliveries = 10612, car oreder cost =  108,70 work time = 10
+22.09.2020 7:45:56 > couriers = 294, deliveries = 10641, car oreder cost =  86,21 work time = 10
+22.09.2020 7:46:03 > couriers = 295, deliveries = 10665, car oreder cost =  93,75 work time = 9
+22.09.2020 7:46:09 > couriers = 296, deliveries = 10688, car oreder cost =  97,83 work time = 9
+22.09.2020 7:46:17 > couriers = 297, deliveries = 10701, car oreder cost =  115,38 work time = 6
+22.09.2020 7:46:24 > couriers = 298, deliveries = 10726, car oreder cost =  100,00 work time = 10
+22.09.2020 7:46:30 > couriers = 299, deliveries = 10751, car oreder cost =  100,00 work time = 10
+22.09.2020 7:46:37 > couriers = 300, deliveries = 10775, car oreder cost =  93,75 work time = 9
+22.09.2020 7:46:42 > couriers = 301, deliveries = 10800, car oreder cost =  90,00 work time = 9
+22.09.2020 7:46:48 > couriers = 302, deliveries = 10825, car oreder cost =  100,00 work time = 10
+22.09.2020 7:46:53 > couriers = 303, deliveries = 10850, car oreder cost =  80,00 work time = 8
+22.09.2020 7:46:59 > couriers = 304, deliveries = 10871, car oreder cost =  95,24 work time = 8
+22.09.2020 7:47:05 > couriers = 305, deliveries = 10897, car oreder cost =  96,15 work time = 10
+22.09.2020 7:47:10 > couriers = 306, deliveries = 10929, car oreder cost =  78,13 work time = 10
+22.09.2020 7:47:15 > couriers = 307, deliveries = 10952, car oreder cost =  86,96 work time = 8
+22.09.2020 7:47:20 > couriers = 308, deliveries = 10970, car oreder cost =  97,22 work time = 7
+22.09.2020 7:47:25 > couriers = 309, deliveries = 10995, car oreder cost =  100,00 work time = 10
+22.09.2020 7:47:30 > couriers = 310, deliveries = 11019, car oreder cost =  104,17 work time = 10
+22.09.2020 7:47:35 > couriers = 311, deliveries = 11041, car oreder cost =  90,91 work time = 8
+22.09.2020 7:47:40 > couriers = 312, deliveries = 11059, car oreder cost =  83,33 work time = 6
+22.09.2020 7:47:45 > couriers = 313, deliveries = 11078, car oreder cost =  105,26 work time = 8
+22.09.2020 7:47:51 > couriers = 314, deliveries = 11097, car oreder cost =  92,11 work time = 7
+22.09.2020 7:47:56 > couriers = 315, deliveries = 11120, car oreder cost =  97,83 work time = 9
+22.09.2020 7:48:01 > couriers = 316, deliveries = 11135, car oreder cost =  83,33 work time = 5
+22.09.2020 7:48:06 > couriers = 317, deliveries = 11155, car oreder cost =  100,00 work time = 8
+22.09.2020 7:48:11 > couriers = 318, deliveries = 11170, car oreder cost =  83,33 work time = 5
+22.09.2020 7:48:16 > couriers = 319, deliveries = 11194, car oreder cost =  93,75 work time = 9
+22.09.2020 7:48:21 > couriers = 320, deliveries = 11216, car oreder cost =  90,91 work time = 8
+22.09.2020 7:48:26 > couriers = 321, deliveries = 11237, car oreder cost =  95,24 work time = 8
+22.09.2020 7:48:30 > couriers = 322, deliveries = 11250, car oreder cost =  96,15 work time = 5
+22.09.2020 7:48:35 > couriers = 323, deliveries = 11268, car oreder cost =  111,11 work time = 8
+22.09.2020 7:48:40 > couriers = 324, deliveries = 11290, car oreder cost =  90,91 work time = 8
+22.09.2020 7:48:45 > couriers = 325, deliveries = 11307, car oreder cost =  102,94 work time = 7
+22.09.2020 7:48:49 > couriers = 326, deliveries = 11324, car oreder cost =  102,94 work time = 7
+22.09.2020 7:48:54 > couriers = 327, deliveries = 11343, car oreder cost =  105,26 work time = 8
+22.09.2020 7:48:59 > couriers = 328, deliveries = 11363, car oreder cost =  100,00 work time = 8
+22.09.2020 7:49:03 > couriers = 329, deliveries = 11391, car oreder cost =  89,29 work time = 10
+22.09.2020 7:49:08 > couriers = 330, deliveries = 11415, car oreder cost =  104,17 work time = 10
+22.09.2020 7:49:13 > couriers = 331, deliveries = 11427, car oreder cost =  104,17 work time = 5
+22.09.2020 7:49:18 > couriers = 332, deliveries = 11453, car oreder cost =  105,77 work time = 11
+22.09.2020 7:49:22 > couriers = 333, deliveries = 11474, car oreder cost =  107,14 work time = 9
+22.09.2020 7:49:27 > couriers = 334, deliveries = 11492, car oreder cost =  97,22 work time = 7
+22.09.2020 7:49:31 > couriers = 335, deliveries = 11506, car oreder cost =  125,00 work time = 7
+22.09.2020 7:49:36 > couriers = 336, deliveries = 11523, car oreder cost =  102,94 work time = 7
+22.09.2020 7:49:40 > couriers = 337, deliveries = 11546, car oreder cost =  108,70 work time = 10
+22.09.2020 7:49:44 > couriers = 338, deliveries = 11571, car oreder cost =  110,00 work time = 11
+22.09.2020 7:49:48 > couriers = 339, deliveries = 11596, car oreder cost =  110,00 work time = 11
+22.09.2020 7:49:53 > couriers = 340, deliveries = 11624, car oreder cost =  80,36 work time = 9
+22.09.2020 7:49:58 > couriers = 341, deliveries = 11649, car oreder cost =  80,00 work time = 8
+22.09.2020 7:50:04 > couriers = 342, deliveries = 11680, car oreder cost =  80,65 work time = 10
+22.09.2020 7:50:09 > couriers = 343, deliveries = 11703, car oreder cost =  86,96 work time = 8
+22.09.2020 7:50:14 > couriers = 344, deliveries = 11726, car oreder cost =  86,96 work time = 8
+22.09.2020 7:50:19 > couriers = 345, deliveries = 11752, car oreder cost =  96,15 work time = 10
+22.09.2020 7:50:25 > couriers = 346, deliveries = 11777, car oreder cost =  100,00 work time = 10
+22.09.2020 7:50:30 > couriers = 347, deliveries = 11800, car oreder cost =  86,96 work time = 8
+22.09.2020 7:50:35 > couriers = 348, deliveries = 11820, car oreder cost =  100,00 work time = 8
+22.09.2020 7:50:40 > couriers = 349, deliveries = 11836, car oreder cost =  93,75 work time = 6
+22.09.2020 7:50:45 > couriers = 350, deliveries = 11853, car oreder cost =  102,94 work time = 7
+22.09.2020 7:50:50 > couriers = 351, deliveries = 11868, car oreder cost =  100,00 work time = 6
+22.09.2020 7:50:55 > couriers = 352, deliveries = 11892, car oreder cost =  104,17 work time = 10
+22.09.2020 7:51:00 > couriers = 353, deliveries = 11916, car oreder cost =  104,17 work time = 10
+22.09.2020 7:51:05 > couriers = 354, deliveries = 11941, car oreder cost =  110,00 work time = 11
+22.09.2020 7:51:10 > couriers = 355, deliveries = 11959, car oreder cost =  111,11 work time = 8
+22.09.2020 7:51:15 > couriers = 356, deliveries = 11981, car oreder cost =  113,64 work time = 10
+22.09.2020 7:51:18 > couriers = 357, deliveries = 12005, car oreder cost =  114,58 work time = 11
+22.09.2020 7:51:23 > couriers = 358, deliveries = 12027, car oreder cost =  113,64 work time = 10
+22.09.2020 7:51:28 > couriers = 359, deliveries = 12052, car oreder cost =  100,00 work time = 10
+22.09.2020 7:51:33 > couriers = 360, deliveries = 12075, car oreder cost =  119,57 work time = 11
+22.09.2020 7:51:37 > couriers = 361, deliveries = 12096, car oreder cost =  107,14 work time = 9
+22.09.2020 7:51:42 > couriers = 362, deliveries = 12112, car oreder cost =  93,75 work time = 6
+22.09.2020 7:51:46 > couriers = 363, deliveries = 12125, car oreder cost =  96,15 work time = 5
+22.09.2020 7:51:50 > couriers = 364, deliveries = 12141, car oreder cost =  93,75 work time = 6
+22.09.2020 7:51:54 > couriers = 365, deliveries = 12154, car oreder cost =  96,15 work time = 5
+22.09.2020 7:51:59 > couriers = 366, deliveries = 12172, car oreder cost =  97,22 work time = 7
+22.09.2020 7:52:03 > couriers = 367, deliveries = 12186, car oreder cost =  107,14 work time = 6
+22.09.2020 7:52:07 > couriers = 368, deliveries = 12201, car oreder cost =  100,00 work time = 6
+22.09.2020 7:52:12 > couriers = 369, deliveries = 12214, car oreder cost =  96,15 work time = 5
+22.09.2020 7:52:16 > couriers = 370, deliveries = 12227, car oreder cost =  96,15 work time = 5
+22.09.2020 7:52:20 > couriers = 371, deliveries = 12242, car oreder cost =  100,00 work time = 6
+22.09.2020 7:52:25 > couriers = 372, deliveries = 12265, car oreder cost =  108,70 work time = 10
+22.09.2020 7:52:29 > couriers = 373, deliveries = 12286, car oreder cost =  95,24 work time = 8
+22.09.2020 7:52:33 > couriers = 374, deliveries = 12301, car oreder cost =  83,33 work time = 5
+22.09.2020 7:52:37 > couriers = 375, deliveries = 12320, car oreder cost =  105,26 work time = 8
+22.09.2020 7:52:41 > couriers = 376, deliveries = 12338, car oreder cost =  111,11 work time = 8
+22.09.2020 7:52:44 > couriers = 377, deliveries = 12364, car oreder cost =  96,15 work time = 10
+22.09.2020 7:52:48 > couriers = 378, deliveries = 12382, car oreder cost =  97,22 work time = 7
+22.09.2020 7:52:52 > couriers = 379, deliveries = 12402, car oreder cost =  112,50 work time = 9
+22.09.2020 7:52:56 > couriers = 380, deliveries = 12418, car oreder cost =  93,75 work time = 6
+22.09.2020 7:52:59 > couriers = 381, deliveries = 12440, car oreder cost =  113,64 work time = 10
+22.09.2020 7:53:03 > couriers = 382, deliveries = 12455, car oreder cost =  116,67 work time = 7
+22.09.2020 7:53:07 > couriers = 383, deliveries = 12466, car oreder cost =  113,64 work time = 5
+22.09.2020 7:53:10 > couriers = 384, deliveries = 12483, car oreder cost =  117,65 work time = 8
+22.09.2020 7:53:14 > couriers = 385, deliveries = 12502, car oreder cost =  118,42 work time = 9
+22.09.2020 7:53:17 > couriers = 386, deliveries = 12521, car oreder cost =  118,42 work time = 9
+22.09.2020 7:53:20 > couriers = 387, deliveries = 12542, car oreder cost =  107,14 work time = 9
+22.09.2020 7:53:24 > couriers = 388, deliveries = 12564, car oreder cost =  113,64 work time = 10
+22.09.2020 7:53:27 > couriers = 389, deliveries = 12587, car oreder cost =  108,70 work time = 10
+22.09.2020 7:53:30 > couriers = 390, deliveries = 12611, car oreder cost =  114,58 work time = 11
+22.09.2020 7:53:33 > couriers = 391, deliveries = 12634, car oreder cost =  119,57 work time = 11
+22.09.2020 7:53:36 > couriers = 392, deliveries = 12656, car oreder cost =  125,00 work time = 11
+22.09.2020 7:53:40 > couriers = 393, deliveries = 12679, car oreder cost =  119,57 work time = 11
+22.09.2020 7:53:43 > couriers = 394, deliveries = 12701, car oreder cost =  125,00 work time = 11
+22.09.2020 7:53:47 > couriers = 395, deliveries = 12721, car oreder cost =  112,50 work time = 9
+22.09.2020 7:53:50 > couriers = 396, deliveries = 12736, car oreder cost =  116,67 work time = 7
+22.09.2020 7:53:54 > couriers = 397, deliveries = 12746, car oreder cost =  125,00 work time = 5
+22.09.2020 7:53:57 > couriers = 398, deliveries = 12760, car oreder cost =  125,00 work time = 7
+22.09.2020 7:54:01 > couriers = 399, deliveries = 12780, car oreder cost =  125,00 work time = 10
+22.09.2020 7:54:04 > couriers = 400, deliveries = 12798, car oreder cost =  125,00 work time = 9
+22.09.2020 7:54:07 > couriers = 401, deliveries = 12808, car oreder cost =  125,00 work time = 5
+22.09.2020 7:54:10 > couriers = 402, deliveries = 12823, car oreder cost =  83,33 work time = 5
+22.09.2020 7:54:13 > couriers = 403, deliveries = 12845, car oreder cost =  125,00 work time = 11
+22.09.2020 7:54:16 > couriers = 404, deliveries = 12860, car oreder cost =  116,67 work time = 7
+22.09.2020 7:54:19 > couriers = 405, deliveries = 12880, car oreder cost =  125,00 work time = 10
+22.09.2020 7:54:22 > couriers = 406, deliveries = 12900, car oreder cost =  125,00 work time = 10
+22.09.2020 7:54:25 > couriers = 407, deliveries = 12920, car oreder cost =  112,50 work time = 9
+22.09.2020 7:54:29 > couriers = 408, deliveries = 12937, car oreder cost =  132,35 work time = 9
+22.09.2020 7:54:32 > couriers = 409, deliveries = 12948, car oreder cost =  136,36 work time = 6
+22.09.2020 7:54:35 > couriers = 410, deliveries = 12966, car oreder cost =  138,89 work time = 10
+22.09.2020 7:54:38 > couriers = 411, deliveries = 12984, car oreder cost =  138,89 work time = 10
+22.09.2020 7:54:41 > couriers = 412, deliveries = 13002, car oreder cost =  125,00 work time = 9
+22.09.2020 7:54:44 > couriers = 413, deliveries = 13018, car oreder cost =  140,63 work time = 9
+22.09.2020 7:54:47 > couriers = 414, deliveries = 13038, car oreder cost =  100,00 work time = 8
+22.09.2020 7:54:50 > couriers = 415, deliveries = 13047, car oreder cost =  138,89 work time = 5
+22.09.2020 7:54:53 > couriers = 416, deliveries = 13066, car oreder cost =  144,74 work time = 11
+22.09.2020 7:54:56 > couriers = 417, deliveries = 13085, car oreder cost =  144,74 work time = 11
+22.09.2020 7:54:59 > couriers = 418, deliveries = 13097, car oreder cost =  145,83 work time = 7
+22.09.2020 7:55:02 > couriers = 419, deliveries = 13114, car oreder cost =  147,06 work time = 10
+22.09.2020 7:55:04 > couriers = 420, deliveries = 13134, car oreder cost =  150,00 work time = 12
+22.09.2020 7:55:07 > couriers = 421, deliveries = 13150, car oreder cost =  93,75 work time = 6
+22.09.2020 7:55:10 > couriers = 422, deliveries = 13161, car oreder cost =  136,36 work time = 6
+22.09.2020 7:55:12 > couriers = 423, deliveries = 13175, car oreder cost =  142,86 work time = 8
+22.09.2020 7:55:15 > couriers = 424, deliveries = 13188, car oreder cost =  153,85 work time = 8
+22.09.2020 7:55:17 > couriers = 425, deliveries = 13201, car oreder cost =  153,85 work time = 8
+22.09.2020 7:55:19 > couriers = 426, deliveries = 13217, car oreder cost =  125,00 work time = 8
+22.09.2020 7:55:22 > couriers = 427, deliveries = 13238, car oreder cost =  130,95 work time = 11
+22.09.2020 7:55:24 > couriers = 428, deliveries = 13255, car oreder cost =  132,35 work time = 9
+22.09.2020 7:55:27 > couriers = 429, deliveries = 13263, car oreder cost =  156,25 work time = 5
+22.09.2020 7:55:29 > couriers = 430, deliveries = 13279, car oreder cost =  156,25 work time = 10
+22.09.2020 7:55:32 > couriers = 431, deliveries = 13295, car oreder cost =  156,25 work time = 10
+22.09.2020 7:55:34 > couriers = 432, deliveries = 13313, car oreder cost =  97,22 work time = 7
+22.09.2020 7:55:36 > couriers = 433, deliveries = 13328, car oreder cost =  116,67 work time = 7
+22.09.2020 7:55:39 > couriers = 434, deliveries = 13340, car oreder cost =  104,17 work time = 5
+22.09.2020 7:55:41 > couriers = 435, deliveries = 13351, car oreder cost =  159,09 work time = 7
+22.09.2020 7:55:43 > couriers = 436, deliveries = 13370, car oreder cost =  157,89 work time = 12
+22.09.2020 7:55:46 > couriers = 437, deliveries = 13386, car oreder cost =  109,38 work time = 7
+22.09.2020 7:55:48 > couriers = 438, deliveries = 13396, car oreder cost =  125,00 work time = 5
+22.09.2020 7:55:50 > couriers = 439, deliveries = 13413, car oreder cost =  147,06 work time = 10
+22.09.2020 7:55:53 > couriers = 440, deliveries = 13427, car oreder cost =  142,86 work time = 8
+22.09.2020 7:55:55 > couriers = 441, deliveries = 13443, car oreder cost =  125,00 work time = 8
+22.09.2020 7:55:57 > couriers = 442, deliveries = 13453, car oreder cost =  150,00 work time = 6
+22.09.2020 7:55:59 > couriers = 443, deliveries = 13465, car oreder cost =  104,17 work time = 5
+22.09.2020 7:56:01 > couriers = 444, deliveries = 13478, car oreder cost =  134,62 work time = 7
+22.09.2020 7:56:03 > couriers = 445, deliveries = 13489, car oreder cost =  113,64 work time = 5
+22.09.2020 7:56:05 > couriers = 446, deliveries = 13500, car oreder cost =  113,64 work time = 5
+22.09.2020 7:56:07 > couriers = 447, deliveries = 13512, car oreder cost =  125,00 work time = 6
+22.09.2020 7:56:09 > couriers = 448, deliveries = 13527, car oreder cost =  100,00 work time = 6
+22.09.2020 7:56:11 > couriers = 449, deliveries = 13536, car oreder cost =  138,89 work time = 5
+22.09.2020 7:56:13 > couriers = 450, deliveries = 13549, car oreder cost =  96,15 work time = 5
+22.09.2020 7:56:15 > couriers = 451, deliveries = 13558, car oreder cost =  138,89 work time = 5
+22.09.2020 7:56:16 > couriers = 452, deliveries = 13571, car oreder cost =  153,85 work time = 8
+22.09.2020 7:56:18 > couriers = 453, deliveries = 13586, car oreder cost =  133,33 work time = 8
+22.09.2020 7:56:20 > couriers = 454, deliveries = 13598, car oreder cost =  145,83 work time = 7
+22.09.2020 7:56:22 > couriers = 455, deliveries = 13606, car oreder cost =  156,25 work time = 5
+22.09.2020 7:56:23 > couriers = 456, deliveries = 13620, car oreder cost =  160,71 work time = 9
+22.09.2020 7:56:25 > couriers = 457, deliveries = 13635, car oreder cost =  133,33 work time = 8
+22.09.2020 7:56:27 > couriers = 458, deliveries = 13654, car oreder cost =  118,42 work time = 9
+22.09.2020 7:56:29 > couriers = 459, deliveries = 13671, car oreder cost =  73,53 work time = 5
+22.09.2020 7:56:30 > couriers = 460, deliveries = 13686, car oreder cost =  83,33 work time = 5
+22.09.2020 7:56:32 > couriers = 461, deliveries = 13698, car oreder cost =  104,17 work time = 5
+22.09.2020 7:56:33 > couriers = 462, deliveries = 13715, car oreder cost =  161,76 work time = 11
+22.09.2020 7:56:35 > couriers = 463, deliveries = 13730, car oreder cost =  166,67 work time = 10
+22.09.2020 7:56:37 > couriers = 464, deliveries = 13743, car oreder cost =  173,08 work time = 9
+22.09.2020 7:56:38 > couriers = 465, deliveries = 13752, car oreder cost =  138,89 work time = 5
+22.09.2020 7:56:40 > couriers = 466, deliveries = 13769, car oreder cost =  147,06 work time = 10
+22.09.2020 7:56:41 > couriers = 467, deliveries = 13782, car oreder cost =  173,08 work time = 9
+22.09.2020 7:56:43 > couriers = 468, deliveries = 13795, car oreder cost =  173,08 work time = 9
+22.09.2020 7:56:44 > couriers = 469, deliveries = 13805, car oreder cost =  175,00 work time = 7
+22.09.2020 7:56:46 > couriers = 470, deliveries = 13819, car oreder cost =  178,57 work time = 10
+22.09.2020 7:56:48 > couriers = 471, deliveries = 13827, car oreder cost =  156,25 work time = 5
+22.09.2020 7:56:49 > couriers = 472, deliveries = 13836, car oreder cost =  138,89 work time = 5
+22.09.2020 7:56:51 > couriers = 473, deliveries = 13848, car oreder cost =  125,00 work time = 6
+22.09.2020 7:56:52 > couriers = 474, deliveries = 13864, car oreder cost =  171,88 work time = 11
+22.09.2020 7:56:54 > couriers = 475, deliveries = 13877, car oreder cost =  173,08 work time = 9
+22.09.2020 7:56:55 > couriers = 476, deliveries = 13884, car oreder cost =  178,57 work time = 5
+22.09.2020 7:56:56 > couriers = 477, deliveries = 13900, car oreder cost =  187,50 work time = 12
+22.09.2020 7:56:58 > couriers = 478, deliveries = 13913, car oreder cost =  192,31 work time = 10
+22.09.2020 7:56:59 > couriers = 479, deliveries = 13926, car oreder cost =  192,31 work time = 10
+22.09.2020 7:57:00 > couriers = 480, deliveries = 13934, car oreder cost =  187,50 work time = 6
+22.09.2020 7:57:02 > couriers = 481, deliveries = 13943, car oreder cost =  194,44 work time = 7
+22.09.2020 7:57:03 > couriers = 482, deliveries = 13961, car oreder cost =  152,78 work time = 11
+22.09.2020 7:57:04 > couriers = 483, deliveries = 13977, car oreder cost =  156,25 work time = 10
+22.09.2020 7:57:05 > couriers = 484, deliveries = 13989, car oreder cost =  166,67 work time = 8
+22.09.2020 7:57:07 > couriers = 485, deliveries = 14000, car oreder cost =  159,09 work time = 7
+22.09.2020 7:57:08 > couriers = 486, deliveries = 14010, car oreder cost =  200,00 work time = 8
+22.09.2020 7:57:09 > couriers = 487, deliveries = 14022, car oreder cost =  208,33 work time = 10
+22.09.2020 7:57:11 > couriers = 488, deliveries = 14034, car oreder cost =  125,00 work time = 6
+22.09.2020 7:57:12 > couriers = 489, deliveries = 14044, car oreder cost =  125,00 work time = 5
+22.09.2020 7:57:13 > couriers = 490, deliveries = 14057, car oreder cost =  211,54 work time = 11
+22.09.2020 7:57:14 > couriers = 491, deliveries = 14068, car oreder cost =  181,82 work time = 8
+22.09.2020 7:57:16 > couriers = 492, deliveries = 14086, car oreder cost =  138,89 work time = 10
+22.09.2020 7:57:17 > couriers = 493, deliveries = 14097, car oreder cost =  204,55 work time = 9
+22.09.2020 7:57:18 > couriers = 494, deliveries = 14109, car oreder cost =  208,33 work time = 10
+22.09.2020 7:57:20 > couriers = 495, deliveries = 14116, car oreder cost =  214,29 work time = 6
+22.09.2020 7:57:21 > couriers = 496, deliveries = 14125, car oreder cost =  222,22 work time = 8
+22.09.2020 7:57:22 > couriers = 497, deliveries = 14134, car oreder cost =  222,22 work time = 8
+22.09.2020 7:57:24 > couriers = 498, deliveries = 14139, car oreder cost =  250,00 work time = 5
+22.09.2020 7:57:25 > couriers = 499, deliveries = 14148, car oreder cost =  277,78 work time = 10
+22.09.2020 7:57:26 > couriers = 500, deliveries = 14153, car oreder cost =  250,00 work time = 5
+22.09.2020 7:57:28 > couriers = 501, deliveries = 14164, car oreder cost =  227,27 work time = 10
+22.09.2020 7:57:29 > couriers = 502, deliveries = 14171, car oreder cost =  250,00 work time = 7
+22.09.2020 7:57:30 > couriers = 503, deliveries = 14187, car oreder cost =  187,50 work time = 12
+22.09.2020 7:57:32 > couriers = 504, deliveries = 14195, car oreder cost =  187,50 work time = 6
+22.09.2020 7:57:33 > couriers = 505, deliveries = 14204, car oreder cost =  305,56 work time = 11
+22.09.2020 7:57:34 > couriers = 506, deliveries = 14212, car oreder cost =  312,50 work time = 10
+22.09.2020 7:57:36 > couriers = 507, deliveries = 14216, car oreder cost =  312,50 work time = 5
+22.09.2020 7:57:37 > couriers = 508, deliveries = 14220, car oreder cost =  312,50 work time = 5
+22.09.2020 7:57:38 > couriers = 509, deliveries = 14233, car oreder cost =  211,54 work time = 11
+22.09.2020 7:57:40 > couriers = 510, deliveries = 14242, car oreder cost =  250,00 work time = 9
+22.09.2020 7:57:41 > couriers = 511, deliveries = 14249, car oreder cost =  178,57 work time = 5
+22.09.2020 7:57:42 > couriers = 512, deliveries = 14258, car oreder cost =  222,22 work time = 8
+22.09.2020 7:57:43 > couriers = 513, deliveries = 14263, car oreder cost =  250,00 work time = 5
+22.09.2020 7:57:44 > couriers = 514, deliveries = 14270, car oreder cost =  178,57 work time = 5
+22.09.2020 7:57:46 > couriers = 515, deliveries = 14277, car oreder cost =  285,71 work time = 8
+22.09.2020 7:57:47 > couriers = 516, deliveries = 14283, car oreder cost =  333,33 work time = 8
+22.09.2020 7:57:48 > couriers = 517, deliveries = 14291, car oreder cost =  312,50 work time = 10
+22.09.2020 7:57:50 > couriers = 518, deliveries = 14299, car oreder cost =  156,25 work time = 5
+22.09.2020 7:57:51 > couriers = 519, deliveries = 14305, car oreder cost =  333,33 work time = 8
+22.09.2020 7:57:52 > couriers = 520, deliveries = 14311, car oreder cost =  333,33 work time = 8
+22.09.2020 7:57:53 > couriers = 521, deliveries = 14317, car oreder cost =  333,33 work time = 8
+22.09.2020 7:57:55 > couriers = 522, deliveries = 14322, car oreder cost =  350,00 work time = 7
+22.09.2020 7:57:56 > couriers = 523, deliveries = 14328, car oreder cost =  250,00 work time = 6
+22.09.2020 7:57:57 > couriers = 524, deliveries = 14334, car oreder cost =  333,33 work time = 8
+22.09.2020 7:57:58 > couriers = 525, deliveries = 14339, car oreder cost =  450,00 work time = 9
+22.09.2020 7:57:59 > couriers = 526, deliveries = 14350, car oreder cost =  159,09 work time = 7
+22.09.2020 7:58:01 > couriers = 527, deliveries = 14354, car oreder cost =  500,00 work time = 8
+22.09.2020 7:58:02 > couriers = 528, deliveries = 14370, car oreder cost =  171,88 work time = 11
+22.09.2020 7:58:03 > couriers = 529, deliveries = 14377, car oreder cost =  285,71 work time = 8
+22.09.2020 7:58:04 > couriers = 530, deliveries = 14379, car oreder cost =  625,00 work time = 5
+22.09.2020 7:58:06 > couriers = 531, deliveries = 14388, car oreder cost =  166,67 work time = 6
+22.09.2020 7:58:07 > couriers = 532, deliveries = 14391, car oreder cost =  500,00 work time = 6
+22.09.2020 7:58:08 > couriers = 533, deliveries = 14394, car oreder cost =  416,67 work time = 5
+22.09.2020 7:58:09 > couriers = 534, deliveries = 14399, car oreder cost =  250,00 work time = 5
+22.09.2020 7:58:11 > couriers = 535, deliveries = 14401, car oreder cost =  625,00 work time = 5

@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{060CF60C-1BC7-4E46-A178-B112053601E1}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>CourierLogistics</RootNamespace>
+    <AssemblyName>CourierLogistics</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>..\packages\Portable.BouncyCastle.1.8.6\lib\net40\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="ClosedXML, Version=0.95.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.95.3\lib\net46\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.0.10.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.0.10\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Device" />
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.0.1\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Packaging, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.4.0.0\lib\net46\System.IO.Packaging.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Logistics\CourierStatisticsCalculator\CourierStatistics.cs" />
+    <Compile Include="Logistics\CourierStatisticsCalculator\CourierStatisticsData.cs" />
+    <Compile Include="Logistics\CourierStatisticsCalculator\CourierStatisticsDayData.cs" />
+    <Compile Include="Logistics\CourierStatisticsCalculator\CourierStatisticsDaysData.cs" />
+    <Compile Include="Logistics\FloatOptimalSolution\FloatOptimalDaySolution.cs" />
+    <Compile Include="Logistics\FloatOptimalSolution\ShopSolution.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierInLive\CourierAction.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierInLive\CourierEx.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierInLive\CourierEventArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierInLive\CourierStorage.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\EventQueue.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItem.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItemCourierWorkEndArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItemCourierWorkStartArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItemDeliveryAlertArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItemMovedToPointArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItemOrderAssembledArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItemOrderDeliveredArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItemShopAllDeliveredArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItemStatus.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\ServiceQueue\QueueItemType.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\SimpleService.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\SimpleServiceEx.cs" />
+    <Compile Include="Logistics\FloatSolution\CourierService\SimpleServiceEy.cs" />
+    <Compile Include="Logistics\FloatSolution\FloatCourierStatistics\FloatCourierDayStatistics.cs" />
+    <Compile Include="Logistics\FloatSolution\FloatSolutionParameters.cs" />
+    <Compile Include="Logistics\FloatSolution\OrdersDeliverySolution\DeliverySolution.cs" />
+    <Compile Include="Logistics\FloatSolution\ShopInLive\ShopOrderAssembledEventArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\ShopInLive\ShopPossibleDelivery.cs" />
+    <Compile Include="Logistics\FloatSolution\ShopInLive\ShopPossibleDeliveryEventArgs.cs" />
+    <Compile Include="Logistics\FloatSolution\ShopInLive\ShopEventType.cs" />
+    <Compile Include="Logistics\FloatSolution\ShopInLive\ShopEx.cs" />
+    <Compile Include="Logistics\FloatSolution\ShopInLive\ShopTaxiDeliveryAlertEventArgs.cs" />
+    <Compile Include="Logistics\OptimalSingleShopSolution\PermutationsRepository\Permutations.cs" />
+    <Compile Include="Logistics\OptimalSingleShopSolution\PermutationsRepository\PermutationsGenerator.cs" />
+    <Compile Include="Logistics\OptimalSingleShopSolution\ShopCouriers.cs" />
+    <Compile Include="Logistics\OptimalSingleShopSolution\ShopCourierStatistics.cs" />
+    <Compile Include="Logistics\OptimalSingleShopSolution\SingleShopSolution.cs" />
+    <Compile Include="Logistics\RealSingleShopSolution\DeliveryHistory.cs" />
+    <Compile Include="Logistics\RealSingleShopSolution\DeliveryHistoryNode.cs" />
+    <Compile Include="Logistics\RealSingleShopSolution\HistoryStatistics.cs" />
+    <Compile Include="Logistics\RealSingleShopSolution\PartitionOfASet\PartitionGenerator.cs" />
+    <Compile Include="Logistics\RealSingleShopSolution\PartitionOfASet\Partitions.cs" />
+    <Compile Include="Logistics\RealSingleShopSolution\ShopStatisticsEx.cs" />
+    <Compile Include="Logistics\RealSingleShopSolution\SummaryStatistics.cs" />
+    <Compile Include="Logistics\RealSingleShopSolution\RealShopSolution.cs" />
+    <Compile Include="Logistics\RealSingleShopSolution\ShopStatistics.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helper.cs" />
+    <Compile Include="Logistics\Main.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Report\ExcelReport.cs" />
+    <Compile Include="Report\ExcelReportSheet.cs" />
+    <Compile Include="SourceData\Couriers\CourierDeliveryInfo.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_Bicycle2.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_GettTaxi.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_Bicycle.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_Bicycle1.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_Car.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_Car1.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_OnFoot1.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_Car2.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_YandexTaxi.cs" />
+    <Compile Include="SourceData\Orders\AllOrders.cs" />
+    <Compile Include="SourceData\Couriers\Courier.cs" />
+    <Compile Include="SourceData\Couriers\CourierStatus.cs" />
+    <Compile Include="SourceData\Couriers\CourierType_OnFoot.cs" />
+    <Compile Include="SourceData\Couriers\CourierVehicleType.cs" />
+    <Compile Include="SourceData\Couriers\ICourierType.cs" />
+    <Compile Include="SourceData\Orders\Order.cs" />
+    <Compile Include="SourceData\Orders\OrdersLoader.cs" />
+    <Compile Include="SourceData\Shops\Shop.cs" />
+    <Compile Include="SourceData\Shops\AllShops.cs" />
+    <Compile Include="SourceData\Shops\ShopsLoader.cs" />
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LogisticsService\LogisticsService.csproj">
+      <Project>{42c6787f-d998-429c-b50b-ee03163d47ad}</Project>
+      <Name>LogisticsService</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

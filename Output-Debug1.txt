@@ -1,0 +1,1168 @@
+﻿23.09.2020 20:03:48 > couriers = 1, deliveries = 52, car oreder cost =  48,08 work time = 10
+23.09.2020 20:04:24 > couriers = 2, deliveries = 108, car oreder cost =  49,11 work time = 11
+23.09.2020 20:04:33 > couriers = 3, deliveries = 159, car oreder cost =  49,02 work time = 10
+23.09.2020 20:04:42 > couriers = 4, deliveries = 214, car oreder cost =  50,00 work time = 11
+23.09.2020 20:04:52 > couriers = 5, deliveries = 264, car oreder cost =  55,00 work time = 11
+23.09.2020 20:05:01 > couriers = 6, deliveries = 314, car oreder cost =  55,00 work time = 11
+23.09.2020 20:05:10 > couriers = 7, deliveries = 364, car oreder cost =  55,00 work time = 11
+23.09.2020 20:05:19 > couriers = 8, deliveries = 418, car oreder cost =  50,93 work time = 11
+23.09.2020 20:05:29 > couriers = 9, deliveries = 472, car oreder cost =  46,30 work time = 10
+23.09.2020 20:05:38 > couriers = 10, deliveries = 522, car oreder cost =  50,00 work time = 10
+23.09.2020 20:05:47 > couriers = 11, deliveries = 571, car oreder cost =  51,02 work time = 10
+23.09.2020 20:05:57 > couriers = 12, deliveries = 620, car oreder cost =  51,02 work time = 10
+23.09.2020 20:06:06 > couriers = 13, deliveries = 670, car oreder cost =  50,00 work time = 10
+23.09.2020 20:06:16 > couriers = 14, deliveries = 719, car oreder cost =  51,02 work time = 10
+23.09.2020 20:06:25 > couriers = 15, deliveries = 768, car oreder cost =  51,02 work time = 10
+23.09.2020 20:06:35 > couriers = 16, deliveries = 817, car oreder cost =  51,02 work time = 10
+23.09.2020 20:06:44 > couriers = 17, deliveries = 866, car oreder cost =  51,02 work time = 10
+23.09.2020 20:06:54 > couriers = 18, deliveries = 919, car oreder cost =  51,89 work time = 11
+23.09.2020 20:07:04 > couriers = 19, deliveries = 967, car oreder cost =  57,29 work time = 11
+23.09.2020 20:07:14 > couriers = 20, deliveries = 1015, car oreder cost =  52,08 work time = 10
+23.09.2020 20:07:24 > couriers = 21, deliveries = 1063, car oreder cost =  57,29 work time = 11
+23.09.2020 20:07:33 > couriers = 22, deliveries = 1110, car oreder cost =  53,19 work time = 10
+23.09.2020 20:07:43 > couriers = 23, deliveries = 1157, car oreder cost =  53,19 work time = 10
+23.09.2020 20:07:53 > couriers = 24, deliveries = 1199, car oreder cost =  59,52 work time = 10
+23.09.2020 20:08:03 > couriers = 25, deliveries = 1251, car oreder cost =  52,88 work time = 11
+23.09.2020 20:08:13 > couriers = 26, deliveries = 1302, car oreder cost =  53,92 work time = 11
+23.09.2020 20:08:22 > couriers = 27, deliveries = 1348, car oreder cost =  65,22 work time = 12
+23.09.2020 20:08:32 > couriers = 28, deliveries = 1394, car oreder cost =  54,35 work time = 10
+23.09.2020 20:08:42 > couriers = 29, deliveries = 1440, car oreder cost =  54,35 work time = 10
+23.09.2020 20:08:51 > couriers = 30, deliveries = 1486, car oreder cost =  54,35 work time = 10
+23.09.2020 20:09:01 > couriers = 31, deliveries = 1532, car oreder cost =  54,35 work time = 10
+23.09.2020 20:09:11 > couriers = 32, deliveries = 1579, car oreder cost =  53,19 work time = 10
+23.09.2020 20:09:21 > couriers = 33, deliveries = 1620, car oreder cost =  54,88 work time = 9
+23.09.2020 20:09:31 > couriers = 34, deliveries = 1670, car oreder cost =  55,00 work time = 11
+23.09.2020 20:09:40 > couriers = 35, deliveries = 1716, car oreder cost =  54,35 work time = 10
+23.09.2020 20:09:50 > couriers = 36, deliveries = 1762, car oreder cost =  54,35 work time = 10
+23.09.2020 20:10:00 > couriers = 37, deliveries = 1812, car oreder cost =  55,00 work time = 11
+23.09.2020 20:10:10 > couriers = 38, deliveries = 1857, car oreder cost =  55,56 work time = 10
+23.09.2020 20:10:21 > couriers = 39, deliveries = 1904, car oreder cost =  53,19 work time = 10
+23.09.2020 20:10:30 > couriers = 40, deliveries = 1945, car oreder cost =  48,78 work time = 8
+23.09.2020 20:10:40 > couriers = 41, deliveries = 1990, car oreder cost =  55,56 work time = 10
+23.09.2020 20:10:50 > couriers = 42, deliveries = 2035, car oreder cost =  55,56 work time = 10
+23.09.2020 20:11:00 > couriers = 43, deliveries = 2082, car oreder cost =  58,51 work time = 11
+23.09.2020 20:11:10 > couriers = 44, deliveries = 2127, car oreder cost =  55,56 work time = 10
+23.09.2020 20:11:20 > couriers = 45, deliveries = 2172, car oreder cost =  55,56 work time = 10
+23.09.2020 20:11:30 > couriers = 46, deliveries = 2223, car oreder cost =  53,92 work time = 11
+23.09.2020 20:11:39 > couriers = 47, deliveries = 2268, car oreder cost =  61,11 work time = 11
+23.09.2020 20:11:49 > couriers = 48, deliveries = 2313, car oreder cost =  61,11 work time = 11
+23.09.2020 20:11:59 > couriers = 49, deliveries = 2358, car oreder cost =  55,56 work time = 10
+23.09.2020 20:12:09 > couriers = 50, deliveries = 2402, car oreder cost =  62,50 work time = 11
+23.09.2020 20:12:18 > couriers = 51, deliveries = 2446, car oreder cost =  62,50 work time = 11
+23.09.2020 20:12:28 > couriers = 52, deliveries = 2490, car oreder cost =  62,50 work time = 11
+23.09.2020 20:12:38 > couriers = 53, deliveries = 2534, car oreder cost =  62,50 work time = 11
+23.09.2020 20:12:47 > couriers = 54, deliveries = 2578, car oreder cost =  56,82 work time = 10
+23.09.2020 20:12:57 > couriers = 55, deliveries = 2622, car oreder cost =  62,50 work time = 11
+23.09.2020 20:13:06 > couriers = 56, deliveries = 2670, car oreder cost =  57,29 work time = 11
+23.09.2020 20:13:16 > couriers = 57, deliveries = 2718, car oreder cost =  57,29 work time = 11
+23.09.2020 20:13:26 > couriers = 58, deliveries = 2763, car oreder cost =  61,11 work time = 11
+23.09.2020 20:13:36 > couriers = 59, deliveries = 2807, car oreder cost =  62,50 work time = 11
+23.09.2020 20:13:45 > couriers = 60, deliveries = 2851, car oreder cost =  56,82 work time = 10
+23.09.2020 20:13:55 > couriers = 61, deliveries = 2899, car oreder cost =  57,29 work time = 11
+23.09.2020 20:14:04 > couriers = 62, deliveries = 2942, car oreder cost =  58,14 work time = 10
+23.09.2020 20:14:14 > couriers = 63, deliveries = 2985, car oreder cost =  58,14 work time = 10
+23.09.2020 20:14:23 > couriers = 64, deliveries = 3028, car oreder cost =  58,14 work time = 10
+23.09.2020 20:14:33 > couriers = 65, deliveries = 3071, car oreder cost =  58,14 work time = 10
+23.09.2020 20:14:43 > couriers = 66, deliveries = 3114, car oreder cost =  63,95 work time = 11
+23.09.2020 20:14:53 > couriers = 67, deliveries = 3161, car oreder cost =  58,51 work time = 11
+23.09.2020 20:15:02 > couriers = 68, deliveries = 3203, car oreder cost =  53,57 work time = 9
+23.09.2020 20:15:12 > couriers = 69, deliveries = 3245, car oreder cost =  59,52 work time = 10
+23.09.2020 20:15:21 > couriers = 70, deliveries = 3287, car oreder cost =  59,52 work time = 10
+23.09.2020 20:15:31 > couriers = 71, deliveries = 3330, car oreder cost =  58,14 work time = 10
+23.09.2020 20:15:41 > couriers = 72, deliveries = 3372, car oreder cost =  59,52 work time = 10
+23.09.2020 20:15:50 > couriers = 73, deliveries = 3414, car oreder cost =  59,52 work time = 10
+23.09.2020 20:16:00 > couriers = 74, deliveries = 3458, car oreder cost =  56,82 work time = 10
+23.09.2020 20:16:09 > couriers = 75, deliveries = 3500, car oreder cost =  59,52 work time = 10
+23.09.2020 20:16:19 > couriers = 76, deliveries = 3543, car oreder cost =  63,95 work time = 11
+23.09.2020 20:16:28 > couriers = 77, deliveries = 3585, car oreder cost =  59,52 work time = 10
+23.09.2020 20:16:37 > couriers = 78, deliveries = 3631, car oreder cost =  59,78 work time = 11
+23.09.2020 20:16:47 > couriers = 79, deliveries = 3673, car oreder cost =  53,57 work time = 9
+23.09.2020 20:16:57 > couriers = 80, deliveries = 3718, car oreder cost =  55,56 work time = 10
+23.09.2020 20:17:07 > couriers = 81, deliveries = 3761, car oreder cost =  63,95 work time = 11
+23.09.2020 20:17:17 > couriers = 82, deliveries = 3803, car oreder cost =  59,52 work time = 10
+23.09.2020 20:17:26 > couriers = 83, deliveries = 3846, car oreder cost =  58,14 work time = 10
+23.09.2020 20:17:36 > couriers = 84, deliveries = 3889, car oreder cost =  63,95 work time = 11
+23.09.2020 20:17:46 > couriers = 85, deliveries = 3931, car oreder cost =  59,52 work time = 10
+23.09.2020 20:17:56 > couriers = 86, deliveries = 3973, car oreder cost =  59,52 work time = 10
+23.09.2020 20:18:06 > couriers = 87, deliveries = 4019, car oreder cost =  59,78 work time = 11
+23.09.2020 20:18:16 > couriers = 88, deliveries = 4060, car oreder cost =  60,98 work time = 10
+23.09.2020 20:18:26 > couriers = 89, deliveries = 4099, car oreder cost =  51,28 work time = 8
+23.09.2020 20:18:36 > couriers = 90, deliveries = 4141, car oreder cost =  59,52 work time = 10
+23.09.2020 20:18:46 > couriers = 91, deliveries = 4182, car oreder cost =  60,98 work time = 10
+23.09.2020 20:18:56 > couriers = 92, deliveries = 4223, car oreder cost =  67,07 work time = 11
+23.09.2020 20:19:07 > couriers = 93, deliveries = 4264, car oreder cost =  67,07 work time = 11
+23.09.2020 20:19:17 > couriers = 94, deliveries = 4305, car oreder cost =  60,98 work time = 10
+23.09.2020 20:19:27 > couriers = 95, deliveries = 4346, car oreder cost =  60,98 work time = 10
+23.09.2020 20:19:37 > couriers = 96, deliveries = 4383, car oreder cost =  54,05 work time = 8
+23.09.2020 20:19:47 > couriers = 97, deliveries = 4424, car oreder cost =  60,98 work time = 10
+23.09.2020 20:19:57 > couriers = 98, deliveries = 4469, car oreder cost =  61,11 work time = 11
+23.09.2020 20:20:07 > couriers = 99, deliveries = 4510, car oreder cost =  60,98 work time = 10
+23.09.2020 20:20:18 > couriers = 100, deliveries = 4555, car oreder cost =  61,11 work time = 11
+23.09.2020 20:20:28 > couriers = 101, deliveries = 4599, car oreder cost =  62,50 work time = 11
+23.09.2020 20:20:38 > couriers = 102, deliveries = 4643, car oreder cost =  62,50 work time = 11
+23.09.2020 20:20:49 > couriers = 103, deliveries = 4684, car oreder cost =  60,98 work time = 10
+23.09.2020 20:20:59 > couriers = 104, deliveries = 4726, car oreder cost =  59,52 work time = 10
+23.09.2020 20:21:09 > couriers = 105, deliveries = 4766, car oreder cost =  68,75 work time = 11
+23.09.2020 20:21:20 > couriers = 106, deliveries = 4809, car oreder cost =  58,14 work time = 10
+23.09.2020 20:21:30 > couriers = 107, deliveries = 4852, car oreder cost =  63,95 work time = 11
+23.09.2020 20:21:41 > couriers = 108, deliveries = 4895, car oreder cost =  63,95 work time = 11
+23.09.2020 20:21:51 > couriers = 109, deliveries = 4934, car oreder cost =  70,51 work time = 11
+23.09.2020 20:22:01 > couriers = 110, deliveries = 4973, car oreder cost =  64,10 work time = 10
+23.09.2020 20:22:11 > couriers = 111, deliveries = 5012, car oreder cost =  64,10 work time = 10
+23.09.2020 20:22:22 > couriers = 112, deliveries = 5051, car oreder cost =  64,10 work time = 10
+23.09.2020 20:22:32 > couriers = 113, deliveries = 5093, car oreder cost =  65,48 work time = 11
+23.09.2020 20:22:42 > couriers = 114, deliveries = 5132, car oreder cost =  64,10 work time = 10
+23.09.2020 20:22:53 > couriers = 115, deliveries = 5171, car oreder cost =  64,10 work time = 10
+23.09.2020 20:23:03 > couriers = 116, deliveries = 5210, car oreder cost =  64,10 work time = 10
+23.09.2020 20:23:14 > couriers = 117, deliveries = 5252, car oreder cost =  65,48 work time = 11
+23.09.2020 20:23:24 > couriers = 118, deliveries = 5294, car oreder cost =  65,48 work time = 11
+23.09.2020 20:23:34 > couriers = 119, deliveries = 5332, car oreder cost =  65,79 work time = 10
+23.09.2020 20:23:45 > couriers = 120, deliveries = 5370, car oreder cost =  65,79 work time = 10
+23.09.2020 20:23:55 > couriers = 121, deliveries = 5412, car oreder cost =  59,52 work time = 10
+23.09.2020 20:24:05 > couriers = 122, deliveries = 5456, car oreder cost =  62,50 work time = 11
+23.09.2020 20:24:15 > couriers = 123, deliveries = 5494, car oreder cost =  65,79 work time = 10
+23.09.2020 20:24:26 > couriers = 124, deliveries = 5532, car oreder cost =  65,79 work time = 10
+23.09.2020 20:24:36 > couriers = 125, deliveries = 5570, car oreder cost =  65,79 work time = 10
+23.09.2020 20:24:46 > couriers = 126, deliveries = 5608, car oreder cost =  65,79 work time = 10
+23.09.2020 20:24:57 > couriers = 127, deliveries = 5646, car oreder cost =  65,79 work time = 10
+23.09.2020 20:25:07 > couriers = 128, deliveries = 5672, car oreder cost =  67,31 work time = 7
+23.09.2020 20:25:17 > couriers = 129, deliveries = 5713, car oreder cost =  67,07 work time = 11
+23.09.2020 20:25:28 > couriers = 130, deliveries = 5750, car oreder cost =  67,57 work time = 10
+23.09.2020 20:25:38 > couriers = 131, deliveries = 5787, car oreder cost =  67,57 work time = 10
+23.09.2020 20:25:49 > couriers = 132, deliveries = 5824, car oreder cost =  67,57 work time = 10
+23.09.2020 20:25:59 > couriers = 133, deliveries = 5861, car oreder cost =  67,57 work time = 10
+23.09.2020 20:26:09 > couriers = 134, deliveries = 5900, car oreder cost =  64,10 work time = 10
+23.09.2020 20:26:19 > couriers = 135, deliveries = 5938, car oreder cost =  65,79 work time = 10
+23.09.2020 20:26:29 > couriers = 136, deliveries = 5979, car oreder cost =  67,07 work time = 11
+23.09.2020 20:26:40 > couriers = 137, deliveries = 6016, car oreder cost =  74,32 work time = 11
+23.09.2020 20:26:50 > couriers = 138, deliveries = 6056, car oreder cost =  68,75 work time = 11
+23.09.2020 20:27:00 > couriers = 139, deliveries = 6092, car oreder cost =  69,44 work time = 10
+23.09.2020 20:27:10 > couriers = 140, deliveries = 6132, car oreder cost =  68,75 work time = 11
+23.09.2020 20:27:20 > couriers = 141, deliveries = 6168, car oreder cost =  69,44 work time = 10
+23.09.2020 20:27:30 > couriers = 142, deliveries = 6201, car oreder cost =  75,76 work time = 10
+23.09.2020 20:27:40 > couriers = 143, deliveries = 6239, car oreder cost =  72,37 work time = 11
+23.09.2020 20:27:51 > couriers = 144, deliveries = 6275, car oreder cost =  69,44 work time = 10
+23.09.2020 20:28:01 > couriers = 145, deliveries = 6311, car oreder cost =  69,44 work time = 10
+23.09.2020 20:28:11 > couriers = 146, deliveries = 6347, car oreder cost =  69,44 work time = 10
+23.09.2020 20:28:20 > couriers = 147, deliveries = 6381, car oreder cost =  66,18 work time = 9
+23.09.2020 20:28:30 > couriers = 148, deliveries = 6419, car oreder cost =  65,79 work time = 10
+23.09.2020 20:28:40 > couriers = 149, deliveries = 6459, car oreder cost =  68,75 work time = 11
+23.09.2020 20:28:50 > couriers = 150, deliveries = 6496, car oreder cost =  67,57 work time = 10
+23.09.2020 20:29:00 > couriers = 151, deliveries = 6536, car oreder cost =  68,75 work time = 11
+23.09.2020 20:29:10 > couriers = 152, deliveries = 6572, car oreder cost =  76,39 work time = 11
+23.09.2020 20:29:20 > couriers = 153, deliveries = 6608, car oreder cost =  76,39 work time = 11
+23.09.2020 20:29:30 > couriers = 154, deliveries = 6626, car oreder cost =  55,56 work time = 4
+23.09.2020 20:29:40 > couriers = 155, deliveries = 6665, car oreder cost =  70,51 work time = 11
+23.09.2020 20:29:50 > couriers = 156, deliveries = 6704, car oreder cost =  70,51 work time = 11
+23.09.2020 20:30:01 > couriers = 157, deliveries = 6741, car oreder cost =  67,57 work time = 10
+23.09.2020 20:30:11 > couriers = 158, deliveries = 6776, car oreder cost =  78,57 work time = 11
+23.09.2020 20:30:21 > couriers = 159, deliveries = 6811, car oreder cost =  78,57 work time = 11
+23.09.2020 20:30:31 > couriers = 160, deliveries = 6846, car oreder cost =  64,29 work time = 9
+23.09.2020 20:30:41 > couriers = 161, deliveries = 6881, car oreder cost =  71,43 work time = 10
+23.09.2020 20:30:52 > couriers = 162, deliveries = 6917, car oreder cost =  69,44 work time = 10
+23.09.2020 20:31:02 > couriers = 163, deliveries = 6952, car oreder cost =  71,43 work time = 10
+23.09.2020 20:31:13 > couriers = 164, deliveries = 6990, car oreder cost =  72,37 work time = 11
+23.09.2020 20:31:23 > couriers = 165, deliveries = 7028, car oreder cost =  72,37 work time = 11
+23.09.2020 20:31:33 > couriers = 166, deliveries = 7067, car oreder cost =  70,51 work time = 11
+23.09.2020 20:31:43 > couriers = 167, deliveries = 7106, car oreder cost =  70,51 work time = 11
+23.09.2020 20:31:53 > couriers = 168, deliveries = 7144, car oreder cost =  72,37 work time = 11
+23.09.2020 20:32:03 > couriers = 169, deliveries = 7182, car oreder cost =  72,37 work time = 11
+23.09.2020 20:32:14 > couriers = 170, deliveries = 7216, car oreder cost =  80,88 work time = 11
+23.09.2020 20:32:24 > couriers = 171, deliveries = 7252, car oreder cost =  69,44 work time = 10
+23.09.2020 20:32:34 > couriers = 172, deliveries = 7289, car oreder cost =  67,57 work time = 10
+23.09.2020 20:32:44 > couriers = 173, deliveries = 7323, car oreder cost =  73,53 work time = 10
+23.09.2020 20:32:54 > couriers = 174, deliveries = 7357, car oreder cost =  66,18 work time = 9
+23.09.2020 20:33:04 > couriers = 175, deliveries = 7393, car oreder cost =  69,44 work time = 10
+23.09.2020 20:33:14 > couriers = 176, deliveries = 7430, car oreder cost =  67,57 work time = 10
+23.09.2020 20:33:24 > couriers = 177, deliveries = 7464, car oreder cost =  73,53 work time = 10
+23.09.2020 20:33:34 > couriers = 178, deliveries = 7498, car oreder cost =  73,53 work time = 10
+23.09.2020 20:33:44 > couriers = 179, deliveries = 7532, car oreder cost =  80,88 work time = 11
+23.09.2020 20:33:54 > couriers = 180, deliveries = 7569, car oreder cost =  67,57 work time = 10
+23.09.2020 20:34:04 > couriers = 181, deliveries = 7606, car oreder cost =  67,57 work time = 10
+23.09.2020 20:34:14 > couriers = 182, deliveries = 7640, car oreder cost =  80,88 work time = 11
+23.09.2020 20:34:24 > couriers = 183, deliveries = 7677, car oreder cost =  67,57 work time = 10
+23.09.2020 20:34:34 > couriers = 184, deliveries = 7713, car oreder cost =  69,44 work time = 10
+23.09.2020 20:34:44 > couriers = 185, deliveries = 7747, car oreder cost =  73,53 work time = 10
+23.09.2020 20:34:54 > couriers = 186, deliveries = 7786, car oreder cost =  70,51 work time = 11
+23.09.2020 20:35:04 > couriers = 187, deliveries = 7819, car oreder cost =  68,18 work time = 9
+23.09.2020 20:35:14 > couriers = 188, deliveries = 7850, car oreder cost =  64,52 work time = 8
+23.09.2020 20:35:23 > couriers = 189, deliveries = 7883, car oreder cost =  83,33 work time = 11
+23.09.2020 20:35:34 > couriers = 190, deliveries = 7916, car oreder cost =  75,76 work time = 10
+23.09.2020 20:35:43 > couriers = 191, deliveries = 7939, car oreder cost =  76,09 work time = 7
+23.09.2020 20:35:53 > couriers = 192, deliveries = 7972, car oreder cost =  75,76 work time = 10
+23.09.2020 20:36:02 > couriers = 193, deliveries = 8005, car oreder cost =  68,18 work time = 9
+23.09.2020 20:36:11 > couriers = 194, deliveries = 8031, car oreder cost =  76,92 work time = 8
+23.09.2020 20:36:21 > couriers = 195, deliveries = 8061, car oreder cost =  66,67 work time = 8
+23.09.2020 20:36:30 > couriers = 196, deliveries = 8093, car oreder cost =  78,13 work time = 10
+23.09.2020 20:36:40 > couriers = 197, deliveries = 8125, car oreder cost =  78,13 work time = 10
+23.09.2020 20:36:49 > couriers = 198, deliveries = 8157, car oreder cost =  78,13 work time = 10
+23.09.2020 20:36:59 > couriers = 199, deliveries = 8189, car oreder cost =  85,94 work time = 11
+23.09.2020 20:37:08 > couriers = 200, deliveries = 8221, car oreder cost =  85,94 work time = 11
+23.09.2020 20:37:18 > couriers = 201, deliveries = 8257, car oreder cost =  76,39 work time = 11
+23.09.2020 20:37:27 > couriers = 202, deliveries = 8283, car oreder cost =  67,31 work time = 7
+23.09.2020 20:37:37 > couriers = 203, deliveries = 8319, car oreder cost =  76,39 work time = 11
+23.09.2020 20:37:47 > couriers = 204, deliveries = 8343, car oreder cost =  72,92 work time = 7
+23.09.2020 20:37:56 > couriers = 205, deliveries = 8379, car oreder cost =  76,39 work time = 11
+23.09.2020 20:38:06 > couriers = 206, deliveries = 8414, car oreder cost =  78,57 work time = 11
+23.09.2020 20:38:15 > couriers = 207, deliveries = 8454, car oreder cost =  68,75 work time = 11
+23.09.2020 20:38:25 > couriers = 208, deliveries = 8489, car oreder cost =  78,57 work time = 11
+23.09.2020 20:38:34 > couriers = 209, deliveries = 8524, car oreder cost =  78,57 work time = 11
+23.09.2020 20:38:44 > couriers = 210, deliveries = 8559, car oreder cost =  78,57 work time = 11
+23.09.2020 20:38:54 > couriers = 211, deliveries = 8594, car oreder cost =  71,43 work time = 10
+23.09.2020 20:39:04 > couriers = 212, deliveries = 8627, car oreder cost =  75,76 work time = 10
+23.09.2020 20:39:14 > couriers = 213, deliveries = 8659, car oreder cost =  78,13 work time = 10
+23.09.2020 20:39:23 > couriers = 214, deliveries = 8694, car oreder cost =  78,57 work time = 11
+23.09.2020 20:39:32 > couriers = 215, deliveries = 8726, car oreder cost =  78,13 work time = 10
+23.09.2020 20:39:42 > couriers = 216, deliveries = 8755, car oreder cost =  77,59 work time = 9
+23.09.2020 20:39:51 > couriers = 217, deliveries = 8790, car oreder cost =  78,57 work time = 11
+23.09.2020 20:40:01 > couriers = 218, deliveries = 8825, car oreder cost =  78,57 work time = 11
+23.09.2020 20:40:10 > couriers = 219, deliveries = 8860, car oreder cost =  78,57 work time = 11
+23.09.2020 20:40:19 > couriers = 220, deliveries = 8888, car oreder cost =  71,43 work time = 8
+23.09.2020 20:40:28 > couriers = 221, deliveries = 8919, car oreder cost =  80,65 work time = 10
+23.09.2020 20:40:38 > couriers = 222, deliveries = 8953, car oreder cost =  73,53 work time = 10
+23.09.2020 20:40:47 > couriers = 223, deliveries = 8987, car oreder cost =  73,53 work time = 10
+23.09.2020 20:40:56 > couriers = 224, deliveries = 9021, car oreder cost =  80,88 work time = 11
+23.09.2020 20:41:06 > couriers = 225, deliveries = 9050, car oreder cost =  68,97 work time = 8
+23.09.2020 20:41:15 > couriers = 226, deliveries = 9084, car oreder cost =  80,88 work time = 11
+23.09.2020 20:41:24 > couriers = 227, deliveries = 9118, car oreder cost =  80,88 work time = 11
+23.09.2020 20:41:33 > couriers = 228, deliveries = 9155, car oreder cost =  67,57 work time = 10
+23.09.2020 20:41:42 > couriers = 229, deliveries = 9188, car oreder cost =  83,33 work time = 11
+23.09.2020 20:41:52 > couriers = 230, deliveries = 9221, car oreder cost =  75,76 work time = 10
+23.09.2020 20:42:01 > couriers = 231, deliveries = 9251, car oreder cost =  75,00 work time = 9
+23.09.2020 20:42:10 > couriers = 232, deliveries = 9281, car oreder cost =  83,33 work time = 10
+23.09.2020 20:42:19 > couriers = 233, deliveries = 9318, car oreder cost =  74,32 work time = 11
+23.09.2020 20:42:28 > couriers = 234, deliveries = 9349, car oreder cost =  80,65 work time = 10
+23.09.2020 20:42:37 > couriers = 235, deliveries = 9380, car oreder cost =  80,65 work time = 10
+23.09.2020 20:42:46 > couriers = 236, deliveries = 9410, car oreder cost =  75,00 work time = 9
+23.09.2020 20:42:55 > couriers = 237, deliveries = 9443, car oreder cost =  83,33 work time = 11
+23.09.2020 20:43:05 > couriers = 238, deliveries = 9476, car oreder cost =  75,76 work time = 10
+23.09.2020 20:43:14 > couriers = 239, deliveries = 9508, car oreder cost =  78,13 work time = 10
+23.09.2020 20:43:23 > couriers = 240, deliveries = 9539, car oreder cost =  80,65 work time = 10
+23.09.2020 20:43:32 > couriers = 241, deliveries = 9571, car oreder cost =  78,13 work time = 10
+23.09.2020 20:43:41 > couriers = 242, deliveries = 9602, car oreder cost =  80,65 work time = 10
+23.09.2020 20:43:49 > couriers = 243, deliveries = 9632, car oreder cost =  100,00 work time = 12
+23.09.2020 20:43:57 > couriers = 244, deliveries = 9663, car oreder cost =  80,65 work time = 10
+23.09.2020 20:44:05 > couriers = 245, deliveries = 9690, car oreder cost =  83,33 work time = 9
+23.09.2020 20:44:13 > couriers = 246, deliveries = 9722, car oreder cost =  85,94 work time = 11
+23.09.2020 20:44:22 > couriers = 247, deliveries = 9754, car oreder cost =  85,94 work time = 11
+23.09.2020 20:44:30 > couriers = 248, deliveries = 9788, car oreder cost =  73,53 work time = 10
+23.09.2020 20:44:39 > couriers = 249, deliveries = 9812, car oreder cost =  83,33 work time = 8
+23.09.2020 20:44:47 > couriers = 250, deliveries = 9841, car oreder cost =  86,21 work time = 10
+23.09.2020 20:44:56 > couriers = 251, deliveries = 9869, car oreder cost =  80,36 work time = 9
+23.09.2020 20:45:03 > couriers = 252, deliveries = 9901, car oreder cost =  85,94 work time = 11
+23.09.2020 20:45:11 > couriers = 253, deliveries = 9930, car oreder cost =  86,21 work time = 10
+23.09.2020 20:45:19 > couriers = 254, deliveries = 9959, car oreder cost =  86,21 work time = 10
+23.09.2020 20:45:27 > couriers = 255, deliveries = 9982, car oreder cost =  76,09 work time = 7
+23.09.2020 20:45:35 > couriers = 256, deliveries = 10013, car oreder cost =  80,65 work time = 10
+23.09.2020 20:45:43 > couriers = 257, deliveries = 10033, car oreder cost =  87,50 work time = 7
+23.09.2020 20:45:50 > couriers = 258, deliveries = 10064, car oreder cost =  88,71 work time = 11
+23.09.2020 20:45:58 > couriers = 259, deliveries = 10095, car oreder cost =  80,65 work time = 10
+23.09.2020 20:46:05 > couriers = 260, deliveries = 10112, car oreder cost =  88,24 work time = 6
+23.09.2020 20:46:13 > couriers = 261, deliveries = 10136, car oreder cost =  83,33 work time = 8
+23.09.2020 20:46:20 > couriers = 262, deliveries = 10167, car oreder cost =  88,71 work time = 11
+23.09.2020 20:46:28 > couriers = 263, deliveries = 10194, car oreder cost =  83,33 work time = 9
+23.09.2020 20:46:35 > couriers = 264, deliveries = 10226, car oreder cost =  78,13 work time = 10
+23.09.2020 20:46:42 > couriers = 265, deliveries = 10252, car oreder cost =  67,31 work time = 7
+23.09.2020 20:46:50 > couriers = 266, deliveries = 10281, car oreder cost =  86,21 work time = 10
+23.09.2020 20:46:57 > couriers = 267, deliveries = 10295, car oreder cost =  71,43 work time = 4
+23.09.2020 20:47:05 > couriers = 268, deliveries = 10323, car oreder cost =  89,29 work time = 10
+23.09.2020 20:47:13 > couriers = 269, deliveries = 10356, car oreder cost =  83,33 work time = 11
+23.09.2020 20:47:20 > couriers = 270, deliveries = 10388, car oreder cost =  85,94 work time = 11
+23.09.2020 20:47:28 > couriers = 271, deliveries = 10417, car oreder cost =  86,21 work time = 10
+23.09.2020 20:47:37 > couriers = 272, deliveries = 10448, car oreder cost =  88,71 work time = 11
+23.09.2020 20:47:44 > couriers = 273, deliveries = 10478, car oreder cost =  83,33 work time = 10
+23.09.2020 20:47:52 > couriers = 274, deliveries = 10506, car oreder cost =  89,29 work time = 10
+23.09.2020 20:48:00 > couriers = 275, deliveries = 10536, car oreder cost =  91,67 work time = 11
+23.09.2020 20:48:08 > couriers = 276, deliveries = 10563, car oreder cost =  92,59 work time = 10
+23.09.2020 20:48:16 > couriers = 277, deliveries = 10590, car oreder cost =  92,59 work time = 10
+23.09.2020 20:48:24 > couriers = 278, deliveries = 10620, car oreder cost =  83,33 work time = 10
+23.09.2020 20:48:32 > couriers = 279, deliveries = 10644, car oreder cost =  83,33 work time = 8
+23.09.2020 20:48:41 > couriers = 280, deliveries = 10676, car oreder cost =  85,94 work time = 11
+23.09.2020 20:48:49 > couriers = 281, deliveries = 10703, car oreder cost =  92,59 work time = 10
+23.09.2020 20:48:57 > couriers = 282, deliveries = 10730, car oreder cost =  92,59 work time = 10
+23.09.2020 20:49:05 > couriers = 283, deliveries = 10754, car oreder cost =  93,75 work time = 9
+23.09.2020 20:49:13 > couriers = 284, deliveries = 10774, car oreder cost =  87,50 work time = 7
+23.09.2020 20:49:21 > couriers = 285, deliveries = 10803, car oreder cost =  94,83 work time = 11
+23.09.2020 20:49:29 > couriers = 286, deliveries = 10832, car oreder cost =  94,83 work time = 11
+23.09.2020 20:49:36 > couriers = 287, deliveries = 10861, car oreder cost =  94,83 work time = 11
+23.09.2020 20:49:44 > couriers = 288, deliveries = 10892, car oreder cost =  80,65 work time = 10
+23.09.2020 20:49:52 > couriers = 289, deliveries = 10922, car oreder cost =  83,33 work time = 10
+23.09.2020 20:50:00 > couriers = 290, deliveries = 10949, car oreder cost =  83,33 work time = 9
+23.09.2020 20:50:07 > couriers = 291, deliveries = 10978, car oreder cost =  94,83 work time = 11
+23.09.2020 20:50:15 > couriers = 292, deliveries = 11007, car oreder cost =  94,83 work time = 11
+23.09.2020 20:50:22 > couriers = 293, deliveries = 11033, car oreder cost =  96,15 work time = 10
+23.09.2020 20:50:30 > couriers = 294, deliveries = 11060, car oreder cost =  92,59 work time = 10
+23.09.2020 20:50:37 > couriers = 295, deliveries = 11088, car oreder cost =  80,36 work time = 9
+23.09.2020 20:50:45 > couriers = 296, deliveries = 11114, car oreder cost =  96,15 work time = 10
+23.09.2020 20:50:52 > couriers = 297, deliveries = 11140, car oreder cost =  96,15 work time = 10
+23.09.2020 20:51:00 > couriers = 298, deliveries = 11166, car oreder cost =  96,15 work time = 10
+23.09.2020 20:51:07 > couriers = 299, deliveries = 11196, car oreder cost =  83,33 work time = 10
+23.09.2020 20:51:14 > couriers = 300, deliveries = 11225, car oreder cost =  86,21 work time = 10
+23.09.2020 20:51:22 > couriers = 301, deliveries = 11254, car oreder cost =  86,21 work time = 10
+23.09.2020 20:51:30 > couriers = 302, deliveries = 11283, car oreder cost =  94,83 work time = 11
+23.09.2020 20:51:37 > couriers = 303, deliveries = 11318, car oreder cost =  78,57 work time = 11
+23.09.2020 20:51:44 > couriers = 304, deliveries = 11347, car oreder cost =  86,21 work time = 10
+23.09.2020 20:51:51 > couriers = 305, deliveries = 11375, car oreder cost =  89,29 work time = 10
+23.09.2020 20:51:57 > couriers = 306, deliveries = 11402, car oreder cost =  92,59 work time = 10
+23.09.2020 20:52:04 > couriers = 307, deliveries = 11431, car oreder cost =  94,83 work time = 11
+23.09.2020 20:52:11 > couriers = 308, deliveries = 11457, car oreder cost =  105,77 work time = 11
+23.09.2020 20:52:18 > couriers = 309, deliveries = 11483, car oreder cost =  96,15 work time = 10
+23.09.2020 20:52:24 > couriers = 310, deliveries = 11514, car oreder cost =  96,77 work time = 12
+23.09.2020 20:52:31 > couriers = 311, deliveries = 11537, car oreder cost =  97,83 work time = 9
+23.09.2020 20:52:38 > couriers = 312, deliveries = 11562, car oreder cost =  100,00 work time = 10
+23.09.2020 20:52:44 > couriers = 313, deliveries = 11587, car oreder cost =  100,00 work time = 10
+23.09.2020 20:52:50 > couriers = 314, deliveries = 11612, car oreder cost =  100,00 work time = 10
+23.09.2020 20:52:56 > couriers = 315, deliveries = 11640, car oreder cost =  98,21 work time = 11
+23.09.2020 20:53:03 > couriers = 316, deliveries = 11671, car oreder cost =  88,71 work time = 11
+23.09.2020 20:53:09 > couriers = 317, deliveries = 11699, car oreder cost =  98,21 work time = 11
+23.09.2020 20:53:15 > couriers = 318, deliveries = 11724, car oreder cost =  90,00 work time = 9
+23.09.2020 20:53:21 > couriers = 319, deliveries = 11749, car oreder cost =  100,00 work time = 10
+23.09.2020 20:53:28 > couriers = 320, deliveries = 11776, car oreder cost =  101,85 work time = 11
+23.09.2020 20:53:34 > couriers = 321, deliveries = 11800, car oreder cost =  114,58 work time = 11
+23.09.2020 20:53:40 > couriers = 322, deliveries = 11824, car oreder cost =  104,17 work time = 10
+23.09.2020 20:53:46 > couriers = 323, deliveries = 11848, car oreder cost =  104,17 work time = 10
+23.09.2020 20:53:51 > couriers = 324, deliveries = 11872, car oreder cost =  93,75 work time = 9
+23.09.2020 20:53:57 > couriers = 325, deliveries = 11898, car oreder cost =  105,77 work time = 11
+23.09.2020 20:54:03 > couriers = 326, deliveries = 11924, car oreder cost =  105,77 work time = 11
+23.09.2020 20:54:09 > couriers = 327, deliveries = 11948, car oreder cost =  104,17 work time = 10
+23.09.2020 20:54:15 > couriers = 328, deliveries = 11975, car oreder cost =  92,59 work time = 10
+23.09.2020 20:54:21 > couriers = 329, deliveries = 11998, car oreder cost =  108,70 work time = 10
+23.09.2020 20:54:26 > couriers = 330, deliveries = 12024, car oreder cost =  105,77 work time = 11
+23.09.2020 20:54:32 > couriers = 331, deliveries = 12050, car oreder cost =  96,15 work time = 10
+23.09.2020 20:54:38 > couriers = 332, deliveries = 12073, car oreder cost =  108,70 work time = 10
+23.09.2020 20:54:43 > couriers = 333, deliveries = 12098, car oreder cost =  110,00 work time = 11
+23.09.2020 20:54:49 > couriers = 334, deliveries = 12123, car oreder cost =  110,00 work time = 11
+23.09.2020 20:54:55 > couriers = 335, deliveries = 12148, car oreder cost =  110,00 work time = 11
+23.09.2020 20:55:00 > couriers = 336, deliveries = 12166, car oreder cost =  111,11 work time = 8
+23.09.2020 20:55:05 > couriers = 337, deliveries = 12186, car oreder cost =  112,50 work time = 9
+23.09.2020 20:55:11 > couriers = 338, deliveries = 12212, car oreder cost =  105,77 work time = 11
+23.09.2020 20:55:17 > couriers = 339, deliveries = 12237, car oreder cost =  110,00 work time = 11
+23.09.2020 20:55:22 > couriers = 340, deliveries = 12259, car oreder cost =  113,64 work time = 10
+23.09.2020 20:55:28 > couriers = 341, deliveries = 12281, car oreder cost =  113,64 work time = 10
+23.09.2020 20:55:33 > couriers = 342, deliveries = 12303, car oreder cost =  113,64 work time = 10
+23.09.2020 20:55:39 > couriers = 343, deliveries = 12318, car oreder cost =  116,67 work time = 7
+23.09.2020 20:55:45 > couriers = 344, deliveries = 12333, car oreder cost =  116,67 work time = 7
+23.09.2020 20:55:50 > couriers = 345, deliveries = 12344, car oreder cost =  113,64 work time = 5
+23.09.2020 20:55:56 > couriers = 346, deliveries = 12363, car oreder cost =  118,42 work time = 9
+23.09.2020 20:56:01 > couriers = 347, deliveries = 12385, car oreder cost =  102,27 work time = 9
+23.09.2020 20:56:07 > couriers = 348, deliveries = 12409, car oreder cost =  104,17 work time = 10
+23.09.2020 20:56:12 > couriers = 349, deliveries = 12430, car oreder cost =  107,14 work time = 9
+23.09.2020 20:56:17 > couriers = 350, deliveries = 12459, car oreder cost =  94,83 work time = 11
+23.09.2020 20:56:23 > couriers = 351, deliveries = 12474, car oreder cost =  116,67 work time = 7
+23.09.2020 20:56:29 > couriers = 352, deliveries = 12495, car oreder cost =  119,05 work time = 10
+23.09.2020 20:56:34 > couriers = 353, deliveries = 12516, car oreder cost =  119,05 work time = 10
+23.09.2020 20:56:38 > couriers = 354, deliveries = 12533, car oreder cost =  88,24 work time = 6
+23.09.2020 20:56:43 > couriers = 355, deliveries = 12556, car oreder cost =  119,57 work time = 11
+23.09.2020 20:56:48 > couriers = 356, deliveries = 12579, car oreder cost =  119,57 work time = 11
+23.09.2020 20:56:53 > couriers = 357, deliveries = 12593, car oreder cost =  89,29 work time = 5
+23.09.2020 20:56:58 > couriers = 358, deliveries = 12613, car oreder cost =  100,00 work time = 8
+23.09.2020 20:57:03 > couriers = 359, deliveries = 12637, car oreder cost =  104,17 work time = 10
+23.09.2020 20:57:07 > couriers = 360, deliveries = 12655, car oreder cost =  83,33 work time = 6
+23.09.2020 20:57:12 > couriers = 361, deliveries = 12670, car oreder cost =  100,00 work time = 6
+23.09.2020 20:57:16 > couriers = 362, deliveries = 12687, car oreder cost =  117,65 work time = 8
+23.09.2020 20:57:21 > couriers = 363, deliveries = 12710, car oreder cost =  119,57 work time = 11
+23.09.2020 20:57:26 > couriers = 364, deliveries = 12720, car oreder cost =  100,00 work time = 4
+23.09.2020 20:57:31 > couriers = 365, deliveries = 12738, car oreder cost =  125,00 work time = 9
+23.09.2020 20:57:35 > couriers = 366, deliveries = 12755, car oreder cost =  88,24 work time = 6
+23.09.2020 20:57:40 > couriers = 367, deliveries = 12772, car oreder cost =  102,94 work time = 7
+23.09.2020 20:57:45 > couriers = 368, deliveries = 12792, car oreder cost =  125,00 work time = 10
+23.09.2020 20:57:48 > couriers = 369, deliveries = 12811, car oreder cost =  92,11 work time = 7
+23.09.2020 20:57:52 > couriers = 370, deliveries = 12833, car oreder cost =  125,00 work time = 11
+23.09.2020 20:57:56 > couriers = 371, deliveries = 12852, car oreder cost =  78,95 work time = 6
+23.09.2020 20:57:59 > couriers = 372, deliveries = 12863, car oreder cost =  113,64 work time = 5
+23.09.2020 20:58:03 > couriers = 373, deliveries = 12874, car oreder cost =  113,64 work time = 5
+23.09.2020 20:58:07 > couriers = 374, deliveries = 12894, car oreder cost =  125,00 work time = 10
+23.09.2020 20:58:10 > couriers = 375, deliveries = 12911, car oreder cost =  117,65 work time = 8
+23.09.2020 20:58:14 > couriers = 376, deliveries = 12925, car oreder cost =  107,14 work time = 6
+23.09.2020 20:58:17 > couriers = 377, deliveries = 12935, car oreder cost =  150,00 work time = 6
+23.09.2020 20:58:21 > couriers = 378, deliveries = 12950, car oreder cost =  100,00 work time = 6
+23.09.2020 20:58:24 > couriers = 379, deliveries = 12972, car oreder cost =  125,00 work time = 11
+23.09.2020 20:58:27 > couriers = 380, deliveries = 13007, car oreder cost =  78,57 work time = 11
+23.09.2020 20:58:31 > couriers = 381, deliveries = 13032, car oreder cost =  110,00 work time = 11
+23.09.2020 20:58:35 > couriers = 382, deliveries = 13051, car oreder cost =  118,42 work time = 9
+23.09.2020 20:58:38 > couriers = 383, deliveries = 13067, car oreder cost =  125,00 work time = 8
+23.09.2020 20:58:42 > couriers = 384, deliveries = 13088, car oreder cost =  119,05 work time = 10
+23.09.2020 20:58:45 > couriers = 385, deliveries = 13109, car oreder cost =  130,95 work time = 11
+23.09.2020 20:58:48 > couriers = 386, deliveries = 13132, car oreder cost =  108,70 work time = 10
+23.09.2020 20:58:51 > couriers = 387, deliveries = 13156, car oreder cost =  125,00 work time = 12
+23.09.2020 20:58:54 > couriers = 388, deliveries = 13175, car oreder cost =  92,11 work time = 7
+23.09.2020 20:58:57 > couriers = 389, deliveries = 13191, car oreder cost =  78,13 work time = 5
+23.09.2020 20:59:00 > couriers = 390, deliveries = 13207, car oreder cost =  78,13 work time = 5
+23.09.2020 20:59:02 > couriers = 391, deliveries = 13219, car oreder cost =  104,17 work time = 5
+23.09.2020 20:59:05 > couriers = 392, deliveries = 13240, car oreder cost =  130,95 work time = 11
+23.09.2020 20:59:08 > couriers = 393, deliveries = 13251, car oreder cost =  113,64 work time = 5
+23.09.2020 20:59:11 > couriers = 394, deliveries = 13272, car oreder cost =  130,95 work time = 11
+23.09.2020 20:59:13 > couriers = 395, deliveries = 13288, car oreder cost =  125,00 work time = 8
+23.09.2020 20:59:16 > couriers = 396, deliveries = 13311, car oreder cost =  119,57 work time = 11
+23.09.2020 20:59:19 > couriers = 397, deliveries = 13336, car oreder cost =  100,00 work time = 10
+23.09.2020 20:59:22 > couriers = 398, deliveries = 13356, car oreder cost =  125,00 work time = 10
+23.09.2020 20:59:24 > couriers = 399, deliveries = 13377, car oreder cost =  130,95 work time = 11
+23.09.2020 20:59:27 > couriers = 400, deliveries = 13394, car oreder cost =  117,65 work time = 8
+23.09.2020 20:59:30 > couriers = 401, deliveries = 13413, car oreder cost =  131,58 work time = 10
+23.09.2020 20:59:33 > couriers = 402, deliveries = 13424, car oreder cost =  136,36 work time = 6
+23.09.2020 20:59:36 > couriers = 403, deliveries = 13444, car oreder cost =  137,50 work time = 11
+23.09.2020 20:59:39 > couriers = 404, deliveries = 13459, car oreder cost =  133,33 work time = 8
+23.09.2020 20:59:41 > couriers = 405, deliveries = 13477, car oreder cost =  125,00 work time = 9
+23.09.2020 20:59:44 > couriers = 406, deliveries = 13486, car oreder cost =  138,89 work time = 5
+23.09.2020 20:59:47 > couriers = 407, deliveries = 13504, car oreder cost =  138,89 work time = 10
+23.09.2020 20:59:49 > couriers = 408, deliveries = 13518, car oreder cost =  142,86 work time = 8
+23.09.2020 20:59:52 > couriers = 409, deliveries = 13536, car oreder cost =  97,22 work time = 7
+23.09.2020 20:59:54 > couriers = 410, deliveries = 13556, car oreder cost =  137,50 work time = 11
+23.09.2020 20:59:57 > couriers = 411, deliveries = 13569, car oreder cost =  96,15 work time = 5
+23.09.2020 20:59:59 > couriers = 412, deliveries = 13580, car oreder cost =  113,64 work time = 5
+23.09.2020 21:00:02 > couriers = 413, deliveries = 13597, car oreder cost =  147,06 work time = 10
+23.09.2020 21:00:04 > couriers = 414, deliveries = 13612, car oreder cost =  150,00 work time = 9
+23.09.2020 21:00:07 > couriers = 415, deliveries = 13627, car oreder cost =  150,00 work time = 9
+23.09.2020 21:00:09 > couriers = 416, deliveries = 13646, car oreder cost =  144,74 work time = 11
+23.09.2020 21:00:12 > couriers = 417, deliveries = 13656, car oreder cost =  125,00 work time = 5
+23.09.2020 21:00:14 > couriers = 418, deliveries = 13673, car oreder cost =  147,06 work time = 10
+23.09.2020 21:00:17 > couriers = 419, deliveries = 13691, car oreder cost =  152,78 work time = 11
+23.09.2020 21:00:19 > couriers = 420, deliveries = 13705, car oreder cost =  89,29 work time = 5
+23.09.2020 21:00:20 > couriers = 421, deliveries = 13720, car oreder cost =  83,33 work time = 5
+23.09.2020 21:00:22 > couriers = 422, deliveries = 13734, car oreder cost =  89,29 work time = 5
+23.09.2020 21:00:24 > couriers = 423, deliveries = 13746, car oreder cost =  83,33 work time = 4
+23.09.2020 21:00:26 > couriers = 424, deliveries = 13767, car oreder cost =  130,95 work time = 11
+23.09.2020 21:00:28 > couriers = 425, deliveries = 13782, car oreder cost =  133,33 work time = 8
+23.09.2020 21:00:30 > couriers = 426, deliveries = 13799, car oreder cost =  132,35 work time = 9
+23.09.2020 21:00:32 > couriers = 427, deliveries = 13810, car oreder cost =  113,64 work time = 5
+23.09.2020 21:00:34 > couriers = 428, deliveries = 13821, car oreder cost =  113,64 work time = 5
+23.09.2020 21:00:36 > couriers = 429, deliveries = 13831, car oreder cost =  125,00 work time = 5
+23.09.2020 21:00:38 > couriers = 430, deliveries = 13841, car oreder cost =  125,00 work time = 5
+23.09.2020 21:00:40 > couriers = 431, deliveries = 13850, car oreder cost =  138,89 work time = 5
+23.09.2020 21:00:42 > couriers = 432, deliveries = 13858, car oreder cost =  156,25 work time = 5
+23.09.2020 21:00:44 > couriers = 433, deliveries = 13866, car oreder cost =  156,25 work time = 5
+23.09.2020 21:00:46 > couriers = 434, deliveries = 13882, car oreder cost =  156,25 work time = 10
+23.09.2020 21:00:47 > couriers = 435, deliveries = 13901, car oreder cost =  118,42 work time = 9
+23.09.2020 21:00:49 > couriers = 436, deliveries = 13917, car oreder cost =  156,25 work time = 10
+23.09.2020 21:00:51 > couriers = 437, deliveries = 13933, car oreder cost =  156,25 work time = 10
+23.09.2020 21:00:52 > couriers = 438, deliveries = 13947, car oreder cost =  160,71 work time = 9
+23.09.2020 21:00:54 > couriers = 439, deliveries = 13961, car oreder cost =  89,29 work time = 5
+23.09.2020 21:00:55 > couriers = 440, deliveries = 13974, car oreder cost =  96,15 work time = 5
+23.09.2020 21:00:57 > couriers = 441, deliveries = 13991, car oreder cost =  161,76 work time = 11
+23.09.2020 21:00:58 > couriers = 442, deliveries = 14003, car oreder cost =  145,83 work time = 7
+23.09.2020 21:01:00 > couriers = 443, deliveries = 14020, car oreder cost =  147,06 work time = 10
+23.09.2020 21:01:01 > couriers = 444, deliveries = 14036, car oreder cost =  156,25 work time = 10
+23.09.2020 21:01:03 > couriers = 445, deliveries = 14053, car oreder cost =  147,06 work time = 10
+23.09.2020 21:01:04 > couriers = 446, deliveries = 14068, car oreder cost =  166,67 work time = 10
+23.09.2020 21:01:05 > couriers = 447, deliveries = 14092, car oreder cost =  104,17 work time = 10
+23.09.2020 21:01:07 > couriers = 448, deliveries = 14104, car oreder cost =  104,17 work time = 5
+23.09.2020 21:01:08 > couriers = 449, deliveries = 14113, car oreder cost =  166,67 work time = 6
+23.09.2020 21:01:09 > couriers = 450, deliveries = 14126, car oreder cost =  173,08 work time = 9
+23.09.2020 21:01:11 > couriers = 451, deliveries = 14136, car oreder cost =  125,00 work time = 5
+23.09.2020 21:01:12 > couriers = 452, deliveries = 14144, car oreder cost =  156,25 work time = 5
+23.09.2020 21:01:13 > couriers = 453, deliveries = 14157, car oreder cost =  96,15 work time = 5
+23.09.2020 21:01:14 > couriers = 454, deliveries = 14172, car oreder cost =  183,33 work time = 11
+23.09.2020 21:01:16 > couriers = 455, deliveries = 14186, car oreder cost =  89,29 work time = 5
+23.09.2020 21:01:17 > couriers = 456, deliveries = 14196, car oreder cost =  125,00 work time = 5
+23.09.2020 21:01:18 > couriers = 457, deliveries = 14203, car oreder cost =  178,57 work time = 5
+23.09.2020 21:01:19 > couriers = 458, deliveries = 14214, car oreder cost =  159,09 work time = 7
+23.09.2020 21:01:20 > couriers = 459, deliveries = 14227, car oreder cost =  192,31 work time = 10
+23.09.2020 21:01:21 > couriers = 460, deliveries = 14240, car oreder cost =  173,08 work time = 9
+23.09.2020 21:01:22 > couriers = 461, deliveries = 14255, car oreder cost =  200,00 work time = 12
+23.09.2020 21:01:23 > couriers = 462, deliveries = 14262, car oreder cost =  178,57 work time = 5
+23.09.2020 21:01:25 > couriers = 463, deliveries = 14272, car oreder cost =  150,00 work time = 6
+23.09.2020 21:01:26 > couriers = 464, deliveries = 14283, car oreder cost =  204,55 work time = 9
+23.09.2020 21:01:27 > couriers = 465, deliveries = 14296, car oreder cost =  192,31 work time = 10
+23.09.2020 21:01:28 > couriers = 466, deliveries = 14304, car oreder cost =  156,25 work time = 5
+23.09.2020 21:01:29 > couriers = 467, deliveries = 14316, car oreder cost =  208,33 work time = 10
+23.09.2020 21:01:30 > couriers = 468, deliveries = 14326, car oreder cost =  200,00 work time = 8
+23.09.2020 21:01:31 > couriers = 469, deliveries = 14345, car oreder cost =  144,74 work time = 11
+23.09.2020 21:01:32 > couriers = 470, deliveries = 14351, car oreder cost =  208,33 work time = 5
+23.09.2020 21:01:33 > couriers = 471, deliveries = 14369, car oreder cost =  138,89 work time = 10
+23.09.2020 21:01:34 > couriers = 472, deliveries = 14382, car oreder cost =  211,54 work time = 11
+23.09.2020 21:01:35 > couriers = 473, deliveries = 14390, car oreder cost =  187,50 work time = 6
+23.09.2020 21:01:36 > couriers = 474, deliveries = 14400, car oreder cost =  225,00 work time = 9
+23.09.2020 21:01:37 > couriers = 475, deliveries = 14411, car oreder cost =  227,27 work time = 10
+23.09.2020 21:01:38 > couriers = 476, deliveries = 14417, car oreder cost =  208,33 work time = 5
+23.09.2020 21:01:39 > couriers = 477, deliveries = 14427, car oreder cost =  250,00 work time = 10
+23.09.2020 21:01:40 > couriers = 478, deliveries = 14433, car oreder cost =  250,00 work time = 6
+23.09.2020 21:01:41 > couriers = 479, deliveries = 14441, car oreder cost =  250,00 work time = 8
+23.09.2020 21:01:41 > couriers = 480, deliveries = 14446, car oreder cost =  250,00 work time = 5
+23.09.2020 21:01:42 > couriers = 481, deliveries = 14451, car oreder cost =  250,00 work time = 5
+23.09.2020 21:01:43 > couriers = 482, deliveries = 14459, car oreder cost =  156,25 work time = 5
+23.09.2020 21:01:44 > couriers = 483, deliveries = 14467, car oreder cost =  281,25 work time = 9
+23.09.2020 21:01:45 > couriers = 484, deliveries = 14479, car oreder cost =  208,33 work time = 10
+23.09.2020 21:01:46 > couriers = 485, deliveries = 14491, car oreder cost =  125,00 work time = 6
+23.09.2020 21:01:47 > couriers = 486, deliveries = 14502, car oreder cost =  227,27 work time = 10
+23.09.2020 21:01:48 > couriers = 487, deliveries = 14509, car oreder cost =  178,57 work time = 5
+23.09.2020 21:01:49 > couriers = 488, deliveries = 14522, car oreder cost =  192,31 work time = 10
+23.09.2020 21:01:50 > couriers = 489, deliveries = 14531, car oreder cost =  250,00 work time = 9
+23.09.2020 21:01:51 > couriers = 490, deliveries = 14538, car oreder cost =  285,71 work time = 8
+23.09.2020 21:01:52 > couriers = 491, deliveries = 14544, car oreder cost =  291,67 work time = 7
+23.09.2020 21:01:53 > couriers = 492, deliveries = 14549, car oreder cost =  300,00 work time = 6
+23.09.2020 21:01:54 > couriers = 493, deliveries = 14553, car oreder cost =  312,50 work time = 5
+23.09.2020 21:01:55 > couriers = 494, deliveries = 14560, car oreder cost =  321,43 work time = 9
+23.09.2020 21:01:56 > couriers = 495, deliveries = 14567, car oreder cost =  285,71 work time = 8
+23.09.2020 21:01:57 > couriers = 496, deliveries = 14573, car oreder cost =  333,33 work time = 8
+23.09.2020 21:01:58 > couriers = 497, deliveries = 14583, car oreder cost =  150,00 work time = 6
+23.09.2020 21:01:59 > couriers = 498, deliveries = 14591, car oreder cost =  187,50 work time = 6
+23.09.2020 21:02:00 > couriers = 499, deliveries = 14603, car oreder cost =  187,50 work time = 9
+23.09.2020 21:02:01 > couriers = 500, deliveries = 14612, car oreder cost =  138,89 work time = 5
+23.09.2020 21:02:02 > couriers = 501, deliveries = 14618, car oreder cost =  333,33 work time = 8
+23.09.2020 21:02:03 > couriers = 502, deliveries = 14624, car oreder cost =  333,33 work time = 8
+23.09.2020 21:02:03 > couriers = 503, deliveries = 14629, car oreder cost =  350,00 work time = 7
+23.09.2020 21:02:04 > couriers = 504, deliveries = 14638, car oreder cost =  138,89 work time = 5
+23.09.2020 21:02:05 > couriers = 505, deliveries = 14649, car oreder cost =  159,09 work time = 7
+23.09.2020 21:02:06 > couriers = 506, deliveries = 14662, car oreder cost =  211,54 work time = 11
+23.09.2020 21:02:07 > couriers = 507, deliveries = 14677, car oreder cost =  166,67 work time = 10
+23.09.2020 21:02:08 > couriers = 508, deliveries = 14683, car oreder cost =  250,00 work time = 6
+23.09.2020 21:02:09 > couriers = 509, deliveries = 14689, car oreder cost =  208,33 work time = 5
+23.09.2020 21:02:09 > couriers = 510, deliveries = 14695, car oreder cost =  291,67 work time = 7
+23.09.2020 21:02:10 > couriers = 511, deliveries = 14700, car oreder cost =  300,00 work time = 6
+23.09.2020 21:02:11 > couriers = 512, deliveries = 14706, car oreder cost =  333,33 work time = 8
+23.09.2020 21:02:12 > couriers = 513, deliveries = 14712, car oreder cost =  375,00 work time = 9
+23.09.2020 21:02:13 > couriers = 514, deliveries = 14721, car oreder cost =  138,89 work time = 5
+23.09.2020 21:02:14 > couriers = 515, deliveries = 14731, car oreder cost =  125,00 work time = 5
+23.09.2020 21:02:14 > couriers = 516, deliveries = 14749, car oreder cost =  152,78 work time = 11
+23.09.2020 21:02:15 > couriers = 517, deliveries = 14765, car oreder cost =  156,25 work time = 10
+23.09.2020 21:02:16 > couriers = 518, deliveries = 14781, car oreder cost =  187,50 work time = 12
+23.09.2020 21:02:17 > couriers = 519, deliveries = 14789, car oreder cost =  187,50 work time = 6
+23.09.2020 21:02:18 > couriers = 520, deliveries = 14799, car oreder cost =  200,00 work time = 8
+23.09.2020 21:02:18 > couriers = 521, deliveries = 14804, car oreder cost =  250,00 work time = 5
+23.09.2020 21:02:19 > couriers = 522, deliveries = 14813, car oreder cost =  250,00 work time = 9
+23.09.2020 21:02:20 > couriers = 523, deliveries = 14816, car oreder cost =  416,67 work time = 5
+23.09.2020 21:02:21 > couriers = 524, deliveries = 14820, car oreder cost =  500,00 work time = 8
+23.09.2020 21:02:22 > couriers = 525, deliveries = 14825, car oreder cost =  550,00 work time = 11
+23.09.2020 21:02:23 > couriers = 526, deliveries = 14828, car oreder cost =  583,33 work time = 7
+23.09.2020 21:02:23 > couriers = 527, deliveries = 14844, car oreder cost =  171,88 work time = 11
+23.09.2020 21:02:24 > couriers = 528, deliveries = 14855, car oreder cost =  181,82 work time = 8
+23.09.2020 21:02:25 > couriers = 529, deliveries = 14860, car oreder cost =  250,00 work time = 5
+23.09.2020 21:02:26 > couriers = 530, deliveries = 14862, car oreder cost =  625,00 work time = 5
+23.09.2020 21:03:17 > Day  01:06:20. Код возврата - 0.
+Exception thrown: 'System.ArgumentException' in mscorlib.dll
+Exception thrown: 'System.ArgumentException' in mscorlib.dll
+Managed Debugging Assistant 'DisconnectedContext' 
+Переход к COM-контексту 0xdfa030 для данного объекта RuntimeCallableWrapper завершился следующей ошибкой: Ошибка при системном вызове. (Исключение из HRESULT: 0x80010100 (RPC_E_SYS_CALL_FAILED)). Обычно это происходит из-за того, что COM-контекст 0xdfa030, в котором был создан этот объект RuntimeCallableWrapper, отключен или занят другой операцией. Выполняется освобождение интерфейсов из текущего COM-контекста (COM-контекст 0xdfa0e8). Это может привести к повреждению или потере данных. Для устранения этой проблемы убедитесь в том, что все контексты, подразделения и потоки будут существовать и оставаться доступными для перехода к контексту до полного завершения работы приложения с объектами RuntimeCallableWrapper, представляющими находящиеся в них COM-компоненты.
+
+Managed Debugging Assistant 'DisconnectedContext' 
+Переход к COM-контексту 0xdfa030 для данного объекта RuntimeCallableWrapper завершился следующей ошибкой: Ошибка при системном вызове. (Исключение из HRESULT: 0x80010100 (RPC_E_SYS_CALL_FAILED)). Обычно это происходит из-за того, что COM-контекст 0xdfa030, в котором был создан этот объект RuntimeCallableWrapper, отключен или занят другой операцией. Выполняется освобождение интерфейсов из текущего COM-контекста (COM-контекст 0xdfa0e8). Это может привести к повреждению или потере данных. Для устранения этой проблемы убедитесь в том, что все контексты, подразделения и потоки будут существовать и оставаться доступными для перехода к контексту до полного завершения работы приложения с объектами RuntimeCallableWrapper, представляющими находящиеся в них COM-компоненты.
+
+01.06.2020 10:06:26(01.06.2020 10:32:23 ~ 01.06.2020 12:06:26) > Undelivered Order. ShopID = 557. OrederID = 2434378. Weight = 12,368, Lat = 55,7557142992309, Long = 37,4108333, dist =0,42 km, arrivalTime =  1,27 min
+01.06.2020 10:15:43(01.06.2020 10:35:45 ~ 01.06.2020 12:15:43) > Undelivered Order. ShopID = 557. OrederID = 2437516. Weight = 9,707, Lat = 55,754875, Long = 37,409603, dist =0,57 km, arrivalTime =  1,70 min
+01.06.2020 10:25:50(01.06.2020 10:46:28 ~ 01.06.2020 12:25:50) > Undelivered Order. ShopID = 557. OrederID = 2437346. Weight = 6,739, Lat = 55,756012, Long = 37,403122, dist =0,87 km, arrivalTime =  2,61 min
+01.06.2020 10:30:48(01.06.2020 10:47:20 ~ 01.06.2020 12:30:48) > Undelivered Order. ShopID = 557. OrederID = 2438441. Weight = 9,464, Lat = 55,7588493973082, Long = 37,4124253, dist =0,13 km, arrivalTime =  0,40 min
+01.06.2020 10:55:30(01.06.2020 10:58:56 ~ 01.06.2020 12:55:30) > Undelivered Order. ShopID = 557. OrederID = 2440169. Weight = 0,923, Lat = 55,75901, Long = 37,413967, dist =0,09 km, arrivalTime =  0,27 min
+01.06.2020 11:15:12(01.06.2020 11:28:58 ~ 01.06.2020 13:15:12) > Undelivered Order. ShopID = 557. OrederID = 2441256. Weight = 2,877, Lat = 55,751766, Long = 37,411327, dist =0,90 km, arrivalTime =  2,70 min
+01.06.2020 11:15:00(01.06.2020 11:29:17 ~ 01.06.2020 13:15:00) > Undelivered Order. ShopID = 557. OrederID = 2441031. Weight = 5,907, Lat = 55,760643, Long = 37,417549, dist =0,41 km, arrivalTime =  1,23 min
+01.06.2020 11:23:57(01.06.2020 11:31:04 ~ 01.06.2020 13:23:57) > Undelivered Order. ShopID = 557. OrederID = 2439501. Weight = 5,244, Lat = 55,7524912096442, Long = 37,4125020521035, dist =0,79 km, arrivalTime =  2,37 min
+01.06.2020 11:14:15(01.06.2020 11:39:26 ~ 01.06.2020 13:14:15) > Undelivered Order. ShopID = 557. OrederID = 2440773. Weight = 10,638, Lat = 55,76017, Long = 37,418892, dist =0,44 km, arrivalTime =  1,33 min
+01.06.2020 11:07:44(01.06.2020 11:51:42 ~ 01.06.2020 13:07:44) > Undelivered Order. ShopID = 557. OrederID = 2439970. Weight = 24,135, Lat = 55,7602086199734, Long = 37,4188420729411, dist =0,44 km, arrivalTime =  1,33 min
+01.06.2020 11:47:25(01.06.2020 12:06:04 ~ 01.06.2020 13:47:25) > Undelivered Order. ShopID = 557. OrederID = 2442332. Weight = 7,379, Lat = 55,75877, Long = 37,410545, dist =0,26 km, arrivalTime =  0,79 min
+01.06.2020 10:01:00(01.06.2020 10:32:14 ~ 01.06.2020 12:01:00) > Undelivered Order. ShopID = 599. OrederID = 2436378. Weight = 9,331, Lat = 55,842678, Long = 37,344959, dist =0,73 km, arrivalTime =  2,19 min
+01.06.2020 10:02:18(01.06.2020 10:51:49 ~ 01.06.2020 12:02:18) > Undelivered Order. ShopID = 599. OrederID = 2436291. Weight = 2,753, Lat = 55,842529, Long = 37,346668, dist =0,70 km, arrivalTime =  2,09 min
+01.06.2020 10:00:32(01.06.2020 11:03:56 ~ 01.06.2020 12:00:32) > Undelivered Order. ShopID = 599. OrederID = 2435557. Weight = 9,498, Lat = 55,855762, Long = 37,352104, dist =1,12 km, arrivalTime =  3,37 min
+01.06.2020 10:01:54(01.06.2020 11:11:54 ~ 01.06.2020 12:01:54) > Undelivered Order. ShopID = 599. OrederID = 2433253. Weight = 15,507, Lat = 55,8456612988474, Long = 37,3445396, dist =0,45 km, arrivalTime =  1,36 min
+01.06.2020 10:11:21(01.06.2020 11:21:21 ~ 01.06.2020 12:11:21) > Undelivered Order. ShopID = 599. OrederID = 2437488. Weight = 3,411, Lat = 55,8448579, Long = 37,347579, dist =0,38 km, arrivalTime =  1,14 min
+01.06.2020 10:16:01(01.06.2020 11:26:01 ~ 01.06.2020 12:16:01) > Undelivered Order. ShopID = 599. OrederID = 2436850. Weight = 5,909, Lat = 55,8435926965421, Long = 37,3542537, dist =0,62 km, arrivalTime =  1,86 min
+01.06.2020 10:29:04(01.06.2020 11:39:04 ~ 01.06.2020 12:29:04) > Undelivered Order. ShopID = 599. OrederID = 2438748. Weight = 11,057, Lat = 55,849634, Long = 37,3527507, dist =0,37 km, arrivalTime =  1,11 min
+01.06.2020 10:34:56(01.06.2020 11:44:56 ~ 01.06.2020 12:34:56) > Undelivered Order. ShopID = 599. OrederID = 2434412. Weight = 7,646, Lat = 55,8445090973106, Long = 37,353788, dist =0,50 km, arrivalTime =  1,50 min
+01.06.2020 9:19:32(01.06.2020 9:33:36 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 796. OrederID = 2435141. Weight = 3,365, Lat = 56,00452, Long = 37,211895, dist =1,17 km, arrivalTime =  3,52 min
+01.06.2020 10:01:21(01.06.2020 10:23:32 ~ 01.06.2020 12:01:21) > Undelivered Order. ShopID = 796. OrederID = 2436339. Weight = 6,309, Lat = 55,9913664976984, Long = 37,2115838, dist =0,76 km, arrivalTime =  2,28 min
+01.06.2020 10:48:21(01.06.2020 11:32:44 ~ 01.06.2020 12:48:21) > Undelivered Order. ShopID = 796. OrederID = 2438246. Weight = 5,255, Lat = 56,0046866996165, Long = 37,2087739, dist =1,29 km, arrivalTime =  3,86 min
+01.06.2020 10:43:33(01.06.2020 11:37:11 ~ 01.06.2020 12:43:33) > Undelivered Order. ShopID = 796. OrederID = 2438899. Weight = 5,737, Lat = 55,994946, Long = 37,205669, dist =0,86 km, arrivalTime =  2,58 min
+01.06.2020 11:10:49(01.06.2020 11:41:24 ~ 01.06.2020 13:10:49) > Undelivered Order. ShopID = 796. OrederID = 2441463. Weight = 20,822, Lat = 55,9939096, Long = 37,2174037, dist =0,31 km, arrivalTime =  0,93 min
+01.06.2020 10:02:44(01.06.2020 10:21:38 ~ 01.06.2020 12:02:44) > Undelivered Order. ShopID = 810. OrederID = 2435022. Weight = 4,498, Lat = 55,923138, Long = 37,825333, dist =1,76 km, arrivalTime =  5,27 min
+01.06.2020 10:18:09(01.06.2020 10:59:42 ~ 01.06.2020 12:18:09) > Undelivered Order. ShopID = 810. OrederID = 2435417. Weight = 8,172, Lat = 55,913849, Long = 37,826954, dist =1,89 km, arrivalTime =  5,68 min
+01.06.2020 10:42:53(01.06.2020 11:03:32 ~ 01.06.2020 12:42:53) > Undelivered Order. ShopID = 810. OrederID = 2436945. Weight = 0,723, Lat = 55,917019, Long = 37,805695, dist =3,26 km, arrivalTime =  9,77 min
+01.06.2020 10:09:58(01.06.2020 11:19:58 ~ 01.06.2020 12:09:58) > Undelivered Order. ShopID = 810. OrederID = 2437057. Weight = 5,72, Lat = 55,9147571992321, Long = 37,7988124, dist =3,82 km, arrivalTime =  11,46 min
+01.06.2020 11:24:21(01.06.2020 11:26:50 ~ 01.06.2020 13:24:21) > Undelivered Order. ShopID = 810. OrederID = 2442147. Weight = 2,35, Lat = 55,917019, Long = 37,805695, dist =3,26 km, arrivalTime =  9,77 min
+01.06.2020 11:16:50(01.06.2020 11:30:30 ~ 01.06.2020 13:16:50) > Undelivered Order. ShopID = 810. OrederID = 2441751. Weight = 6,499, Lat = 55,907194099616, Long = 37,8268037, dist =2,48 km, arrivalTime =  7,45 min
+01.06.2020 10:25:44(01.06.2020 11:35:44 ~ 01.06.2020 12:25:44) > Undelivered Order. ShopID = 810. OrederID = 2437577. Weight = 7,192, Lat = 55,907089, Long = 37,828983, dist =2,39 km, arrivalTime =  7,17 min
+01.06.2020 11:56:49(01.06.2020 12:14:48 ~ 01.06.2020 13:56:49) > Undelivered Order. ShopID = 840. OrederID = 2443514. Weight = 2,63, Lat = 56,294228, Long = 38,123508, dist =1,72 km, arrivalTime =  5,16 min
+01.06.2020 13:07:16(01.06.2020 13:27:50 ~ 01.06.2020 15:07:16) > Undelivered Order. ShopID = 840. OrederID = 2447401. Weight = 10,056, Lat = 56,294334, Long = 38,167244, dist =2,63 km, arrivalTime =  7,90 min
+01.06.2020 13:30:55(01.06.2020 13:40:42 ~ 01.06.2020 15:30:55) > Undelivered Order. ShopID = 840. OrederID = 2450643. Weight = 2,934, Lat = 56,3028978, Long = 38,1876043, dist =3,75 km, arrivalTime =  11,26 min
+01.06.2020 10:34:51(01.06.2020 11:07:57 ~ 01.06.2020 12:34:51) > Undelivered Order. ShopID = 857. OrederID = 2433153. Weight = 0,525, Lat = 55,9168774713496, Long = 37,8635827218788, dist =0,89 km, arrivalTime =  2,66 min
+01.06.2020 10:01:10(01.06.2020 11:11:10 ~ 01.06.2020 12:01:10) > Undelivered Order. ShopID = 857. OrederID = 2436777. Weight = 5,117, Lat = 55,916784, Long = 37,863504, dist =0,88 km, arrivalTime =  2,63 min
+01.06.2020 10:06:13(01.06.2020 11:16:13 ~ 01.06.2020 12:06:13) > Undelivered Order. ShopID = 857. OrederID = 2435076. Weight = 20,982, Lat = 55,905468, Long = 37,866199, dist =0,70 km, arrivalTime =  2,10 min
+01.06.2020 10:10:50(01.06.2020 11:20:50 ~ 01.06.2020 12:10:50) > Undelivered Order. ShopID = 857. OrederID = 2436935. Weight = 3,914, Lat = 55,9190031266793, Long = 37,8869191195402, dist =1,82 km, arrivalTime =  5,46 min
+01.06.2020 10:35:21(01.06.2020 11:22:03 ~ 01.06.2020 12:35:21) > Undelivered Order. ShopID = 857. OrederID = 2439167. Weight = 8,529, Lat = 55,916784, Long = 37,863504, dist =0,88 km, arrivalTime =  2,63 min
+01.06.2020 10:16:56(01.06.2020 11:26:56 ~ 01.06.2020 12:16:56) > Undelivered Order. ShopID = 857. OrederID = 2437895. Weight = 7,58, Lat = 55,9129823, Long = 37,8716139, dist =0,43 km, arrivalTime =  1,28 min
+01.06.2020 10:35:08(01.06.2020 11:45:08 ~ 01.06.2020 12:35:08) > Undelivered Order. ShopID = 857. OrederID = 2438071. Weight = 1,213, Lat = 55,9120815103975, Long = 37,8515172661885, dist =1,23 km, arrivalTime =  3,68 min
+01.06.2020 10:38:07(01.06.2020 11:48:07 ~ 01.06.2020 12:38:07) > Undelivered Order. ShopID = 857. OrederID = 2439353. Weight = 24,833, Lat = 55,910291, Long = 37,860504, dist =0,54 km, arrivalTime =  1,62 min
+01.06.2020 10:17:12(01.06.2020 10:38:44 ~ 01.06.2020 12:17:12) > Undelivered Order. ShopID = 905. OrederID = 2437919. Weight = 2,203, Lat = 55,5754825, Long = 37,6471601, dist =2,14 km, arrivalTime =  6,41 min
+01.06.2020 11:19:08(01.06.2020 11:30:48 ~ 01.06.2020 13:19:08) > Undelivered Order. ShopID = 905. OrederID = 2442024. Weight = 1,133, Lat = 55,5749666, Long = 37,6551132, dist =2,30 km, arrivalTime =  6,89 min
+01.06.2020 11:19:57(01.06.2020 11:36:48 ~ 01.06.2020 13:19:57) > Undelivered Order. ShopID = 905. OrederID = 2441311. Weight = 1,598, Lat = 55,5834842996148, Long = 37,6521646, dist =1,15 km, arrivalTime =  3,44 min
+01.06.2020 10:48:58(01.06.2020 11:58:58 ~ 01.06.2020 12:48:58) > Undelivered Order. ShopID = 920. OrederID = 2436341. Weight = 13,409, Lat = 55,535835, Long = 37,684864, dist =2,53 km, arrivalTime =  7,58 min
+01.06.2020 11:12:24(01.06.2020 12:22:24 ~ 01.06.2020 13:12:24) > Undelivered Order. ShopID = 920. OrederID = 2437135. Weight = 5,573, Lat = 55,526188, Long = 37,696644, dist =3,46 km, arrivalTime =  10,38 min
+01.06.2020 12:55:21(01.06.2020 13:38:47 ~ 01.06.2020 14:55:21) > Undelivered Order. ShopID = 930. OrederID = 2448347. Weight = 10,196, Lat = 55,5832929, Long = 38,1465745, dist =2,17 km, arrivalTime =  6,50 min
+01.06.2020 13:23:47(01.06.2020 13:45:31 ~ 01.06.2020 15:23:47) > Undelivered Order. ShopID = 930. OrederID = 2449216. Weight = 5,906, Lat = 55,5816, Long = 38,149403, dist =2,48 km, arrivalTime =  7,43 min
+01.06.2020 13:43:50(01.06.2020 13:51:17 ~ 01.06.2020 15:43:50) > Undelivered Order. ShopID = 930. OrederID = 2451455. Weight = 4,971, Lat = 55,5832929, Long = 38,1465745, dist =2,17 km, arrivalTime =  6,50 min
+01.06.2020 13:29:31(01.06.2020 14:06:25 ~ 01.06.2020 15:29:31) > Undelivered Order. ShopID = 930. OrederID = 2450145. Weight = 5,035, Lat = 55,577213, Long = 38,166328, dist =3,83 km, arrivalTime =  11,49 min
+01.06.2020 13:52:03(01.06.2020 14:12:05 ~ 01.06.2020 15:52:03) > Undelivered Order. ShopID = 930. OrederID = 2450947. Weight = 11,196, Lat = 55,595562, Long = 38,123119, dist =0,25 km, arrivalTime =  0,76 min
+01.06.2020 14:02:46(01.06.2020 14:22:59 ~ 01.06.2020 16:02:46) > Undelivered Order. ShopID = 930. OrederID = 2451920. Weight = 5,493, Lat = 55,5925741949922, Long = 38,1339147, dist =0,66 km, arrivalTime =  1,97 min
+01.06.2020 15:04:48(01.06.2020 15:23:02 ~ 01.06.2020 17:04:48) > Undelivered Order. ShopID = 930. OrederID = 2456124. Weight = 2,533, Lat = 55,588589, Long = 38,13419, dist =1,01 km, arrivalTime =  3,04 min
+01.06.2020 14:58:27(01.06.2020 15:31:27 ~ 01.06.2020 16:58:27) > Undelivered Order. ShopID = 930. OrederID = 2455997. Weight = 5,126, Lat = 55,5858849, Long = 38,1525763, dist =2,32 km, arrivalTime =  6,96 min
+01.06.2020 16:09:33(01.06.2020 16:28:41 ~ 01.06.2020 18:09:33) > Undelivered Order. ShopID = 930. OrederID = 2459196. Weight = 5,224, Lat = 55,5932035529352, Long = 38,1308243284104, dist =0,41 km, arrivalTime =  1,23 min
+01.06.2020 7:20:05(01.06.2020 11:10:00 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 958. OrederID = 2433785. Weight = 14,49, Lat = 55,455486, Long = 38,439011, dist =0,89 km, arrivalTime =  2,66 min
+01.06.2020 10:20:25(01.06.2020 11:30:25 ~ 01.06.2020 12:20:25) > Undelivered Order. ShopID = 958. OrederID = 2435969. Weight = 10,225, Lat = 55,46207, Long = 38,443779, dist =0,25 km, arrivalTime =  0,75 min
+01.06.2020 10:02:09(01.06.2020 10:34:48 ~ 01.06.2020 12:02:09) > Undelivered Order. ShopID = 983. OrederID = 2436841. Weight = 7,277, Lat = 55,6340469, Long = 37,7930497, dist =3,29 km, arrivalTime =  9,86 min
+01.06.2020 10:14:58(01.06.2020 10:42:54 ~ 01.06.2020 12:14:58) > Undelivered Order. ShopID = 1020. OrederID = 2435213. Weight = 12,573, Lat = 55,735966, Long = 37,433079, dist =0,21 km, arrivalTime =  0,63 min
+01.06.2020 10:36:48(01.06.2020 10:57:05 ~ 01.06.2020 12:36:48) > Undelivered Order. ShopID = 1020. OrederID = 2439258. Weight = 2,481, Lat = 55,7357007, Long = 37,4324721, dist =0,27 km, arrivalTime =  0,80 min
+01.06.2020 11:39:25(01.06.2020 11:51:09 ~ 01.06.2020 13:39:25) > Undelivered Order. ShopID = 1020. OrederID = 2443334. Weight = 6,519, Lat = 55,7383082, Long = 37,4307365, dist =0,38 km, arrivalTime =  1,13 min
+01.06.2020 12:21:09(01.06.2020 13:14:40 ~ 01.06.2020 14:21:09) > Undelivered Order. ShopID = 1020. OrederID = 2445073. Weight = 10,494, Lat = 55,730968, Long = 37,437054, dist =0,82 km, arrivalTime =  2,46 min
+01.06.2020 12:28:34(01.06.2020 13:21:24 ~ 01.06.2020 14:28:34) > Undelivered Order. ShopID = 1020. OrederID = 2446013. Weight = 5,102, Lat = 55,7422533996154, Long = 37,4215446, dist =1,24 km, arrivalTime =  3,72 min
+01.06.2020 13:28:30(01.06.2020 13:53:23 ~ 01.06.2020 15:28:30) > Undelivered Order. ShopID = 1020. OrederID = 2446793. Weight = 2,552, Lat = 55,730938, Long = 37,437305, dist =0,83 km, arrivalTime =  2,48 min
+01.06.2020 10:29:05(01.06.2020 10:44:37 ~ 01.06.2020 12:29:05) > Undelivered Order. ShopID = 1029. OrederID = 2434852. Weight = 4,963, Lat = 56,319057, Long = 36,723442, dist =1,99 km, arrivalTime =  5,96 min
+01.06.2020 10:56:09(01.06.2020 11:13:36 ~ 01.06.2020 12:56:09) > Undelivered Order. ShopID = 1029. OrederID = 2440462. Weight = 6,668, Lat = 56,3729722, Long = 36,7012457, dist =5,75 km, arrivalTime =  17,25 min
+01.06.2020 11:32:26(01.06.2020 11:44:29 ~ 01.06.2020 13:32:26) > Undelivered Order. ShopID = 1029. OrederID = 2441735. Weight = 4,449, Lat = 56,319298, Long = 36,766644, dist =3,21 km, arrivalTime =  9,64 min
+01.06.2020 15:10:52(01.06.2020 15:24:08 ~ 01.06.2020 17:10:52) > Undelivered Order. ShopID = 1029. OrederID = 2456256. Weight = 1,85, Lat = 56,3243237961784, Long = 36,7279127, dist =1,22 km, arrivalTime =  3,66 min
+01.06.2020 17:39:20(01.06.2020 17:51:34 ~ 01.06.2020 19:39:20) > Undelivered Order. ShopID = 1029. OrederID = 2464456. Weight = 5,998, Lat = 56,33728, Long = 36,724674, dist =0,73 km, arrivalTime =  2,18 min
+01.06.2020 9:26:01(01.06.2020 9:37:07 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 1041. OrederID = 2435487. Weight = 3,943, Lat = 55,778811, Long = 38,451209, dist =1,87 km, arrivalTime =  5,61 min
+01.06.2020 11:00:47(01.06.2020 11:35:16 ~ 01.06.2020 13:00:47) > Undelivered Order. ShopID = 1041. OrederID = 2440777. Weight = 0,668, Lat = 55,784152, Long = 38,438588, dist =1,01 km, arrivalTime =  3,04 min
+01.06.2020 10:21:26(01.06.2020 10:33:10 ~ 01.06.2020 12:21:26) > Undelivered Order. ShopID = 1078. OrederID = 2437586. Weight = 2,388, Lat = 55,635883, Long = 37,747974, dist =4,12 km, arrivalTime =  12,37 min
+01.06.2020 11:25:49(01.06.2020 11:35:49 ~ 01.06.2020 13:25:49) > Undelivered Order. ShopID = 1078. OrederID = 2442399. Weight = 0,5, Lat = 55,636498499615, Long = 37,715843, dist =1,72 km, arrivalTime =  5,16 min
+01.06.2020 10:00:22(01.06.2020 10:13:14 ~ 01.06.2020 12:00:22) > Undelivered Order. ShopID = 1080. OrederID = 2435356. Weight = 5,499, Lat = 55,863525, Long = 37,122726, dist =0,38 km, arrivalTime =  1,14 min
+01.06.2020 10:12:54(01.06.2020 10:23:44 ~ 01.06.2020 12:12:54) > Undelivered Order. ShopID = 1080. OrederID = 2430699. Weight = 9,741, Lat = 55,85936, Long = 37,122112, dist =0,91 km, arrivalTime =  2,72 min
+01.06.2020 11:28:43(01.06.2020 11:42:16 ~ 01.06.2020 13:28:43) > Undelivered Order. ShopID = 1080. OrederID = 2441845. Weight = 5,698, Lat = 55,856361, Long = 37,124837, dist =1,27 km, arrivalTime =  3,82 min
+01.06.2020 11:23:35(01.06.2020 12:27:17 ~ 01.06.2020 13:23:35) > Undelivered Order. ShopID = 1080. OrederID = 2433271. Weight = 4,213, Lat = 55,8658748969271, Long = 37,1167993, dist =0,65 km, arrivalTime =  1,96 min
+01.06.2020 12:06:51(01.06.2020 12:35:35 ~ 01.06.2020 14:06:51) > Undelivered Order. ShopID = 1080. OrederID = 2442155. Weight = 4,073, Lat = 55,866035, Long = 37,115814, dist =0,73 km, arrivalTime =  2,19 min
+01.06.2020 11:52:28(01.06.2020 13:02:28 ~ 01.06.2020 13:52:28) > Undelivered Order. ShopID = 1080. OrederID = 2443165. Weight = 1,568, Lat = 55,867567296543, Long = 37,1015168, dist =1,81 km, arrivalTime =  5,44 min
+01.06.2020 12:02:50(01.06.2020 13:12:50 ~ 01.06.2020 14:02:50) > Undelivered Order. ShopID = 1080. OrederID = 2444673. Weight = 2,363, Lat = 55,862972, Long = 37,112797, dist =1,03 km, arrivalTime =  3,09 min
+01.06.2020 12:39:52(01.06.2020 13:40:59 ~ 01.06.2020 14:39:52) > Undelivered Order. ShopID = 1080. OrederID = 2447304. Weight = 6, Lat = 55,866051, Long = 37,115883, dist =0,72 km, arrivalTime =  2,17 min
+01.06.2020 12:51:50(01.06.2020 14:01:50 ~ 01.06.2020 14:51:50) > Undelivered Order. ShopID = 1080. OrederID = 2448110. Weight = 12,115, Lat = 55,8891312, Long = 37,1657645, dist =4,33 km, arrivalTime =  12,98 min
+01.06.2020 10:58:15(01.06.2020 12:08:15 ~ 01.06.2020 12:58:15) > Undelivered Order. ShopID = 1148. OrederID = 2436010. Weight = 4,107, Lat = 55,715511, Long = 37,435169, dist =1,14 km, arrivalTime =  3,42 min
+01.06.2020 10:05:45(01.06.2020 10:46:07 ~ 01.06.2020 12:05:45) > Undelivered Order. ShopID = 1160. OrederID = 2435507. Weight = 6,184, Lat = 55,617862995, Long = 37,6058382909341, dist =1,08 km, arrivalTime =  3,23 min
+01.06.2020 10:10:31(01.06.2020 11:20:31 ~ 01.06.2020 12:10:31) > Undelivered Order. ShopID = 1160. OrederID = 2436214. Weight = 18,789, Lat = 55,618664, Long = 37,606346, dist =1,11 km, arrivalTime =  3,33 min
+01.06.2020 10:37:59(01.06.2020 11:47:59 ~ 01.06.2020 12:37:59) > Undelivered Order. ShopID = 1170. OrederID = 2439104. Weight = 4,459, Lat = 55,9660364162106, Long = 37,6706606729504, dist =5,67 km, arrivalTime =  17,02 min
+01.06.2020 10:47:37(01.06.2020 11:57:37 ~ 01.06.2020 12:47:37) > Undelivered Order. ShopID = 1170. OrederID = 2439572. Weight = 5,375, Lat = 56,002655, Long = 37,630066, dist =9,03 km, arrivalTime =  27,08 min
+01.06.2020 11:02:48(01.06.2020 12:12:48 ~ 01.06.2020 13:02:48) > Undelivered Order. ShopID = 1170. OrederID = 2440601. Weight = 7,969, Lat = 55,992233, Long = 37,659164, dist =6,52 km, arrivalTime =  19,57 min
+01.06.2020 10:50:01(01.06.2020 12:00:01 ~ 01.06.2020 12:50:01) > Undelivered Order. ShopID = 1175. OrederID = 2438724. Weight = 19,459, Lat = 55,671074, Long = 36,665958, dist =12,77 km, arrivalTime =  38,30 min
+01.06.2020 11:19:56(01.06.2020 12:29:56 ~ 01.06.2020 13:19:56) > Undelivered Order. ShopID = 1175. OrederID = 2440750. Weight = 9,402, Lat = 55,644413, Long = 36,69083, dist =9,04 km, arrivalTime =  27,11 min
+01.06.2020 12:33:16(01.06.2020 13:43:16 ~ 01.06.2020 14:33:16) > Undelivered Order. ShopID = 1175. OrederID = 2446497. Weight = 8,427, Lat = 55,702435, Long = 36,752113, dist =17,35 km, arrivalTime =  52,04 min
+01.06.2020 11:15:48(01.06.2020 11:54:24 ~ 01.06.2020 13:15:48) > Undelivered Order. ShopID = 1215. OrederID = 2430527. Weight = 16,152, Lat = 55,739628, Long = 37,439056, dist =0,97 km, arrivalTime =  2,90 min
+01.06.2020 10:15:12(01.06.2020 10:39:16 ~ 01.06.2020 12:15:12) > Undelivered Order. ShopID = 1237. OrederID = 2435322. Weight = 1,863, Lat = 55,896702, Long = 37,603996, dist =1,04 km, arrivalTime =  3,11 min
+01.06.2020 10:51:08(01.06.2020 10:56:54 ~ 01.06.2020 12:51:08) > Undelivered Order. ShopID = 1237. OrederID = 2439865. Weight = 1,123, Lat = 55,895054, Long = 37,608238, dist =1,39 km, arrivalTime =  4,18 min
+01.06.2020 10:50:44(01.06.2020 10:57:09 ~ 01.06.2020 12:50:44) > Undelivered Order. ShopID = 1237. OrederID = 2437008. Weight = 1,103, Lat = 55,89307, Long = 37,597523, dist =0,82 km, arrivalTime =  2,47 min
+01.06.2020 11:15:39(01.06.2020 11:42:42 ~ 01.06.2020 13:15:39) > Undelivered Order. ShopID = 1237. OrederID = 2440789. Weight = 4,999, Lat = 55,8945209433964, Long = 37,5964367674804, dist =0,63 km, arrivalTime =  1,88 min
+01.06.2020 10:05:57(01.06.2020 10:33:03 ~ 01.06.2020 12:05:57) > Undelivered Order. ShopID = 1239. OrederID = 2435694. Weight = 12,664, Lat = 55,8017288992313, Long = 37,9306537, dist =0,52 km, arrivalTime =  1,56 min
+01.06.2020 10:21:10(01.06.2020 10:44:09 ~ 01.06.2020 12:21:10) > Undelivered Order. ShopID = 1239. OrederID = 2435871. Weight = 2,785, Lat = 55,806496, Long = 37,980865, dist =3,44 km, arrivalTime =  10,32 min
+01.06.2020 10:30:11(01.06.2020 11:03:56 ~ 01.06.2020 12:30:11) > Undelivered Order. ShopID = 1239. OrederID = 2437124. Weight = 18,065, Lat = 55,791439, Long = 37,936428, dist =1,11 km, arrivalTime =  3,34 min
+01.06.2020 10:36:55(01.06.2020 11:17:38 ~ 01.06.2020 12:36:55) > Undelivered Order. ShopID = 1239. OrederID = 2436707. Weight = 4,037, Lat = 55,789829, Long = 37,934105, dist =1,34 km, arrivalTime =  4,02 min
+01.06.2020 10:08:44(01.06.2020 10:28:00 ~ 01.06.2020 12:08:44) > Undelivered Order. ShopID = 1252. OrederID = 2435101. Weight = 2,617, Lat = 55,595383, Long = 37,538628, dist =0,49 km, arrivalTime =  1,47 min
+01.06.2020 10:44:46(01.06.2020 11:33:59 ~ 01.06.2020 12:44:46) > Undelivered Order. ShopID = 1252. OrederID = 2438034. Weight = 7,748, Lat = 55,5963243996148, Long = 37,5400425, dist =0,39 km, arrivalTime =  1,16 min
+01.06.2020 10:04:45(01.06.2020 10:33:32 ~ 01.06.2020 12:04:45) > Undelivered Order. ShopID = 1280. OrederID = 2436522. Weight = 13,088, Lat = 55,776082899231, Long = 37,6987888, dist =0,89 km, arrivalTime =  2,68 min
+01.06.2020 11:14:19(01.06.2020 11:46:36 ~ 01.06.2020 13:14:19) > Undelivered Order. ShopID = 1280. OrederID = 2440949. Weight = 21,537, Lat = 55,773769998462, Long = 37,6947368, dist =0,66 km, arrivalTime =  1,97 min
+01.06.2020 10:02:08(01.06.2020 10:13:13 ~ 01.06.2020 12:02:08) > Undelivered Order. ShopID = 1310. OrederID = 2435305. Weight = 1,743, Lat = 55,6868929071156, Long = 37,8650441804015, dist =0,38 km, arrivalTime =  1,15 min
+01.06.2020 10:15:34(01.06.2020 10:34:19 ~ 01.06.2020 12:15:34) > Undelivered Order. ShopID = 1310. OrederID = 2434733. Weight = 3,253, Lat = 55,67944, Long = 37,877937, dist =1,04 km, arrivalTime =  3,11 min
+01.06.2020 10:15:24(01.06.2020 10:40:17 ~ 01.06.2020 12:15:24) > Undelivered Order. ShopID = 1310. OrederID = 2437666. Weight = 10,184, Lat = 55,6750584240533, Long = 37,8716809898595, dist =1,28 km, arrivalTime =  3,84 min
+01.06.2020 10:15:29(01.06.2020 10:51:54 ~ 01.06.2020 12:15:29) > Undelivered Order. ShopID = 1310. OrederID = 2437481. Weight = 4,822, Lat = 55,695808, Long = 37,866093, dist =1,54 km, arrivalTime =  4,61 min
+01.06.2020 10:19:46(01.06.2020 11:08:33 ~ 01.06.2020 12:19:46) > Undelivered Order. ShopID = 1310. OrederID = 2435686. Weight = 20,899, Lat = 55,683308, Long = 37,868992, dist =0,19 km, arrivalTime =  0,56 min
+01.06.2020 10:27:26(01.06.2020 11:37:26 ~ 01.06.2020 12:27:26) > Undelivered Order. ShopID = 1310. OrederID = 2438627. Weight = 3,373, Lat = 55,6678189, Long = 37,8798077, dist =2,40 km, arrivalTime =  7,19 min
+01.06.2020 10:32:57(01.06.2020 11:42:57 ~ 01.06.2020 12:32:57) > Undelivered Order. ShopID = 1310. OrederID = 2433797. Weight = 4,109, Lat = 55,672619, Long = 37,869877, dist =1,57 km, arrivalTime =  4,72 min
+01.06.2020 10:41:53(01.06.2020 11:51:53 ~ 01.06.2020 12:41:53) > Undelivered Order. ShopID = 1310. OrederID = 2438948. Weight = 3,973, Lat = 55,6833930329091, Long = 37,8629768186518, dist =0,34 km, arrivalTime =  1,03 min
+01.06.2020 10:43:12(01.06.2020 11:53:12 ~ 01.06.2020 12:43:12) > Undelivered Order. ShopID = 1310. OrederID = 2430987. Weight = 4,722, Lat = 55,68111, Long = 37,867558, dist =0,43 km, arrivalTime =  1,28 min
+01.06.2020 9:47:13(01.06.2020 10:38:50 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 1315. OrederID = 2435285. Weight = 8,743, Lat = 55,4492110976855, Long = 36,98269, dist =8,65 km, arrivalTime =  25,94 min
+01.06.2020 10:52:21(01.06.2020 11:09:59 ~ 01.06.2020 12:52:21) > Undelivered Order. ShopID = 1315. OrederID = 2439253. Weight = 8,205, Lat = 55,407047, Long = 37,000519, dist =14,34 km, arrivalTime =  43,03 min
+01.06.2020 9:43:45(01.06.2020 11:10:00 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 1315. OrederID = 2434936. Weight = 83,464, Lat = 55,4648257727138, Long = 36,8720530168754, dist =10,62 km, arrivalTime =  31,87 min
+01.06.2020 10:02:54(01.06.2020 11:12:54 ~ 01.06.2020 12:02:54) > Undelivered Order. ShopID = 1315. OrederID = 2435976. Weight = 19,346, Lat = 55,480053, Long = 36,992157, dist =4,59 km, arrivalTime =  13,76 min
+01.06.2020 11:07:32(01.06.2020 11:42:24 ~ 01.06.2020 13:07:32) > Undelivered Order. ShopID = 1315. OrederID = 2439155. Weight = 19,866, Lat = 55,4678138953717, Long = 36,8695816, dist =10,53 km, arrivalTime =  31,60 min
+01.06.2020 10:53:26(01.06.2020 12:03:26 ~ 01.06.2020 12:53:26) > Undelivered Order. ShopID = 1315. OrederID = 2439330. Weight = 4,203, Lat = 55,5097844930604, Long = 36,9807726, dist =0,57 km, arrivalTime =  1,71 min
+01.06.2020 11:04:11(01.06.2020 12:14:11 ~ 01.06.2020 13:04:11) > Undelivered Order. ShopID = 1315. OrederID = 2439996. Weight = 15,082, Lat = 55,570923, Long = 37,021618, dist =8,16 km, arrivalTime =  24,49 min
+01.06.2020 11:04:55(01.06.2020 12:14:55 ~ 01.06.2020 13:04:55) > Undelivered Order. ShopID = 1315. OrederID = 2440430. Weight = 15,726, Lat = 55,472019, Long = 37,031071, dist =6,70 km, arrivalTime =  20,10 min
+01.06.2020 11:08:45(01.06.2020 12:18:45 ~ 01.06.2020 13:08:45) > Undelivered Order. ShopID = 1315. OrederID = 2430673. Weight = 8,693, Lat = 55,517025, Long = 37,014618, dist =2,47 km, arrivalTime =  7,40 min
+01.06.2020 11:42:52(01.06.2020 12:52:52 ~ 01.06.2020 13:42:52) > Undelivered Order. ShopID = 1315. OrederID = 2442616. Weight = 21,024, Lat = 55,483963, Long = 37,009079, dist =4,48 km, arrivalTime =  13,45 min
+01.06.2020 11:55:07(01.06.2020 13:05:07 ~ 01.06.2020 13:55:07) > Undelivered Order. ShopID = 1315. OrederID = 2441402. Weight = 13,379, Lat = 55,5081936263792, Long = 37,0148057160245, dist =2,56 km, arrivalTime =  7,69 min
+01.06.2020 12:16:49(01.06.2020 13:26:49 ~ 01.06.2020 14:16:49) > Undelivered Order. ShopID = 1315. OrederID = 2444582. Weight = 10,557, Lat = 55,449883, Long = 36,857632, dist =12,75 km, arrivalTime =  38,24 min
+01.06.2020 12:25:19(01.06.2020 13:35:19 ~ 01.06.2020 14:25:19) > Undelivered Order. ShopID = 1315. OrederID = 2445116. Weight = 9,865, Lat = 55,483078, Long = 37,00053, dist =4,34 km, arrivalTime =  13,03 min
+01.06.2020 12:27:19(01.06.2020 13:37:19 ~ 01.06.2020 14:27:19) > Undelivered Order. ShopID = 1315. OrederID = 2445681. Weight = 8,096, Lat = 55,4529781496742, Long = 36,9952452422091, dist =8,20 km, arrivalTime =  24,60 min
+01.06.2020 13:05:07(01.06.2020 14:15:07 ~ 01.06.2020 15:05:07) > Undelivered Order. ShopID = 1315. OrederID = 2447838. Weight = 68,081, Lat = 55,477875, Long = 36,997101, dist =4,94 km, arrivalTime =  14,83 min
+01.06.2020 13:21:06(01.06.2020 14:31:06 ~ 01.06.2020 15:21:06) > Undelivered Order. ShopID = 1315. OrederID = 2442057. Weight = 81, Lat = 55,4136935469976, Long = 37,0072301871726, dist =13,52 km, arrivalTime =  40,56 min
+01.06.2020 13:36:19(01.06.2020 14:46:19 ~ 01.06.2020 15:36:19) > Undelivered Order. ShopID = 1315. OrederID = 2450288. Weight = 8,383, Lat = 55,4566235980714, Long = 36,8871246, dist =10,52 km, arrivalTime =  31,56 min
+01.06.2020 10:08:02(01.06.2020 10:26:22 ~ 01.06.2020 12:08:02) > Undelivered Order. ShopID = 1318. OrederID = 2435489. Weight = 2,26, Lat = 55,382362, Long = 37,5448, dist =1,18 km, arrivalTime =  3,54 min
+01.06.2020 13:23:02(01.06.2020 13:28:18 ~ 01.06.2020 15:23:02) > Undelivered Order. ShopID = 1318. OrederID = 2433409. Weight = 5,79, Lat = 55,3711832335597, Long = 37,5382732647141, dist =0,42 km, arrivalTime =  1,26 min
+01.06.2020 10:06:14(01.06.2020 10:22:40 ~ 01.06.2020 12:06:14) > Undelivered Order. ShopID = 1320. OrederID = 2435121. Weight = 13,181, Lat = 55,8914547586702, Long = 37,5855447848398, dist =1,04 km, arrivalTime =  3,12 min
+01.06.2020 11:03:47(01.06.2020 11:52:14 ~ 01.06.2020 13:03:47) > Undelivered Order. ShopID = 1320. OrederID = 2438854. Weight = 39,992, Lat = 55,891281, Long = 37,585514, dist =1,05 km, arrivalTime =  3,15 min
+01.06.2020 10:00:18(01.06.2020 10:27:15 ~ 01.06.2020 12:00:18) > Undelivered Order. ShopID = 1321. OrederID = 2436348. Weight = 1,365, Lat = 55,78632, Long = 37,461445, dist =1,16 km, arrivalTime =  3,49 min
+01.06.2020 10:02:00(01.06.2020 10:42:50 ~ 01.06.2020 12:02:00) > Undelivered Order. ShopID = 1321. OrederID = 2436006. Weight = 9,078, Lat = 55,7780888992311, Long = 37,4648574, dist =0,06 km, arrivalTime =  0,19 min
+01.06.2020 10:02:28(01.06.2020 10:53:17 ~ 01.06.2020 12:02:28) > Undelivered Order. ShopID = 1321. OrederID = 2435510. Weight = 2,642, Lat = 55,7853745996156, Long = 37,479795, dist =1,55 km, arrivalTime =  4,65 min
+01.06.2020 10:02:57(01.06.2020 10:59:43 ~ 01.06.2020 12:02:57) > Undelivered Order. ShopID = 1321. OrederID = 2434252. Weight = 9,304, Lat = 55,780567, Long = 37,463329, dist =0,38 km, arrivalTime =  1,15 min
+01.06.2020 10:06:36(01.06.2020 11:15:49 ~ 01.06.2020 12:06:36) > Undelivered Order. ShopID = 1321. OrederID = 2430993. Weight = 19,696, Lat = 55,777882, Long = 37,46516, dist =0,07 km, arrivalTime =  0,21 min
+01.06.2020 10:13:39(01.06.2020 11:18:53 ~ 01.06.2020 12:13:39) > Undelivered Order. ShopID = 1321. OrederID = 2434734. Weight = 5,946, Lat = 55,779919, Long = 37,462879, dist =0,31 km, arrivalTime =  0,92 min
+01.06.2020 10:25:52(01.06.2020 11:35:23 ~ 01.06.2020 12:25:52) > Undelivered Order. ShopID = 1321. OrederID = 2437452. Weight = 2,796, Lat = 55,778851, Long = 37,468494, dist =0,35 km, arrivalTime =  1,05 min
+01.06.2020 10:03:13(01.06.2020 10:35:06 ~ 01.06.2020 12:03:13) > Undelivered Order. ShopID = 1325. OrederID = 2436097. Weight = 18,072, Lat = 55,840298, Long = 37,149052, dist =0,24 km, arrivalTime =  0,72 min
+01.06.2020 10:05:01(01.06.2020 10:36:15 ~ 01.06.2020 12:05:01) > Undelivered Order. ShopID = 1326. OrederID = 2434095. Weight = 16,96, Lat = 55,9022233999987, Long = 37,4148275464239, dist =0,57 km, arrivalTime =  1,72 min
+01.06.2020 10:29:50(01.06.2020 10:52:43 ~ 01.06.2020 12:29:50) > Undelivered Order. ShopID = 1326. OrederID = 2437821. Weight = 3,735, Lat = 55,902531, Long = 37,414322, dist =0,55 km, arrivalTime =  1,64 min
+01.06.2020 11:15:05(01.06.2020 11:36:46 ~ 01.06.2020 13:15:05) > Undelivered Order. ShopID = 1326. OrederID = 2440553. Weight = 8,882, Lat = 55,900177, Long = 37,409649, dist =0,22 km, arrivalTime =  0,65 min
+01.06.2020 12:11:44(01.06.2020 13:21:44 ~ 01.06.2020 14:11:44) > Undelivered Order. ShopID = 1328. OrederID = 2445456. Weight = 4,714, Lat = 55,7905358, Long = 37,6230681, dist =0,13 km, arrivalTime =  0,39 min
+01.06.2020 12:21:49(01.06.2020 13:31:49 ~ 01.06.2020 14:21:49) > Undelivered Order. ShopID = 1328. OrederID = 2446102. Weight = 3,076, Lat = 55,774046, Long = 37,625433, dist =2,34 km, arrivalTime =  7,01 min
+01.06.2020 12:26:19(01.06.2020 13:36:19 ~ 01.06.2020 14:26:19) > Undelivered Order. ShopID = 1328. OrederID = 2446378. Weight = 0,118, Lat = 55,7922632, Long = 37,6251823, dist =0,21 km, arrivalTime =  0,62 min
+01.06.2020 12:30:18(01.06.2020 13:40:18 ~ 01.06.2020 14:30:18) > Undelivered Order. ShopID = 1328. OrederID = 2445975. Weight = 1,109, Lat = 55,7912407474917, Long = 37,6225893692615, dist =0,04 km, arrivalTime =  0,11 min
+01.06.2020 12:50:06(01.06.2020 13:40:33 ~ 01.06.2020 14:50:06) > Undelivered Order. ShopID = 1328. OrederID = 2443238. Weight = 4,041, Lat = 55,79076, Long = 37,628231, dist =0,42 km, arrivalTime =  1,26 min
+01.06.2020 13:32:53(01.06.2020 14:36:06 ~ 01.06.2020 15:32:53) > Undelivered Order. ShopID = 1347. OrederID = 2450242. Weight = 2,755, Lat = 55,8484999988475, Long = 38,4318376, dist =0,98 km, arrivalTime =  2,95 min
+01.06.2020 14:09:26(01.06.2020 14:53:38 ~ 01.06.2020 16:09:26) > Undelivered Order. ShopID = 1347. OrederID = 2453092. Weight = 7,054, Lat = 55,8496106, Long = 38,4352663, dist =0,69 km, arrivalTime =  2,08 min
+01.06.2020 14:30:22(01.06.2020 14:58:41 ~ 01.06.2020 16:30:22) > Undelivered Order. ShopID = 1347. OrederID = 2453611. Weight = 8,576, Lat = 55,849659, Long = 38,435081, dist =0,70 km, arrivalTime =  2,10 min
+01.06.2020 10:30:43(01.06.2020 11:40:43 ~ 01.06.2020 12:30:43) > Undelivered Order. ShopID = 1369. OrederID = 2434932. Weight = 15,361, Lat = 55,719234, Long = 37,39637, dist =0,44 km, arrivalTime =  1,31 min
+01.06.2020 10:58:12(01.06.2020 12:08:12 ~ 01.06.2020 12:58:12) > Undelivered Order. ShopID = 1369. OrederID = 2434305. Weight = 13,707, Lat = 55,7232220996153, Long = 37,4052766, dist =0,42 km, arrivalTime =  1,27 min
+01.06.2020 11:46:13(01.06.2020 12:56:13 ~ 01.06.2020 13:46:13) > Undelivered Order. ShopID = 1369. OrederID = 2443237. Weight = 2,614, Lat = 55,722435, Long = 37,397141, dist =0,30 km, arrivalTime =  0,89 min
+01.06.2020 10:05:23(01.06.2020 10:50:41 ~ 01.06.2020 12:05:23) > Undelivered Order. ShopID = 1384. OrederID = 2434015. Weight = 10,159, Lat = 55,62125, Long = 37,70285, dist =0,35 km, arrivalTime =  1,05 min
+01.06.2020 11:22:43(01.06.2020 11:45:47 ~ 01.06.2020 13:22:43) > Undelivered Order. ShopID = 1384. OrederID = 2438390. Weight = 4,374, Lat = 55,619102, Long = 37,695885, dist =0,37 km, arrivalTime =  1,11 min
+01.06.2020 11:19:09(01.06.2020 11:43:23 ~ 01.06.2020 13:19:09) > Undelivered Order. ShopID = 1392. OrederID = 2441544. Weight = 2,743, Lat = 55,722115, Long = 37,535725, dist =1,53 km, arrivalTime =  4,60 min
+01.06.2020 10:29:51(01.06.2020 10:40:46 ~ 01.06.2020 12:29:51) > Undelivered Order. ShopID = 1397. OrederID = 2438801. Weight = 3,824, Lat = 55,8281193, Long = 37,2921708, dist =1,13 km, arrivalTime =  3,38 min
+01.06.2020 11:45:38(01.06.2020 12:02:42 ~ 01.06.2020 13:45:38) > Undelivered Order. ShopID = 1397. OrederID = 2443781. Weight = 4,89, Lat = 55,831489, Long = 37,313951, dist =1,30 km, arrivalTime =  3,91 min
+01.06.2020 10:19:57(01.06.2020 10:51:06 ~ 01.06.2020 12:19:57) > Undelivered Order. ShopID = 1399. OrederID = 2430787. Weight = 10,087, Lat = 55,876840172671, Long = 37,5054812647713, dist =1,28 km, arrivalTime =  3,83 min
+01.06.2020 10:33:05(01.06.2020 10:52:49 ~ 01.06.2020 12:33:05) > Undelivered Order. ShopID = 1399. OrederID = 2434678. Weight = 1,756, Lat = 55,8802504988478, Long = 37,509009, dist =1,28 km, arrivalTime =  3,84 min
+01.06.2020 10:42:42(01.06.2020 10:59:12 ~ 01.06.2020 12:42:42) > Undelivered Order. ShopID = 1399. OrederID = 2434965. Weight = 2,295, Lat = 55,876984, Long = 37,505169, dist =1,30 km, arrivalTime =  3,91 min
+01.06.2020 10:55:03(01.06.2020 11:35:30 ~ 01.06.2020 12:55:03) > Undelivered Order. ShopID = 1399. OrederID = 2438086. Weight = 6,65, Lat = 55,880577, Long = 37,49614, dist =2,11 km, arrivalTime =  6,34 min
+01.06.2020 10:51:49(01.06.2020 11:52:18 ~ 01.06.2020 12:51:49) > Undelivered Order. ShopID = 1399. OrederID = 2436435. Weight = 17,279, Lat = 55,874855, Long = 37,516953, dist =0,38 km, arrivalTime =  1,13 min
+01.06.2020 10:47:49(01.06.2020 11:57:49 ~ 01.06.2020 12:47:49) > Undelivered Order. ShopID = 1399. OrederID = 2438443. Weight = 9,843, Lat = 55,874458, Long = 37,523899, dist =0,19 km, arrivalTime =  0,58 min
+01.06.2020 10:43:28(01.06.2020 11:01:40 ~ 01.06.2020 12:43:28) > Undelivered Order. ShopID = 1412. OrederID = 2434319. Weight = 5,115, Lat = 55,838146, Long = 37,011742, dist =6,39 km, arrivalTime =  19,17 min
+01.06.2020 10:23:34(01.06.2020 11:27:40 ~ 01.06.2020 12:23:34) > Undelivered Order. ShopID = 1412. OrederID = 2436844. Weight = 26,539, Lat = 55,8438935630315, Long = 36,9948357714751, dist =7,87 km, arrivalTime =  23,62 min
+01.06.2020 11:11:11(01.06.2020 12:12:26 ~ 01.06.2020 13:11:11) > Undelivered Order. ShopID = 1441. OrederID = 2441295. Weight = 4,445, Lat = 55,808308, Long = 37,945087, dist =2,13 km, arrivalTime =  6,38 min
+01.06.2020 11:52:25(01.06.2020 12:05:44 ~ 01.06.2020 13:52:25) > Undelivered Order. ShopID = 1449. OrederID = 2444017. Weight = 2,819, Lat = 54,6311811984456, Long = 39,7112059, dist =0,41 km, arrivalTime =  1,23 min
+01.06.2020 12:36:26(01.06.2020 12:38:25 ~ 01.06.2020 14:36:26) > Undelivered Order. ShopID = 1449. OrederID = 2446941. Weight = 0,39, Lat = 54,6000891996113, Long = 39,711063, dist =3,92 km, arrivalTime =  11,76 min
+01.06.2020 13:08:06(01.06.2020 13:22:40 ~ 01.06.2020 15:08:06) > Undelivered Order. ShopID = 1449. OrederID = 2447312. Weight = 3,918, Lat = 54,6378514996114, Long = 39,6665217, dist =3,95 km, arrivalTime =  11,85 min
+01.06.2020 13:12:56(01.06.2020 13:22:56 ~ 01.06.2020 15:12:56) > Undelivered Order. ShopID = 1449. OrederID = 2449210. Weight = 2,239, Lat = 54,619263, Long = 39,734581, dist =2,00 km, arrivalTime =  6,00 min
+01.06.2020 13:20:07(01.06.2020 13:28:04 ~ 01.06.2020 15:20:07) > Undelivered Order. ShopID = 1449. OrederID = 2449939. Weight = 0,403, Lat = 54,625893, Long = 39,705086, dist =0,92 km, arrivalTime =  2,77 min
+01.06.2020 12:58:49(01.06.2020 13:51:18 ~ 01.06.2020 14:58:49) > Undelivered Order. ShopID = 1449. OrederID = 2448590. Weight = 15,226, Lat = 54,6100274, Long = 39,7408942, dist =3,24 km, arrivalTime =  9,73 min
+01.06.2020 13:26:06(01.06.2020 14:04:29 ~ 01.06.2020 15:26:06) > Undelivered Order. ShopID = 1449. OrederID = 2449422. Weight = 13,833, Lat = 54,618153, Long = 39,732029, dist =1,97 km, arrivalTime =  5,90 min
+01.06.2020 13:58:46(01.06.2020 14:20:36 ~ 01.06.2020 15:58:46) > Undelivered Order. ShopID = 1449. OrederID = 2451790. Weight = 1,928, Lat = 54,6441255996114, Long = 39,6874028, dist =2,93 km, arrivalTime =  8,80 min
+01.06.2020 13:46:43(01.06.2020 14:27:21 ~ 01.06.2020 15:46:43) > Undelivered Order. ShopID = 1449. OrederID = 2447898. Weight = 7,893, Lat = 54,6160259996114, Long = 39,7196193, dist =1,81 km, arrivalTime =  5,42 min
+01.06.2020 10:56:33(01.06.2020 11:39:54 ~ 01.06.2020 12:56:33) > Undelivered Order. ShopID = 1460. OrederID = 2438640. Weight = 6,639, Lat = 55,8320899992315, Long = 37,5063315, dist =1,30 km, arrivalTime =  3,89 min
+01.06.2020 11:19:50(01.06.2020 11:47:02 ~ 01.06.2020 13:19:50) > Undelivered Order. ShopID = 1460. OrederID = 2441564. Weight = 3,941, Lat = 55,831741, Long = 37,500019, dist =0,82 km, arrivalTime =  2,47 min
+01.06.2020 11:42:24(01.06.2020 11:56:16 ~ 01.06.2020 13:42:24) > Undelivered Order. ShopID = 1460. OrederID = 2442518. Weight = 4,219, Lat = 55,83535, Long = 37,495903, dist =0,83 km, arrivalTime =  2,50 min
+01.06.2020 11:22:07(01.06.2020 12:04:01 ~ 01.06.2020 13:22:07) > Undelivered Order. ShopID = 1460. OrederID = 2441680. Weight = 8,543, Lat = 55,8340525993431, Long = 37,5038423184094, dist =1,20 km, arrivalTime =  3,59 min
+01.06.2020 11:47:39(01.06.2020 12:18:27 ~ 01.06.2020 13:47:39) > Undelivered Order. ShopID = 1460. OrederID = 2438977. Weight = 1,107, Lat = 55,835957, Long = 37,496571, dist =0,93 km, arrivalTime =  2,78 min
+01.06.2020 11:47:49(01.06.2020 12:24:03 ~ 01.06.2020 13:47:49) > Undelivered Order. ShopID = 1460. OrederID = 2443363. Weight = 7,661, Lat = 55,8319092996157, Long = 37,5036131, dist =1,09 km, arrivalTime =  3,27 min
+01.06.2020 10:02:50(01.06.2020 11:01:06 ~ 01.06.2020 12:02:50) > Undelivered Order. ShopID = 1471. OrederID = 2435922. Weight = 2,442, Lat = 55,681698, Long = 37,681065, dist =0,74 km, arrivalTime =  2,23 min
+01.06.2020 10:22:11(01.06.2020 11:13:05 ~ 01.06.2020 12:22:11) > Undelivered Order. ShopID = 1471. OrederID = 2437072. Weight = 5,032, Lat = 55,683521, Long = 37,674297, dist =0,45 km, arrivalTime =  1,36 min
+01.06.2020 12:08:40(01.06.2020 13:18:40 ~ 01.06.2020 14:08:40) > Undelivered Order. ShopID = 1493. OrederID = 2444556. Weight = 11,174, Lat = 55,701958, Long = 37,788052, dist =1,29 km, arrivalTime =  3,88 min
+01.06.2020 11:37:44(01.06.2020 12:47:56 ~ 01.06.2020 13:37:44) > Undelivered Order. ShopID = 1494. OrederID = 2442752. Weight = 8,042, Lat = 55,5574554969729, Long = 37,5566476, dist =1,53 km, arrivalTime =  4,58 min
+01.06.2020 12:04:54(01.06.2020 12:08:42 ~ 01.06.2020 14:04:54) > Undelivered Order. ShopID = 1507. OrederID = 2445038. Weight = 2,423, Lat = 55,812828, Long = 37,793669, dist =0,70 km, arrivalTime =  2,09 min
+01.06.2020 12:07:12(01.06.2020 12:29:30 ~ 01.06.2020 14:07:12) > Undelivered Order. ShopID = 1507. OrederID = 2435869. Weight = 11,715, Lat = 55,8265245992314, Long = 37,7526686, dist =3,56 km, arrivalTime =  10,69 min
+01.06.2020 12:52:35(01.06.2020 13:01:41 ~ 01.06.2020 14:52:35) > Undelivered Order. ShopID = 1507. OrederID = 2433414. Weight = 2,934, Lat = 55,811714, Long = 37,782688, dist =1,36 km, arrivalTime =  4,07 min
+01.06.2020 11:34:58(01.06.2020 11:50:10 ~ 01.06.2020 13:34:58) > Undelivered Order. ShopID = 1511. OrederID = 2442310. Weight = 6,141, Lat = 55,7943, Long = 37,571854, dist =0,52 km, arrivalTime =  1,55 min
+01.06.2020 11:39:17(01.06.2020 12:20:43 ~ 01.06.2020 13:39:17) > Undelivered Order. ShopID = 1511. OrederID = 2441607. Weight = 2,083, Lat = 55,802818, Long = 37,584637, dist =1,23 km, arrivalTime =  3,69 min
+01.06.2020 11:55:02(01.06.2020 12:28:33 ~ 01.06.2020 13:55:02) > Undelivered Order. ShopID = 1511. OrederID = 2443096. Weight = 1,902, Lat = 55,799644, Long = 37,571812, dist =0,89 km, arrivalTime =  2,67 min
+01.06.2020 12:21:47(01.06.2020 12:40:14 ~ 01.06.2020 14:21:47) > Undelivered Order. ShopID = 1511. OrederID = 2446100. Weight = 6,061, Lat = 55,808058, Long = 37,583068, dist =1,87 km, arrivalTime =  5,62 min
+01.06.2020 11:46:40(01.06.2020 12:56:40 ~ 01.06.2020 13:46:40) > Undelivered Order. ShopID = 1511. OrederID = 2441390. Weight = 11,509, Lat = 55,7987134397084, Long = 37,5755659874216, dist =0,64 km, arrivalTime =  1,93 min
+01.06.2020 12:00:35(01.06.2020 13:10:35 ~ 01.06.2020 14:00:35) > Undelivered Order. ShopID = 1511. OrederID = 2437785. Weight = 2,453, Lat = 55,795956, Long = 37,572876, dist =0,50 km, arrivalTime =  1,49 min
+01.06.2020 13:03:00(01.06.2020 13:10:43 ~ 01.06.2020 15:03:00) > Undelivered Order. ShopID = 1511. OrederID = 2448387. Weight = 2,644, Lat = 55,796078, Long = 37,583397, dist =0,43 km, arrivalTime =  1,29 min
+01.06.2020 12:45:12(01.06.2020 13:14:23 ~ 01.06.2020 14:45:12) > Undelivered Order. ShopID = 1511. OrederID = 2447473. Weight = 0,393, Lat = 55,800896, Long = 37,585636, dist =1,03 km, arrivalTime =  3,09 min
+01.06.2020 12:00:43(01.06.2020 13:10:43 ~ 01.06.2020 14:00:43) > Undelivered Order. ShopID = 1517. OrederID = 2444191. Weight = 7,314, Lat = 55,725113, Long = 37,767342, dist =0,24 km, arrivalTime =  0,71 min
+01.06.2020 12:39:42(01.06.2020 13:49:42 ~ 01.06.2020 14:39:42) > Undelivered Order. ShopID = 1517. OrederID = 2447135. Weight = 5,077, Lat = 55,7266303996153, Long = 37,76684, dist =0,19 km, arrivalTime =  0,56 min
+01.06.2020 10:22:25(01.06.2020 10:53:16 ~ 01.06.2020 12:22:25) > Undelivered Order. ShopID = 1537. OrederID = 2437833. Weight = 8,617, Lat = 55,662754, Long = 37,589199, dist =1,48 km, arrivalTime =  4,45 min
+01.06.2020 10:13:50(01.06.2020 10:57:32 ~ 01.06.2020 12:13:50) > Undelivered Order. ShopID = 1537. OrederID = 2437151. Weight = 5,784, Lat = 55,6479228984601, Long = 37,5822623, dist =0,80 km, arrivalTime =  2,39 min
+01.06.2020 10:00:20(01.06.2020 11:10:20 ~ 01.06.2020 12:00:20) > Undelivered Order. ShopID = 1537. OrederID = 2434967. Weight = 10,8, Lat = 55,662533, Long = 37,587296, dist =1,38 km, arrivalTime =  4,15 min
+01.06.2020 10:02:51(01.06.2020 11:12:51 ~ 01.06.2020 12:02:51) > Undelivered Order. ShopID = 1537. OrederID = 2435640. Weight = 8,545, Lat = 55,650355999615, Long = 37,5697029, dist =0,78 km, arrivalTime =  2,33 min
+01.06.2020 10:04:53(01.06.2020 11:14:53 ~ 01.06.2020 12:04:53) > Undelivered Order. ShopID = 1537. OrederID = 2437009. Weight = 6,185, Lat = 55,6492887, Long = 37,5682859, dist =0,95 km, arrivalTime =  2,84 min
+01.06.2020 10:07:34(01.06.2020 10:24:20 ~ 01.06.2020 12:07:34) > Undelivered Order. ShopID = 1550. OrederID = 2435708. Weight = 2,188, Lat = 55,846157, Long = 37,420555, dist =1,01 km, arrivalTime =  3,03 min
+01.06.2020 10:09:03(01.06.2020 11:19:03 ~ 01.06.2020 12:09:03) > Undelivered Order. ShopID = 1550. OrederID = 2434894. Weight = 6,593, Lat = 55,8456556996158, Long = 37,3999505, dist =1,05 km, arrivalTime =  3,14 min
+01.06.2020 10:22:03(01.06.2020 11:21:40 ~ 01.06.2020 12:22:03) > Undelivered Order. ShopID = 1550. OrederID = 2436307. Weight = 12,45, Lat = 55,8492829988475, Long = 37,4163175, dist =0,51 km, arrivalTime =  1,54 min
+01.06.2020 10:40:21(01.06.2020 11:44:53 ~ 01.06.2020 12:40:21) > Undelivered Order. ShopID = 1550. OrederID = 2439111. Weight = 0,928, Lat = 55,849312, Long = 37,42062, dist =0,81 km, arrivalTime =  2,44 min
+01.06.2020 9:15:03(01.06.2020 9:54:04 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 1556. OrederID = 2435198. Weight = 7,741, Lat = 55,679311, Long = 37,44727, dist =0,34 km, arrivalTime =  1,02 min
+01.06.2020 10:37:05(01.06.2020 11:47:05 ~ 01.06.2020 12:37:05) > Undelivered Order. ShopID = 1556. OrederID = 2439273. Weight = 2,863, Lat = 55,6753767, Long = 37,4494723, dist =0,65 km, arrivalTime =  1,96 min
+01.06.2020 17:25:44(01.06.2020 17:52:08 ~ 01.06.2020 19:25:44) > Undelivered Order. ShopID = 1567. OrederID = 2464112. Weight = 1,363, Lat = 55,081818, Long = 38,7771, dist =1,55 km, arrivalTime =  4,65 min
+01.06.2020 18:56:43(01.06.2020 19:09:55 ~ 01.06.2020 20:56:43) > Undelivered Order. ShopID = 1567. OrederID = 2468282. Weight = 4,584, Lat = 55,071964, Long = 38,774906, dist =2,76 km, arrivalTime =  8,29 min
+01.06.2020 10:00:51(01.06.2020 10:28:21 ~ 01.06.2020 12:00:51) > Undelivered Order. ShopID = 1569. OrederID = 2435196. Weight = 7,209, Lat = 55,678486, Long = 37,535828, dist =0,88 km, arrivalTime =  2,63 min
+01.06.2020 10:42:01(01.06.2020 11:09:42 ~ 01.06.2020 12:42:01) > Undelivered Order. ShopID = 1569. OrederID = 2438763. Weight = 9,028, Lat = 55,681816, Long = 37,542053, dist =0,93 km, arrivalTime =  2,78 min
+01.06.2020 11:36:25(01.06.2020 11:45:35 ~ 01.06.2020 13:36:25) > Undelivered Order. ShopID = 1569. OrederID = 2430951. Weight = 2,186, Lat = 55,680748, Long = 37,535896, dist =1,06 km, arrivalTime =  3,17 min
+01.06.2020 10:11:36(01.06.2020 11:17:45 ~ 01.06.2020 12:11:36) > Undelivered Order. ShopID = 1570. OrederID = 2435862. Weight = 5,748, Lat = 55,7649730946167, Long = 37,4813151, dist =0,35 km, arrivalTime =  1,06 min
+01.06.2020 10:20:44(01.06.2020 11:30:44 ~ 01.06.2020 12:20:44) > Undelivered Order. ShopID = 1570. OrederID = 2438160. Weight = 8,759, Lat = 55,7647161, Long = 37,4945096, dist =0,64 km, arrivalTime =  1,93 min
+01.06.2020 11:23:29(01.06.2020 11:45:35 ~ 01.06.2020 13:23:29) > Undelivered Order. ShopID = 1612. OrederID = 2442190. Weight = 6,978, Lat = 55,682442, Long = 37,694584, dist =0,63 km, arrivalTime =  1,89 min
+01.06.2020 11:57:23(01.06.2020 12:24:22 ~ 01.06.2020 13:57:23) > Undelivered Order. ShopID = 1612. OrederID = 2443541. Weight = 2,998, Lat = 55,681477, Long = 37,695595, dist =0,76 km, arrivalTime =  2,29 min
+01.06.2020 11:59:21(01.06.2020 12:33:17 ~ 01.06.2020 13:59:21) > Undelivered Order. ShopID = 1612. OrederID = 2444494. Weight = 3,738, Lat = 55,682743, Long = 37,697533, dist =0,81 km, arrivalTime =  2,43 min
+01.06.2020 12:03:59(01.06.2020 12:43:16 ~ 01.06.2020 14:03:59) > Undelivered Order. ShopID = 1612. OrederID = 2444719. Weight = 1,223, Lat = 55,680199, Long = 37,693264, dist =0,77 km, arrivalTime =  2,30 min
+01.06.2020 12:06:00(01.06.2020 12:47:23 ~ 01.06.2020 14:06:00) > Undelivered Order. ShopID = 1612. OrederID = 2444927. Weight = 2,873, Lat = 55,687107, Long = 37,691612, dist =0,42 km, arrivalTime =  1,27 min
+01.06.2020 12:36:14(01.06.2020 13:03:10 ~ 01.06.2020 14:36:14) > Undelivered Order. ShopID = 1612. OrederID = 2446629. Weight = 16,518, Lat = 55,685089, Long = 37,686131, dist =0,11 km, arrivalTime =  0,32 min
+01.06.2020 11:11:09(01.06.2020 11:32:06 ~ 01.06.2020 13:11:09) > Undelivered Order. ShopID = 1618. OrederID = 2440717. Weight = 4,388, Lat = 53,309635, Long = 34,299908, dist =0,58 km, arrivalTime =  1,74 min
+01.06.2020 11:26:02(01.06.2020 11:36:54 ~ 01.06.2020 13:26:02) > Undelivered Order. ShopID = 1618. OrederID = 2442224. Weight = 1,629, Lat = 53,3062876759879, Long = 34,2912765629653, dist =1,24 km, arrivalTime =  3,73 min
+01.06.2020 11:42:25(01.06.2020 12:02:08 ~ 01.06.2020 13:42:25) > Undelivered Order. ShopID = 1618. OrederID = 2440328. Weight = 6,472, Lat = 53,3047740996079, Long = 34,2851212, dist =1,77 km, arrivalTime =  5,30 min
+01.06.2020 12:05:48(01.06.2020 12:34:05 ~ 01.06.2020 14:05:48) > Undelivered Order. ShopID = 1618. OrederID = 2444900. Weight = 3,103, Lat = 53,3024761116119, Long = 34,3054827602513, dist =0,74 km, arrivalTime =  2,21 min
+01.06.2020 13:00:17(01.06.2020 13:08:38 ~ 01.06.2020 15:00:17) > Undelivered Order. ShopID = 1618. OrederID = 2448616. Weight = 0,18, Lat = 53,3062876755958, Long = 34,2912765629653, dist =1,24 km, arrivalTime =  3,73 min
+01.06.2020 10:06:15(01.06.2020 10:17:47 ~ 01.06.2020 12:06:15) > Undelivered Order. ShopID = 1642. OrederID = 2437025. Weight = 2,353, Lat = 55,8176735969255, Long = 37,5013283, dist =1,18 km, arrivalTime =  3,55 min
+01.06.2020 10:30:54(01.06.2020 11:02:25 ~ 01.06.2020 12:30:54) > Undelivered Order. ShopID = 1642. OrederID = 2438145. Weight = 5,997, Lat = 55,815998, Long = 37,511497, dist =0,88 km, arrivalTime =  2,63 min
+01.06.2020 10:26:21(01.06.2020 11:36:21 ~ 01.06.2020 12:26:21) > Undelivered Order. ShopID = 1642. OrederID = 2437572. Weight = 13,857, Lat = 55,816494, Long = 37,501068, dist =1,29 km, arrivalTime =  3,87 min
+01.06.2020 11:02:10(01.06.2020 11:58:41 ~ 01.06.2020 13:02:10) > Undelivered Order. ShopID = 1645. OrederID = 2436197. Weight = 11,064, Lat = 55,8366453767275, Long = 37,4563616886601, dist =1,77 km, arrivalTime =  5,32 min
+01.06.2020 11:20:22(01.06.2020 12:29:57 ~ 01.06.2020 13:20:22) > Undelivered Order. ShopID = 1645. OrederID = 2441288. Weight = 5,544, Lat = 55,837749, Long = 37,440006, dist =1,04 km, arrivalTime =  3,12 min
+01.06.2020 11:56:24(01.06.2020 13:06:24 ~ 01.06.2020 13:56:24) > Undelivered Order. ShopID = 1647. OrederID = 2443640. Weight = 5,445, Lat = 55,6041366996125, Long = 37,1932822834239, dist =2,31 km, arrivalTime =  6,93 min
+01.06.2020 12:11:35(01.06.2020 13:21:35 ~ 01.06.2020 14:11:35) > Undelivered Order. ShopID = 1647. OrederID = 2444511. Weight = 2,833, Lat = 55,5916022992296, Long = 37,1590226, dist =1,22 km, arrivalTime =  3,65 min
+01.06.2020 8:00:32(01.06.2020 10:19:46 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 1658. OrederID = 2434060. Weight = 1,003, Lat = 55,93383, Long = 37,497887, dist =0,30 km, arrivalTime =  0,89 min
+01.06.2020 10:16:06(01.06.2020 11:19:51 ~ 01.06.2020 12:16:06) > Undelivered Order. ShopID = 1658. OrederID = 2437178. Weight = 9,841, Lat = 55,911129, Long = 37,490017, dist =2,80 km, arrivalTime =  8,40 min
+01.06.2020 10:42:07(01.06.2020 11:31:40 ~ 01.06.2020 12:42:07) > Undelivered Order. ShopID = 1658. OrederID = 2438499. Weight = 4,013, Lat = 55,9350361996162, Long = 37,5006116, dist =0,50 km, arrivalTime =  1,49 min
+01.06.2020 11:19:59(01.06.2020 11:33:14 ~ 01.06.2020 13:19:59) > Undelivered Order. ShopID = 1658. OrederID = 2433996. Weight = 0,853, Lat = 55,9332013996161, Long = 37,5034272, dist =0,45 km, arrivalTime =  1,36 min
+01.06.2020 10:30:58(01.06.2020 11:40:06 ~ 01.06.2020 12:30:58) > Undelivered Order. ShopID = 1658. OrederID = 2438116. Weight = 6,278, Lat = 55,9348353060063, Long = 37,5038652539531, dist =0,61 km, arrivalTime =  1,84 min
+01.06.2020 11:42:12(01.06.2020 12:02:31 ~ 01.06.2020 13:42:12) > Undelivered Order. ShopID = 1680. OrederID = 2443088. Weight = 5,331, Lat = 55,108402, Long = 36,581154, dist =2,10 km, arrivalTime =  6,30 min
+01.06.2020 12:15:56(01.06.2020 12:35:00 ~ 01.06.2020 14:15:56) > Undelivered Order. ShopID = 1680. OrederID = 2444903. Weight = 1,073, Lat = 55,116451, Long = 36,585075, dist =1,32 km, arrivalTime =  3,97 min
+01.06.2020 11:16:14(01.06.2020 11:27:31 ~ 01.06.2020 13:16:14) > Undelivered Order. ShopID = 1683. OrederID = 2441819. Weight = 5,541, Lat = 55,5334676, Long = 37,5335213, dist =0,47 km, arrivalTime =  1,40 min
+01.06.2020 11:43:51(01.06.2020 11:54:14 ~ 01.06.2020 13:43:51) > Undelivered Order. ShopID = 1683. OrederID = 2443021. Weight = 1,729, Lat = 55,533043, Long = 37,527184, dist =0,50 km, arrivalTime =  1,50 min
+01.06.2020 11:46:49(01.06.2020 12:03:54 ~ 01.06.2020 13:46:49) > Undelivered Order. ShopID = 1683. OrederID = 2434335. Weight = 4,393, Lat = 55,5375325425421, Long = 37,5334118313117, dist =0,29 km, arrivalTime =  0,87 min
+01.06.2020 12:37:31(01.06.2020 12:54:20 ~ 01.06.2020 14:37:31) > Undelivered Order. ShopID = 1683. OrederID = 2446119. Weight = 10,3, Lat = 55,5379012992291, Long = 37,5319777, dist =0,25 km, arrivalTime =  0,74 min
+01.06.2020 10:21:19(01.06.2020 10:59:34 ~ 01.06.2020 12:21:19) > Undelivered Order. ShopID = 1720. OrederID = 2434977. Weight = 5,837, Lat = 55,7652769996155, Long = 37,7031077, dist =0,14 km, arrivalTime =  0,41 min
+01.06.2020 10:55:05(01.06.2020 11:48:09 ~ 01.06.2020 12:55:05) > Undelivered Order. ShopID = 1720. OrederID = 2437639. Weight = 21,593, Lat = 55,765415, Long = 37,715405, dist =1,02 km, arrivalTime =  3,05 min
+01.06.2020 10:34:03(01.06.2020 11:28:22 ~ 01.06.2020 12:34:03) > Undelivered Order. ShopID = 1727. OrederID = 2437853. Weight = 18,761, Lat = 55,9597096047532, Long = 37,266620546498, dist =2,83 km, arrivalTime =  8,50 min
+01.06.2020 10:12:58(01.06.2020 11:22:58 ~ 01.06.2020 12:12:58) > Undelivered Order. ShopID = 1730. OrederID = 2437583. Weight = 8,988, Lat = 55,8687157, Long = 37,5995059, dist =0,50 km, arrivalTime =  1,50 min
+01.06.2020 10:52:47(01.06.2020 11:30:40 ~ 01.06.2020 12:52:47) > Undelivered Order. ShopID = 1730. OrederID = 2438112. Weight = 11,361, Lat = 55,869835, Long = 37,591164, dist =1,05 km, arrivalTime =  3,15 min
+01.06.2020 10:29:21(01.06.2020 11:39:21 ~ 01.06.2020 12:29:21) > Undelivered Order. ShopID = 1730. OrederID = 2438568. Weight = 1,468, Lat = 55,871429, Long = 37,605259, dist =0,82 km, arrivalTime =  2,45 min
+01.06.2020 10:36:45(01.06.2020 11:46:45 ~ 01.06.2020 12:36:45) > Undelivered Order. ShopID = 1730. OrederID = 2438355. Weight = 9,539, Lat = 55,874882, Long = 37,598412, dist =1,30 km, arrivalTime =  3,90 min
+01.06.2020 10:41:54(01.06.2020 11:51:54 ~ 01.06.2020 12:41:54) > Undelivered Order. ShopID = 1730. OrederID = 2439363. Weight = 7,404, Lat = 55,8734213980796, Long = 37,5890842, dist =1,48 km, arrivalTime =  4,44 min
+01.06.2020 10:44:54(01.06.2020 11:54:54 ~ 01.06.2020 12:44:54) > Undelivered Order. ShopID = 1730. OrederID = 2439746. Weight = 12,113, Lat = 55,8752466, Long = 37,5906578, dist =1,59 km, arrivalTime =  4,78 min
+01.06.2020 10:54:25(01.06.2020 12:04:25 ~ 01.06.2020 12:54:25) > Undelivered Order. ShopID = 1734. OrederID = 2437799. Weight = 3,894, Lat = 55,744179, Long = 37,826019, dist =1,36 km, arrivalTime =  4,07 min
+01.06.2020 12:48:14(01.06.2020 13:51:15 ~ 01.06.2020 14:48:14) > Undelivered Order. ShopID = 1740. OrederID = 2446272. Weight = 18,934, Lat = 55,778048703019, Long = 37,4869938140567, dist =0,42 km, arrivalTime =  1,27 min
+01.06.2020 13:55:05(01.06.2020 14:10:33 ~ 01.06.2020 15:55:05) > Undelivered Order. ShopID = 1740. OrederID = 2451676. Weight = 20,449, Lat = 55,7816345998955, Long = 37,4848855721608, dist =0,92 km, arrivalTime =  2,77 min
+01.06.2020 13:01:11(01.06.2020 14:11:11 ~ 01.06.2020 15:01:11) > Undelivered Order. ShopID = 1740. OrederID = 2446746. Weight = 2,946, Lat = 55,774292, Long = 37,492977, dist =0,27 km, arrivalTime =  0,82 min
+01.06.2020 14:10:18(01.06.2020 14:17:03 ~ 01.06.2020 16:10:18) > Undelivered Order. ShopID = 1740. OrederID = 2452738. Weight = 4,329, Lat = 55,779476, Long = 37,480396, dist =0,90 km, arrivalTime =  2,70 min
+01.06.2020 13:26:37(01.06.2020 14:36:37 ~ 01.06.2020 15:26:37) > Undelivered Order. ShopID = 1740. OrederID = 2449253. Weight = 9,735, Lat = 55,778717, Long = 37,484829, dist =0,59 km, arrivalTime =  1,77 min
+01.06.2020 10:04:54(01.06.2020 10:21:51 ~ 01.06.2020 12:04:54) > Undelivered Order. ShopID = 1742. OrederID = 2435763. Weight = 3,83, Lat = 55,507172, Long = 37,567741, dist =0,06 km, arrivalTime =  0,18 min
+01.06.2020 10:14:45(01.06.2020 10:28:11 ~ 01.06.2020 12:14:45) > Undelivered Order. ShopID = 1742. OrederID = 2437492. Weight = 2,403, Lat = 55,5098760965303, Long = 37,5646864, dist =0,43 km, arrivalTime =  1,28 min
+01.06.2020 10:01:09(01.06.2020 10:52:29 ~ 01.06.2020 12:01:09) > Undelivered Order. ShopID = 1742. OrederID = 2433881. Weight = 19,743, Lat = 55,5043709992289, Long = 37,5927006, dist =1,89 km, arrivalTime =  5,66 min
+01.06.2020 10:50:52(01.06.2020 11:19:22 ~ 01.06.2020 12:50:52) > Undelivered Order. ShopID = 1742. OrederID = 2440137. Weight = 2,603, Lat = 55,5031935, Long = 37,5890284, dist =1,66 km, arrivalTime =  4,99 min
+01.06.2020 11:06:50(01.06.2020 11:27:06 ~ 01.06.2020 13:06:50) > Undelivered Order. ShopID = 1742. OrederID = 2438343. Weight = 9,911, Lat = 55,509941, Long = 37,564743, dist =0,43 km, arrivalTime =  1,29 min
+01.06.2020 10:35:48(01.06.2020 10:49:04 ~ 01.06.2020 12:35:48) > Undelivered Order. ShopID = 1750. OrederID = 2435108. Weight = 4,114, Lat = 53,261406, Long = 34,33387, dist =0,63 km, arrivalTime =  1,88 min
+01.06.2020 11:57:36(01.06.2020 12:10:36 ~ 01.06.2020 13:57:36) > Undelivered Order. ShopID = 1750. OrederID = 2442919. Weight = 4,671, Lat = 53,25909, Long = 34,329697, dist =0,31 km, arrivalTime =  0,92 min
+01.06.2020 12:50:30(01.06.2020 13:01:39 ~ 01.06.2020 14:50:30) > Undelivered Order. ShopID = 1750. OrederID = 2445400. Weight = 4,553, Lat = 53,2664189988234, Long = 34,3546234, dist =2,41 km, arrivalTime =  7,23 min
+01.06.2020 12:48:31(01.06.2020 13:18:27 ~ 01.06.2020 14:48:31) > Undelivered Order. ShopID = 1750. OrederID = 2446702. Weight = 8,902, Lat = 53,2722255996078, Long = 34,3455551, dist =2,23 km, arrivalTime =  6,68 min
+01.06.2020 13:08:23(01.06.2020 13:22:24 ~ 01.06.2020 15:08:23) > Undelivered Order. ShopID = 1750. OrederID = 2448567. Weight = 3,123, Lat = 53,270081, Long = 34,35043, dist =2,34 km, arrivalTime =  7,01 min
+01.06.2020 13:47:15(01.06.2020 13:58:36 ~ 01.06.2020 15:47:15) > Undelivered Order. ShopID = 1750. OrederID = 2448485. Weight = 5,473, Lat = 53,26762, Long = 34,352757, dist =2,34 km, arrivalTime =  7,01 min
+01.06.2020 11:36:22(01.06.2020 12:21:36 ~ 01.06.2020 13:36:22) > Undelivered Order. ShopID = 1768. OrederID = 2439538. Weight = 13,205, Lat = 56,348381, Long = 37,530411, dist =0,73 km, arrivalTime =  2,19 min
+01.06.2020 12:01:15(01.06.2020 12:35:43 ~ 01.06.2020 14:01:15) > Undelivered Order. ShopID = 1768. OrederID = 2444248. Weight = 16,612, Lat = 56,350159, Long = 37,522854, dist =0,25 km, arrivalTime =  0,75 min
+01.06.2020 12:47:16(01.06.2020 13:01:25 ~ 01.06.2020 14:47:16) > Undelivered Order. ShopID = 1768. OrederID = 2447298. Weight = 3,573, Lat = 56,3523255969437, Long = 37,5295338, dist =0,48 km, arrivalTime =  1,44 min
+01.06.2020 10:03:58(01.06.2020 10:28:51 ~ 01.06.2020 12:03:58) > Undelivered Order. ShopID = 1774. OrederID = 2435783. Weight = 3,157, Lat = 54,487606, Long = 36,192356, dist =2,15 km, arrivalTime =  6,46 min
+01.06.2020 10:09:37(01.06.2020 10:32:14 ~ 01.06.2020 12:09:37) > Undelivered Order. ShopID = 1774. OrederID = 2434689. Weight = 3,184, Lat = 54,513845099611, Long = 36,2334503, dist =3,05 km, arrivalTime =  9,14 min
+01.06.2020 10:19:37(01.06.2020 10:32:58 ~ 01.06.2020 12:19:37) > Undelivered Order. ShopID = 1774. OrederID = 2437430. Weight = 3,431, Lat = 54,510021, Long = 36,243511, dist =3,01 km, arrivalTime =  9,02 min
+01.06.2020 10:36:14(01.06.2020 10:40:02 ~ 01.06.2020 12:36:14) > Undelivered Order. ShopID = 1774. OrederID = 2439020. Weight = 1,348, Lat = 54,513737, Long = 36,236488, dist =3,13 km, arrivalTime =  9,39 min
+01.06.2020 10:35:32(01.06.2020 10:43:43 ~ 01.06.2020 12:35:32) > Undelivered Order. ShopID = 1774. OrederID = 2439057. Weight = 0,178, Lat = 54,513845099611, Long = 36,2334503, dist =3,05 km, arrivalTime =  9,14 min
+01.06.2020 10:30:58(01.06.2020 10:44:10 ~ 01.06.2020 12:30:58) > Undelivered Order. ShopID = 1774. OrederID = 2435247. Weight = 6,773, Lat = 54,525219, Long = 36,265251, dist =5,65 km, arrivalTime =  16,94 min
+01.06.2020 11:22:14(01.06.2020 11:36:12 ~ 01.06.2020 13:22:14) > Undelivered Order. ShopID = 1774. OrederID = 2441843. Weight = 4,92, Lat = 54,5311160992222, Long = 36,2666627, dist =6,34 km, arrivalTime =  19,01 min
+01.06.2020 11:32:27(01.06.2020 11:43:36 ~ 01.06.2020 13:32:27) > Undelivered Order. ShopID = 1774. OrederID = 2442279. Weight = 2,705, Lat = 54,519619, Long = 36,25251, dist =4,45 km, arrivalTime =  13,35 min
+01.06.2020 11:25:25(01.06.2020 11:45:28 ~ 01.06.2020 13:25:25) > Undelivered Order. ShopID = 1774. OrederID = 2441917. Weight = 1,623, Lat = 54,515148, Long = 36,256119, dist =4,17 km, arrivalTime =  12,51 min
+01.06.2020 11:41:50(01.06.2020 11:58:16 ~ 01.06.2020 13:41:50) > Undelivered Order. ShopID = 1774. OrederID = 2442793. Weight = 8,729, Lat = 54,515148, Long = 36,256119, dist =4,17 km, arrivalTime =  12,51 min
+01.06.2020 11:50:25(01.06.2020 13:00:25 ~ 01.06.2020 13:50:25) > Undelivered Order. ShopID = 1774. OrederID = 2443718. Weight = 2,378, Lat = 54,578773, Long = 36,251785, dist =11,78 km, arrivalTime =  35,33 min
+01.06.2020 12:18:15(01.06.2020 13:28:15 ~ 01.06.2020 14:18:15) > Undelivered Order. ShopID = 1774. OrederID = 2445031. Weight = 1,053, Lat = 54,514782, Long = 36,247551, dist =3,70 km, arrivalTime =  11,10 min
+01.06.2020 10:28:07(01.06.2020 10:57:02 ~ 01.06.2020 12:28:07) > Undelivered Order. ShopID = 1780. OrederID = 2433580. Weight = 4,838, Lat = 55,561138, Long = 37,095711, dist =2,55 km, arrivalTime =  7,65 min
+01.06.2020 10:01:02(01.06.2020 11:11:02 ~ 01.06.2020 12:01:02) > Undelivered Order. ShopID = 1780. OrederID = 2436184. Weight = 3,537, Lat = 55,55265, Long = 37,080215, dist =0,96 km, arrivalTime =  2,87 min
+01.06.2020 10:02:36(01.06.2020 11:12:36 ~ 01.06.2020 12:02:36) > Undelivered Order. ShopID = 1780. OrederID = 2436180. Weight = 6,685, Lat = 55,5595039615741, Long = 37,0918841634434, dist =2,19 km, arrivalTime =  6,56 min
+01.06.2020 10:07:02(01.06.2020 11:17:02 ~ 01.06.2020 12:07:02) > Undelivered Order. ShopID = 1780. OrederID = 2437195. Weight = 6,288, Lat = 55,5298592, Long = 37,0642605, dist =2,67 km, arrivalTime =  8,00 min
+01.06.2020 10:12:20(01.06.2020 11:20:27 ~ 01.06.2020 12:12:20) > Undelivered Order. ShopID = 1780. OrederID = 2434396. Weight = 8,628, Lat = 55,517273, Long = 37,02652, dist =5,38 km, arrivalTime =  16,13 min
+01.06.2020 10:57:08(01.06.2020 11:28:55 ~ 01.06.2020 12:57:08) > Undelivered Order. ShopID = 1780. OrederID = 2436540. Weight = 4,413, Lat = 55,5635172996147, Long = 37,1011062, dist =3,07 km, arrivalTime =  9,20 min
+01.06.2020 11:18:14(01.06.2020 12:15:31 ~ 01.06.2020 13:18:14) > Undelivered Order. ShopID = 1780. OrederID = 2436572. Weight = 19,315, Lat = 55,5570418416976, Long = 37,0295191413995, dist =3,12 km, arrivalTime =  9,36 min
+01.06.2020 11:18:06(01.06.2020 12:28:06 ~ 01.06.2020 13:18:06) > Undelivered Order. ShopID = 1780. OrederID = 2441944. Weight = 9,255, Lat = 55,5306342, Long = 37,0629579, dist =2,58 km, arrivalTime =  7,74 min
+01.06.2020 11:23:50(01.06.2020 12:33:50 ~ 01.06.2020 13:23:50) > Undelivered Order. ShopID = 1780. OrederID = 2442317. Weight = 1,733, Lat = 55,531687, Long = 37,061946, dist =2,46 km, arrivalTime =  7,37 min
+01.06.2020 11:32:40(01.06.2020 12:39:59 ~ 01.06.2020 13:32:40) > Undelivered Order. ShopID = 1780. OrederID = 2442069. Weight = 9,904, Lat = 55,5457445976877, Long = 37,0865669, dist =1,45 km, arrivalTime =  4,34 min
+01.06.2020 11:36:19(01.06.2020 12:46:19 ~ 01.06.2020 13:36:19) > Undelivered Order. ShopID = 1780. OrederID = 2443110. Weight = 11,673, Lat = 55,52674, Long = 37,081602, dist =3,21 km, arrivalTime =  9,64 min
+01.06.2020 11:41:44(01.06.2020 12:51:44 ~ 01.06.2020 13:41:44) > Undelivered Order. ShopID = 1780. OrederID = 2443485. Weight = 7,814, Lat = 55,5298592, Long = 37,0642605, dist =2,67 km, arrivalTime =  8,00 min
+01.06.2020 11:48:27(01.06.2020 12:58:27 ~ 01.06.2020 13:48:27) > Undelivered Order. ShopID = 1780. OrederID = 2443632. Weight = 5,42, Lat = 55,545185, Long = 37,08519, dist =1,38 km, arrivalTime =  4,14 min
+01.06.2020 11:50:01(01.06.2020 13:00:01 ~ 01.06.2020 13:50:01) > Undelivered Order. ShopID = 1780. OrederID = 2444072. Weight = 25, Lat = 55,4956398, Long = 37,0950636, dist =7,49 km, arrivalTime =  22,46 min
+01.06.2020 12:47:49(01.06.2020 13:57:49 ~ 01.06.2020 14:47:49) > Undelivered Order. ShopID = 1780. OrederID = 2446751. Weight = 11,882, Lat = 55,495743, Long = 37,096458, dist =7,50 km, arrivalTime =  22,50 min
+01.06.2020 12:51:36(01.06.2020 14:01:36 ~ 01.06.2020 14:51:36) > Undelivered Order. ShopID = 1780. OrederID = 2447409. Weight = 12,871, Lat = 55,518223, Long = 37,06036, dist =4,25 km, arrivalTime =  12,74 min
+01.06.2020 10:59:39(01.06.2020 11:58:42 ~ 01.06.2020 12:59:39) > Undelivered Order. ShopID = 1787. OrederID = 2439753. Weight = 13,488, Lat = 55,699802, Long = 36,197906, dist =0,82 km, arrivalTime =  2,47 min
+01.06.2020 14:22:12(01.06.2020 14:29:33 ~ 01.06.2020 16:22:12) > Undelivered Order. ShopID = 1915. OrederID = 2452823. Weight = 3,55, Lat = 54,769363, Long = 32,035625, dist =0,41 km, arrivalTime =  1,23 min
+01.06.2020 14:22:34(01.06.2020 14:58:38 ~ 01.06.2020 16:22:34) > Undelivered Order. ShopID = 1915. OrederID = 2453860. Weight = 0,189, Lat = 54,7670141, Long = 32,0279399, dist =0,95 km, arrivalTime =  2,86 min
+01.06.2020 15:21:10(01.06.2020 15:58:10 ~ 01.06.2020 17:21:10) > Undelivered Order. ShopID = 1915. OrederID = 2456801. Weight = 1,103, Lat = 54,7698716267167, Long = 32,0226609864139, dist =1,08 km, arrivalTime =  3,24 min
+01.06.2020 10:03:52(01.06.2020 10:23:24 ~ 01.06.2020 12:03:52) > Undelivered Order. ShopID = 1991. OrederID = 2435400. Weight = 7,546, Lat = 60,001484, Long = 30,29952, dist =0,39 km, arrivalTime =  1,16 min
+01.06.2020 10:05:20(01.06.2020 10:45:11 ~ 01.06.2020 12:05:20) > Undelivered Order. ShopID = 1991. OrederID = 2430771. Weight = 8,061, Lat = 60,014954, Long = 30,311241, dist =1,76 km, arrivalTime =  5,28 min
+01.06.2020 10:21:38(01.06.2020 11:23:52 ~ 01.06.2020 12:21:38) > Undelivered Order. ShopID = 1991. OrederID = 2435298. Weight = 15,239, Lat = 60,025593, Long = 30,323132, dist =3,38 km, arrivalTime =  10,15 min
+01.06.2020 10:42:25(01.06.2020 11:24:16 ~ 01.06.2020 12:42:25) > Undelivered Order. ShopID = 1991. OrederID = 2436556. Weight = 6,558, Lat = 59,994331, Long = 30,311277, dist =1,62 km, arrivalTime =  4,85 min
+01.06.2020 10:16:05(01.06.2020 11:26:05 ~ 01.06.2020 12:16:05) > Undelivered Order. ShopID = 1991. OrederID = 2437822. Weight = 10,13, Lat = 60,013639, Long = 30,3270821, dist =2,41 km, arrivalTime =  7,22 min
+01.06.2020 10:25:21(01.06.2020 11:35:21 ~ 01.06.2020 12:25:21) > Undelivered Order. ShopID = 1991. OrederID = 2437320. Weight = 8,546, Lat = 60,001373, Long = 30,29945, dist =0,40 km, arrivalTime =  1,19 min
+01.06.2020 10:32:28(01.06.2020 11:42:28 ~ 01.06.2020 12:32:28) > Undelivered Order. ShopID = 1991. OrederID = 2437119. Weight = 23,02, Lat = 60,0002943085759, Long = 30,3170244718564, dist =1,45 km, arrivalTime =  4,34 min
+01.06.2020 10:56:21(01.06.2020 12:06:21 ~ 01.06.2020 12:56:21) > Undelivered Order. ShopID = 1991. OrederID = 2440476. Weight = 2,263, Lat = 59,9971618, Long = 30,2774347, dist =1,57 km, arrivalTime =  4,72 min
+01.06.2020 11:21:29(01.06.2020 12:06:55 ~ 01.06.2020 13:21:29) > Undelivered Order. ShopID = 1991. OrederID = 2433995. Weight = 4,903, Lat = 59,9983979476144, Long = 30,2967166809123, dist =0,75 km, arrivalTime =  2,24 min
+01.06.2020 12:06:27(01.06.2020 12:32:13 ~ 01.06.2020 14:06:27) > Undelivered Order. ShopID = 1991. OrederID = 2437192. Weight = 7,271, Lat = 59,982594, Long = 30,31745, dist =3,18 km, arrivalTime =  9,53 min
+01.06.2020 11:55:46(01.06.2020 13:00:03 ~ 01.06.2020 13:55:46) > Undelivered Order. ShopID = 1991. OrederID = 2439621. Weight = 6,808, Lat = 60,0042823461478, Long = 30,2962687273589, dist =0,05 km, arrivalTime =  0,14 min
+01.06.2020 11:54:55(01.06.2020 13:04:55 ~ 01.06.2020 13:54:55) > Undelivered Order. ShopID = 1991. OrederID = 2444378. Weight = 1,119, Lat = 59,9854162, Long = 30,2690925, dist =3,09 km, arrivalTime =  9,26 min
+01.06.2020 11:58:07(01.06.2020 13:08:07 ~ 01.06.2020 13:58:07) > Undelivered Order. ShopID = 1991. OrederID = 2443407. Weight = 4,842, Lat = 59,9998442974725, Long = 30,3000748, dist =0,60 km, arrivalTime =  1,80 min
+01.06.2020 12:05:33(01.06.2020 13:15:33 ~ 01.06.2020 14:05:33) > Undelivered Order. ShopID = 1991. OrederID = 2443092. Weight = 5,923, Lat = 60,013287, Long = 30,286518, dist =1,41 km, arrivalTime =  4,24 min
+01.06.2020 12:12:15(01.06.2020 13:22:15 ~ 01.06.2020 14:12:15) > Undelivered Order. ShopID = 1991. OrederID = 2444655. Weight = 5,831, Lat = 59,996372, Long = 30,308544, dist =1,29 km, arrivalTime =  3,87 min
+01.06.2020 12:29:47(01.06.2020 13:39:47 ~ 01.06.2020 14:29:47) > Undelivered Order. ShopID = 1991. OrederID = 2446483. Weight = 1,794, Lat = 60,0063426985559, Long = 30,2942956, dist =0,35 km, arrivalTime =  1,05 min
+01.06.2020 10:32:04(01.06.2020 11:42:04 ~ 01.06.2020 12:32:04) > Undelivered Order. ShopID = 1993. OrederID = 2436505. Weight = 17,088, Lat = 55,786221, Long = 37,54221, dist =0,91 km, arrivalTime =  2,74 min
+01.06.2020 10:00:46(01.06.2020 10:37:26 ~ 01.06.2020 12:00:46) > Undelivered Order. ShopID = 2018. OrederID = 2434544. Weight = 17,683, Lat = 55,7431189973077, Long = 37,5791309, dist =2,32 km, arrivalTime =  6,97 min
+01.06.2020 10:04:42(01.06.2020 11:11:54 ~ 01.06.2020 12:04:42) > Undelivered Order. ShopID = 2018. OrederID = 2436996. Weight = 8,529, Lat = 55,7239267, Long = 37,5587453, dist =0,75 km, arrivalTime =  2,24 min
+01.06.2020 10:21:50(01.06.2020 11:26:02 ~ 01.06.2020 12:21:50) > Undelivered Order. ShopID = 2018. OrederID = 2437964. Weight = 2,829, Lat = 55,752033, Long = 37,5807, dist =3,48 km, arrivalTime =  10,45 min
+01.06.2020 10:26:34(01.06.2020 11:36:34 ~ 01.06.2020 12:26:34) > Undelivered Order. ShopID = 2018. OrederID = 2437957. Weight = 10,965, Lat = 55,7518650996154, Long = 37,5766367, dist =3,38 km, arrivalTime =  10,14 min
+01.06.2020 10:47:46(01.06.2020 11:46:18 ~ 01.06.2020 12:47:46) > Undelivered Order. ShopID = 2018. OrederID = 2438778. Weight = 5,362, Lat = 55,723511, Long = 37,557461, dist =0,86 km, arrivalTime =  2,57 min
+01.06.2020 12:08:50(01.06.2020 12:22:11 ~ 01.06.2020 14:08:50) > Undelivered Order. ShopID = 2018. OrederID = 2445194. Weight = 0,895, Lat = 55,752033, Long = 37,5807, dist =3,48 km, arrivalTime =  10,45 min
+01.06.2020 12:14:56(01.06.2020 12:38:07 ~ 01.06.2020 14:14:56) > Undelivered Order. ShopID = 2018. OrederID = 2445669. Weight = 8,273, Lat = 55,7388369, Long = 37,5710718, dist =1,59 km, arrivalTime =  4,78 min
+01.06.2020 12:16:37(01.06.2020 12:46:51 ~ 01.06.2020 14:16:37) > Undelivered Order. ShopID = 2018. OrederID = 2444983. Weight = 9,752, Lat = 55,733749, Long = 37,566071, dist =0,88 km, arrivalTime =  2,64 min
+01.06.2020 12:33:28(01.06.2020 12:52:41 ~ 01.06.2020 14:33:28) > Undelivered Order. ShopID = 2018. OrederID = 2445748. Weight = 2,531, Lat = 55,7439538980591, Long = 37,5761974387373, dist =2,35 km, arrivalTime =  7,05 min
+01.06.2020 12:36:14(01.06.2020 12:59:37 ~ 01.06.2020 14:36:14) > Undelivered Order. ShopID = 2018. OrederID = 2447076. Weight = 2,926, Lat = 55,7227, Long = 37,5637, dist =0,64 km, arrivalTime =  1,92 min
+01.06.2020 13:06:12(01.06.2020 13:11:05 ~ 01.06.2020 15:06:12) > Undelivered Order. ShopID = 2018. OrederID = 2448932. Weight = 7,298, Lat = 55,7416703992308, Long = 37,577622, dist =2,10 km, arrivalTime =  6,30 min
+01.06.2020 12:56:18(01.06.2020 13:11:27 ~ 01.06.2020 14:56:18) > Undelivered Order. ShopID = 2018. OrederID = 2448414. Weight = 0,476, Lat = 55,7432379, Long = 37,5832995, dist =2,48 km, arrivalTime =  7,44 min
+01.06.2020 12:57:22(01.06.2020 13:14:32 ~ 01.06.2020 14:57:22) > Undelivered Order. ShopID = 2018. OrederID = 2436139. Weight = 2,209, Lat = 55,745274, Long = 37,578232, dist =2,57 km, arrivalTime =  7,70 min
+01.06.2020 13:08:18(01.06.2020 13:25:12 ~ 01.06.2020 15:08:18) > Undelivered Order. ShopID = 2018. OrederID = 2448561. Weight = 6,656, Lat = 55,743237, Long = 37,583298, dist =2,48 km, arrivalTime =  7,44 min
+01.06.2020 1:10:44(01.06.2020 11:05:05 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 2019. OrederID = 2430775. Weight = 29,065, Lat = 56,340034, Long = 37,887478, dist =13,57 km, arrivalTime =  40,70 min
+01.06.2020 9:54:21(01.06.2020 11:10:00 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 2019. OrederID = 2435081. Weight = 25,485, Lat = 56,2276991267251, Long = 37,9789620584442, dist =3,28 km, arrivalTime =  9,83 min
+01.06.2020 10:03:32(01.06.2020 11:13:32 ~ 01.06.2020 12:03:32) > Undelivered Order. ShopID = 2019. OrederID = 2436070. Weight = 13,986, Lat = 56,26857, Long = 38,003113, dist =2,79 km, arrivalTime =  8,38 min
+01.06.2020 11:30:13(01.06.2020 12:38:21 ~ 01.06.2020 13:30:13) > Undelivered Order. ShopID = 2019. OrederID = 2441086. Weight = 4,933, Lat = 56,228252, Long = 37,978718, dist =3,20 km, arrivalTime =  9,61 min
+01.06.2020 13:00:15(01.06.2020 13:40:48 ~ 01.06.2020 15:00:15) > Undelivered Order. ShopID = 2019. OrederID = 2447258. Weight = 8,021, Lat = 56,20779, Long = 37,970268, dist =5,98 km, arrivalTime =  17,93 min
+01.06.2020 10:25:09(01.06.2020 10:55:34 ~ 01.06.2020 12:25:09) > Undelivered Order. ShopID = 2091. OrederID = 2438464. Weight = 5,507, Lat = 59,9747025, Long = 30,3187234, dist =2,05 km, arrivalTime =  6,14 min
+01.06.2020 10:38:56(01.06.2020 11:14:09 ~ 01.06.2020 12:38:56) > Undelivered Order. ShopID = 2091. OrederID = 2436060. Weight = 6,467, Lat = 59,974701, Long = 30,318724, dist =2,05 km, arrivalTime =  6,14 min
+01.06.2020 11:10:14(01.06.2020 12:07:51 ~ 01.06.2020 13:10:14) > Undelivered Order. ShopID = 2091. OrederID = 2441415. Weight = 5,06, Lat = 59,9747025, Long = 30,3187234, dist =2,05 km, arrivalTime =  6,14 min
+01.06.2020 11:00:17(01.06.2020 12:10:17 ~ 01.06.2020 13:00:17) > Undelivered Order. ShopID = 2091. OrederID = 2440740. Weight = 5,277, Lat = 59,9770619, Long = 30,3158519, dist =2,36 km, arrivalTime =  7,08 min
+01.06.2020 17:19:01(01.06.2020 17:54:22 ~ 01.06.2020 19:19:01) > Undelivered Order. ShopID = 2110. OrederID = 2454288. Weight = 12,632, Lat = 56,313587, Long = 43,984116, dist =0,45 km, arrivalTime =  1,36 min
+01.06.2020 18:50:23(01.06.2020 19:07:22 ~ 01.06.2020 20:50:23) > Undelivered Order. ShopID = 2110. OrederID = 2467622. Weight = 1,009, Lat = 56,3152561815224, Long = 43,991348170718, dist =0,16 km, arrivalTime =  0,48 min
+01.06.2020 14:37:19(01.06.2020 14:53:44 ~ 01.06.2020 16:37:19) > Undelivered Order. ShopID = 2156. OrederID = 2454042. Weight = 2,368, Lat = 57,693199, Long = 39,802319, dist =9,01 km, arrivalTime =  27,02 min
+01.06.2020 15:20:57(01.06.2020 15:28:27 ~ 01.06.2020 17:20:57) > Undelivered Order. ShopID = 2156. OrederID = 2456197. Weight = 2,81, Lat = 57,685112, Long = 39,805401, dist =7,98 km, arrivalTime =  23,93 min
+01.06.2020 10:25:30(01.06.2020 10:59:12 ~ 01.06.2020 12:25:30) > Undelivered Order. ShopID = 2167. OrederID = 2436581. Weight = 9,375, Lat = 55,684059, Long = 37,396278, dist =0,62 km, arrivalTime =  1,87 min
+01.06.2020 10:36:34(01.06.2020 11:05:26 ~ 01.06.2020 12:36:34) > Undelivered Order. ShopID = 2167. OrederID = 2438858. Weight = 7,155, Lat = 55,68264, Long = 37,395962, dist =0,80 km, arrivalTime =  2,41 min
+01.06.2020 11:39:47(01.06.2020 12:05:49 ~ 01.06.2020 13:39:47) > Undelivered Order. ShopID = 2167. OrederID = 2442645. Weight = 13,574, Lat = 55,6847667996152, Long = 37,3968107, dist =0,54 km, arrivalTime =  1,63 min
+01.06.2020 13:33:24(01.06.2020 14:43:24 ~ 01.06.2020 15:33:24) > Undelivered Order. ShopID = 2199. OrederID = 2437809. Weight = 2,535, Lat = 55,761982, Long = 49,164383, dist =4,65 km, arrivalTime =  13,95 min
+01.06.2020 13:51:43(01.06.2020 15:01:43 ~ 01.06.2020 15:51:43) > Undelivered Order. ShopID = 2199. OrederID = 2449804. Weight = 6,795, Lat = 55,799137, Long = 49,12994, dist =1,78 km, arrivalTime =  5,34 min
+01.06.2020 14:23:35(01.06.2020 15:33:35 ~ 01.06.2020 16:23:35) > Undelivered Order. ShopID = 2199. OrederID = 2434445. Weight = 9,45, Lat = 55,787865, Long = 49,149075, dist =2,12 km, arrivalTime =  6,35 min
+01.06.2020 14:40:42(01.06.2020 15:49:07 ~ 01.06.2020 16:40:42) > Undelivered Order. ShopID = 2199. OrederID = 2453540. Weight = 8,672, Lat = 55,777874, Long = 49,143097, dist =2,05 km, arrivalTime =  6,14 min
+01.06.2020 15:38:08(01.06.2020 16:23:03 ~ 01.06.2020 17:38:08) > Undelivered Order. ShopID = 2199. OrederID = 2458164. Weight = 5,725, Lat = 55,7726315, Long = 49,1355641, dist =2,19 km, arrivalTime =  6,56 min
+01.06.2020 16:19:31(01.06.2020 17:29:31 ~ 01.06.2020 18:19:31) > Undelivered Order. ShopID = 2199. OrederID = 2457384. Weight = 0,931, Lat = 55,7979026996156, Long = 49,185663, dist =5,08 km, arrivalTime =  15,24 min
+01.06.2020 15:10:44(01.06.2020 15:28:15 ~ 01.06.2020 17:10:44) > Undelivered Order. ShopID = 2219. OrederID = 2444321. Weight = 8,186, Lat = 56,31493, Long = 44,024059, dist =1,28 km, arrivalTime =  3,84 min
+01.06.2020 16:35:44(01.06.2020 16:42:08 ~ 01.06.2020 18:35:44) > Undelivered Order. ShopID = 2219. OrederID = 2460918. Weight = 0,663, Lat = 56,320129, Long = 44,049393, dist =1,78 km, arrivalTime =  5,33 min
+01.06.2020 10:02:39(01.06.2020 10:45:26 ~ 01.06.2020 12:02:39) > Undelivered Order. ShopID = 2286. OrederID = 2430618. Weight = 11,01, Lat = 55,7982002996156, Long = 37,5087165, dist =0,46 km, arrivalTime =  1,38 min
+01.06.2020 10:05:15(01.06.2020 10:48:10 ~ 01.06.2020 12:05:15) > Undelivered Order. ShopID = 2286. OrederID = 2434528. Weight = 0,68, Lat = 55,7983350996156, Long = 37,5068074, dist =0,35 km, arrivalTime =  1,04 min
+01.06.2020 10:04:06(01.06.2020 10:58:29 ~ 01.06.2020 12:04:06) > Undelivered Order. ShopID = 2286. OrederID = 2436829. Weight = 1,248, Lat = 55,798996, Long = 37,504742, dist =0,19 km, arrivalTime =  0,58 min
+01.06.2020 10:58:31(01.06.2020 11:32:16 ~ 01.06.2020 12:58:31) > Undelivered Order. ShopID = 2286. OrederID = 2440362. Weight = 4,263, Lat = 55,800246, Long = 37,506648, dist =0,20 km, arrivalTime =  0,60 min
+01.06.2020 14:24:30(01.06.2020 14:47:50 ~ 01.06.2020 16:24:30) > Undelivered Order. ShopID = 2289. OrederID = 2435073. Weight = 8,145, Lat = 55,7002488996152, Long = 37,0230524, dist =0,83 km, arrivalTime =  2,48 min
+01.06.2020 10:02:11(01.06.2020 10:28:24 ~ 01.06.2020 12:02:11) > Undelivered Order. ShopID = 2294. OrederID = 2436174. Weight = 13,849, Lat = 55,8165144992314, Long = 37,3426252, dist =2,33 km, arrivalTime =  6,98 min
+01.06.2020 10:08:27(01.06.2020 10:35:19 ~ 01.06.2020 12:08:27) > Undelivered Order. ShopID = 2294. OrederID = 2435497. Weight = 7,525, Lat = 55,820164, Long = 37,329685, dist =1,30 km, arrivalTime =  3,91 min
+01.06.2020 11:21:57(01.06.2020 11:28:27 ~ 01.06.2020 13:21:57) > Undelivered Order. ShopID = 2294. OrederID = 2441949. Weight = 7,453, Lat = 55,8231918360251, Long = 37,3418012043273, dist =2,25 km, arrivalTime =  6,75 min
+01.06.2020 10:47:39(01.06.2020 11:12:06 ~ 01.06.2020 12:47:39) > Undelivered Order. ShopID = 2327. OrederID = 2436655. Weight = 2,825, Lat = 59,7399223806129, Long = 30,4778609020395, dist =5,38 km, arrivalTime =  16,15 min
+01.06.2020 10:57:54(01.06.2020 11:36:18 ~ 01.06.2020 12:57:54) > Undelivered Order. ShopID = 2327. OrederID = 2437667. Weight = 3,142, Lat = 59,739895, Long = 30,473921, dist =5,15 km, arrivalTime =  15,46 min
+01.06.2020 10:38:31(01.06.2020 11:44:49 ~ 01.06.2020 12:38:31) > Undelivered Order. ShopID = 2327. OrederID = 2438988. Weight = 5,375, Lat = 59,805637, Long = 30,379772, dist =11,67 km, arrivalTime =  35,00 min
+01.06.2020 10:47:54(01.06.2020 11:57:54 ~ 01.06.2020 12:47:54) > Undelivered Order. ShopID = 2327. OrederID = 2436812. Weight = 6,282, Lat = 59,7395812981856, Long = 30,4049128, dist =2,69 km, arrivalTime =  8,08 min
+01.06.2020 12:17:26(01.06.2020 13:27:26 ~ 01.06.2020 14:17:26) > Undelivered Order. ShopID = 2327. OrederID = 2444608. Weight = 5,587, Lat = 59,7072744963691, Long = 30,3863865, dist =2,23 km, arrivalTime =  6,69 min
+01.06.2020 12:41:05(01.06.2020 13:51:05 ~ 01.06.2020 14:41:05) > Undelivered Order. ShopID = 2327. OrederID = 2435211. Weight = 4,569, Lat = 59,7064108140137, Long = 30,4152398343616, dist =1,80 km, arrivalTime =  5,40 min
+01.06.2020 13:03:35(01.06.2020 14:13:35 ~ 01.06.2020 15:03:35) > Undelivered Order. ShopID = 2327. OrederID = 2448028. Weight = 10,953, Lat = 59,7311296978223, Long = 30,4634194, dist =3,98 km, arrivalTime =  11,95 min
+01.06.2020 14:39:23(01.06.2020 15:16:38 ~ 01.06.2020 16:39:23) > Undelivered Order. ShopID = 2327. OrederID = 2454836. Weight = 7,466, Lat = 59,7065836, Long = 30,3811365, dist =2,55 km, arrivalTime =  7,64 min
+01.06.2020 15:06:46(01.06.2020 15:20:14 ~ 01.06.2020 17:06:46) > Undelivered Order. ShopID = 2327. OrederID = 2454699. Weight = 2,703, Lat = 59,6858214992735, Long = 30,4382797, dist =4,91 km, arrivalTime =  14,74 min
+01.06.2020 14:40:39(01.06.2020 15:50:39 ~ 01.06.2020 16:40:39) > Undelivered Order. ShopID = 2327. OrederID = 2454922. Weight = 11,937, Lat = 59,7568471, Long = 30,3651986, dist =5,79 km, arrivalTime =  17,37 min
+01.06.2020 15:19:52(01.06.2020 16:10:15 ~ 01.06.2020 17:19:52) > Undelivered Order. ShopID = 2327. OrederID = 2457146. Weight = 5,523, Lat = 59,6952936, Long = 30,4184483, dist =3,30 km, arrivalTime =  9,89 min
+01.06.2020 14:37:38(01.06.2020 15:47:38 ~ 01.06.2020 16:37:38) > Undelivered Order. ShopID = 2333. OrederID = 2454736. Weight = 5,893, Lat = 52,761422, Long = 41,384154, dist =6,33 km, arrivalTime =  18,99 min
+01.06.2020 14:42:18(01.06.2020 15:52:18 ~ 01.06.2020 16:42:18) > Undelivered Order. ShopID = 2333. OrederID = 2455037. Weight = 0,5, Lat = 52,761422, Long = 41,384154, dist =6,33 km, arrivalTime =  18,99 min
+01.06.2020 16:17:54(01.06.2020 17:27:54 ~ 01.06.2020 18:17:54) > Undelivered Order. ShopID = 2333. OrederID = 2459698. Weight = 16,216, Lat = 52,735302, Long = 41,446049, dist =0,63 km, arrivalTime =  1,90 min
+01.06.2020 16:38:22(01.06.2020 17:48:22 ~ 01.06.2020 18:38:22) > Undelivered Order. ShopID = 2333. OrederID = 2459375. Weight = 5,265, Lat = 52,74062, Long = 41,41922, dist =2,70 km, arrivalTime =  8,09 min
+01.06.2020 16:55:11(01.06.2020 18:05:11 ~ 01.06.2020 18:55:11) > Undelivered Order. ShopID = 2333. OrederID = 2462239. Weight = 4,435, Lat = 52,7457003996068, Long = 41,43926, dist =1,46 km, arrivalTime =  4,39 min
+01.06.2020 10:34:10(01.06.2020 10:58:07 ~ 01.06.2020 12:34:10) > Undelivered Order. ShopID = 2339. OrederID = 2437082. Weight = 8,751, Lat = 55,590942, Long = 37,766373, dist =0,88 km, arrivalTime =  2,64 min
+01.06.2020 10:32:02(01.06.2020 11:14:23 ~ 01.06.2020 12:32:02) > Undelivered Order. ShopID = 2339. OrederID = 2438419. Weight = 5,682, Lat = 55,559059, Long = 37,809219, dist =6,01 km, arrivalTime =  18,03 min
+01.06.2020 10:38:41(01.06.2020 11:20:27 ~ 01.06.2020 12:38:41) > Undelivered Order. ShopID = 2339. OrederID = 2439169. Weight = 3,003, Lat = 55,5586767992293, Long = 37,8089324, dist =6,03 km, arrivalTime =  18,10 min
+01.06.2020 10:03:58(01.06.2020 10:29:47 ~ 01.06.2020 12:03:58) > Undelivered Order. ShopID = 2364. OrederID = 2434587. Weight = 9,588, Lat = 55,814432831678, Long = 38,9771259861207, dist =0,77 km, arrivalTime =  2,32 min
+01.06.2020 10:24:14(01.06.2020 11:02:55 ~ 01.06.2020 12:24:14) > Undelivered Order. ShopID = 2364. OrederID = 2436482. Weight = 2,051, Lat = 55,791367, Long = 38,925495, dist =4,26 km, arrivalTime =  12,78 min
+01.06.2020 10:52:36(01.06.2020 11:36:09 ~ 01.06.2020 12:52:36) > Undelivered Order. ShopID = 2364. OrederID = 2438662. Weight = 9,887, Lat = 55,789803, Long = 38,941467, dist =3,65 km, arrivalTime =  10,96 min
+01.06.2020 10:56:09(01.06.2020 11:42:40 ~ 01.06.2020 12:56:09) > Undelivered Order. ShopID = 2364. OrederID = 2433791. Weight = 4,347, Lat = 55,811157, Long = 38,949333, dist =1,36 km, arrivalTime =  4,07 min
+01.06.2020 10:01:06(01.06.2020 10:20:50 ~ 01.06.2020 12:01:06) > Undelivered Order. ShopID = 2376. OrederID = 2434908. Weight = 0,295, Lat = 59,941391, Long = 30,396376, dist =2,55 km, arrivalTime =  7,65 min
+01.06.2020 10:00:37(01.06.2020 11:10:37 ~ 01.06.2020 12:00:37) > Undelivered Order. ShopID = 2376. OrederID = 2435812. Weight = 10,136, Lat = 59,922028, Long = 30,371, dist =3,12 km, arrivalTime =  9,36 min
+01.06.2020 10:09:49(01.06.2020 11:19:49 ~ 01.06.2020 12:09:49) > Undelivered Order. ShopID = 2376. OrederID = 2436221. Weight = 14,969, Lat = 59,927338, Long = 30,375633, dist =2,56 km, arrivalTime =  7,69 min
+01.06.2020 10:12:31(01.06.2020 11:22:31 ~ 01.06.2020 12:12:31) > Undelivered Order. ShopID = 2376. OrederID = 2437441. Weight = 2,305, Lat = 59,93364, Long = 30,382633, dist =2,16 km, arrivalTime =  6,49 min
+01.06.2020 10:18:42(01.06.2020 11:28:42 ~ 01.06.2020 12:18:42) > Undelivered Order. ShopID = 2376. OrederID = 2436047. Weight = 13,429, Lat = 59,947041, Long = 30,387581, dist =1,95 km, arrivalTime =  5,86 min
+01.06.2020 10:22:27(01.06.2020 11:32:27 ~ 01.06.2020 12:22:27) > Undelivered Order. ShopID = 2376. OrederID = 2435535. Weight = 4,272, Lat = 59,938114099277, Long = 30,3787025, dist =1,59 km, arrivalTime =  4,76 min
+01.06.2020 10:27:57(01.06.2020 11:37:57 ~ 01.06.2020 12:27:57) > Undelivered Order. ShopID = 2376. OrederID = 2437022. Weight = 11,573, Lat = 59,945312, Long = 30,387787, dist =1,94 km, arrivalTime =  5,83 min
+01.06.2020 10:45:54(01.06.2020 11:55:54 ~ 01.06.2020 12:45:54) > Undelivered Order. ShopID = 2376. OrederID = 2438113. Weight = 17,916, Lat = 59,9274802989153, Long = 30,3738443, dist =2,50 km, arrivalTime =  7,49 min
+01.06.2020 11:06:26(01.06.2020 11:49:20 ~ 01.06.2020 13:06:26) > Undelivered Order. ShopID = 2394. OrederID = 2435066. Weight = 4,176, Lat = 59,8579936182967, Long = 30,310122216008, dist =2,77 km, arrivalTime =  8,31 min
+01.06.2020 10:50:50(01.06.2020 12:00:50 ~ 01.06.2020 12:50:50) > Undelivered Order. ShopID = 2394. OrederID = 2439782. Weight = 2,102, Lat = 59,861935, Long = 30,342438, dist =2,69 km, arrivalTime =  8,07 min
+01.06.2020 11:09:18(01.06.2020 12:19:18 ~ 01.06.2020 13:09:18) > Undelivered Order. ShopID = 2394. OrederID = 2440571. Weight = 8,454, Lat = 59,854191, Long = 30,326181, dist =3,25 km, arrivalTime =  9,75 min
+01.06.2020 12:24:36(01.06.2020 13:34:36 ~ 01.06.2020 14:24:36) > Undelivered Order. ShopID = 2394. OrederID = 2445973. Weight = 1,633, Lat = 59,8634396386103, Long = 30,3505899706392, dist =2,90 km, arrivalTime =  8,70 min
+01.06.2020 12:25:29(01.06.2020 13:15:31 ~ 01.06.2020 14:25:29) > Undelivered Order. ShopID = 2416. OrederID = 2444920. Weight = 8,343, Lat = 55,5036067988434, Long = 37,9476267, dist =0,26 km, arrivalTime =  0,77 min
+01.06.2020 12:55:52(01.06.2020 13:27:51 ~ 01.06.2020 14:55:52) > Undelivered Order. ShopID = 2416. OrederID = 2438025. Weight = 7,497, Lat = 55,497501, Long = 37,912739, dist =2,58 km, arrivalTime =  7,74 min
+01.06.2020 13:13:09(01.06.2020 13:41:10 ~ 01.06.2020 15:13:09) > Undelivered Order. ShopID = 2416. OrederID = 2433257. Weight = 6,573, Lat = 55,498798, Long = 37,911312, dist =2,65 km, arrivalTime =  7,95 min
+01.06.2020 13:20:33(01.06.2020 13:46:09 ~ 01.06.2020 15:20:33) > Undelivered Order. ShopID = 2416. OrederID = 2448553. Weight = 2,77, Lat = 55,502575, Long = 37,946892, dist =0,11 km, arrivalTime =  0,33 min
+01.06.2020 13:21:39(01.06.2020 13:50:05 ~ 01.06.2020 15:21:39) > Undelivered Order. ShopID = 2416. OrederID = 2449414. Weight = 3,745, Lat = 55,5050297996145, Long = 37,9503891, dist =0,53 km, arrivalTime =  1,60 min
+01.06.2020 13:34:05(01.06.2020 13:59:06 ~ 01.06.2020 15:34:05) > Undelivered Order. ShopID = 2416. OrederID = 2450182. Weight = 2,611, Lat = 55,502663, Long = 37,946793, dist =0,12 km, arrivalTime =  0,35 min
+01.06.2020 14:32:52(01.06.2020 15:42:52 ~ 01.06.2020 16:32:52) > Undelivered Order. ShopID = 2416. OrederID = 2452644. Weight = 72,601, Lat = 55,5049408558816, Long = 37,9056979436379, dist =3,07 km, arrivalTime =  9,20 min
+01.06.2020 8:27:36(01.06.2020 9:39:27 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 2419. OrederID = 2434119. Weight = 12,832, Lat = 55,966228, Long = 37,149704, dist =2,25 km, arrivalTime =  6,75 min
+01.06.2020 8:25:59(01.06.2020 9:47:10 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 2419. OrederID = 2434323. Weight = 2,451, Lat = 55,9648786389563, Long = 37,1506493291848, dist =2,39 km, arrivalTime =  7,16 min
+01.06.2020 9:22:17(01.06.2020 11:10:00 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 2419. OrederID = 2435329. Weight = 0,933, Lat = 55,970676, Long = 37,166443, dist =1,46 km, arrivalTime =  4,38 min
+01.06.2020 10:17:03(01.06.2020 11:27:03 ~ 01.06.2020 12:17:03) > Undelivered Order. ShopID = 2419. OrederID = 2437322. Weight = 11,101, Lat = 55,96785, Long = 37,186428, dist =2,53 km, arrivalTime =  7,60 min
+01.06.2020 10:23:52(01.06.2020 11:30:51 ~ 01.06.2020 12:23:52) > Undelivered Order. ShopID = 2419. OrederID = 2433968. Weight = 13,748, Lat = 55,969269, Long = 37,186935, dist =2,43 km, arrivalTime =  7,29 min
+01.06.2020 10:53:16(01.06.2020 12:03:16 ~ 01.06.2020 12:53:16) > Undelivered Order. ShopID = 2419. OrederID = 2440293. Weight = 4,042, Lat = 55,9778112, Long = 37,1646503, dist =0,50 km, arrivalTime =  1,51 min
+01.06.2020 10:56:37(01.06.2020 12:06:37 ~ 01.06.2020 12:56:37) > Undelivered Order. ShopID = 2419. OrederID = 2440496. Weight = 2,705, Lat = 55,978327, Long = 37,163519, dist =0,42 km, arrivalTime =  1,25 min
+01.06.2020 10:56:50(01.06.2020 12:06:50 ~ 01.06.2020 12:56:50) > Undelivered Order. ShopID = 2419. OrederID = 2436928. Weight = 17,352, Lat = 56,0095426976989, Long = 37,1341107, dist =4,32 km, arrivalTime =  12,97 min
+01.06.2020 11:04:57(01.06.2020 12:14:57 ~ 01.06.2020 13:04:57) > Undelivered Order. ShopID = 2419. OrederID = 2441066. Weight = 3,138, Lat = 55,9807097, Long = 37,169193, dist =0,49 km, arrivalTime =  1,47 min
+01.06.2020 11:51:25(01.06.2020 12:15:00 ~ 01.06.2020 13:51:25) > Undelivered Order. ShopID = 2419. OrederID = 2443113. Weight = 2,853, Lat = 55,9791027996163, Long = 37,1490283, dist =1,07 km, arrivalTime =  3,21 min
+01.06.2020 11:08:44(01.06.2020 12:18:44 ~ 01.06.2020 13:08:44) > Undelivered Order. ShopID = 2419. OrederID = 2440518. Weight = 8,028, Lat = 55,9668386093305, Long = 37,1500362891347, dist =2,17 km, arrivalTime =  6,50 min
+01.06.2020 11:14:03(01.06.2020 12:24:03 ~ 01.06.2020 13:14:03) > Undelivered Order. ShopID = 2419. OrederID = 2440397. Weight = 5,708, Lat = 55,978291, Long = 37,149246, dist =1,09 km, arrivalTime =  3,27 min
+01.06.2020 12:06:42(01.06.2020 12:25:39 ~ 01.06.2020 14:06:42) > Undelivered Order. ShopID = 2419. OrederID = 2444746. Weight = 8,61, Lat = 55,965698, Long = 37,150318, dist =2,29 km, arrivalTime =  6,88 min
+01.06.2020 11:18:11(01.06.2020 12:28:11 ~ 01.06.2020 13:18:11) > Undelivered Order. ShopID = 2419. OrederID = 2440184. Weight = 15,992, Lat = 55,979362, Long = 37,16275, dist =0,27 km, arrivalTime =  0,82 min
+01.06.2020 11:20:54(01.06.2020 12:30:54 ~ 01.06.2020 13:20:54) > Undelivered Order. ShopID = 2419. OrederID = 2441120. Weight = 5,706, Lat = 55,9779793996163, Long = 37,1562365, dist =0,67 km, arrivalTime =  2,00 min
+01.06.2020 12:28:24(01.06.2020 12:49:11 ~ 01.06.2020 14:28:24) > Undelivered Order. ShopID = 2419. OrederID = 2440529. Weight = 13,553, Lat = 55,974541, Long = 37,16856, dist =1,02 km, arrivalTime =  3,05 min
+01.06.2020 12:23:25(01.06.2020 13:33:25 ~ 01.06.2020 14:23:25) > Undelivered Order. ShopID = 2419. OrederID = 2438606. Weight = 4,202, Lat = 55,978146, Long = 37,164215, dist =0,45 km, arrivalTime =  1,35 min
+01.06.2020 12:32:58(01.06.2020 13:42:58 ~ 01.06.2020 14:32:58) > Undelivered Order. ShopID = 2419. OrederID = 2445569. Weight = 7,884, Lat = 55,989086, Long = 37,148609, dist =1,47 km, arrivalTime =  4,41 min
+01.06.2020 12:37:26(01.06.2020 13:45:39 ~ 01.06.2020 14:37:26) > Undelivered Order. ShopID = 2419. OrederID = 2447164. Weight = 0,703, Lat = 55,9708815, Long = 37,1610289, dist =1,41 km, arrivalTime =  4,24 min
+01.06.2020 14:13:19(01.06.2020 14:21:16 ~ 01.06.2020 16:13:19) > Undelivered Order. ShopID = 2439. OrederID = 2452482. Weight = 17,578, Lat = 60,04908, Long = 30,631269, dist =3,21 km, arrivalTime =  9,62 min
+01.06.2020 14:23:35(01.06.2020 14:37:28 ~ 01.06.2020 16:23:35) > Undelivered Order. ShopID = 2439. OrederID = 2453005. Weight = 15,585, Lat = 60,0027812989168, Long = 30,6126726, dist =3,24 km, arrivalTime =  9,71 min
+01.06.2020 15:07:12(01.06.2020 15:19:12 ~ 01.06.2020 17:07:12) > Undelivered Order. ShopID = 2439. OrederID = 2455007. Weight = 2,867, Lat = 59,9893647985554, Long = 30,6539658, dist =5,00 km, arrivalTime =  14,99 min
+01.06.2020 15:37:02(01.06.2020 15:50:17 ~ 01.06.2020 17:37:02) > Undelivered Order. ShopID = 2439. OrederID = 2457388. Weight = 4,288, Lat = 59,997967, Long = 30,655865, dist =3,96 km, arrivalTime =  11,89 min
+01.06.2020 10:03:06(01.06.2020 10:32:38 ~ 01.06.2020 12:03:06) > Undelivered Order. ShopID = 2451. OrederID = 2435088. Weight = 10,294, Lat = 55,863953, Long = 37,431927, dist =0,14 km, arrivalTime =  0,43 min
+01.06.2020 10:19:31(01.06.2020 11:12:11 ~ 01.06.2020 12:19:31) > Undelivered Order. ShopID = 2451. OrederID = 2436405. Weight = 8,796, Lat = 55,8644698506096, Long = 37,4307987104625, dist =0,25 km, arrivalTime =  0,75 min
+01.06.2020 10:32:21(01.06.2020 11:23:24 ~ 01.06.2020 12:32:21) > Undelivered Order. ShopID = 2451. OrederID = 2438023. Weight = 7,962, Lat = 55,863388, Long = 37,430649, dist =0,21 km, arrivalTime =  0,64 min
+01.06.2020 11:21:43(01.06.2020 11:34:47 ~ 01.06.2020 13:21:43) > Undelivered Order. ShopID = 2451. OrederID = 2442199. Weight = 1,933, Lat = 55,862282, Long = 37,443461, dist =0,76 km, arrivalTime =  2,28 min
+01.06.2020 11:08:09(01.06.2020 11:37:33 ~ 01.06.2020 13:08:09) > Undelivered Order. ShopID = 2451. OrederID = 2440527. Weight = 4,338, Lat = 55,8642999996159, Long = 37,429662, dist =0,31 km, arrivalTime =  0,94 min
+01.06.2020 12:18:53(01.06.2020 13:00:19 ~ 01.06.2020 14:18:53) > Undelivered Order. ShopID = 2554. OrederID = 2438305. Weight = 0,953, Lat = 55,737606, Long = 37,516327, dist =0,72 km, arrivalTime =  2,16 min
+01.06.2020 12:05:57(01.06.2020 13:13:24 ~ 01.06.2020 14:05:57) > Undelivered Order. ShopID = 2554. OrederID = 2444137. Weight = 4,465, Lat = 55,740616, Long = 37,523327, dist =0,51 km, arrivalTime =  1,53 min
+01.06.2020 12:18:43(01.06.2020 13:28:43 ~ 01.06.2020 14:18:43) > Undelivered Order. ShopID = 2554. OrederID = 2444262. Weight = 7,19, Lat = 55,7387407976922, Long = 37,5311014, dist =0,45 km, arrivalTime =  1,36 min
+01.06.2020 12:32:21(01.06.2020 13:29:25 ~ 01.06.2020 14:32:21) > Undelivered Order. ShopID = 2554. OrederID = 2445668. Weight = 4,032, Lat = 55,735584, Long = 37,519543, dist =0,51 km, arrivalTime =  1,54 min
+01.06.2020 12:32:47(01.06.2020 13:42:18 ~ 01.06.2020 14:32:47) > Undelivered Order. ShopID = 2554. OrederID = 2446161. Weight = 7,166, Lat = 55,737686, Long = 37,519806, dist =0,46 km, arrivalTime =  1,39 min
+01.06.2020 13:04:10(01.06.2020 13:44:34 ~ 01.06.2020 15:04:10) > Undelivered Order. ShopID = 2554. OrederID = 2448828. Weight = 0,943, Lat = 55,739925, Long = 37,527752, dist =0,41 km, arrivalTime =  1,22 min
+01.06.2020 10:01:40(01.06.2020 10:16:07 ~ 01.06.2020 12:01:40) > Undelivered Order. ShopID = 2565. OrederID = 2436644. Weight = 2,307, Lat = 55,74603, Long = 37,494773, dist =0,88 km, arrivalTime =  2,63 min
+01.06.2020 10:36:56(01.06.2020 11:43:12 ~ 01.06.2020 12:36:56) > Undelivered Order. ShopID = 2565. OrederID = 2439265. Weight = 11,786, Lat = 55,7475103, Long = 37,4968871, dist =0,98 km, arrivalTime =  2,95 min
+01.06.2020 10:02:16(01.06.2020 10:24:39 ~ 01.06.2020 12:02:16) > Undelivered Order. ShopID = 2568. OrederID = 2435609. Weight = 5,02, Lat = 59,8293239337965, Long = 30,2233867065094, dist =1,56 km, arrivalTime =  4,67 min
+01.06.2020 10:00:18(01.06.2020 10:33:27 ~ 01.06.2020 12:00:18) > Undelivered Order. ShopID = 2583. OrederID = 2433747. Weight = 6,189, Lat = 55,5197096090093, Long = 37,3448395081387, dist =0,43 km, arrivalTime =  1,29 min
+01.06.2020 10:05:01(01.06.2020 10:36:34 ~ 01.06.2020 12:05:01) > Undelivered Order. ShopID = 2583. OrederID = 2434427. Weight = 9,028, Lat = 55,5141995996145, Long = 37,3676558, dist =1,53 km, arrivalTime =  4,60 min
+01.06.2020 10:17:45(01.06.2020 11:27:45 ~ 01.06.2020 12:17:45) > Undelivered Order. ShopID = 2583. OrederID = 2434118. Weight = 18,586, Lat = 55,519161, Long = 37,349506, dist =0,31 km, arrivalTime =  0,93 min
+01.06.2020 11:13:12(01.06.2020 11:35:02 ~ 01.06.2020 13:13:12) > Undelivered Order. ShopID = 2583. OrederID = 2441501. Weight = 2,393, Lat = 55,519936, Long = 37,345242, dist =0,44 km, arrivalTime =  1,32 min
+01.06.2020 10:30:41(01.06.2020 11:40:41 ~ 01.06.2020 12:30:41) > Undelivered Order. ShopID = 2583. OrederID = 2436969. Weight = 13,861, Lat = 55,5246298375597, Long = 37,3683485684465, dist =1,85 km, arrivalTime =  5,54 min
+01.06.2020 11:11:13(01.06.2020 12:03:31 ~ 01.06.2020 13:11:13) > Undelivered Order. ShopID = 2586. OrederID = 2438530. Weight = 14,378, Lat = 55,7346935932435, Long = 37,4533800129357, dist =2,36 km, arrivalTime =  7,08 min
+01.06.2020 11:18:18(01.06.2020 12:10:23 ~ 01.06.2020 13:18:18) > Undelivered Order. ShopID = 2586. OrederID = 2441163. Weight = 7,594, Lat = 55,7380629996154, Long = 37,4687138, dist =1,18 km, arrivalTime =  3,53 min
+01.06.2020 11:50:52(01.06.2020 12:42:39 ~ 01.06.2020 13:50:52) > Undelivered Order. ShopID = 2586. OrederID = 2442284. Weight = 6,006, Lat = 55,732933, Long = 37,449432, dist =2,70 km, arrivalTime =  8,09 min
+01.06.2020 9:06:40(01.06.2020 10:18:31 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 2607. OrederID = 2435000. Weight = 2,578, Lat = 55,91688, Long = 37,713432, dist =0,38 km, arrivalTime =  1,13 min
+01.06.2020 10:08:11(01.06.2020 10:38:53 ~ 01.06.2020 12:08:11) > Undelivered Order. ShopID = 2607. OrederID = 2433684. Weight = 3,445, Lat = 55,919590405249, Long = 37,7153513650818, dist =0,74 km, arrivalTime =  2,22 min
+01.06.2020 10:04:59(01.06.2020 10:41:21 ~ 01.06.2020 12:04:59) > Undelivered Order. ShopID = 2607. OrederID = 2436112. Weight = 11,356, Lat = 55,9173881982829, Long = 37,710817375962, dist =0,32 km, arrivalTime =  0,96 min
+01.06.2020 10:12:40(01.06.2020 11:22:40 ~ 01.06.2020 12:12:40) > Undelivered Order. ShopID = 2607. OrederID = 2436680. Weight = 7,737, Lat = 55,9032253388134, Long = 37,699251727067, dist =1,76 km, arrivalTime =  5,29 min
+01.06.2020 10:14:37(01.06.2020 11:24:37 ~ 01.06.2020 12:14:37) > Undelivered Order. ShopID = 2607. OrederID = 2436144. Weight = 7,764, Lat = 55,919456, Long = 37,715164, dist =0,72 km, arrivalTime =  2,15 min
+01.06.2020 10:24:48(01.06.2020 11:34:48 ~ 01.06.2020 12:24:48) > Undelivered Order. ShopID = 2607. OrederID = 2436817. Weight = 11,172, Lat = 55,9180483992322, Long = 37,7139685, dist =0,52 km, arrivalTime =  1,55 min
+01.06.2020 9:44:46(01.06.2020 11:10:00 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 2647. OrederID = 2435540. Weight = 5,986, Lat = 55,4242624713005, Long = 37,0980624404755, dist =6,73 km, arrivalTime =  20,19 min
+01.06.2020 10:09:07(01.06.2020 11:19:07 ~ 01.06.2020 12:09:07) > Undelivered Order. ShopID = 2647. OrederID = 2436340. Weight = 12,043, Lat = 55,429649, Long = 37,116131, dist =5,67 km, arrivalTime =  17,01 min
+01.06.2020 10:22:13(01.06.2020 11:32:13 ~ 01.06.2020 12:22:13) > Undelivered Order. ShopID = 2647. OrederID = 2436580. Weight = 8,319, Lat = 55,379726, Long = 37,084824, dist =8,68 km, arrivalTime =  26,04 min
+01.06.2020 10:43:04(01.06.2020 11:53:04 ~ 01.06.2020 12:43:04) > Undelivered Order. ShopID = 2647. OrederID = 2439630. Weight = 12,65, Lat = 55,3839465, Long = 37,1758841, dist =3,80 km, arrivalTime =  11,39 min
+01.06.2020 11:26:43(01.06.2020 12:36:43 ~ 01.06.2020 13:26:43) > Undelivered Order. ShopID = 2647. OrederID = 2430971. Weight = 14,356, Lat = 55,4101077992282, Long = 37,1012418, dist =6,29 km, arrivalTime =  18,87 min
+01.06.2020 11:35:14(01.06.2020 12:45:14 ~ 01.06.2020 13:35:14) > Undelivered Order. ShopID = 2647. OrederID = 2441651. Weight = 8,898, Lat = 55,316086, Long = 37,176708, dist =12,82 km, arrivalTime =  38,46 min
+01.06.2020 11:59:49(01.06.2020 13:09:49 ~ 01.06.2020 13:59:49) > Undelivered Order. ShopID = 2647. OrederID = 2443796. Weight = 11,868, Lat = 55,4296088972991, Long = 37,1132221, dist =5,87 km, arrivalTime =  17,61 min
+01.06.2020 12:05:01(01.06.2020 13:15:01 ~ 01.06.2020 14:05:01) > Undelivered Order. ShopID = 2647. OrederID = 2444426. Weight = 8,557, Lat = 55,4288681992283, Long = 37,113341, dist =5,82 km, arrivalTime =  17,47 min
+01.06.2020 13:05:04(01.06.2020 14:15:04 ~ 01.06.2020 15:05:04) > Undelivered Order. ShopID = 2647. OrederID = 2445318. Weight = 34,807, Lat = 55,310291, Long = 37,206844, dist =13,69 km, arrivalTime =  41,07 min
+01.06.2020 13:11:33(01.06.2020 14:21:33 ~ 01.06.2020 15:11:33) > Undelivered Order. ShopID = 2647. OrederID = 2445332. Weight = 17,527, Lat = 55,4312572992284, Long = 37,1203798, dist =5,48 km, arrivalTime =  16,43 min
+01.06.2020 10:01:12(01.06.2020 10:22:35 ~ 01.06.2020 12:01:12) > Undelivered Order. ShopID = 2699. OrederID = 2435012. Weight = 3,418, Lat = 55,749729, Long = 37,711197, dist =0,57 km, arrivalTime =  1,72 min
+01.06.2020 10:15:45(01.06.2020 10:27:37 ~ 01.06.2020 12:15:45) > Undelivered Order. ShopID = 2699. OrederID = 2437804. Weight = 0,653, Lat = 55,7453421, Long = 37,7022716, dist =1,39 km, arrivalTime =  4,16 min
+01.06.2020 11:34:29(01.06.2020 11:38:56 ~ 01.06.2020 13:34:29) > Undelivered Order. ShopID = 2699. OrederID = 2442906. Weight = 0,783, Lat = 55,7446469439868, Long = 37,7063390013591, dist =1,17 km, arrivalTime =  3,52 min
+01.06.2020 10:21:50(01.06.2020 10:44:37 ~ 01.06.2020 12:21:50) > Undelivered Order. ShopID = 2735. OrederID = 2438244. Weight = 0,077, Lat = 55,9026011, Long = 37,7159273, dist =1,09 km, arrivalTime =  3,27 min
+01.06.2020 10:12:55(01.06.2020 10:45:47 ~ 01.06.2020 12:12:55) > Undelivered Order. ShopID = 2735. OrederID = 2437274. Weight = 5,853, Lat = 55,8996417961602, Long = 37,7179768, dist =1,22 km, arrivalTime =  3,67 min
+01.06.2020 11:08:18(01.06.2020 11:52:12 ~ 01.06.2020 13:08:18) > Undelivered Order. ShopID = 2735. OrederID = 2440119. Weight = 14,986, Lat = 55,899641799616, Long = 37,7163071, dist =1,31 km, arrivalTime =  3,93 min
+01.06.2020 10:23:40(01.06.2020 11:33:40 ~ 01.06.2020 12:23:40) > Undelivered Order. ShopID = 2764. OrederID = 2435991. Weight = 9,418, Lat = 55,48539, Long = 37,132877, dist =7,52 km, arrivalTime =  22,57 min
+01.06.2020 15:14:30(01.06.2020 15:34:20 ~ 01.06.2020 17:14:30) > Undelivered Order. ShopID = 2856. OrederID = 2437372. Weight = 11,181, Lat = 56,130074, Long = 47,266106, dist =1,22 km, arrivalTime =  3,65 min
+01.06.2020 15:30:58(01.06.2020 15:57:48 ~ 01.06.2020 17:30:58) > Undelivered Order. ShopID = 2856. OrederID = 2453608. Weight = 10,33, Lat = 56,133133, Long = 47,264736, dist =1,39 km, arrivalTime =  4,17 min
+01.06.2020 15:18:32(01.06.2020 16:03:50 ~ 01.06.2020 17:18:32) > Undelivered Order. ShopID = 2856. OrederID = 2456871. Weight = 0,493, Lat = 56,12513, Long = 47,392193, dist =10,45 km, arrivalTime =  31,34 min
+01.06.2020 16:39:56(01.06.2020 16:45:14 ~ 01.06.2020 18:39:56) > Undelivered Order. ShopID = 2856. OrederID = 2461339. Weight = 1,598, Lat = 56,128414, Long = 47,26033, dist =0,73 km, arrivalTime =  2,20 min
+01.06.2020 10:25:21(01.06.2020 11:15:15 ~ 01.06.2020 12:25:21) > Undelivered Order. ShopID = 2871. OrederID = 2438493. Weight = 1,837, Lat = 55,5687517, Long = 37,492713, dist =1,30 km, arrivalTime =  3,90 min
+01.06.2020 10:30:42(01.06.2020 11:24:14 ~ 01.06.2020 12:30:42) > Undelivered Order. ShopID = 2871. OrederID = 2433352. Weight = 6,614, Lat = 55,5660656030916, Long = 37,49232676683, dist =1,26 km, arrivalTime =  3,79 min
+01.06.2020 10:27:06(01.06.2020 11:27:29 ~ 01.06.2020 12:27:06) > Undelivered Order. ShopID = 2871. OrederID = 2434301. Weight = 5,742, Lat = 55,5676930988441, Long = 37,4754606, dist =0,06 km, arrivalTime =  0,18 min
+01.06.2020 10:54:38(01.06.2020 11:29:30 ~ 01.06.2020 12:54:38) > Undelivered Order. ShopID = 2871. OrederID = 2439890. Weight = 2,461, Lat = 55,566933, Long = 37,474209, dist =0,12 km, arrivalTime =  0,36 min
+01.06.2020 10:44:32(01.06.2020 11:49:16 ~ 01.06.2020 12:44:32) > Undelivered Order. ShopID = 2871. OrederID = 2436402. Weight = 0,731, Lat = 55,5692092990526, Long = 37,4743515623147, dist =0,28 km, arrivalTime =  0,84 min
+01.06.2020 11:18:15(01.06.2020 11:50:10 ~ 01.06.2020 13:18:15) > Undelivered Order. ShopID = 2871. OrederID = 2441966. Weight = 0,155, Lat = 55,5687517, Long = 37,492713, dist =1,30 km, arrivalTime =  3,90 min
+01.06.2020 10:59:44(01.06.2020 11:54:08 ~ 01.06.2020 12:59:44) > Undelivered Order. ShopID = 2871. OrederID = 2440136. Weight = 3,255, Lat = 55,568996, Long = 37,487167, dist =0,90 km, arrivalTime =  2,69 min
+01.06.2020 11:34:39(01.06.2020 12:04:04 ~ 01.06.2020 13:34:39) > Undelivered Order. ShopID = 2871. OrederID = 2442999. Weight = 9,466, Lat = 55,570843, Long = 37,473635, dist =0,50 km, arrivalTime =  1,51 min
+01.06.2020 18:00:31(01.06.2020 19:10:31 ~ 01.06.2020 20:00:31) > Undelivered Order. ShopID = 2883. OrederID = 2447703. Weight = 2,656, Lat = 51,813934, Long = 36,167419, dist =9,18 km, arrivalTime =  27,54 min
+01.06.2020 12:03:10(01.06.2020 13:13:10 ~ 01.06.2020 14:03:10) > Undelivered Order. ShopID = 2902. OrederID = 2444948. Weight = 0,888, Lat = 48,8188041, Long = 44,6325579, dist =17,94 km, arrivalTime =  53,81 min
+01.06.2020 10:27:45(01.06.2020 10:44:31 ~ 01.06.2020 12:27:45) > Undelivered Order. ShopID = 2930. OrederID = 2438045. Weight = 1,428, Lat = 55,7653799996155, Long = 37,4121673, dist =0,68 km, arrivalTime =  2,03 min
+01.06.2020 10:12:45(01.06.2020 11:16:02 ~ 01.06.2020 12:12:45) > Undelivered Order. ShopID = 2930. OrederID = 2435156. Weight = 20,229, Lat = 55,764095, Long = 37,415405, dist =0,96 km, arrivalTime =  2,87 min
+01.06.2020 10:00:18(01.06.2020 10:36:57 ~ 01.06.2020 12:00:18) > Undelivered Order. ShopID = 2955. OrederID = 2435734. Weight = 1,768, Lat = 55,7959800965404, Long = 37,2739987, dist =5,69 km, arrivalTime =  17,08 min
+01.06.2020 10:29:15(01.06.2020 10:48:01 ~ 01.06.2020 12:29:15) > Undelivered Order. ShopID = 2955. OrederID = 2438434. Weight = 0,723, Lat = 55,768848, Long = 37,234016, dist =1,35 km, arrivalTime =  4,05 min
+01.06.2020 10:25:49(01.06.2020 11:08:15 ~ 01.06.2020 12:25:49) > Undelivered Order. ShopID = 2955. OrederID = 2436279. Weight = 12,279, Lat = 55,746746, Long = 37,097797, dist =10,57 km, arrivalTime =  31,70 min
+01.06.2020 10:32:51(01.06.2020 11:34:08 ~ 01.06.2020 12:32:51) > Undelivered Order. ShopID = 2955. OrederID = 2434399. Weight = 10,609, Lat = 55,8077642279257, Long = 37,2858239202566, dist =7,50 km, arrivalTime =  22,51 min
+01.06.2020 10:33:51(01.06.2020 11:34:59 ~ 01.06.2020 12:33:51) > Undelivered Order. ShopID = 2955. OrederID = 2429738. Weight = 29,911, Lat = 55,7737097996155, Long = 37,2160633, dist =2,52 km, arrivalTime =  7,56 min
+01.06.2020 10:37:52(01.06.2020 11:47:52 ~ 01.06.2020 12:37:52) > Undelivered Order. ShopID = 2955. OrederID = 2437422. Weight = 12,503, Lat = 55,811646, Long = 37,21048, dist =7,32 km, arrivalTime =  21,97 min
+01.06.2020 10:39:53(01.06.2020 11:49:53 ~ 01.06.2020 12:39:53) > Undelivered Order. ShopID = 2955. OrederID = 2433734. Weight = 13,919, Lat = 55,781178, Long = 37,139065, dist =7,92 km, arrivalTime =  23,76 min
+01.06.2020 10:43:33(01.06.2020 11:53:33 ~ 01.06.2020 12:43:33) > Undelivered Order. ShopID = 2955. OrederID = 2437532. Weight = 7,748, Lat = 55,74334, Long = 37,109917, dist =9,75 km, arrivalTime =  29,26 min
+01.06.2020 10:51:01(01.06.2020 12:01:01 ~ 01.06.2020 12:51:01) > Undelivered Order. ShopID = 2955. OrederID = 2439506. Weight = 1,638, Lat = 55,795856, Long = 37,271938, dist =5,61 km, arrivalTime =  16,82 min
+01.06.2020 10:53:37(01.06.2020 12:03:37 ~ 01.06.2020 12:53:37) > Undelivered Order. ShopID = 2955. OrederID = 2440182. Weight = 0,803, Lat = 55,795980096156, Long = 37,2739987, dist =5,69 km, arrivalTime =  17,08 min
+01.06.2020 11:52:20(01.06.2020 12:05:10 ~ 01.06.2020 13:52:20) > Undelivered Order. ShopID = 2955. OrederID = 2444198. Weight = 0,603, Lat = 55,709423, Long = 37,273178, dist =7,15 km, arrivalTime =  21,44 min
+01.06.2020 11:00:41(01.06.2020 12:10:41 ~ 01.06.2020 13:00:41) > Undelivered Order. ShopID = 2955. OrederID = 2439876. Weight = 8,396, Lat = 55,751465, Long = 37,206387, dist =2,48 km, arrivalTime =  7,45 min
+01.06.2020 12:03:07(01.06.2020 12:25:32 ~ 01.06.2020 14:03:07) > Undelivered Order. ShopID = 2955. OrederID = 2433383. Weight = 4,234, Lat = 55,7747069980776, Long = 37,2407848, dist =2,14 km, arrivalTime =  6,42 min
+01.06.2020 11:29:47(01.06.2020 12:28:20 ~ 01.06.2020 13:29:47) > Undelivered Order. ShopID = 2955. OrederID = 2435608. Weight = 7,591, Lat = 55,77533, Long = 37,239918, dist =2,21 km, arrivalTime =  6,64 min
+01.06.2020 11:26:33(01.06.2020 12:36:33 ~ 01.06.2020 13:26:33) > Undelivered Order. ShopID = 2955. OrederID = 2441537. Weight = 35,137, Lat = 55,73872, Long = 37,220211, dist =2,96 km, arrivalTime =  8,88 min
+01.06.2020 11:43:11(01.06.2020 12:41:06 ~ 01.06.2020 13:43:11) > Undelivered Order. ShopID = 2955. OrederID = 2443596. Weight = 9,813, Lat = 55,7521527, Long = 37,1608681, dist =5,77 km, arrivalTime =  17,31 min
+01.06.2020 11:45:56(01.06.2020 12:55:56 ~ 01.06.2020 13:45:56) > Undelivered Order. ShopID = 2955. OrederID = 2442668. Weight = 5,074, Lat = 55,772163, Long = 37,245369, dist =1,89 km, arrivalTime =  5,68 min
+01.06.2020 12:10:18(01.06.2020 13:20:18 ~ 01.06.2020 14:10:18) > Undelivered Order. ShopID = 2955. OrederID = 2444906. Weight = 3,663, Lat = 55,732559, Long = 37,146618, dist =7,63 km, arrivalTime =  22,89 min
+01.06.2020 12:36:34(01.06.2020 13:46:34 ~ 01.06.2020 14:36:34) > Undelivered Order. ShopID = 2955. OrederID = 2447101. Weight = 2,457, Lat = 55,7319332, Long = 37,224989, dist =3,70 km, arrivalTime =  11,10 min
+01.06.2020 12:40:12(01.06.2020 13:50:12 ~ 01.06.2020 14:40:12) > Undelivered Order. ShopID = 2955. OrederID = 2446760. Weight = 6,698, Lat = 55,748444, Long = 37,159916, dist =5,94 km, arrivalTime =  17,81 min
+01.06.2020 13:48:38(01.06.2020 14:55:38 ~ 01.06.2020 15:48:38) > Undelivered Order. ShopID = 2955. OrederID = 2451637. Weight = 0,893, Lat = 55,717129, Long = 37,281273, dist =6,50 km, arrivalTime =  19,50 min
+01.06.2020 14:56:54(01.06.2020 16:06:54 ~ 01.06.2020 16:56:54) > Undelivered Order. ShopID = 2955. OrederID = 2455919. Weight = 1,897, Lat = 55,7867909, Long = 37,2985307, dist =5,96 km, arrivalTime =  17,87 min
+01.06.2020 10:13:42(01.06.2020 10:38:24 ~ 01.06.2020 12:13:42) > Undelivered Order. ShopID = 2981. OrederID = 2434213. Weight = 7,818, Lat = 59,890415, Long = 30,420824, dist =3,70 km, arrivalTime =  11,10 min
+01.06.2020 11:01:25(01.06.2020 11:18:39 ~ 01.06.2020 13:01:25) > Undelivered Order. ShopID = 2981. OrederID = 2439094. Weight = 4,163, Lat = 59,871070699638, Long = 30,3830725, dist =0,10 km, arrivalTime =  0,29 min
+01.06.2020 11:46:29(01.06.2020 12:13:50 ~ 01.06.2020 13:46:29) > Undelivered Order. ShopID = 2981. OrederID = 2442478. Weight = 7,473, Lat = 59,8580937549613, Long = 30,3759289186698, dist =1,75 km, arrivalTime =  5,25 min
+01.06.2020 12:41:12(01.06.2020 12:50:58 ~ 01.06.2020 14:41:12) > Undelivered Order. ShopID = 2981. OrederID = 2446490. Weight = 3,393, Lat = 59,8706335989141, Long = 30,3847165, dist =0,21 km, arrivalTime =  0,62 min
+01.06.2020 12:52:51(01.06.2020 12:54:16 ~ 01.06.2020 14:52:51) > Undelivered Order. ShopID = 2981. OrederID = 2448091. Weight = 3,623, Lat = 59,866474, Long = 30,387825, dist =0,72 km, arrivalTime =  2,15 min
+01.06.2020 10:54:52(01.06.2020 11:23:44 ~ 01.06.2020 12:54:52) > Undelivered Order. ShopID = 2987. OrederID = 2430571. Weight = 0,563, Lat = 53,0131969988218, Long = 36,152468, dist =8,56 km, arrivalTime =  25,67 min
+01.06.2020 11:27:21(01.06.2020 11:48:05 ~ 01.06.2020 13:27:21) > Undelivered Order. ShopID = 2987. OrederID = 2434589. Weight = 5,141, Lat = 53,0011526992145, Long = 36,1354449, dist =6,45 km, arrivalTime =  19,36 min
+01.06.2020 13:04:57(01.06.2020 13:10:19 ~ 01.06.2020 15:04:57) > Undelivered Order. ShopID = 2987. OrederID = 2447429. Weight = 2,04, Lat = 52,9842410984289, Long = 36,1065232, dist =3,21 km, arrivalTime =  9,64 min
+01.06.2020 13:10:06(01.06.2020 13:20:11 ~ 01.06.2020 15:10:06) > Undelivered Order. ShopID = 2987. OrederID = 2449195. Weight = 0,616, Lat = 52,9842410980362, Long = 36,1065232, dist =3,21 km, arrivalTime =  9,64 min
+01.06.2020 13:11:10(01.06.2020 13:24:31 ~ 01.06.2020 15:11:10) > Undelivered Order. ShopID = 2987. OrederID = 2442743. Weight = 1,527, Lat = 52,9983343290295, Long = 36,0701473043786, dist =4,07 km, arrivalTime =  12,21 min
+01.06.2020 13:43:15(01.06.2020 14:11:56 ~ 01.06.2020 15:43:15) > Undelivered Order. ShopID = 2987. OrederID = 2450431. Weight = 3,051, Lat = 52,979794, Long = 36,084789, dist =1,68 km, arrivalTime =  5,05 min
+01.06.2020 10:09:50(01.06.2020 10:47:53 ~ 01.06.2020 12:09:50) > Undelivered Order. ShopID = 2992. OrederID = 2435002. Weight = 8,576, Lat = 55,7595905996155, Long = 37,7023759, dist =0,45 km, arrivalTime =  1,35 min
+01.06.2020 10:02:54(01.06.2020 10:58:58 ~ 01.06.2020 12:02:54) > Undelivered Order. ShopID = 2992. OrederID = 2436199. Weight = 2,762, Lat = 55,763546, Long = 37,696911, dist =0,83 km, arrivalTime =  2,48 min
+01.06.2020 10:14:21(01.06.2020 11:24:21 ~ 01.06.2020 12:14:21) > Undelivered Order. ShopID = 2992. OrederID = 2437690. Weight = 1,573, Lat = 55,7611473, Long = 37,7059312, dist =0,79 km, arrivalTime =  2,37 min
+01.06.2020 10:15:02(01.06.2020 11:25:02 ~ 01.06.2020 12:15:02) > Undelivered Order. ShopID = 2992. OrederID = 2436828. Weight = 1,487, Lat = 55,7543066677061, Long = 37,7102286920371, dist =1,02 km, arrivalTime =  3,05 min
+01.06.2020 10:16:36(01.06.2020 11:26:36 ~ 01.06.2020 12:16:36) > Undelivered Order. ShopID = 2992. OrederID = 2436903. Weight = 4,689, Lat = 55,7638485996155, Long = 37,700523, dist =0,89 km, arrivalTime =  2,66 min
+01.06.2020 9:24:57(01.06.2020 11:10:00 ~ 01.06.2020 12:00:00) > Undelivered Order. ShopID = 3005. OrederID = 2435178. Weight = 1,973, Lat = 55,4627419544831, Long = 35,8866935065187, dist =11,47 km, arrivalTime =  34,42 min
+01.06.2020 10:02:16(01.06.2020 10:30:08 ~ 01.06.2020 12:02:16) > Undelivered Order. ShopID = 3028. OrederID = 2434601. Weight = 9,347, Lat = 56,1509472554097, Long = 47,1912324478081, dist =0,32 km, arrivalTime =  0,96 min
+01.06.2020 10:06:16(01.06.2020 10:41:46 ~ 01.06.2020 12:06:16) > Undelivered Order. ShopID = 3028. OrederID = 2437140. Weight = 1,178, Lat = 56,1214747, Long = 47,1809947, dist =3,91 km, arrivalTime =  11,74 min
+01.06.2020 10:05:58(01.06.2020 11:15:58 ~ 01.06.2020 12:05:58) > Undelivered Order. ShopID = 3059. OrederID = 2434033. Weight = 14,161, Lat = 55,701134, Long = 37,762096, dist =0,80 km, arrivalTime =  2,39 min
+01.06.2020 11:27:09(01.06.2020 11:45:11 ~ 01.06.2020 13:27:09) > Undelivered Order. ShopID = 3059. OrederID = 2440378. Weight = 3,965, Lat = 55,695599, Long = 37,756432, dist =0,85 km, arrivalTime =  2,56 min
+01.06.2020 13:32:33(01.06.2020 14:07:34 ~ 01.06.2020 15:32:33) > Undelivered Order. ShopID = 3063. OrederID = 2449869. Weight = 2,191, Lat = 47,249191, Long = 39,768517, dist =4,20 km, arrivalTime =  12,60 min
+01.06.2020 14:26:18(01.06.2020 14:40:50 ~ 01.06.2020 16:26:18) > Undelivered Order. ShopID = 3063. OrederID = 2453277. Weight = 0,163, Lat = 47,249191, Long = 39,768517, dist =4,20 km, arrivalTime =  12,60 min
+01.06.2020 10:05:30(01.06.2020 10:24:54 ~ 01.06.2020 12:05:30) > Undelivered Order. ShopID = 3186. OrederID = 2436722. Weight = 2,368, Lat = 59,8561136996379, Long = 30,4026494, dist =2,13 km, arrivalTime =  6,38 min
+01.06.2020 10:29:52(01.06.2020 11:18:34 ~ 01.06.2020 12:29:52) > Undelivered Order. ShopID = 3186. OrederID = 2438080. Weight = 3,693, Lat = 59,85743, Long = 30,410379, dist =2,66 km, arrivalTime =  7,99 min
+01.06.2020 10:48:19(01.06.2020 11:18:40 ~ 01.06.2020 12:48:19) > Undelivered Order. ShopID = 3266. OrederID = 2439520. Weight = 2,925, Lat = 55,728535, Long = 37,612812, dist =1,61 km, arrivalTime =  4,84 min
+01.06.2020 11:41:12(01.06.2020 12:01:02 ~ 01.06.2020 13:41:12) > Undelivered Order. ShopID = 3266. OrederID = 2443303. Weight = 0,933, Lat = 55,7209452315029, Long = 37,6135862132706, dist =0,71 km, arrivalTime =  2,12 min
+01.06.2020 12:41:47(01.06.2020 13:12:01 ~ 01.06.2020 14:41:47) > Undelivered Order. ShopID = 3295. OrederID = 2447442. Weight = 12,79, Lat = 55,4163735, Long = 38,2563482, dist =1,79 km, arrivalTime =  5,37 min
+01.06.2020 12:16:22(01.06.2020 13:26:22 ~ 01.06.2020 14:16:22) > Undelivered Order. ShopID = 3295. OrederID = 2440504. Weight = 16,071, Lat = 55,459251, Long = 38,277523, dist =5,56 km, arrivalTime =  16,68 min
+01.06.2020 13:16:01(01.06.2020 13:31:57 ~ 01.06.2020 15:16:01) > Undelivered Order. ShopID = 3295. OrederID = 2448523. Weight = 2,761, Lat = 55,423088, Long = 38,265453, dist =1,31 km, arrivalTime =  3,94 min
+01.06.2020 13:00:55(01.06.2020 13:47:48 ~ 01.06.2020 15:00:55) > Undelivered Order. ShopID = 3295. OrederID = 2445515. Weight = 12,669, Lat = 55,311546, Long = 38,441505, dist =18,74 km, arrivalTime =  56,23 min
+01.06.2020 13:08:21(01.06.2020 14:03:19 ~ 01.06.2020 15:08:21) > Undelivered Order. ShopID = 3295. OrederID = 2444068. Weight = 28,25, Lat = 55,3112877731755, Long = 38,4361330884778, dist =18,50 km, arrivalTime =  55,51 min
+01.06.2020 13:53:59(01.06.2020 14:04:08 ~ 01.06.2020 15:53:59) > Undelivered Order. ShopID = 3295. OrederID = 2451657. Weight = 7,088, Lat = 55,413250296527, Long = 38,2821848, dist =0,61 km, arrivalTime =  1,84 min
+01.06.2020 13:28:04(01.06.2020 14:12:17 ~ 01.06.2020 15:28:04) > Undelivered Order. ShopID = 3295. OrederID = 2449854. Weight = 18,123, Lat = 55,416832, Long = 38,280079, dist =0,11 km, arrivalTime =  0,33 min
+01.06.2020 10:35:03(01.06.2020 11:45:03 ~ 01.06.2020 12:35:03) > Undelivered Order. ShopID = 3324. OrederID = 2438706. Weight = 2,043, Lat = 55,946426, Long = 37,304535, dist =3,20 km, arrivalTime =  9,59 min
+01.06.2020 10:45:37(01.06.2020 11:55:37 ~ 01.06.2020 12:45:37) > Undelivered Order. ShopID = 3324. OrederID = 2439795. Weight = 18,262, Lat = 55,9433618, Long = 37,3185111, dist =4,19 km, arrivalTime =  12,58 min
+01.06.2020 11:07:59(01.06.2020 12:17:59 ~ 01.06.2020 13:07:59) > Undelivered Order. ShopID = 3324. OrederID = 2440737. Weight = 1,637, Lat = 55,944424, Long = 37,285511, dist =1,75 km, arrivalTime =  5,24 min
+01.06.2020 11:26:32(01.06.2020 12:36:32 ~ 01.06.2020 13:26:32) > Undelivered Order. ShopID = 3324. OrederID = 2434479. Weight = 8,899, Lat = 55,956295, Long = 37,252048, dist =2,05 km, arrivalTime =  6,14 min
+01.06.2020 11:28:56(01.06.2020 12:38:56 ~ 01.06.2020 13:28:56) > Undelivered Order. ShopID = 3324. OrederID = 2441678. Weight = 6,637, Lat = 55,946453, Long = 37,291218, dist =2,22 km, arrivalTime =  6,67 min
+01.06.2020 11:03:02(01.06.2020 11:55:28 ~ 01.06.2020 13:03:02) > Undelivered Order. ShopID = 3328. OrederID = 2440556. Weight = 4,508, Lat = 59,233967, Long = 39,881824, dist =2,70 km, arrivalTime =  8,09 min
+01.06.2020 12:06:13(01.06.2020 12:43:47 ~ 01.06.2020 14:06:13) > Undelivered Order. ShopID = 3328. OrederID = 2445118. Weight = 2,003, Lat = 59,2329631, Long = 39,8822553, dist =2,56 km, arrivalTime =  7,68 min
+01.06.2020 12:01:21(01.06.2020 12:20:01 ~ 01.06.2020 14:01:21) > Undelivered Order. ShopID = 3337. OrederID = 2443860. Weight = 3,583, Lat = 55,726963, Long = 37,652092, dist =2,22 km, arrivalTime =  6,67 min
+01.06.2020 12:07:15(01.06.2020 12:38:35 ~ 01.06.2020 14:07:15) > Undelivered Order. ShopID = 3369. OrederID = 2445188. Weight = 13,236, Lat = 58,0552295, Long = 38,7836999, dist =1,28 km, arrivalTime =  3,83 min
+01.06.2020 13:29:24(01.06.2020 13:38:41 ~ 01.06.2020 15:29:24) > Undelivered Order. ShopID = 3369. OrederID = 2450061. Weight = 4,898, Lat = 58,0625361992533, Long = 38,7706707, dist =0,78 km, arrivalTime =  2,35 min
+01.06.2020 10:30:03(01.06.2020 10:51:51 ~ 01.06.2020 12:30:03) > Undelivered Order. ShopID = 3383. OrederID = 2437365. Weight = 14,971, Lat = 55,576054, Long = 37,11718, dist =2,77 km, arrivalTime =  8,31 min
+01.06.2020 10:47:12(01.06.2020 11:57:12 ~ 01.06.2020 12:47:12) > Undelivered Order. ShopID = 3383. OrederID = 2438906. Weight = 16,876, Lat = 55,571022, Long = 37,118858, dist =3,45 km, arrivalTime =  10,35 min
+01.06.2020 11:33:27(01.06.2020 12:00:44 ~ 01.06.2020 13:33:27) > Undelivered Order. ShopID = 3383. OrederID = 2441330. Weight = 1,093, Lat = 55,5844581168368, Long = 37,1270239968688, dist =1,90 km, arrivalTime =  5,70 min
+01.06.2020 13:03:57(01.06.2020 14:13:57 ~ 01.06.2020 15:03:57) > Undelivered Order. ShopID = 3383. OrederID = 2445816. Weight = 13,116, Lat = 55,5751837992295, Long = 37,1527224, dist =4,09 km, arrivalTime =  12,26 min
+01.06.2020 13:35:12(01.06.2020 14:20:06 ~ 01.06.2020 15:35:12) > Undelivered Order. ShopID = 3383. OrederID = 2450690. Weight = 1,083, Lat = 55,5751837992295, Long = 37,1527224, dist =4,09 km, arrivalTime =  12,26 min
+01.06.2020 10:24:30(01.06.2020 10:36:57 ~ 01.06.2020 12:24:30) > Undelivered Order. ShopID = 3407. OrederID = 2437056. Weight = 3,795, Lat = 55,519714, Long = 37,691719, dist =4,40 km, arrivalTime =  13,21 min
+01.06.2020 10:09:03(01.06.2020 10:43:51 ~ 01.06.2020 12:09:03) > Undelivered Order. ShopID = 3407. OrederID = 2433609. Weight = 3,424, Lat = 55,5226516228324, Long = 37,6459711747764, dist =1,78 km, arrivalTime =  5,33 min
+01.06.2020 10:48:39(01.06.2020 11:10:10 ~ 01.06.2020 12:48:39) > Undelivered Order. ShopID = 3407. OrederID = 2439303. Weight = 6,716, Lat = 55,5087828976868, Long = 37,675689, dist =4,45 km, arrivalTime =  13,36 min
+01.06.2020 11:38:35(01.06.2020 11:49:04 ~ 01.06.2020 13:38:35) > Undelivered Order. ShopID = 3407. OrederID = 2443258. Weight = 3,198, Lat = 55,5683769, Long = 37,6346381, dist =4,40 km, arrivalTime =  13,20 min
+01.06.2020 10:14:03(01.06.2020 10:50:00 ~ 01.06.2020 12:14:03) > Undelivered Order. ShopID = 3418. OrederID = 2436303. Weight = 6,901, Lat = 55,907192, Long = 37,463474, dist =1,43 km, arrivalTime =  4,28 min
+01.06.2020 10:34:47(01.06.2020 10:57:25 ~ 01.06.2020 12:34:47) > Undelivered Order. ShopID = 3418. OrederID = 2438416. Weight = 0,891, Lat = 55,897564998848, Long = 37,4463809, dist =1,08 km, arrivalTime =  3,24 min
+01.06.2020 10:27:34(01.06.2020 11:05:50 ~ 01.06.2020 12:27:34) > Undelivered Order. ShopID = 3418. OrederID = 2438257. Weight = 2,212, Lat = 55,896158399616, Long = 37,4533181, dist =0,56 km, arrivalTime =  1,67 min
+01.06.2020 10:43:37(01.06.2020 11:30:19 ~ 01.06.2020 12:43:37) > Undelivered Order. ShopID = 3418. OrederID = 2438039. Weight = 7,713, Lat = 55,906906, Long = 37,463802, dist =1,39 km, arrivalTime =  4,18 min
+01.06.2020 10:12:32(01.06.2020 10:45:15 ~ 01.06.2020 12:12:32) > Undelivered Order. ShopID = 3439. OrederID = 2434982. Weight = 9,426, Lat = 55,6193908146621, Long = 37,7309382216251, dist =1,09 km, arrivalTime =  3,28 min
+01.06.2020 10:06:59(01.06.2020 10:13:06 ~ 01.06.2020 12:06:59) > Undelivered Order. ShopID = 3487. OrederID = 2437193. Weight = 0,22, Lat = 57,6214601, Long = 39,8528547, dist =0,84 km, arrivalTime =  2,53 min
+01.06.2020 10:39:08(01.06.2020 10:43:33 ~ 01.06.2020 12:39:08) > Undelivered Order. ShopID = 3487. OrederID = 2439408. Weight = 0,428, Lat = 57,6180513, Long = 39,8598663, dist =1,17 km, arrivalTime =  3,50 min
+01.06.2020 10:37:26(01.06.2020 10:45:17 ~ 01.06.2020 12:37:26) > Undelivered Order. ShopID = 3487. OrederID = 2439297. Weight = 0,443, Lat = 57,6180513, Long = 39,8598663, dist =1,17 km, arrivalTime =  3,50 min
+01.06.2020 11:43:58(01.06.2020 11:53:13 ~ 01.06.2020 13:43:58) > Undelivered Order. ShopID = 3487. OrederID = 2441912. Weight = 3,516, Lat = 57,619545, Long = 39,859581, dist =0,97 km, arrivalTime =  2,90 min
+01.06.2020 12:59:16(01.06.2020 13:20:26 ~ 01.06.2020 14:59:16) > Undelivered Order. ShopID = 3487. OrederID = 2448358. Weight = 9,483, Lat = 57,634605, Long = 39,890865, dist =2,50 km, arrivalTime =  7,49 min
+01.06.2020 13:21:03(01.06.2020 13:54:20 ~ 01.06.2020 15:21:03) > Undelivered Order. ShopID = 3487. OrederID = 2450029. Weight = 6,188, Lat = 57,6096555, Long = 39,8984516, dist =3,62 km, arrivalTime =  10,87 min
+01.06.2020 14:30:29(01.06.2020 14:39:53 ~ 01.06.2020 16:30:29) > Undelivered Order. ShopID = 3487. OrederID = 2453534. Weight = 2,042, Lat = 57,585915, Long = 39,909687, dist =6,55 km, arrivalTime =  19,64 min
+01.06.2020 11:36:31(01.06.2020 12:45:14 ~ 01.06.2020 13:36:31) > Undelivered Order. ShopID = 3622. OrederID = 2443121. Weight = 7,841, Lat = 59,8856222, Long = 30,3130316, dist =2,29 km, arrivalTime =  6,87 min
+01.06.2020 12:31:06(01.06.2020 13:41:06 ~ 01.06.2020 14:31:06) > Undelivered Order. ShopID = 3641. OrederID = 2445746. Weight = 4,363, Lat = 53,2172526992154, Long = 44,8841052, dist =10,09 km, arrivalTime =  30,27 min
+01.06.2020 13:04:00(01.06.2020 14:14:00 ~ 01.06.2020 15:04:00) > Undelivered Order. ShopID = 3641. OrederID = 2448633. Weight = 3,718, Lat = 53,200146, Long = 45,006393, dist =0,44 km, arrivalTime =  1,33 min
+01.06.2020 13:21:31(01.06.2020 14:27:23 ~ 01.06.2020 15:21:31) > Undelivered Order. ShopID = 3641. OrederID = 2449119. Weight = 4,522, Lat = 53,198074, Long = 45,008232, dist =0,27 km, arrivalTime =  0,80 min
+01.06.2020 13:21:49(01.06.2020 14:31:49 ~ 01.06.2020 15:21:49) > Undelivered Order. ShopID = 3641. OrederID = 2449354. Weight = 14,647, Lat = 53,134914, Long = 45,031998, dist =8,54 km, arrivalTime =  25,62 min
+01.06.2020 14:54:04(01.06.2020 15:25:25 ~ 01.06.2020 16:54:04) > Undelivered Order. ShopID = 3659. OrederID = 2452575. Weight = 15,324, Lat = 56,227402, Long = 41,301765, dist =17,16 km, arrivalTime =  51,47 min
+01.06.2020 15:14:05(01.06.2020 15:42:54 ~ 01.06.2020 17:14:05) > Undelivered Order. ShopID = 3659. OrederID = 2456867. Weight = 10,643, Lat = 56,335236, Long = 41,286085, dist =3,32 km, arrivalTime =  9,97 min
+01.06.2020 15:20:48(01.06.2020 15:49:23 ~ 01.06.2020 17:20:48) > Undelivered Order. ShopID = 3659. OrederID = 2435238. Weight = 4,73, Lat = 56,337418, Long = 41,292088, dist =2,84 km, arrivalTime =  8,51 min
+01.06.2020 15:36:42(01.06.2020 15:56:02 ~ 01.06.2020 17:36:42) > Undelivered Order. ShopID = 3659. OrederID = 2457811. Weight = 1,908, Lat = 56,365184999618, Long = 41,3191633, dist =1,38 km, arrivalTime =  4,15 min
+01.06.2020 13:06:57(01.06.2020 14:16:57 ~ 01.06.2020 15:06:57) > Undelivered Order. ShopID = 3724. OrederID = 2449114. Weight = 5,846, Lat = 56,386553, Long = 38,716428, dist =1,41 km, arrivalTime =  4,24 min
+01.06.2020 17:29:06(01.06.2020 18:14:24 ~ 01.06.2020 19:29:06) > Undelivered Order. ShopID = 3724. OrederID = 2463604. Weight = 11,77, Lat = 56,391819, Long = 38,711113, dist =0,81 km, arrivalTime =  2,42 min
+01.06.2020 10:09:07(01.06.2020 10:39:20 ~ 01.06.2020 12:09:07) > Undelivered Order. ShopID = 3801. OrederID = 2435887. Weight = 1,343, Lat = 55,8067352680042, Long = 37,4163409586533, dist =0,65 km, arrivalTime =  1,96 min
+01.06.2020 10:46:58(01.06.2020 11:56:58 ~ 01.06.2020 12:46:58) > Undelivered Order. ShopID = 3801. OrederID = 2439879. Weight = 7,971, Lat = 55,8044495, Long = 37,4145011, dist =0,69 km, arrivalTime =  2,07 min
+01.06.2020 11:26:43(01.06.2020 12:36:43 ~ 01.06.2020 13:26:43) > Undelivered Order. ShopID = 3801. OrederID = 2442480. Weight = 0,968, Lat = 55,8062014, Long = 37,4072912, dist =0,26 km, arrivalTime =  0,78 min
+01.06.2020 11:28:01(01.06.2020 12:38:01 ~ 01.06.2020 13:28:01) > Undelivered Order. ShopID = 3801. OrederID = 2442222. Weight = 1,183, Lat = 55,807274, Long = 37,405937, dist =0,19 km, arrivalTime =  0,57 min
+01.06.2020 11:35:23(01.06.2020 12:45:23 ~ 01.06.2020 13:35:23) > Undelivered Order. ShopID = 3801. OrederID = 2430658. Weight = 7,109, Lat = 55,8099792305357, Long = 37,4015963671534, dist =0,54 km, arrivalTime =  1,62 min
+01.06.2020 11:54:22(01.06.2020 13:04:22 ~ 01.06.2020 13:54:22) > Undelivered Order. ShopID = 3801. OrederID = 2442596. Weight = 3,071, Lat = 55,8086641996156, Long = 37,4120704, dist =0,31 km, arrivalTime =  0,94 min
+01.06.2020 10:31:46(01.06.2020 11:41:46 ~ 01.06.2020 12:31:46) > Undelivered Order. ShopID = 3827. OrederID = 2438920. Weight = 5,921, Lat = 60,0134425, Long = 30,4234727, dist =2,79 km, arrivalTime =  8,36 min
+01.06.2020 11:44:35(01.06.2020 12:05:55 ~ 01.06.2020 13:44:35) > Undelivered Order. ShopID = 3827. OrederID = 2434210. Weight = 3,14, Lat = 60,003452, Long = 30,422052, dist =4,00 km, arrivalTime =  12,01 min
+01.06.2020 12:57:04(01.06.2020 13:43:29 ~ 01.06.2020 14:57:04) > Undelivered Order. ShopID = 3827. OrederID = 2448469. Weight = 4,413, Lat = 60,0069043, Long = 30,4293084, dist =3,74 km, arrivalTime =  11,23 min
+01.06.2020 13:04:31(01.06.2020 13:51:41 ~ 01.06.2020 15:04:31) > Undelivered Order. ShopID = 3827. OrederID = 2447946. Weight = 4,473, Lat = 60,002991, Long = 30,400133, dist =3,92 km, arrivalTime =  11,75 min
+01.06.2020 13:28:52(01.06.2020 14:14:09 ~ 01.06.2020 15:28:52) > Undelivered Order. ShopID = 3827. OrederID = 2449888. Weight = 5,139, Lat = 60,001423, Long = 30,388905, dist =4,25 km, arrivalTime =  12,76 min
+01.06.2020 14:03:43(01.06.2020 14:16:21 ~ 01.06.2020 16:03:43) > Undelivered Order. ShopID = 3827. OrederID = 2452164. Weight = 1,527, Lat = 60,00428, Long = 30,403252, dist =3,73 km, arrivalTime =  11,20 min
+01.06.2020 14:12:32(01.06.2020 14:21:42 ~ 01.06.2020 16:12:32) > Undelivered Order. ShopID = 3827. OrederID = 2453098. Weight = 0,1, Lat = 60,002766, Long = 30,399595, dist =3,95 km, arrivalTime =  11,85 min
+01.06.2020 13:54:55(01.06.2020 14:32:52 ~ 01.06.2020 15:54:55) > Undelivered Order. ShopID = 3827. OrederID = 2439152. Weight = 7,798, Lat = 60,002766, Long = 30,399595, dist =3,95 km, arrivalTime =  11,85 min
+01.06.2020 10:35:23(01.06.2020 10:43:42 ~ 01.06.2020 12:35:23) > Undelivered Order. ShopID = 3843. OrederID = 2438771. Weight = 1,305, Lat = 55,8167333965412, Long = 37,7096665, dist =0,60 km, arrivalTime =  1,80 min
+01.06.2020 11:22:52(01.06.2020 12:08:47 ~ 01.06.2020 13:22:52) > Undelivered Order. ShopID = 3843. OrederID = 2442261. Weight = 5,905, Lat = 55,818862, Long = 37,710862, dist =0,61 km, arrivalTime =  1,84 min
+01.06.2020 10:32:09(01.06.2020 11:42:09 ~ 01.06.2020 12:32:09) > Undelivered Order. ShopID = 3856. OrederID = 2435652. Weight = 3,828, Lat = 55,7558690996154, Long = 37,5413575, dist =1,23 km, arrivalTime =  3,68 min
+01.06.2020 10:52:59(01.06.2020 12:02:59 ~ 01.06.2020 12:52:59) > Undelivered Order. ShopID = 3856. OrederID = 2439269. Weight = 7,773, Lat = 55,7573490996154, Long = 37,5578793, dist =0,62 km, arrivalTime =  1,87 min
+01.06.2020 10:55:47(01.06.2020 12:05:47 ~ 01.06.2020 12:55:47) > Undelivered Order. ShopID = 3856. OrederID = 2440444. Weight = 1,267, Lat = 55,7599821, Long = 37,53736, dist =1,28 km, arrivalTime =  3,85 min
+01.06.2020 11:14:52(01.06.2020 12:24:52 ~ 01.06.2020 13:14:52) > Undelivered Order. ShopID = 3856. OrederID = 2441731. Weight = 1,6, Lat = 55,7532383, Long = 37,5361401, dist =1,75 km, arrivalTime =  5,26 min
+01.06.2020 12:27:21(01.06.2020 13:37:21 ~ 01.06.2020 14:27:21) > Undelivered Order. ShopID = 3856. OrederID = 2445475. Weight = 10,778, Lat = 55,761673, Long = 37,53788, dist =1,23 km, arrivalTime =  3,68 min
+01.06.2020 12:31:58(01.06.2020 12:39:30 ~ 01.06.2020 14:31:58) > Undelivered Order. ShopID = 3905. OrederID = 2441317. Weight = 12,223, Lat = 55,769562, Long = 37,492767, dist =1,32 km, arrivalTime =  3,95 min
+01.06.2020 12:15:00(01.06.2020 13:25:00 ~ 01.06.2020 14:15:00) > Undelivered Order. ShopID = 3917. OrederID = 2443074. Weight = 5,658, Lat = 55,709663, Long = 37,661549, dist =0,21 km, arrivalTime =  0,63 min
+01.06.2020 12:21:05(01.06.2020 13:31:05 ~ 01.06.2020 14:21:05) > Undelivered Order. ShopID = 3917. OrederID = 2445595. Weight = 2,855, Lat = 55,7219553996153, Long = 37,6609218, dist =1,59 km, arrivalTime =  4,77 min
+01.06.2020 12:30:12(01.06.2020 13:40:12 ~ 01.06.2020 14:30:12) > Undelivered Order. ShopID = 3917. OrederID = 2446189. Weight = 0,545, Lat = 55,708611, Long = 37,665569, dist =0,54 km, arrivalTime =  1,62 min
+01.06.2020 12:20:14(01.06.2020 12:54:48 ~ 01.06.2020 14:20:14) > Undelivered Order. ShopID = 4011. OrederID = 2443191. Weight = 11,139, Lat = 59,979229, Long = 30,377214, dist =0,73 km, arrivalTime =  2,18 min
+01.06.2020 12:28:33(01.06.2020 13:06:50 ~ 01.06.2020 14:28:33) > Undelivered Order. ShopID = 4011. OrederID = 2446520. Weight = 4,998, Lat = 59,9865974, Long = 30,3424677, dist =2,55 km, arrivalTime =  7,65 min
+01.06.2020 12:46:34(01.06.2020 13:10:08 ~ 01.06.2020 14:46:34) > Undelivered Order. ShopID = 4011. OrederID = 2447614. Weight = 0,803, Lat = 59,9671031992774, Long = 30,4000995, dist =2,66 km, arrivalTime =  7,98 min
+01.06.2020 13:00:26(01.06.2020 13:15:11 ~ 01.06.2020 15:00:26) > Undelivered Order. ShopID = 4011. OrederID = 2448621. Weight = 0,503, Lat = 59,9671031992774, Long = 30,4000995, dist =2,66 km, arrivalTime =  7,98 min
+01.06.2020 13:22:51(01.06.2020 13:27:36 ~ 01.06.2020 15:22:51) > Undelivered Order. ShopID = 4011. OrederID = 2448005. Weight = 0,413, Lat = 59,980972, Long = 30,374273, dist =0,62 km, arrivalTime =  1,85 min
+01.06.2020 14:02:15(01.06.2020 14:14:36 ~ 01.06.2020 16:02:15) > Undelivered Order. ShopID = 4011. OrederID = 2451345. Weight = 1,068, Lat = 59,9785547688136, Long = 30,37437262962, dist =0,88 km, arrivalTime =  2,64 min
