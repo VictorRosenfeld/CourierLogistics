@@ -7,6 +7,7 @@ namespace CourierLogistics
     using LogisticsService.FixedCourierService;
     using LogisticsService.ServiceParameters;
     using System;
+    using System.Diagnostics;
     using System.IO;
     //using System.Net.Http;
     using System.Windows.Forms;
@@ -408,7 +409,6 @@ namespace CourierLogistics
             }
         }
 
-
         //FixedService service;
         //FixedServiceEx service;
         //FixedServiceEy service;
@@ -437,11 +437,95 @@ namespace CourierLogistics
 
         }
 
+        /// <summary>
+        /// Событие формы Closed
+        /// </summary>
+        /// <param name="sender">Форма</param>
+        /// <param name="e">Аргументы события</param>
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (service != null)
             {
                 try { service.Dispose(); service = null; } catch { }
+            }
+
+            try { TrayIcon.Dispose(); } catch { }
+        }
+
+        /// <summary>
+        /// Событие формы Load
+        /// </summary>
+        /// <param name="sender">Форма</param>
+        /// <param name="e">Аргументы события</param>
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            service = new FixedServiceEz();
+            //string jsonFile = @"C:\Users\Виктор\source\repos\CourierLogistics\LogisticsService\ServiceParameters.json";
+            string jsonFile = @"ServiceParameters.json";
+            int rc = service.Create(jsonFile);
+            if (rc != 0)
+            {
+                isTrayExit = true;
+                Close();
+                return;
+            }
+            TrayIcon.Text = $"LogisticsService ver. {Application.ProductVersion} (service_id {service.Config.functional_parameters.service_id})";
+            service.Start();
+        }
+
+        /// <summary>
+        /// Событие формы Shown
+        /// </summary>
+        /// <param name="sender">Форма</param>
+        /// <param name="e">Аргументы события</param>
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            this.Visible = false;
+        }
+
+        /// <summary>
+        /// Пункт ShowLog Tray-меню 
+        /// </summary>
+        /// <param name="sender">MenuItem</param>
+        /// <param name="e">Аргументы события</param>
+        private void menuTrayIcon_ShowLog_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process notepadProcess = new Process();
+                notepadProcess.StartInfo.Arguments = "";
+                notepadProcess.StartInfo.FileName = service.LogFileName;
+                notepadProcess.StartInfo.UseShellExecute = true;
+                notepadProcess.Start();
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Пункт Exit Tray-меню 
+        /// </summary>
+        /// <param name="sender">MenuItem</param>
+        /// <param name="e">Аргументы события</param>
+        private void menuTrayIcon_Exit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                isTrayExit = true;
+                this.Close();
+            }
+            catch
+            { }
+        }
+
+        bool isTrayExit = false;
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing && !isTrayExit)
+            {
+                e.Cancel = true;
+                this.Visible = false;
             }
         }
     }

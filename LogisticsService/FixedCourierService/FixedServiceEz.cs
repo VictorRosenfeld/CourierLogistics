@@ -33,6 +33,16 @@ namespace LogisticsService.FixedCourierService
         private ServiceConfig config;
 
         /// <summary>
+        /// Параметры конфигурации
+        /// </summary>
+        public ServiceConfig Config => config;
+
+        /// <summary>
+        /// Путь к файлу лога
+        /// </summary>
+        public string LogFileName => Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
+
+        /// <summary>
         /// Менеджер расстояний и времени движения
         /// между точками разными способами
         /// </summary>

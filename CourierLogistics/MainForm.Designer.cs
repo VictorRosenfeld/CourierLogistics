@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.butStart = new System.Windows.Forms.Button();
             this.butRealModel = new System.Windows.Forms.Button();
@@ -35,6 +36,12 @@
             this.butFloatOptimalModel = new System.Windows.Forms.Button();
             this.butCompareDistance = new System.Windows.Forms.Button();
             this.butStartFixedService = new System.Windows.Forms.Button();
+            this.TrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.menuTrayIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.menuTrayIcon_ShowLog = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuTrayIcon_Exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuTrayIcon.SuspendLayout();
             this.SuspendLayout();
             // 
             // butStart
@@ -102,6 +109,44 @@
             this.butStartFixedService.UseVisualStyleBackColor = true;
             this.butStartFixedService.Click += new System.EventHandler(this.butStartFixedService_Click);
             // 
+            // TrayIcon
+            // 
+            this.TrayIcon.ContextMenuStrip = this.menuTrayIcon;
+            this.TrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("TrayIcon.Icon")));
+            this.TrayIcon.Text = "notifyIcon1";
+            this.TrayIcon.Visible = true;
+            // 
+            // menuTrayIcon
+            // 
+            this.menuTrayIcon.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuTrayIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuTrayIcon_ShowLog,
+            this.toolStripSeparator1,
+            this.menuTrayIcon_Exit});
+            this.menuTrayIcon.Name = "menuTrayIcon";
+            this.menuTrayIcon.Size = new System.Drawing.Size(144, 58);
+            // 
+            // menuTrayIcon_ShowLog
+            // 
+            this.menuTrayIcon_ShowLog.Name = "menuTrayIcon_ShowLog";
+            this.menuTrayIcon_ShowLog.Size = new System.Drawing.Size(210, 24);
+            this.menuTrayIcon_ShowLog.Text = "Show Log";
+            this.menuTrayIcon_ShowLog.ToolTipText = "Show log";
+            this.menuTrayIcon_ShowLog.Click += new System.EventHandler(this.menuTrayIcon_ShowLog_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(207, 6);
+            // 
+            // menuTrayIcon_Exit
+            // 
+            this.menuTrayIcon_Exit.Name = "menuTrayIcon_Exit";
+            this.menuTrayIcon_Exit.Size = new System.Drawing.Size(210, 24);
+            this.menuTrayIcon_Exit.Text = "Exit";
+            this.menuTrayIcon_Exit.ToolTipText = "Exit";
+            this.menuTrayIcon_Exit.Click += new System.EventHandler(this.menuTrayIcon_Exit_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -116,7 +161,12 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Анализ и построение логистики курьеров";
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
+            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.menuTrayIcon.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -129,6 +179,11 @@
         private System.Windows.Forms.Button butFloatOptimalModel;
         private System.Windows.Forms.Button butCompareDistance;
         private System.Windows.Forms.Button butStartFixedService;
+        private System.Windows.Forms.NotifyIcon TrayIcon;
+        private System.Windows.Forms.ContextMenuStrip menuTrayIcon;
+        private System.Windows.Forms.ToolStripMenuItem menuTrayIcon_ShowLog;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem menuTrayIcon_Exit;
     }
 }
 
