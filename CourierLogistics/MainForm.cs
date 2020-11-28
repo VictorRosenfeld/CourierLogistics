@@ -9,6 +9,7 @@ namespace CourierLogistics
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Threading;
     //using System.Net.Http;
     using System.Windows.Forms;
     using static LogisticsService.API.GetOrderEvents;
@@ -450,7 +451,10 @@ namespace CourierLogistics
             }
 
             try { TrayIcon.Dispose(); } catch { }
+            try { if (locker != null) locker.Dispose(); } catch { }
         }
+
+        Mutex locker = null;
 
         /// <summary>
         /// Событие формы Load
@@ -459,18 +463,49 @@ namespace CourierLogistics
         /// <param name="e">Аргументы события</param>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            service = new FixedServiceEz();
-            //string jsonFile = @"C:\Users\Виктор\source\repos\CourierLogistics\LogisticsService\ServiceParameters.json";
-            string jsonFile = @"ServiceParameters.json";
-            int rc = service.Create(jsonFile);
-            if (rc != 0)
+            try
             {
+                // 1. Создам сервис
+                service = new FixedServiceEz();
+                //string jsonFile = @"C:\Users\Виктор\source\repos\CourierLogistics\LogisticsService\ServiceParameters.json";
+                string jsonFile = @"ServiceParameters.json";
+                int rc = service.Create(jsonFile);
+                if (rc != 0)
+                {
+                    MessageBox.Show($"Не удалось создать сервис (rc = {rc}) !", "LogisticsService", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    isTrayExit = true;
+                    Close();
+                    return;
+                }
+
+                // 2. Проверяем, что сервис с тем же service_id ещё не запущен
+                try
+                {
+                    bool createdNew;
+                    locker = new Mutex(true, $"580D37FF-D838-46E8-A350-DB10B6207E6C-{service.Config.functional_parameters.service_id}", out createdNew);
+                    if (!createdNew)
+                    {
+                        MessageBox.Show($"LogisticsService c service_id = {service.Config.functional_parameters.service_id} уже запущен !", "LogisticsService", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        //locker.Dispose();
+                        //locker = null;
+                        isTrayExit = true;
+                        Close();
+                        return;
+                    }
+                }
+                catch
+                { }
+
+                // 3. Запускаем сервис
+                TrayIcon.Text = $"LogisticsService ver. {Application.ProductVersion} (service_id {service.Config.functional_parameters.service_id})";
+                service.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "LogisticsService", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 isTrayExit = true;
                 Close();
-                return;
             }
-            TrayIcon.Text = $"LogisticsService ver. {Application.ProductVersion} (service_id {service.Config.functional_parameters.service_id})";
-            service.Start();
         }
 
         /// <summary>
