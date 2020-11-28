@@ -1,6 +1,7 @@
 ﻿
 namespace LogisticsService.API
 {
+    using LogisticsService.Log;
     using Newtonsoft.Json;
     using System.IO;
     using System.Net;
@@ -46,6 +47,7 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+                Helper.WriteToLog(string.Format(MessagePatterns.TIME_DIST_REQUEST, request.Address.OriginalString));
 
                 string postData;
                 JsonSerializerSettings settings = new JsonSerializerSettings();
@@ -57,6 +59,8 @@ namespace LogisticsService.API
                     sw.Close();
                     postData = sw.ToString();
                 }
+
+                Helper.WriteToLog(string.Format(MessagePatterns.TIME_DIST_POST_DATA, postData));
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
                 request.ContentLength = byteArray.Length;
@@ -72,11 +76,20 @@ namespace LogisticsService.API
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Helper.WriteToLog(string.Format(MessagePatterns.TIME_DIST_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
                         throw new HttpListenerException((int)response.StatusCode, response.StatusDescription);
+                    }
 
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
-                        responseData = (ShippingInfoResponse)serializer.Deserialize(reader, typeof(ShippingInfoResponse));
+                        string json = reader.ReadToEnd();
+                        Helper.WriteToLog(string.Format(MessagePatterns.TIME_DIST_RESPONSE, json));
+
+                        using (StringReader sr = new StringReader(json))
+                        {
+                            responseData = (ShippingInfoResponse)serializer.Deserialize(sr, typeof(ShippingInfoResponse));
+                        }
                     }
                 }
 
@@ -119,7 +132,8 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                Helper.WriteToLog(request.Address.OriginalString);
+                //Helper.WriteToLog(request.Address.OriginalString);
+                Helper.WriteToLog(string.Format(MessagePatterns.TIME_DIST_REQUEST, request.Address.OriginalString));
 
                 string postData;
                 JsonSerializerSettings settings = new JsonSerializerSettings();
@@ -131,6 +145,8 @@ namespace LogisticsService.API
                     sw.Close();
                     postData = sw.ToString();
                 }
+
+                Helper.WriteToLog(string.Format(MessagePatterns.TIME_DIST_POST_DATA, postData));
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
                 request.ContentLength = byteArray.Length;
@@ -146,13 +162,18 @@ namespace LogisticsService.API
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Helper.WriteToLog(string.Format(MessagePatterns.TIME_DIST_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
                         throw new HttpListenerException((int)response.StatusCode, response.StatusDescription);
+                    }
 
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
                         //responseData = (ShippingInfoResponse)serializer.Deserialize(reader, typeof(ShippingInfoResponse));
                         string json = reader.ReadToEnd();
-                        Helper.WriteToLog(json);
+                        //Helper.WriteToLog(json);
+                        Helper.WriteToLog(string.Format(MessagePatterns.TIME_DIST_RESPONSE, json));
+
                         if (string.IsNullOrEmpty(json))
                             return rc;
 
@@ -241,7 +262,6 @@ namespace LogisticsService.API
             public int duration { get; set; }
         }
 
-
         /// <summary>
         /// Post-данные для
         /// запроса времени движения и расстояний
@@ -281,6 +301,5 @@ namespace LogisticsService.API
             [JsonIgnore]
             public int DestinationCount => destinations == null ? 0 : destinations.Length;
         }
-
     }
 }

@@ -66,7 +66,7 @@ namespace LogisticsService
         /// Запись сообщения в лог
         /// </summary>
         /// <param name="message">Сообщение</param>
-        public static void WriteWariningToLog(string message)
+        public static void WriteWarningToLog(string message)
         {
             try
             {

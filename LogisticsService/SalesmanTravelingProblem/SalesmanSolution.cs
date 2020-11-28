@@ -317,7 +317,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                     if (calcTime > order.DeliveryTimeTo)
                     {
                         undelivOrders[undeliveredCount++] = order;
-                        Helper.WriteWariningToLog($"Undelivered By Time. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
+                        Helper.WriteWarningToLog($"Undelivered By Time. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
                     }
                     else
                     {
@@ -576,7 +576,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                 {
                     if (!orderCoverMap[i] && shopOrders[i].Status == OrderStatus.Assembled)
                     {
-                        Helper.WriteWariningToLog($"Undelivered By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
+                        Helper.WriteWarningToLog($"Undelivered By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
                         undelivOrders[undeliveredCount++] = shopOrders[i];
                     }
                 }

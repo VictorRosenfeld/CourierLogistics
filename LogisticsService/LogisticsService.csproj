@@ -73,7 +73,7 @@
     <Compile Include="Geo\CacheItem.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Locations\LocationManager.cs" />
-    <Compile Include="Log\LogMessages.cs" />
+    <Compile Include="Log\MessagePatterns.cs" />
     <Compile Include="Orders\AllOrders.cs" />
     <Compile Include="Orders\AllOrdersEx.cs" />
     <Compile Include="Orders\EnabledCourierType.cs" />

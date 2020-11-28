@@ -1,6 +1,7 @@
 ﻿
 namespace LogisticsService.API
 {
+    using LogisticsService.Log;
     using Newtonsoft.Json;
     using System;
     using System.IO;
@@ -55,14 +56,18 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                Helper.WriteToLog(request.Address.OriginalString);
+                //Helper.WriteToLog(request.Address.OriginalString);
+                Helper.WriteToLog(string.Format(MessagePatterns.COURIER_EVENTS_REQUEST, request.Address.OriginalString));
 
                 // 3. Посылаем Get-запрос и обрабатываем отклик
                 rc = 3;
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Helper.WriteToLog(string.Format(MessagePatterns.COURIER_EVENTS_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
                         throw new HttpListenerException((int)response.StatusCode, response.StatusDescription);
+                    }
 
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
@@ -72,7 +77,9 @@ namespace LogisticsService.API
                         //events = (CourierEvent[])serializer.Deserialize(reader, typeof(CourierEvent[]));
 
                         string json = reader.ReadToEnd();
-                        Helper.WriteToLog(json);
+                        //Helper.WriteToLog(json);
+                        Helper.WriteToLog(string.Format(MessagePatterns.COURIER_EVENTS_RESPONSE, json));
+
                         using (StringReader sr = new StringReader(json))
                         {
                             events = (CourierEvent[])serializer.Deserialize(sr, typeof(CourierEvent[]));

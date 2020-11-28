@@ -3,6 +3,7 @@ namespace LogisticsService.SalesmanTravelingProblem
 {
     using LogisticsService.Couriers;
     using LogisticsService.Geo;
+    using LogisticsService.Log;
     using LogisticsService.Orders;
     using LogisticsService.SalesmanTravelingProblem.PermutationsSupport;
     using LogisticsService.ServiceParameters;
@@ -384,7 +385,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                     if (calcTime > order.DeliveryTimeTo)
                     {
                         undelivOrders[undeliveredCount++] = order;
-                        Helper.WriteWariningToLog($"Undelivered By Time. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
+                        Helper.WriteWarningToLog($"Undelivered By Time. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
                         order.RejectionReason = OrderRejectionReason.LateStart;
                     }
                     else
@@ -422,7 +423,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                         else
                         {
                             undelivOrders[undeliveredCount++] = order;
-                            Helper.WriteWariningToLog($"Order Rejected. Courier is not available. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
+                            Helper.WriteWarningToLog($"Order Rejected. Courier is not available. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
                             order.RejectionReason = OrderRejectionReason.CourierNa;
                         }
                     }
@@ -644,7 +645,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                 {
                     if (!orderCoverMap[i] && shopOrders[i].Status == OrderStatus.Receipted)
                     {
-                        Helper.WriteWariningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
+                        Helper.WriteWarningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
                         undelivOrders[undeliveredCount++] = shopOrders[i];
                     }
                     else if (shopOrders[i].Status == OrderStatus.Receipted)
@@ -685,7 +686,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                     if (!orderCoverMap[i] && shopOrders[i].Status == OrderStatus.Assembled)
                         //if (!orderCoverMap[i])
                     {
-                        Helper.WriteWariningToLog($"Assembled order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
+                        Helper.WriteWarningToLog($"Assembled order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
                         undelivOrders[undeliveredCount++] = shopOrders[i];
                     }
                 }
@@ -763,7 +764,9 @@ namespace LogisticsService.SalesmanTravelingProblem
                     if (calcTime > order.DeliveryTimeTo)
                     {
                         undelivOrders[undeliveredCount++] = order;
-                        Helper.WriteWariningToLog($"Undelivered By Time. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
+                        //Helper.WriteWarningToLog($"Undelivered By Time. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
+                        Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ORDER_BY_TIME, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+
                         order.RejectionReason = OrderRejectionReason.LateStart;
                     }
                     else
@@ -801,7 +804,9 @@ namespace LogisticsService.SalesmanTravelingProblem
                         else
                         {
                             undelivOrders[undeliveredCount++] = order;
-                            Helper.WriteWariningToLog($"Order Rejected. Courier is not available. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
+                            //Helper.WriteWarningToLog($"Order Rejected. Courier is not available. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
+                            Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+
                             order.RejectionReason = OrderRejectionReason.CourierNa;
                         }
                     }
@@ -1023,8 +1028,10 @@ namespace LogisticsService.SalesmanTravelingProblem
                 {
                     if (!orderCoverMap[i] && shopOrders[i].Status == OrderStatus.Receipted)
                     {
-                        Helper.WriteWariningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
-                        undelivOrders[undeliveredCount++] = shopOrders[i];
+                        Order order = shopOrders[i];
+                        //Helper.WriteWarningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
+                        Helper.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+                        undelivOrders[undeliveredCount++] = order;
                     }
                     else if (shopOrders[i].Status == OrderStatus.Receipted)
                     {
@@ -1161,8 +1168,10 @@ namespace LogisticsService.SalesmanTravelingProblem
                     if (!orderCoverMap[i] && shopOrders[i].Status == OrderStatus.Assembled)
                         //if (!orderCoverMap[i])
                     {
-                        Helper.WriteWariningToLog($"Assembled order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
-                        undelivOrders[undeliveredCount++] = shopOrders[i];
+                        Order order = shopOrders[i];
+                        //Helper.WriteWarningToLog($"Assembled order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
+                        Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ASSEMBLED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+                        undelivOrders[undeliveredCount++] = order;
                     }
                 }
 
@@ -1179,9 +1188,13 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveriesEx(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateShopDeliveriesEx(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateSingleDeliveryEx", $"Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateSingleDeliveryEx", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateSingleDeliveryEx", ex.ToString()));
 
                 return rc;
             }
@@ -2105,9 +2118,13 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveriesForCourier(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateShopDeliveriesForCourier(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateSingleDeliveryEx", $"Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateSingleDeliveryEx", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateSingleDeliveryEx", ex.ToString()));
 
                 return rc;
             }
@@ -2280,9 +2297,12 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveries8(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateShopDeliveries8(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries8", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries8", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries8", ex.ToString()));
 
                 return rc;
             }
@@ -2443,9 +2463,12 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveries7(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateShopDeliveries7(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries7", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries7", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries7", ex.ToString()));
 
                 return rc;
             }
@@ -2594,9 +2617,12 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveries6(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateShopDeliveries6(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries6", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries6", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries6", ex.ToString()));
 
                 return rc;
             }
@@ -2733,9 +2759,12 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveries5(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateShopDeliveries5(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries5", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries5", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries5", ex.ToString()));
 
                 return rc;
             }
@@ -2860,9 +2889,12 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveries4(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateShopDeliveries4(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries4", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries4", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries4", ex.ToString()));
 
                 return rc;
             }
@@ -2970,14 +3002,17 @@ namespace LogisticsService.SalesmanTravelingProblem
                 allPossibleDeliveries = allDeliveries;
 
                 // 8. Выход - Ok
-                rc = 0;
+                //rc = 0;
                 return rc;
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveries3(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateShopDeliveries3(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries3", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries3", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries3", ex.ToString()));
 
                 return rc;
             }
@@ -3078,9 +3113,12 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveries2(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateShopDeliveries2(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries2", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries2", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries2", ex.ToString()));
 
                 return rc;
             }
@@ -3171,9 +3209,12 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"FindSalesmanProblemSolution(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Take(orderCount).Select(order => order.Id).ToArray())}, courier {courier.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"FindSalesmanProblemSolution(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Take(orderCount).Select(order => order.Id).ToArray())}, courier {courier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "FindSalesmanProblemSolution", $"Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Take(orderCount).Select(order => order.Id).ToArray())}, courier {courier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "FindSalesmanProblemSolution", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "FindSalesmanProblemSolution", ex.ToString()));
 
                 return rc;
             }
@@ -3404,9 +3445,12 @@ namespace LogisticsService.SalesmanTravelingProblem
             catch (Exception ex)
             {
 
-                Helper.WriteErrorToLog($"BuildDeliveryCoverEx(...)");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"BuildDeliveryCoverEx(...)");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "BuildDeliveryCoverEx", "..."));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "BuildDeliveryCoverEx", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "BuildDeliveryCoverEx", ex.ToString()));
                 return rc;
             }
         }
@@ -3526,9 +3570,13 @@ namespace LogisticsService.SalesmanTravelingProblem
             catch (Exception ex)
             {
 
-                Helper.WriteErrorToLog($"BuildDeliveryCoverEy(...)");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"BuildDeliveryCoverEy(...)");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "BuildDeliveryCoverEy", "..."));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "BuildDeliveryCoverEy", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "BuildDeliveryCoverEy", ex.ToString()));
+
                 return rc;
             }
         }
@@ -3762,9 +3810,12 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateSingleDelivery(Shop {shop.Id}, OrderId {shop}, courier {order.Id}, isloop {isLoop}, calcTime {calcTime})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                //Helper.WriteErrorToLog($"CreateSingleDelivery(Shop {shop.Id}, OrderId {shop}, courier {order.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateSingleDeliveryEx", $"Shop {shop.Id}, OrderId {shop}, courier {order.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateSingleDeliveryEx", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateSingleDeliveryEx", ex.ToString()));
 
                 return rc;
             }

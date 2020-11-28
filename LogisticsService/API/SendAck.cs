@@ -1,6 +1,7 @@
 ﻿
 namespace LogisticsService.API
 {
+    using LogisticsService.Log;
     using Newtonsoft.Json;
     using System.IO;
     using System.Net;
@@ -42,6 +43,7 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+                Helper.WriteToLog(string.Format(MessagePatterns.SEND_ACK_REQUEST, request.Address.OriginalString));
 
                 request.ContentLength = 0;
 
@@ -50,17 +52,25 @@ namespace LogisticsService.API
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Helper.WriteToLog(string.Format(MessagePatterns.SEND_ACK_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
                         throw new HttpListenerException((int)response.StatusCode, response.StatusDescription);
+                    }
 
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
-                        //string json = reader.ReadToEnd();
-                        JsonSerializer serializer = JsonSerializer.Create();
-                        PostResponse rsp = (PostResponse)serializer.Deserialize(reader, typeof(PostResponse));
-                        if (rsp == null)
-                            return rc;
-                        if (rsp.result != 0)
-                            return rc = 10000 * rc + rsp.result;
+                        string json = reader.ReadToEnd();
+                        Helper.WriteToLog(string.Format(MessagePatterns.SEND_ACK_RESPONSE, json));
+
+                        using (StringReader sr = new StringReader(json))
+                        {
+                            JsonSerializer serializer = JsonSerializer.Create();
+                            PostResponse rsp = (PostResponse)serializer.Deserialize(sr, typeof(PostResponse));
+                            if (rsp == null)
+                                return rc;
+                            if (rsp.result != 0)
+                                return rc = 10000 * rc + rsp.result;
+                        }
                     }
                 }
 
@@ -112,6 +122,7 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+                Helper.WriteToLog(string.Format(MessagePatterns.SEND_ACK_REQUEST, request.Address.OriginalString));
 
                 string postData;
                 JsonSerializer serializer = JsonSerializer.Create();
@@ -122,7 +133,8 @@ namespace LogisticsService.API
                     postData = sw.ToString();
                 }
 
-                Helper.WriteToLog(postData);
+                //Helper.WriteToLog(postData);
+                Helper.WriteToLog(string.Format(MessagePatterns.SEND_ACK_POST_DATA, postData));
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
                 request.ContentLength = byteArray.Length;
@@ -138,13 +150,17 @@ namespace LogisticsService.API
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Helper.WriteToLog(string.Format(MessagePatterns.SEND_ACK_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
                         throw new HttpListenerException((int)response.StatusCode, response.StatusDescription);
+                    }
 
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
                         //PostResponse rsp = (PostResponse)serializer.Deserialize(reader, typeof(PostResponse));
                         string json = reader.ReadToEnd();
-                        Helper.WriteToLog(json);
+                        //Helper.WriteToLog(json);
+                        Helper.WriteToLog(string.Format(MessagePatterns.SEND_ACK_RESPONSE, json));
 
                         using (StringReader sr = new StringReader(json))
                         {

@@ -3,6 +3,7 @@ namespace LogisticsService.Geo
 {
     using LogisticsService.API;
     using LogisticsService.Couriers;
+    using LogisticsService.Log;
     using System.Collections.Generic;
     using System.Device.Location;
     using System.Drawing;
@@ -211,7 +212,8 @@ namespace LogisticsService.Geo
                 int rc1 = GetShippingInfo.GetInfo(requestData, out responseData);
                 if (rc1 != 0)
                 {
-                    Helper.WriteErrorToLog($"LocationManager1.PutLocationInfo deliveryMethod = {deliveryMethod}, origin_count = {sourceCount}, destination_count = {destinationCount}, rc = {rc1}");
+                    //Helper.WriteErrorToLog($"LocationManager1.PutLocationInfo deliveryMethod = {deliveryMethod}, origin_count = {sourceCount}, destination_count = {destinationCount}, rc = {rc1}");
+                    Helper.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_PUT_INFO_ERROR, deliveryMethod, sourceCount, destinationCount, rc1));
                     return rc = 1000 * rc + rc1;
                 }
 
@@ -265,7 +267,9 @@ namespace LogisticsService.Geo
                 rc1 = GetShippingInfo.GetInfo(requestData, out responseData);
                 if (rc1 != 0)
                 {
-                    Helper.WriteErrorToLog($"LocationManager1.PutLocationInfo deliveryMethod = {deliveryMethod}, origin_count = {destinationCount}, destination_count = {sourceCount}, rc = {rc1}");
+                    //Helper.WriteErrorToLog($"LocationManager1.PutLocationInfo deliveryMethod = {deliveryMethod}, origin_count = {destinationCount}, destination_count = {sourceCount}, rc = {rc1}");
+                    Helper.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_PUT_INFO_ERROR, deliveryMethod, destinationCount, sourceCount, rc1));
+
                     return rc = 1000 * rc + rc1;
                 }
 

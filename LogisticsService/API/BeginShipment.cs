@@ -1,6 +1,7 @@
 ﻿
 namespace LogisticsService.API
 {
+    using LogisticsService.Log;
     using Newtonsoft.Json;
     using System;
     using System.IO;
@@ -44,7 +45,8 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                Helper.WriteToLog(request.Address.OriginalString);
+                //Helper.WriteToLog(request.Address.OriginalString);
+                Helper.WriteToLog(string.Format(MessagePatterns.BEGIN_SHIPMENT_REQUEST, request.Address.OriginalString));
 
                 string postData;
                 JsonSerializer serializer = JsonSerializer.Create();
@@ -55,7 +57,8 @@ namespace LogisticsService.API
                     postData = sw.ToString();
                 }
 
-                Helper.WriteToLog(postData);
+                //Helper.WriteToLog(postData);
+                Helper.WriteToLog(string.Format(MessagePatterns.BEGIN_SHIPMENT_POST_DATA, postData));
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
                 request.ContentLength = byteArray.Length;
@@ -71,7 +74,10 @@ namespace LogisticsService.API
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
+                    { 
+                        Helper.WriteToLog(string.Format(MessagePatterns.BEGIN_SHIPMENT_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
                         throw new HttpListenerException((int)response.StatusCode, response.StatusDescription);
+                    }
 
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
@@ -79,7 +85,8 @@ namespace LogisticsService.API
                         //PostResponse rsp = (PostResponse)serializer.Deserialize(reader, typeof(PostResponse));
                         PostResponse rsp;
                         string json = reader.ReadToEnd();
-                        Helper.WriteToLog(json);
+                        //Helper.WriteToLog(json);
+                        Helper.WriteToLog(string.Format(MessagePatterns.BEGIN_SHIPMENT_RESPONSE, json));
                         
                         using (StringReader sr = new StringReader(json))
                         {
@@ -130,7 +137,8 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                Helper.WriteToLog(request.Address.OriginalString);
+                //Helper.WriteToLog(request.Address.OriginalString);
+                Helper.WriteToLog(string.Format(MessagePatterns.BEGIN_SHIPMENT_REQUEST, request.Address.OriginalString));
 
                 string postData;
                 JsonSerializer serializer = JsonSerializer.Create();
@@ -141,7 +149,8 @@ namespace LogisticsService.API
                     postData = sw.ToString();
                 }
 
-                Helper.WriteToLog(postData);
+                //Helper.WriteToLog(postData);
+                Helper.WriteToLog(string.Format(MessagePatterns.BEGIN_SHIPMENT_POST_DATA, postData));
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
                 request.ContentLength = byteArray.Length;
@@ -157,7 +166,10 @@ namespace LogisticsService.API
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Helper.WriteToLog(string.Format(MessagePatterns.BEGIN_SHIPMENT_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
                         throw new HttpListenerException((int)response.StatusCode, response.StatusDescription);
+                    }
 
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
@@ -207,7 +219,8 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                Helper.WriteToLog(request.Address.OriginalString);
+                //Helper.WriteToLog(request.Address.OriginalString);
+                Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ORDER_REQUEST, request.Address.OriginalString));
 
                 string postData;
                 JsonSerializer serializer = JsonSerializer.Create();
@@ -218,7 +231,8 @@ namespace LogisticsService.API
                     postData = sw.ToString();
                 }
 
-                Helper.WriteToLog(postData);
+                //Helper.WriteToLog(postData);
+                Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ORDER_POST_DATA, postData));
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
                 request.ContentLength = byteArray.Length;
@@ -234,7 +248,10 @@ namespace LogisticsService.API
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ORDER_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
                         throw new HttpListenerException((int)response.StatusCode, response.StatusDescription);
+                    }
 
                     using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                     {
