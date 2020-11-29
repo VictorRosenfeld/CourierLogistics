@@ -6,9 +6,9 @@ namespace LogisticsService.Log
     /// </summary>
     public class MessagePatterns
     {
-        public const string METHOD_FAIL = "0666 Error > Method {0}. {1}";
-        public const string METHOD_RC = "0667 Error > Method {0}. rc = {1}";
         public const string METHOD_CALL = "0668 Error > {0}({1})";
+        public const string METHOD_RC = "0667 Error > Method {0}. rc = {1}";
+        public const string METHOD_FAIL = "0666 Error > Method {0}. {1}";
 
         public const string BEGIN_SHIPMENT_REQUEST = "0001 Info > {0}";
         public const string BEGIN_SHIPMENT_POST_DATA = "0002 Info > {0}";
@@ -60,11 +60,11 @@ namespace LogisticsService.Log
         public const string REJECT_ORDER_FROM_CHECKING_QUEUE1 = "0036 Info > (((( Отказ в доставке заказа по событию из очереди предотвращения утечек";
         public const string REJECT_ORDER_FROM_CHECKING_QUEUE2 = "0037 Info > )))) Отказ в доставке заказа по событию из очереди предотвращения утечек";
 
-        public const string REJECT_ORDER_BY_TIME = "0038 WARNING > Для заказа {0} из магазина {1} истекло время доставки в срок. (delivery_frame_to: {2}, calc_time: {3})";
-        public const string REJECT_ORDER_BY_COURIER = "0039 WARNING > Для заказа {0} из магазина {1} нет курьера в магазине. (delivery_frame_to: {2}, calc_time: {3})";
+        public const string REJECT_ORDER_BY_TIME = "0038 Warning > Для заказа {0} из магазина {1} истекло время доставки в срок. (delivery_frame_to: {2}, calc_time: {3})";
+        public const string REJECT_ORDER_BY_COURIER = "0039 Warning > Для заказа {0} из магазина {1} нет курьера в магазине. (delivery_frame_to: {2}, calc_time: {3})";
 
-        public const string REJECT_ASSEMBLED_ORDER_BY_COURIER = "0040 WARNING > Собранный заказа {0} из магазина {1} не может быть доставлен в срок. (delivery_frame_to: {2}, calc_time: {3})";
-        public const string REJECT_RECEIPTED_ORDER_BY_COURIER = "0041 WARNING > Принятый заказ {0} из магазина {1} не может быть доставлен в срок. (delivery_frame_to: {2}, calc_time: {3})";
+        public const string REJECT_ASSEMBLED_ORDER_BY_COURIER = "0040 Warning > Собранный заказа {0} из магазина {1} не может быть доставлен в срок. (delivery_frame_to: {2}, calc_time: {3})";
+        public const string REJECT_RECEIPTED_ORDER_BY_COURIER = "0041 Warning > Принятый заказ {0} из магазина {1} не может быть доставлен в срок. (delivery_frame_to: {2}, calc_time: {3})";
 
         public const string CHECKING_QUEUE_INFO_TIMER_ELAPSED = "0042 Info > CheckingQueueTimer_Elapsed CheckingItemCount = {0}";
 

@@ -37,7 +37,7 @@ namespace LogisticsService
                 //string xx = Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
                 using (StreamWriter sw = new StreamWriter(Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log"), true))
                 {
-                    sw.WriteLine($"{DateTime.Now} > {message}");
+                    sw.WriteLine($"@{DateTime.Now:dd.MM.yy HH:mm:ss} {message}");
                 }
             }
             catch
