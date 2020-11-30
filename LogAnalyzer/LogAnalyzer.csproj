@@ -69,6 +69,7 @@
     <Compile Include="ReportData\OrdersSummary\DeliveryServiceFlags.cs" />
     <Compile Include="ReportData\OrdersSummary\OrderFlags.cs" />
     <Compile Include="ReportData\OrdersSummary\OrderSummary.cs" />
+    <Compile Include="ReportData\OrdersSummary\PrintOrderSummary.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

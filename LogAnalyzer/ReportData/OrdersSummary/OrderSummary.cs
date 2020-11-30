@@ -3,6 +3,9 @@ namespace LogAnalyzer.ReportData.OrdersSummary
 {
     using System;
 
+    /// <summary>
+    /// Сводка по заказу
+    /// </summary>
     public class OrderSummary
     {
         /// <summary>

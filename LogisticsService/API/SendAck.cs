@@ -15,8 +15,11 @@ namespace LogisticsService.API
         /// <summary>
         /// URL Post запроса
         /// </summary>
-        private const string URL = "https://telegram.it-stuff.ru/POService/hs/test/events/{0}/received";
-        private const string URLx = "https://telegram.it-stuff.ru/POService/hs/test/events/received";
+        //private const string URL = "https://telegram.it-stuff.ru/POService/hs/test/events/{0}/received";
+        //private const string URLx = "https://telegram.it-stuff.ru/POService/hs/test/events/received";
+        private const string URL = "{0}events/{1}/received";
+        private const string URLx = "{0}events/received";
+
 
         /// <summary>
         /// Подтверждение получения события
@@ -35,7 +38,7 @@ namespace LogisticsService.API
 
                 // 3. Строим Post-запрос
                 rc = 3;
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format(URL, eventId));
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format(URL, RequestParameters.API_ROOT, eventId));
                 request.Method = "POST";
                 request.UserAgent = RequestParameters.USER_AGENT;
                 request.Accept = RequestParameters.HEADER_ACCEPT;
@@ -114,7 +117,8 @@ namespace LogisticsService.API
 
                 // 3. Строим Post-запрос
                 rc = 3;
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URLx);
+                //HttpWebRequest request = (HttpWebRequest)WebRequest.Create(URLx);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format(URLx, RequestParameters.API_ROOT));
                 request.Method = "POST";
                 request.UserAgent = RequestParameters.USER_AGENT;
                 request.Accept = RequestParameters.HEADER_ACCEPT;
