@@ -192,6 +192,38 @@ namespace LogAnalyzer.ReportData.OrdersSummary
         {
             OrderId = orderId;
             ShopId = shopId;
+            Type_Receipted = int.MinValue;
+            Type_Assembled = int.MinValue;
+            Type_Canceled = int.MinValue;
+        }
+
+        /// <summary>
+        /// Время завершения интервала вручения
+        /// </summary>
+        /// <returns>Время завершения интервала вручения или DateTime.MinValue</returns>
+        public DateTime GetTimeTo()
+        {
+            DateTime timeTo = DateTime.MinValue;
+            DateTime maxReceivedTime = DateTime.MinValue;
+            if (Type_Receipted != int.MinValue &&
+                ReceivedTime_Receipted > maxReceivedTime &&
+                TimeTo_Receipted > timeTo)
+            {
+                timeTo = TimeTo_Receipted;
+                maxReceivedTime = ReceivedTime_Receipted;
+            }
+            if (Type_Assembled != int.MinValue &&
+                ReceivedTime_Assembled > maxReceivedTime &&
+                TimeTo_Assembled > timeTo)
+            {
+                timeTo = TimeTo_Assembled;
+                maxReceivedTime = ReceivedTime_Assembled;
+            }
+            if (Type_Canceled != int.MinValue && 
+                ReceivedTime_Canceled > maxReceivedTime &&
+                TimeTo_Canceled > timeTo)
+                timeTo = TimeTo_Canceled;
+            return timeTo;
         }
     }
 }

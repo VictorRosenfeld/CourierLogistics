@@ -1,6 +1,7 @@
 ﻿namespace LogAnalyzer.ReportData.OrdersSummary
 {
     using ClosedXML.Excel;
+    using System;
 
     /// <summary>
     /// Вывод информации о заказах на лист Excel
@@ -56,12 +57,12 @@
         // First command
         private const int SENT_COLUMN1 = 38;
         private const int STATUS_COLUMN1 = 39;
-        private const int JSON_COLUMN1 = 39;
+        private const int JSON_COLUMN1 = 40;
 
         // Last command
-        private const int SENT_COLUMN2 = 40;
-        private const int STATUS_COLUMN2 = 41;
-        private const int JSON_COLUMN2 = 42;
+        private const int SENT_COLUMN2 = 41;
+        private const int STATUS_COLUMN2 = 42;
+        private const int JSON_COLUMN2 = 43;
 
         #endregion Column settings
 
@@ -104,6 +105,12 @@
                     if ((order.Flags & OrderFlags.Shipped) != 0) sheet.Cell(row, S_COLUMN).SetValue(true);
                     if ((order.Flags & OrderFlags.Canceled) != 0) sheet.Cell(row, C_COLUMN).SetValue(true);
                     if ((order.Flags & OrderFlags.Leak) != 0) sheet.Cell(row, L_COLUMN).SetValue(true);
+                    if ((order.Flags & (OrderFlags.Asssembled | OrderFlags.Canceled)) == 0)
+                    {
+                        if (order.GetTimeTo() <= DateTime.Now)
+                            sheet.Cell(row, L_COLUMN).SetValue(true);
+                    }
+
                     sheet.Cell(row, EVENTS_COLUMN).SetValue(order.EventCount);
 
                     if ((order.Flags & OrderFlags.Receipted) != 0)

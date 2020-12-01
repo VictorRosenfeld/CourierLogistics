@@ -65,11 +65,17 @@
     <Compile Include="Analyzer\AnalyzerConfig.cs" />
     <Compile Include="Analyzer\ServiceLogAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportData\CancelCommands\PrintCancelCommands.cs" />
+    <Compile Include="ReportData\CourierEvents\PrintCourierEvents.cs" />
+    <Compile Include="ReportData\DeliveryCommands\PrintDeliveryCommands.cs" />
+    <Compile Include="ReportData\ErrorsSummary\PrintErrorSummary.cs" />
+    <Compile Include="ReportData\OrderEvents\PrintOrderEvents.cs" />
     <Compile Include="ReportData\OrdersSummary\AllOrders.cs" />
     <Compile Include="ReportData\OrdersSummary\DeliveryServiceFlags.cs" />
     <Compile Include="ReportData\OrdersSummary\OrderFlags.cs" />
     <Compile Include="ReportData\OrdersSummary\OrderSummary.cs" />
     <Compile Include="ReportData\OrdersSummary\PrintOrderSummary.cs" />
+    <Compile Include="ReportData\ShopEvents\PrintShopEvents.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -83,5 +89,6 @@
       <Name>LogisticsService</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
