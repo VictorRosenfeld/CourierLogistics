@@ -182,6 +182,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LogAnalyzer\LogAnalyzer.csproj">
+      <Project>{56D4E7A3-114F-4073-8AAA-F58EC754AAFF}</Project>
+      <Name>LogAnalyzer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LogisticsService\LogisticsService.csproj">
       <Project>{42c6787f-d998-429c-b50b-ee03163d47ad}</Project>
       <Name>LogisticsService</Name>

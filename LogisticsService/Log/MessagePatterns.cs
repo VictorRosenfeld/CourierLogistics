@@ -6,9 +6,9 @@ namespace LogisticsService.Log
     /// </summary>
     public class MessagePatterns
     {
-        public const string METHOD_CALL = "0668 Error > {0}({1})";
-        public const string METHOD_RC = "0667 Error > Method {0}. rc = {1}";
         public const string METHOD_FAIL = "0666 Error > Method {0}. {1}";
+        public const string METHOD_RC = "0667 Error > Method {0}. rc = {1}";
+        public const string METHOD_CALL = "0668 Error > {0}({1})";
 
         public const string BEGIN_SHIPMENT_REQUEST = "0001 Info > {0}";
         public const string BEGIN_SHIPMENT_POST_DATA = "0002 Info > {0}";

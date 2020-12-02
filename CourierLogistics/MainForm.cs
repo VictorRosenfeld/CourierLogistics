@@ -3,6 +3,7 @@ namespace CourierLogistics
 {
     using CourierLogistics.Logistics;
     using CourierLogistics.Logistics.RealSingleShopSolution;
+    using LogAnalyzer.Analyzer;
     using LogisticsService.API;
     using LogisticsService.FixedCourierService;
     using LogisticsService.ServiceParameters;
@@ -463,6 +464,12 @@ namespace CourierLogistics
         /// <param name="e">Аргументы события</param>
         private void MainForm_Load(object sender, EventArgs e)
         {
+            AnalyzerConfig analyzerConfig = new AnalyzerConfig();
+            analyzerConfig.OpenReport = true;
+            analyzerConfig.ReportFile = @"C:\T2\Report\reprt.xlsx";
+            ServiceLogAnalyzer analyzer = new ServiceLogAnalyzer(analyzerConfig);
+            int rcd = analyzer.Create(@"C:\Users\Виктор\source\repos\CourierLogisticsEx\CourierLogistics\bin\Debug\CourierLogistics.log", @"C:\T2\Report\reprt.xlsx");
+
             try
             {
                 // 1. Создам сервис

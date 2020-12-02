@@ -1,20 +1,30 @@
 ﻿
-
 namespace LogAnalyzer.Analyzer
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using ClosedXML.Excel;
+    using LogAnalyzer.ReportData.CancelCommands;
+    using LogAnalyzer.ReportData.CourierEvents;
+    using LogAnalyzer.ReportData.DeliveryCommands;
+    using LogAnalyzer.ReportData.ErrorsSummary;
+    using LogAnalyzer.ReportData.OrderEvents;
+    using LogAnalyzer.ReportData.OrdersSummary;
+    using LogAnalyzer.ReportData.ShopEvents;
+    using LogisticsService.API;
+    using Newtonsoft.Json;
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using static LogisticsService.API.BeginShipment;
+    using static LogisticsService.API.GetOrderEvents;
+    using static LogisticsService.API.GetShopEvents;
 
     /// <summary>
     /// Анализатор лога сервиса управления курьерами
     /// </summary>
     public class ServiceLogAnalyzer
     {
+        #region Report page names
+
         /// <summary>
         /// Наименование листа с заказами
         /// </summary>
@@ -50,6 +60,10 @@ namespace LogAnalyzer.Analyzer
         /// </summary>
         private const string CANCEL_COMMANDS_PAGE = "Cancel Commands";
 
+        #endregion Report page names
+
+        #region Log message separators
+
         /// <summary>
         /// Один из обязательных текстов вначале сообщения
         /// </summary>
@@ -60,26 +74,34 @@ namespace LogAnalyzer.Analyzer
         /// </summary>
         private const string MESSAGE_START_DATA_TEXT = " > ";
 
-        ///// <summary>
-        ///// Один из обязательных текстов вначале сообщения
-        ///// </summary>
-        //private const string START_MESSAGE_TEXT1 = " Info > ";
+        #endregion Log message separators
 
-        ///// <summary>
-        ///// Один из обязательных текстов вначале сообщения
-        ///// </summary>
-        //private const string START_MESSAGE_TEXT2 = " Warning > ";
+        #region API Error parser data
 
-        ///// <summary>
-        ///// Один из обязательных текстов вначале сообщения
-        ///// </summary>
-        //private const string START_MESSAGE_TEXT3 = " Error > ";
+        private const string API_ERROR_PARSER_STATUSCODE = "StatusCode";
+        private const string API_ERROR_PARSER_STATUSCODE_END_CHAR = ":";
 
-        ///// <summary>
-        ///// Максимальная начальная позиция обязательного текста
-        ///// </summary>
-        //private const int START_TEXT_MAX_POSITION = 33;
+        #endregion API Error parser data
 
+        #region Message 666 parser data
+
+        private const string MESSAGE_666_METHOD = "Method";
+        private const string MESSAGE_666_METHOD_END_TEXT = ". ";
+
+        #endregion Message 666 parser data
+
+        #region Message 667 parser data
+
+        private const string MESSAGE_667_METHOD = "Method";
+        private const string MESSAGE_667_METHOD_END_TEXT = ". rc = ";
+
+        #endregion Message 667 parser data
+
+        #region Message 668 parser data
+
+        private const string MESSAGE_668_METHOD_END_TEXT = "(";
+
+        #endregion Message 668 parser data
 
         /// <summary>
         /// Параметры анализатора
@@ -146,7 +168,7 @@ namespace LogAnalyzer.Analyzer
                 if (courierEvents == null)
                     return rc;
                 IXLWorksheet shopEvents = report.Worksheets.Worksheet(SHOP_EVENTS_PAGE);
-                if (courierEvents == null)
+                if (shopEvents == null)
                     return rc;
                 IXLWorksheet deliveryCommands = report.Worksheets.Worksheet(DELIVERY_COMMANDS_PAGE);
                 if (deliveryCommands == null)
@@ -166,6 +188,22 @@ namespace LogAnalyzer.Analyzer
                 // 7. Цикл обработки сообщений лога
                 rc = 7;
                 int size = log.Length;
+                JsonSerializer serializer = JsonSerializer.Create();
+                int deliveryCommandsRow = 0;
+                int cancelCommandsRow = 0;
+                int courierEventsRow = 0;
+                int orderEventsRow = 0;
+                int shopEventsRow = 0;
+                int errorsSummaryRow = 0;
+                //int orderSummaryRow = 0;
+                string method = null;
+                string exceptionText;
+                int errorCode;
+                string methodArgs;
+
+                AllOrders allOrders = new AllOrders();
+                int statusCode;
+                string statusDescription;
 
                 while (startMessagePos < size)
                 {
@@ -213,36 +251,108 @@ namespace LogAnalyzer.Analyzer
                         case 1: // Shipment request
                             break;
                         case 2: // Shipment post data
+                            using (StringReader sr = new StringReader(messageData))
+                            {
+                                Shipment[] shipments = (Shipment[])serializer.Deserialize(sr, typeof(Shipment[]));
+                                PrintDeliveryCommands.Print(messageDateTime, shipments, deliveryCommands, ref deliveryCommandsRow);
+                                allOrders.AddCommand(messageDateTime, shipments);
+                            }
                             break;
                         case 3: // Shipment response
                             break;
                         case 4: // Shipment error
+                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "BeginShipment.Begin", statusDescription, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "BeginShipment.Begin", messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                         case 5: // Cancel request
-                            break;
+                           break;
                         case 6: // Cancel post data
-                            break;
+                            using (StringReader sr = new StringReader(messageData))
+                            {
+                                RejectedOrder[] rejectedOrders = (RejectedOrder[])serializer.Deserialize(sr, typeof(RejectedOrder[]));
+                                PrintCancelCommands.Print(messageDateTime, rejectedOrders, cancelCommands, ref cancelCommandsRow);
+                                allOrders.AddCommand(messageDateTime, rejectedOrders);
+                            }
+                             break;
                         case 7: // Cancel response
                             break;
                         case 8: // Cancel error
+                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "BeginShipment.Reject", statusDescription, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "BeginShipment.Reject", messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                         case 9: // Courier events request
+                            using (StringReader sr = new StringReader(messageData))
+                            {
+                                CourierEvent[] events = (CourierEvent[])serializer.Deserialize(sr, typeof(CourierEvent[]));
+                                PrintCourierEvents.Print(messageDateTime, events, courierEvents, ref courierEventsRow);
+                            }
                             break;
                         case 10: // Courier events response
                             break;
                         case 11: // Courier events error
+                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetCourierEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetCourierEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                         case 12: // Order events request
+                            using (StringReader sr = new StringReader(messageData))
+                            {
+                                OrderEvent[] events = (OrderEvent[])serializer.Deserialize(sr, typeof(OrderEvent[]));
+                                PrintOrderEvents.Print(messageDateTime, events, orderEvents, ref orderEventsRow);
+                            }
                             break;
                         case 13: // Order events response
+                            using (StringReader sr = new StringReader(messageData))
+                            {
+                                OrderEvent[]  events = (OrderEvent[])serializer.Deserialize(sr, typeof(OrderEvent[]));
+                                allOrders.AddOrderEvent(messageDateTime, events);
+                            }
                             break;
                         case 14: // Order events error
+                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetOrderEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetOrderEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                         case 15: // Shop events request
                             break;
                         case 16: // Shop events response
+                            using (StringReader sr = new StringReader(messageData))
+                            {
+                                ShopEvent[] events = (ShopEvent[])serializer.Deserialize(sr, typeof(ShopEvent[]));
+                                PrintShopEvents.Print(messageDateTime, events, shopEvents, ref shopEventsRow);
+                            }
                             break;
                         case 17: // Shop events error
+                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetShopEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetShopEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                         case 18: // ACK request
                             break;
@@ -251,6 +361,14 @@ namespace LogAnalyzer.Analyzer
                         case 20: // ACK response
                             break;
                         case 21: // ACK error
+                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "SendAck.Send", statusDescription, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "SendAck.Send", messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                         case 22: // Time-Dist request
                             break;
@@ -259,6 +377,14 @@ namespace LogAnalyzer.Analyzer
                         case 24: // Time-Dist response
                             break;
                         case 25: // Time-Dist error
+                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetShippingInfo.GetInfo", statusDescription, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetShippingInfo.GetInfo", messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                         case 26: // Queue timer elapsed
                             break;
@@ -296,17 +422,37 @@ namespace LogAnalyzer.Analyzer
                             break;
                         case 43: // GeoCache.PutLocationInfo error
                             break;
-                        case 668: // Called method
+                        case 666: // method exception
+                            if (TryParseMsg666(messageData, out method, out exceptionText))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, method, exceptionText, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                         case 667: // Returned method rc
+                            if (TryParseMsg667(messageData, out method, out errorCode))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, errorCode, method, messageData, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
-                        case 666: // method exception
+                        case 668: // Called method
+                            if (TryParseMsg668(messageData, out method, out methodArgs))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, method, methodArgs, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                     }
-
-
-                    //MessageHandler(messageDateTime, messageNo, messageData);
-
 
                     // 7.2 Переходим к следующему сообщению
                     NextMessage:
@@ -314,6 +460,43 @@ namespace LogAnalyzer.Analyzer
                     startMessagePos = endMessagePos + 2;
                 }
 
+                // 8. Печать OrdersSummary
+                rc = 8;
+                OrderSummary[] orders = new OrderSummary[allOrders.Orders.Count];
+                allOrders.Orders.Values.CopyTo(orders, 0);
+                PrintOrderSummary.Print(orders, ordersSummary);
+                orders = null;
+
+                // 9. Сохраняем построенный отчет
+                rc = 9;
+                report.Save();
+
+                // 10. Открываем сохраненный отчет
+                rc = 10;
+                try
+                {
+                    if (Config.OpenReport)
+                    {
+                        using (Process process = new Process())
+                        {
+                            process.StartInfo.FileName = reportFile;
+                            process.StartInfo.UseShellExecute = true;
+                            process.Start();
+                        }
+                    }
+                }
+                catch { }
+
+                ordersSummary = null;
+                errorsSummary = null;
+                orderEvents = null;
+                courierEvents = null;
+                shopEvents = null;
+                deliveryCommands = null;
+                cancelCommands = null;
+
+                // 11. Выход - Ok
+                rc = 0;
                 return rc;
             }
             catch (Exception ex)
@@ -330,5 +513,175 @@ namespace LogAnalyzer.Analyzer
             }
         }
 
+        #region Meassage parsers
+
+        /// <summary>
+        /// Парсер сообщения об API-ошибке:
+        /// StatusCode {0}: {1}
+        /// </summary>
+        /// <param name="msgData">Данные сообщения</param>
+        /// <param name="statusCode">StatusCode из отклика сервера</param>
+        /// <param name="statusDescription">StatusDescription из отклика сервера</param>
+        /// <returns>true - данные извлечены; данные не извлечены</returns>
+        private static bool TryParseApiError(string msgData, out int statusCode, out string statusDescription)
+        {
+            // 1. Инициализация
+            statusCode = -1;
+            statusDescription = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (string.IsNullOrWhiteSpace(msgData))
+                    return false;
+
+                // 3. Находим "StatusCode" и ":" после него
+                int iPos1 = msgData.IndexOf(API_ERROR_PARSER_STATUSCODE, StringComparison.CurrentCultureIgnoreCase);
+                if (iPos1 < 0)
+                    return false;
+
+                int iPos2 = msgData.IndexOf(API_ERROR_PARSER_STATUSCODE_END_CHAR, iPos1 + API_ERROR_PARSER_STATUSCODE.Length,  StringComparison.CurrentCultureIgnoreCase);
+                if (iPos2 < 0)
+                    return false;
+
+                // 4. Извлекаем значение StatusCode и StatusDescription
+                statusDescription = msgData.Substring(iPos2 + 1).Trim();
+                if (!int.TryParse(msgData.Substring(iPos1 + API_ERROR_PARSER_STATUSCODE.Length, iPos2 - iPos1 - API_ERROR_PARSER_STATUSCODE.Length).Trim(), out statusCode))
+                    return false;
+
+                // 5. Выход - Ok
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Парсер сообщения 666:
+        /// Method {0}. {1}
+        /// </summary>
+        /// <param name="msgData">Данные сообщения</param>
+        /// <param name="method">Название метода, вызвавшего прерывания</param>
+        /// <param name="exceptionText">текст прерывания</param>
+        /// <returns>true - данные извлечены; данные не извлечены</returns>
+        private static bool TryParseMsg666(string msgData, out string method, out string exceptionText)
+        {
+            // 1. Инициализация
+            method = null;
+            exceptionText = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (string.IsNullOrWhiteSpace(msgData))
+                    return false;
+
+                // 3. Находим "Method" и ". " после него
+                int iPos1 = msgData.IndexOf(MESSAGE_666_METHOD, StringComparison.CurrentCultureIgnoreCase);
+                if (iPos1 < 0)
+                    return false;
+
+                int iPos2 = msgData.IndexOf(MESSAGE_666_METHOD_END_TEXT, iPos1 + MESSAGE_666_METHOD.Length,  StringComparison.CurrentCultureIgnoreCase);
+                if (iPos2 < 0)
+                    return false;
+
+                // 4. Извлекаем значение method и exceptionText
+                method = msgData.Substring(iPos1 + MESSAGE_666_METHOD.Length, iPos2 - iPos1 - MESSAGE_666_METHOD.Length).Trim();
+                exceptionText = msgData.Substring(iPos2 + MESSAGE_666_METHOD_END_TEXT.Length).Trim();
+
+                // 5. Выход - Ok
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Парсер сообщения 667:
+        /// Method {0}. rc = {1}
+        /// </summary>
+        /// <param name="msgData">Данные сообщения</param>
+        /// <param name="method">Наименование метода вызвавшего ошибку</param>
+        /// <param name="errorCode">Код ошибки</param>
+        /// <returns>true - данные извлечены; данные не извлечены</returns>
+        private static bool TryParseMsg667(string msgData, out string method, out int errorCode)
+        {
+            // 1. Инициализация
+            errorCode = -1;
+            method = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (string.IsNullOrWhiteSpace(msgData))
+                    return false;
+
+                // 3. Находим "StatusCode" и ":" после него
+                int iPos1 = msgData.IndexOf(MESSAGE_667_METHOD, StringComparison.CurrentCultureIgnoreCase);
+                if (iPos1 < 0)
+                    return false;
+
+                int iPos2 = msgData.IndexOf(MESSAGE_667_METHOD_END_TEXT, iPos1 + MESSAGE_667_METHOD.Length, StringComparison.CurrentCultureIgnoreCase);
+                if (iPos2 < 0)
+                    return false;
+
+                // 4. Извлекаем значение StatusCode и StatusDescription
+                method = msgData.Substring(iPos1 + MESSAGE_667_METHOD.Length, iPos2 - iPos1 - MESSAGE_667_METHOD.Length).Trim();
+                if (!int.TryParse(msgData.Substring(iPos2 + 1).Trim(), out errorCode))
+                    return false;
+
+                // 5. Выход - Ok
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Парсер сообщения 668:
+        /// {0}({1})
+        /// </summary>
+        /// <param name="msgData">Данные сообщения</param>
+        /// <param name="method">Название метода, вызвавшего прерывания</param>
+        /// <param name="methodArgs">Аргументы метода</param>
+        /// <returns>true - данные извлечены; данные не извлечены</returns>
+        private static bool TryParseMsg668(string msgData, out string method, out string methodArgs)
+        {
+            // 1. Инициализация
+            method = null;
+            methodArgs = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (string.IsNullOrWhiteSpace(msgData))
+                    return false;
+
+                // 3. Находим "Method" и ". " после него
+                int iPos = msgData.IndexOf(MESSAGE_668_METHOD_END_TEXT, StringComparison.CurrentCultureIgnoreCase);
+                if (iPos < 0)
+                    return false;
+
+                // 4. Извлекаем значение method и methodArgs
+                method = msgData.Substring(0, iPos).Trim();
+                methodArgs = msgData.Substring(iPos).Trim();
+
+
+                // 5. Выход - Ok
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        #endregion Meassage parsers
     }
 }
