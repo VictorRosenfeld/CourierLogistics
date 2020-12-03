@@ -98,7 +98,7 @@ namespace LogAnalyzer.ReportData.DeliveryCommands
                 if (sheet == null)
                     return rc;
                 if (row <= 0)
-                    row = 1;
+                    row = 2;
 
                 // 3. Печать события
                 rc = 3;
@@ -193,7 +193,7 @@ namespace LogAnalyzer.ReportData.DeliveryCommands
                 if (sheet == null)
                     return rc;
                 if (row <= 0)
-                    row = 1;
+                    row = 2;
 
                 // 3. Печатаем события
                 rc = 3;

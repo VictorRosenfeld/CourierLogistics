@@ -83,6 +83,13 @@ namespace LogAnalyzer.Analyzer
 
         #endregion API Error parser data
 
+        #region Message 43 parser data
+
+        private const string MESSAGE_43_METHOD_END_TEXT = ". ";
+        private const string MESSAGE_43_ERROR_CODE_TEXT = "Код ошибки -";
+
+        #endregion Message 43 parser data
+
         #region Message 666 parser data
 
         private const string MESSAGE_666_METHOD = "Method";
@@ -224,7 +231,7 @@ namespace LogAnalyzer.Analyzer
                     DateTime messageDateTime;
                     int messageNo;
 
-                    int iPos1 = log.IndexOf(' ', startMessagePos, 10);
+                    int iPos1 = log.IndexOf(' ', startMessagePos, 11);
                     if (iPos1 < 0) goto NextMessage;
                     int iPos2 = log.IndexOf(' ', iPos1 + 2, 10);
                     if (iPos2 < 0) goto NextMessage;
@@ -233,7 +240,7 @@ namespace LogAnalyzer.Analyzer
 
                     if (!DateTime.TryParse(log.Substring(startMessagePos, iPos2 - startMessagePos).Trim(), out messageDateTime))
                         goto NextMessage;
-                    if (!int.TryParse(log.Substring(startMessagePos, iPos3 - iPos2).Trim(), out messageNo) || messageNo <= 0)
+                    if (!int.TryParse(log.Substring(iPos2, iPos3 - iPos2).Trim(), out messageNo) || messageNo <= 0)
                         goto NextMessage;
 
                     // 7.3 Извлекаем данные сообщения
@@ -293,13 +300,14 @@ namespace LogAnalyzer.Analyzer
                             }
                             break;
                         case 9: // Courier events request
+                            break;
+                        case 10: // Courier events response
                             using (StringReader sr = new StringReader(messageData))
                             {
                                 CourierEvent[] events = (CourierEvent[])serializer.Deserialize(sr, typeof(CourierEvent[]));
-                                PrintCourierEvents.Print(messageDateTime, events, courierEvents, ref courierEventsRow);
+                                if (events != null && events.Length > 0)
+                                    PrintCourierEvents.Print(messageDateTime, events, courierEvents, ref courierEventsRow);
                             }
-                            break;
-                        case 10: // Courier events response
                             break;
                         case 11: // Courier events error
                             if (TryParseApiError(messageData, out statusCode, out statusDescription))
@@ -312,17 +320,16 @@ namespace LogAnalyzer.Analyzer
                             }
                             break;
                         case 12: // Order events request
-                            using (StringReader sr = new StringReader(messageData))
-                            {
-                                OrderEvent[] events = (OrderEvent[])serializer.Deserialize(sr, typeof(OrderEvent[]));
-                                PrintOrderEvents.Print(messageDateTime, events, orderEvents, ref orderEventsRow);
-                            }
                             break;
                         case 13: // Order events response
                             using (StringReader sr = new StringReader(messageData))
                             {
                                 OrderEvent[]  events = (OrderEvent[])serializer.Deserialize(sr, typeof(OrderEvent[]));
-                                allOrders.AddOrderEvent(messageDateTime, events);
+                                if (events != null && events.Length > 0)
+                                {
+                                    PrintOrderEvents.Print(messageDateTime, events, orderEvents, ref orderEventsRow);
+                                    allOrders.AddOrderEvent(messageDateTime, events);
+                                }
                             }
                             break;
                         case 14: // Order events error
@@ -421,6 +428,14 @@ namespace LogAnalyzer.Analyzer
                         case 42: // Checking queue timer elapsed
                             break;
                         case 43: // GeoCache.PutLocationInfo error
+                            if (TryParseMsg43(messageData, out method, out errorCode))
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, errorCode, method, messageData, errorsSummary, ref errorsSummaryRow);
+                            }
+                            else
+                            {
+                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+                            }
                             break;
                         case 666: // method exception
                             if (TryParseMsg666(messageData, out method, out exceptionText))
@@ -494,6 +509,7 @@ namespace LogAnalyzer.Analyzer
                 shopEvents = null;
                 deliveryCommands = null;
                 cancelCommands = null;
+                allOrders = null;
 
                 // 11. Выход - Ok
                 rc = 0;
@@ -672,6 +688,49 @@ namespace LogAnalyzer.Analyzer
                 method = msgData.Substring(0, iPos).Trim();
                 methodArgs = msgData.Substring(iPos).Trim();
 
+
+                // 5. Выход - Ok
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Парсер сообщения 43:
+        /// GeoCache.PutLocationInfo. Способ доставки {0}. Исходных точек: {1}. Точек назначения: {2}. Код ошибки - {3}
+        /// </summary>
+        /// <param name="msgData">Данные сообщения</param>
+        /// <param name="method">Наименование метода вызвавшего ошибку</param>
+        /// <param name="errorCode">Код ошибки</param>
+        /// <returns>true - данные извлечены; данные не извлечены</returns>
+        private static bool TryParseMsg43(string msgData, out string method, out int errorCode)
+        {
+            // 1. Инициализация
+            errorCode = -1;
+            method = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (string.IsNullOrWhiteSpace(msgData))
+                    return false;
+
+                // 3. Находим "StatusCode" и ":" после него
+                int iPos1 = msgData.IndexOf(MESSAGE_43_METHOD_END_TEXT, StringComparison.CurrentCultureIgnoreCase);
+                if (iPos1 < 0)
+                    return false;
+
+                int iPos2 = msgData.IndexOf(MESSAGE_43_ERROR_CODE_TEXT, iPos1 + MESSAGE_43_METHOD_END_TEXT.Length, StringComparison.CurrentCultureIgnoreCase);
+                if (iPos2 < 0)
+                    return false;
+
+                // 4. Извлекаем значение Method и ErrorCode
+                method = msgData.Substring(0, iPos1).Trim();
+                if (!int.TryParse(msgData.Substring(iPos2 + MESSAGE_43_ERROR_CODE_TEXT.Length).Trim(), out errorCode))
+                    return false;
 
                 // 5. Выход - Ok
                 return true;

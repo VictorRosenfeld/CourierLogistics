@@ -1015,9 +1015,14 @@ namespace LogisticsService.FixedCourierService
                     shipment.info = CreateDeliveryInfo(delivery);
 
                     // date_target
-                    if (delivery.OrderCost <= delivery.DeliveryCourier.AverageOrderCost)
+                    if (!delivery.DeliveryCourier.IsTaxi && delivery.OrderCost <= delivery.DeliveryCourier.AverageOrderCost)
                     {
                         shipment.date_target = delivery.StartDelivery;
+                    }
+                    else if (config.functional_parameters.shipment_trigger && 
+                        delivery.OrderCount >= delivery.DeliveryCourier.CourierType.MaxOrderCount)
+                    {
+                        shipment.date_target = delivery.StartDeliveryInterval;
                     }
                     else
                     {
@@ -1120,7 +1125,16 @@ namespace LogisticsService.FixedCourierService
                     // 3.2 Проверяем, что отгрузить нужно прямо сейчас
                     rc = 32;
                     DateTime eventTime;
-                    if (delivery.DeliveryCourier.IsTaxi)
+                    if (config.functional_parameters.shipment_trigger && 
+                        delivery.OrderCount >= delivery.DeliveryCourier.CourierType.MaxOrderCount)
+                    {
+                        eventTime = delivery.StartDeliveryInterval;
+                    }
+                    else if (!delivery.DeliveryCourier.IsTaxi && delivery.OrderCost <= delivery.DeliveryCourier.AverageOrderCost)
+                    {
+                        eventTime = delivery.StartDeliveryInterval;
+                    }
+                    else if (delivery.DeliveryCourier.IsTaxi)
                     {
                         eventTime = delivery.EndDeliveryInterval.AddMinutes(-config.functional_parameters.taxi_alert_interval);
                     }
@@ -1133,9 +1147,10 @@ namespace LogisticsService.FixedCourierService
                         eventTime = delivery.StartDeliveryInterval;
                     DateTime currentTime = DateTime.Now;
 
-                    if ((eventTime <= currentTime) ||
-                        (!delivery.DeliveryCourier.IsTaxi && delivery.OrderCost <= delivery.DeliveryCourier.AverageOrderCost && delivery.StartDeliveryInterval >= currentTime))
-                    //(delivery.OrderCost <= delivery.DeliveryCourier.AverageOrderCost && delivery.StartDeliveryInterval >= currentTime))
+                    //if ((eventTime <= currentTime) ||
+                    //    (!delivery.DeliveryCourier.IsTaxi && delivery.OrderCost <= delivery.DeliveryCourier.AverageOrderCost && delivery.StartDeliveryInterval <= currentTime))
+                    ////(delivery.OrderCost <= delivery.DeliveryCourier.AverageOrderCost && delivery.StartDeliveryInterval >= currentTime))
+                    if (eventTime <= currentTime)
                     {
                         // 3.3 Построение данных для отгрузки прямо сейчас
                         rc = 33;

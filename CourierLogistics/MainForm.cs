@@ -464,11 +464,13 @@ namespace CourierLogistics
         /// <param name="e">Аргументы события</param>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            AnalyzerConfig analyzerConfig = new AnalyzerConfig();
-            analyzerConfig.OpenReport = true;
-            analyzerConfig.ReportFile = @"C:\T2\Report\reprt.xlsx";
-            ServiceLogAnalyzer analyzer = new ServiceLogAnalyzer(analyzerConfig);
-            int rcd = analyzer.Create(@"C:\Users\Виктор\source\repos\CourierLogisticsEx\CourierLogistics\bin\Debug\CourierLogistics.log", @"C:\T2\Report\reprt.xlsx");
+            //AnalyzerConfig analyzerConfig = new AnalyzerConfig();
+            //analyzerConfig.OpenReport = true;
+            //analyzerConfig.ReportFile = @"C:\T2\Report\report.xlsx";
+            //analyzerConfig.ExcelPatternFile = @"C:\Users\Виктор\source\repos\CourierLogisticsEx\LogAnalyzer\ReportPattern\LogAnalysis.xlsx";
+            //ServiceLogAnalyzer analyzer = new ServiceLogAnalyzer(analyzerConfig);
+            ////int rcd = analyzer.Create(@"C:\Users\Виктор\source\repos\CourierLogisticsEx\CourierLogistics\bin\Debug\CourierLogistics.log", @"C:\T2\Report\report.xlsx");
+            //int rcd = analyzer.Create(@"C:\T2\CourierLogistics.log", @"C:\T2\Report\report.xlsx");
 
             try
             {
@@ -484,6 +486,7 @@ namespace CourierLogistics
                     Close();
                     return;
                 }
+                //menuTrayIcon_LogAnalysis_Click(null, null);
 
                 // 2. Проверяем, что сервис с тем же service_id ещё не запущен
                 try
@@ -558,6 +561,31 @@ namespace CourierLogistics
             }
             catch
             { }
+        }
+
+        /// <summary>
+        /// Пункт Log Analysis Tray-меню 
+        /// </summary>
+        /// <param name="sender">MenuItem</param>
+        /// <param name="e">Аргументы события</param>
+        private void menuTrayIcon_LogAnalysis_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                AnalyzerConfig analyzerConfig = new AnalyzerConfig();
+                analyzerConfig.OpenReport = true;
+                analyzerConfig.ExcelPatternFile = @".\ReportPattern\LogAnalysis.xlsx";
+                ServiceLogAnalyzer analyzer = new ServiceLogAnalyzer(analyzerConfig);
+                string reportFolder = $@".\Reports";
+                if (!Directory.Exists(reportFolder))
+                    Directory.CreateDirectory(reportFolder);
+                string reportFile = $@"{reportFolder}\Report_{DateTime.Now:dd_MM_yy_HH_mm_ss}.xlsx";
+                int rc = analyzer.Create(service.LogFileName, reportFile);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "LogAnalysis", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         bool isTrayExit = false;

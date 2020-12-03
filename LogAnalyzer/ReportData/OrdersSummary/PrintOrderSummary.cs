@@ -100,15 +100,15 @@
                     rc = 32;
                     sheet.Cell(row, ORDER_ID_COLUMN).SetValue(order.OrderId);
                     sheet.Cell(row, SHOP_ID_COLUMN).SetValue(order.ShopId);
-                    if ((order.Flags & OrderFlags.Receipted) != 0) sheet.Cell(row, R_COLUMN).SetValue(true);
-                    if ((order.Flags & OrderFlags.Asssembled) != 0) sheet.Cell(row, A_COLUMN).SetValue(true);
-                    if ((order.Flags & OrderFlags.Shipped) != 0) sheet.Cell(row, S_COLUMN).SetValue(true);
-                    if ((order.Flags & OrderFlags.Canceled) != 0) sheet.Cell(row, C_COLUMN).SetValue(true);
-                    if ((order.Flags & OrderFlags.Leak) != 0) sheet.Cell(row, L_COLUMN).SetValue(true);
+                    if ((order.Flags & OrderFlags.Receipted) != 0) sheet.Cell(row, R_COLUMN).SetValue("+");
+                    if ((order.Flags & OrderFlags.Asssembled) != 0) sheet.Cell(row, A_COLUMN).SetValue("+");
+                    if ((order.Flags & OrderFlags.Shipped) != 0) sheet.Cell(row, S_COLUMN).SetValue("+");
+                    if ((order.Flags & OrderFlags.Canceled) != 0) sheet.Cell(row, C_COLUMN).SetValue("+");
+                    if ((order.Flags & OrderFlags.Leak) != 0) sheet.Cell(row, L_COLUMN).SetValue("+");
                     if ((order.Flags & (OrderFlags.Asssembled | OrderFlags.Canceled)) == 0)
                     {
                         if (order.GetTimeTo() <= DateTime.Now)
-                            sheet.Cell(row, L_COLUMN).SetValue(true);
+                            sheet.Cell(row, L_COLUMN).SetValue("+");
                     }
 
                     sheet.Cell(row, EVENTS_COLUMN).SetValue(order.EventCount);
@@ -122,11 +122,11 @@
                         sheet.Cell(row, TIME_TO_LAST_COLUMN1).SetValue(order.TimeTo_Receipted);
                         sheet.Cell(row, WEIGHT_COLUMN1).SetValue(order.Weight_Receipted);
                         if ((order.DeliveryFlags_Receipted & DeliveryServiceFlags.YandexTaxi) != 0)
-                            sheet.Cell(row, Y_COLUMN1).SetValue(true);
+                            sheet.Cell(row, Y_COLUMN1).SetValue("+");
                         if ((order.DeliveryFlags_Receipted & DeliveryServiceFlags.GettTaxi) != 0)
-                            sheet.Cell(row, G_COLUMN1).SetValue(true);
+                            sheet.Cell(row, G_COLUMN1).SetValue("+");
                         if ((order.DeliveryFlags_Receipted & DeliveryServiceFlags.Courier) != 0)
-                            sheet.Cell(row, C_COLUMN1).SetValue(true);
+                            sheet.Cell(row, C_COLUMN1).SetValue("+");
                     }
 
                     if ((order.Flags & OrderFlags.Asssembled) != 0)
@@ -138,11 +138,11 @@
                         sheet.Cell(row, TIME_TO_LAST_COLUMN2).SetValue(order.TimeTo_Assembled);
                         sheet.Cell(row, WEIGHT_COLUMN2).SetValue(order.Weight_Assembled);
                         if ((order.DeliveryFlags_Assembled & DeliveryServiceFlags.YandexTaxi) != 0)
-                            sheet.Cell(row, Y_COLUMN2).SetValue(true);
+                            sheet.Cell(row, Y_COLUMN2).SetValue("+");
                         if ((order.DeliveryFlags_Assembled & DeliveryServiceFlags.GettTaxi) != 0)
-                            sheet.Cell(row, G_COLUMN2).SetValue(true);
+                            sheet.Cell(row, G_COLUMN2).SetValue("+");
                         if ((order.DeliveryFlags_Assembled & DeliveryServiceFlags.Courier) != 0)
-                            sheet.Cell(row, C_COLUMN2).SetValue(true);
+                            sheet.Cell(row, C_COLUMN2).SetValue("+");
                     }
 
                     if ((order.Flags & OrderFlags.Canceled) != 0)
@@ -154,11 +154,11 @@
                         sheet.Cell(row, TIME_TO_LAST_COLUMN3).SetValue(order.TimeTo_Canceled);
                         sheet.Cell(row, WEIGHT_COLUMN3).SetValue(order.Weight_Canceled);
                         if ((order.DeliveryFlags_Canceled & DeliveryServiceFlags.YandexTaxi) != 0)
-                            sheet.Cell(row, Y_COLUMN3).SetValue(true);
+                            sheet.Cell(row, Y_COLUMN3).SetValue("+");
                         if ((order.DeliveryFlags_Canceled & DeliveryServiceFlags.GettTaxi) != 0)
-                            sheet.Cell(row, G_COLUMN3).SetValue(true);
+                            sheet.Cell(row, G_COLUMN3).SetValue("+");
                         if ((order.DeliveryFlags_Canceled & DeliveryServiceFlags.Courier) != 0)
-                            sheet.Cell(row, C_COLUMN3).SetValue(true);
+                            sheet.Cell(row, C_COLUMN3).SetValue("+");
                     }
 
 
@@ -170,9 +170,9 @@
                         sheet.Cell(row, STATUS_COLUMN1).SetValue(order.Status_First);
                         sheet.Cell(row, JSON_COLUMN1).SetValue(order.CommandText_First);
 
-                        sheet.Cell(row, SENT_COLUMN1).SetValue(order.SentTime_Last);
-                        sheet.Cell(row, STATUS_COLUMN1).SetValue(order.Status_Last);
-                        sheet.Cell(row, JSON_COLUMN1).SetValue(order.CommandText_Last);
+                        sheet.Cell(row, SENT_COLUMN2).SetValue(order.SentTime_Last);
+                        sheet.Cell(row, STATUS_COLUMN2).SetValue(order.Status_Last);
+                        sheet.Cell(row, JSON_COLUMN2).SetValue(order.CommandText_Last);
                     }
                 }
 

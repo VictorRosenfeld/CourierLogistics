@@ -78,7 +78,13 @@ namespace LogisticsService.ServiceParameters
         public int queue_Info_interval { get; set; }
 
         /// <summary>
-        /// Максимальное число заказов для кадой глубины просчета
+        /// Отгружать при достижении в отгрузке максимума заказов для
+        /// курьера и такси
+        /// </summary>
+        public bool shipment_trigger { get; set; }
+
+        /// <summary>
+        /// Максимальное число заказов для каждой глубины просчета
         /// </summary>
         public SalesmanProblemLevel[] salesman_problem_levels { get; set; }
     }

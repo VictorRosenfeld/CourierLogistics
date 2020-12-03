@@ -1105,7 +1105,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                             // 13.5 Отбираем доступных курьеров
                             rc = 135;
                             Courier[] unusedCouriers = null;
-                            if (deliveriesA != null || deliveriesA.Length > 0)
+                            if (deliveriesA == null || deliveriesA.Length <= 0)
                             {
                                 unusedCouriers = shopCouriers;
                             }
@@ -1192,9 +1192,9 @@ namespace LogisticsService.SalesmanTravelingProblem
                 //Helper.WriteErrorToLog($"(rc = {rc})");
                 //Helper.WriteToLog(ex.ToString());
 
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateSingleDeliveryEx", $"Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateSingleDeliveryEx", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateSingleDeliveryEx", ex.ToString()));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveriesEx", $"Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveriesEx", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveriesEx", ex.ToString()));
 
                 return rc;
             }

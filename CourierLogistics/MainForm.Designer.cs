@@ -41,6 +41,8 @@
             this.menuTrayIcon_ShowLog = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuTrayIcon_Exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuTrayIcon_LogAnalysis = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuTrayIcon.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -122,9 +124,11 @@
             this.menuTrayIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuTrayIcon_ShowLog,
             this.toolStripSeparator1,
+            this.menuTrayIcon_LogAnalysis,
+            this.toolStripSeparator2,
             this.menuTrayIcon_Exit});
             this.menuTrayIcon.Name = "menuTrayIcon";
-            this.menuTrayIcon.Size = new System.Drawing.Size(144, 58);
+            this.menuTrayIcon.Size = new System.Drawing.Size(211, 116);
             // 
             // menuTrayIcon_ShowLog
             // 
@@ -146,6 +150,19 @@
             this.menuTrayIcon_Exit.Text = "Exit";
             this.menuTrayIcon_Exit.ToolTipText = "Exit";
             this.menuTrayIcon_Exit.Click += new System.EventHandler(this.menuTrayIcon_Exit_Click);
+            // 
+            // menuTrayIcon_LogAnalysis
+            // 
+            this.menuTrayIcon_LogAnalysis.Name = "menuTrayIcon_LogAnalysis";
+            this.menuTrayIcon_LogAnalysis.Size = new System.Drawing.Size(210, 24);
+            this.menuTrayIcon_LogAnalysis.Text = "Log Analysis";
+            this.menuTrayIcon_LogAnalysis.ToolTipText = "Log Analysis";
+            this.menuTrayIcon_LogAnalysis.Click += new System.EventHandler(this.menuTrayIcon_LogAnalysis_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(207, 6);
             // 
             // MainForm
             // 
@@ -184,6 +201,8 @@
         private System.Windows.Forms.ToolStripMenuItem menuTrayIcon_ShowLog;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem menuTrayIcon_Exit;
+        private System.Windows.Forms.ToolStripMenuItem menuTrayIcon_LogAnalysis;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 
