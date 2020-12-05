@@ -85,6 +85,7 @@
     <Compile Include="SalesmanTravelingProblem\PermutationsSupport\PermutationsGenerator.cs" />
     <Compile Include="SalesmanTravelingProblem\SalesmanSolution.cs" />
     <Compile Include="SalesmanTravelingProblem\SalesmanSolutionEx.cs" />
+    <Compile Include="SalesmanTravelingProblem\SalesmanSolutionEy.cs" />
     <Compile Include="ServiceParameters\CourierParameters.cs" />
     <Compile Include="ServiceParameters\FunctionalParameters.cs" />
     <Compile Include="ServiceParameters\SalesmanProblemLevel.cs" />

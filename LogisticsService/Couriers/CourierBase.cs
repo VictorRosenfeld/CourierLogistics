@@ -125,9 +125,10 @@ namespace LogisticsService.Couriers
             {
 
                 // 2. Проверяем исходные данные
-                rc = 2;
+                rc = 21;
                 if (fromShop.X > 1000 * this.MaxDistance)
                     return rc;
+                rc = 22;
                 if (weight > this.MaxWeight)
                     return rc;
 
@@ -183,10 +184,11 @@ namespace LogisticsService.Couriers
             {
 
                 // 2. Проверяем исходные данные
-                rc = 2;
+                rc = 21;
                 if (this.IsTaxi)
                 if ((fromShop.X + fromShop.X) > 1000 * this.MaxDistance)
                     return rc;
+                rc = 22;
                 if (weight > this.MaxWeight)
                     return rc;
 
@@ -243,12 +245,14 @@ namespace LogisticsService.Couriers
             try
             {
                 // 2. Проверяем исходные данные
-                rc = 2;
+                rc = 20;
                 if (nodeInfo == null || nodeInfo.Length < 3)
                     return rc;
+                rc = 22;
                 if (totalWeight > this.MaxWeight)
                     return rc;
                 int nodeCount = nodeInfo.Length;
+                rc = 23;
                 if (nodeCount - 2 > this.MaxOrderCount)
                     return rc;
 

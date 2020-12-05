@@ -59,6 +59,10 @@ namespace LogAnalyzer.ReportData.OrdersSummary
                     // 3.1 Извлекаем заказ
                     rc = 31;
                     OrderEvent orderEvent = events[i];
+                    //if (orderEvent.order_id == 10422331)
+                    //{
+                    //    i = i;
+                    //}
 
                     // 3.2 Находим заказ в коллекции
                     rc = 32;

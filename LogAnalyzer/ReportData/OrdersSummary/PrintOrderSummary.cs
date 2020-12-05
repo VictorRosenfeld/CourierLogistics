@@ -113,7 +113,7 @@
 
                     sheet.Cell(row, EVENTS_COLUMN).SetValue(order.EventCount);
 
-                    if ((order.Flags & OrderFlags.Receipted) != 0)
+                    if ((order.Flags & OrderFlags.Receipted) != 0 && order.Type_Receipted != int.MinValue)
                     {
                         sheet.Cell(row, RECEIVED_LAST_COLUMN1).SetValue(order.ReceivedTime_Receipted);
                         sheet.Cell(row, EVENT_TIME_LAST_COLUMN1).SetValue(order.EventTime_Receipted);
@@ -129,7 +129,7 @@
                             sheet.Cell(row, C_COLUMN1).SetValue("+");
                     }
 
-                    if ((order.Flags & OrderFlags.Asssembled) != 0)
+                    if ((order.Flags & OrderFlags.Asssembled) != 0 && order.Type_Assembled != int.MinValue)
                     {
                         sheet.Cell(row, RECEIVED_LAST_COLUMN2).SetValue(order.ReceivedTime_Assembled);
                         sheet.Cell(row, EVENT_TIME_LAST_COLUMN2).SetValue(order.EventTime_Assembled);
@@ -145,7 +145,7 @@
                             sheet.Cell(row, C_COLUMN2).SetValue("+");
                     }
 
-                    if ((order.Flags & OrderFlags.Canceled) != 0)
+                    if ((order.Flags & OrderFlags.Canceled) != 0 && order.Type_Canceled != int.MinValue)
                     {
                         sheet.Cell(row, RECEIVED_LAST_COLUMN3).SetValue(order.ReceivedTime_Canceled);
                         sheet.Cell(row, EVENT_TIME_LAST_COLUMN3).SetValue(order.EventTime_Canceled);

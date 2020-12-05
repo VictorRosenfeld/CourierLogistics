@@ -319,6 +319,191 @@ namespace LogisticsService.Geo
         }
 
         /// <summary>
+        /// Запрос неизвестных расстояний и времени движения
+        /// из исходных точек в точки назначения
+        /// </summary>
+        /// <param name="srcLatitude">Широта исходных точек</param>
+        /// <param name="srcLongitude">Долгота исходных точек</param>
+        /// <param name="dstLatitude">Широта точек назначения</param>
+        /// <param name="dstLongitude">Долгота точек назначения</param>
+        /// <param name="vehicleType">Тип способа доставки</param>
+        /// <returns>0 - запрошенные данные получены; иначе - запрошенные данные не получены</returns>
+        public int PutLocationInfo(
+            double[] srcLatitude, double[] srcLongitude, 
+            double[] dstLatitude, double[] dstLongitude, 
+            CourierVehicleType vehicleType)
+        {
+            // 1. Инициализация 
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (srcLatitude == null || srcLatitude.Length <= 0)
+                    return rc;
+                if (srcLongitude == null || srcLongitude.Length !=  srcLatitude.Length)
+                    return rc;
+                if (dstLatitude == null || dstLatitude.Length <= 0)
+                    return rc;
+                if (dstLongitude == null || dstLongitude.Length !=  dstLatitude.Length)
+                    return rc;
+
+                // 3. Запрашиваем индекс способа доставки
+                rc = 3;
+                int deliveryMethodIndex = GetDeliveryMethodIndex(vehicleType);
+                if (deliveryMethodIndex < 0)
+                    return rc;
+
+                // 4. Находим хэш-значения координат
+                rc = 4;
+                int n1 = srcLatitude.Length;
+                int[] srcPointHash = new int[n1];
+                int n2 = dstLatitude.Length;
+                int[] dstPointHash = new int[n2];
+
+                for (int i = 0; i < n1; i++)
+                {
+                    coordinateHash.Latitude = srcLatitude[i];
+                    coordinateHash.Longitude = srcLongitude[i];
+                    srcPointHash[i] = coordinateHash.GetHashCode();
+                }
+
+                for (int i = 0; i < n2; i++)
+                {
+                    coordinateHash.Latitude = dstLatitude[i];
+                    coordinateHash.Longitude = dstLongitude[i];
+                    dstPointHash[i] = coordinateHash.GetHashCode();
+                }
+
+                // 5. Выделяем пары, для которых расстояния неизвестны
+                rc = 5;
+                int sourceCount = 0;
+                int destinationCount = 0;
+                bool[] isSource = new bool[n1];
+                bool[] isDestination = new bool[n2];
+                int[] sourceLocationIndex = new int[n1];
+                int[] destinationLocationIndex = new int[n2];
+
+                for (int i = 0; i < n1; i++)
+                {
+                    int hash1 = srcPointHash[i];
+
+                    for (int j = i + 1; j < n2; j++)
+                    {
+                        int hash2 = dstPointHash[j];
+
+                        bool isEmpty = true;
+
+                        ulong key = GetKey(hash1, hash2);
+                        int index;
+                        if (cacheItemIndex.TryGetValue(key, out index))
+                        {
+                            isEmpty = cacheItems[index].IsEmpty(deliveryMethodIndex);
+                        }
+
+                        if (isEmpty)
+                        {
+                            if (!isSource[i])
+                            {
+                                sourceLocationIndex[sourceCount++] = i;
+                                isSource[i] = true;
+                            }
+                            if (!isDestination[j])
+                            {
+                                destinationLocationIndex[destinationCount++] = j;
+                                isDestination[j] = true;
+                            }
+                        }
+                    }
+                }
+
+                // 6. Если все расстояния между всеми парами известны
+                rc = 6;
+                if (sourceCount <= 0)
+                    return rc = 0;
+
+                // 7. Запрашиваем расстояния и время движения, которые неизвестны в прямом направлении
+                rc = 7;
+                GetShippingInfo.ShippingInfoRequestEx requestData = new GetShippingInfo.ShippingInfoRequestEx();
+                string deliveryMethod = deliveryMethodName[deliveryMethodIndex];
+                requestData.modes = new string[] { deliveryMethod };
+                double[][] source_points = new double[sourceCount][];
+                double[][] destination_points = new double[destinationCount][];
+
+                for (int i = 0; i < sourceCount; i++)
+                {
+                    int index = sourceLocationIndex[i];
+                    source_points[i] = new double[] { srcLatitude[index], srcLongitude[index] };
+                }
+
+                for (int i = 0; i < destinationCount; i++)
+                {
+                    int index = destinationLocationIndex[i];
+                    destination_points[i] = new double[] { dstLatitude[index], dstLongitude[index] };
+                }
+
+                requestData.origins = source_points;
+                requestData.destinations = destination_points;
+
+                GetShippingInfo.ShippingInfoResponse responseData;
+                int rc1 = GetShippingInfo.GetInfo(requestData, out responseData);
+                if (rc1 != 0)
+                {
+                    //Helper.WriteErrorToLog($"LocationManager1.PutLocationInfo deliveryMethod = {deliveryMethod}, origin_count = {sourceCount}, destination_count = {destinationCount}, rc = {rc1}");
+                    Helper.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_PUT_INFO_ERROR, deliveryMethod, sourceCount, destinationCount, rc1));
+                    return rc = 1000 * rc + rc1;
+                }
+
+                // 8. Сохраняем полученные данные в кэше
+                rc = 8;
+                GetShippingInfo.PointsInfo[][] data = null;
+                if (responseData.driving != null)
+                {
+                    data = responseData.driving;
+                }
+                else if (responseData.cycling != null)
+                {
+                    data = responseData.cycling;
+                }
+                else if (responseData.walking != null)
+                {
+                    data = responseData.walking;
+                }
+
+                if (data == null)
+                    return rc;
+
+                for (int i = 0; i < sourceCount; i++)
+                {
+                    int i1 = sourceLocationIndex[i];
+                    int hash1 = srcPointHash[i1];
+                    GetShippingInfo.PointsInfo[] postInfoRow = data[i];
+
+                    for (int j = 0; j < destinationCount; j++)
+                    {
+                        int j1 = destinationLocationIndex[j];
+                        if (j1 != i1)
+                        {
+                            int hash2 = dstPointHash[j1];
+                            SaveCacheItem(hash1, hash2, new Point(postInfoRow[j].distance, postInfoRow[j].duration), deliveryMethodIndex);
+                        }
+                    }
+                }
+
+                // 9. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+
+
+        /// <summary>
         /// Запрос попарных расстояний и времени движения между точками
         /// </summary>
         /// <param name="latitude">Широта</param>
