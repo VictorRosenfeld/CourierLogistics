@@ -389,7 +389,7 @@ namespace LogisticsService.Geo
                 {
                     int hash1 = srcPointHash[i];
 
-                    for (int j = i + 1; j < n2; j++)
+                    for (int j = 0; j < n2; j++)
                     {
                         int hash2 = dstPointHash[j];
 
@@ -483,11 +483,8 @@ namespace LogisticsService.Geo
                     for (int j = 0; j < destinationCount; j++)
                     {
                         int j1 = destinationLocationIndex[j];
-                        if (j1 != i1)
-                        {
-                            int hash2 = dstPointHash[j1];
-                            SaveCacheItem(hash1, hash2, new Point(postInfoRow[j].distance, postInfoRow[j].duration), deliveryMethodIndex);
-                        }
+                        int hash2 = dstPointHash[j1];
+                        SaveCacheItem(hash1, hash2, new Point(postInfoRow[j].distance, postInfoRow[j].duration), deliveryMethodIndex);
                     }
                 }
 

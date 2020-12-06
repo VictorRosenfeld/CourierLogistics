@@ -108,7 +108,8 @@ namespace LogisticsService.FixedCourierService
         /// <summary>
         /// Решение задачи комивояжера
         /// </summary>
-        private SalesmanSolutionEx salesmanSolution;
+        //private SalesmanSolutionEx salesmanSolution;
+        private SalesmanSolutionEy salesmanSolution;
 
         /// <summary>
         /// Создание сервиса
@@ -196,7 +197,8 @@ namespace LogisticsService.FixedCourierService
                 if (rc1 != 0)
                     return rc = 100 * rc + rc1;
 
-                salesmanSolution = new SalesmanSolutionEx(geoCache, config.functional_parameters.salesman_problem_levels);
+                //salesmanSolution = new SalesmanSolutionEx(geoCache, config.functional_parameters.salesman_problem_levels);
+                salesmanSolution = new SalesmanSolutionEy(geoCache, config.functional_parameters.salesman_problem_levels);
 
                 //salesmanSolution.CheckPath(allCouriers.Couriers[4]);
 
@@ -817,7 +819,9 @@ namespace LogisticsService.FixedCourierService
                     CourierDeliveryInfo[] assembledOrders;
                     CourierDeliveryInfo[] receiptedOrders;
                     Order[] undeliveredOrders;
-                    int rc1 = CreateShopDeliveries(shop, shopOrders, shopCouriers, out assembledOrders, out receiptedOrders, out undeliveredOrders);
+                    Order[] tabuOrders;
+
+                    int rc1 = CreateShopDeliveries(shop, shopOrders, shopCouriers, out assembledOrders, out receiptedOrders, out undeliveredOrders, out tabuOrders);
                     if (rc1 != 0)
                         continue;
 
@@ -957,18 +961,20 @@ namespace LogisticsService.FixedCourierService
         /// <param name="receiptedOrders">Отгрузки, в которые могут попасть поступившие, но не собранные заказы</param>
         /// <param name="undeliveredOrders">Заказы, которые не могут быть доставлены в срок</param>
         /// <returns></returns>
-        private int CreateShopDeliveries(Shop shop, Order[] shopOrders, Courier[] shopCouriers, out CourierDeliveryInfo[] assembledOrders, out CourierDeliveryInfo[] receiptedOrders, out Order[] undeliveredOrders)
+        private int CreateShopDeliveries(Shop shop, Order[] shopOrders, Courier[] shopCouriers, out CourierDeliveryInfo[] assembledOrders, out CourierDeliveryInfo[] receiptedOrders, out Order[] undeliveredOrders, out Order[] tabuOrder)
         {
             // 1. Инициализация
             int rc = 1;
             assembledOrders = null;
             receiptedOrders = null;
             undeliveredOrders = null;
+            tabuOrder = null;
 
             try
             {
                 //return salesmanSolution.CreateShopDeliveries(shop, shopOrders, shopCouriers, out assembledOrders, out receiptedOrders, out undeliveredOrders);
-                return salesmanSolution.CreateShopDeliveriesEx(shop, shopOrders, shopCouriers, out assembledOrders, out receiptedOrders, out undeliveredOrders);
+                //return salesmanSolution.CreateShopDeliveriesEx(shop, shopOrders, shopCouriers, out assembledOrders, out receiptedOrders, out undeliveredOrders);
+                return salesmanSolution.CreateShopDeliveries(shop, shopOrders, shopCouriers, out assembledOrders, out receiptedOrders, out undeliveredOrders, out tabuOrder);
             }
             catch
             {
@@ -2476,6 +2482,8 @@ namespace LogisticsService.FixedCourierService
         /// <returns>0 - элементы добавлены; иначе - элементы не добавлены</returns>
         private int AddCheckingInfo(OrderEvent[] orders)
         {
+            // !!!!!!!!!!!!!!!!!!!!!! (отключение очереди контроля утечек)
+            return 0;
             // 1. Инициализация
             int rc = 1;
 
