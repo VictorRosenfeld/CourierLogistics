@@ -1097,6 +1097,11 @@ namespace LogisticsService.SalesmanTravelingProblem
                     return rc = 0;
                 }
 
+                if (deliveryCount < allDeliveries.Length)
+                {
+                    Array.Resize(ref allDeliveries, deliveryCount);
+                }
+
                 // 6. Сортируем по средней стоимости доставки одного заказа
                 rc = 6;
                 //Array.Sort(allDeliveries, CompareByOrderCost);
@@ -4810,6 +4815,33 @@ namespace LogisticsService.SalesmanTravelingProblem
             return 0;
         }
 
+        ///// <summary>
+        ///// Сравнение двух отгрузок по времени вручения первого заказа и средней стоимости доставки заказа
+        ///// (используется при сортировке отгрузок с просроченными заказами)
+        ///// </summary>
+        ///// <param name="delivery1">Отгрузка 1</param>
+        ///// <param name="delivery2">Отгрузка 2</param>
+        ///// <returns>-1 - delivery1 меньше delivery2; 0 - delivery1 = delivery2; delivery1 больше delivery2</returns>
+        //private static int CompareByOrderTimeCost(CourierDeliveryInfo delivery1, CourierDeliveryInfo delivery2)
+        //{
+        //    if (delivery1.Orders[0].Id < delivery2.Orders[0].Id)
+        //        return -1;
+        //    if (delivery1.Orders[0].Id > delivery2.Orders[0].Id)
+        //        return 1;
+
+        //    if (delivery1.NodeDeliveryTime[1] < delivery2.NodeDeliveryTime[1])
+        //        return -1;
+        //    if (delivery1.NodeDeliveryTime[1] > delivery2.NodeDeliveryTime[1])
+        //        return 1;
+
+        //    if (delivery1.OrderCost < delivery2.OrderCost)
+        //        return -1;
+        //    if (delivery1.OrderCost > delivery2.OrderCost)
+        //        return 1;
+
+        //    return 0;
+        //}
+
         /// <summary>
         /// Сравнение двух отгрузок по времени вручения первого заказа и средней стоимости доставки заказа
         /// (используется при сортировке отгрузок с просроченными заказами)
@@ -4824,9 +4856,9 @@ namespace LogisticsService.SalesmanTravelingProblem
             if (delivery1.Orders[0].Id > delivery2.Orders[0].Id)
                 return 1;
 
-            if (delivery1.NodeDeliveryTime[1] < delivery2.NodeDeliveryTime[1])
+            if (delivery1.StartDeliveryInterval.AddMinutes(delivery1.NodeDeliveryTime[1]) < delivery2.StartDeliveryInterval.AddMinutes(delivery2.NodeDeliveryTime[1]))
                 return -1;
-            if (delivery1.NodeDeliveryTime[1] > delivery2.NodeDeliveryTime[1])
+            if (delivery1.StartDeliveryInterval.AddMinutes(delivery1.NodeDeliveryTime[1]) > delivery2.StartDeliveryInterval.AddMinutes(delivery2.NodeDeliveryTime[1]))
                 return 1;
 
             if (delivery1.OrderCost < delivery2.OrderCost)
