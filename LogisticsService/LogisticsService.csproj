@@ -87,6 +87,7 @@
     <Compile Include="SalesmanTravelingProblem\SalesmanSolutionEx.cs" />
     <Compile Include="SalesmanTravelingProblem\SalesmanSolutionEy.cs" />
     <Compile Include="ServiceParameters\CourierParameters.cs" />
+    <Compile Include="ServiceParameters\DServiceIdMapper.cs" />
     <Compile Include="ServiceParameters\FunctionalParameters.cs" />
     <Compile Include="ServiceParameters\SalesmanProblemLevel.cs" />
     <Compile Include="ServiceParameters\ServiceConfig.cs" />

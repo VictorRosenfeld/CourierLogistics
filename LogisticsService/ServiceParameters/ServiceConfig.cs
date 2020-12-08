@@ -14,6 +14,7 @@ namespace LogisticsService.ServiceParameters
         public FunctionalParameters functional_parameters;
         public CourierParameters[] couriers;
         public AverageCostByVechicle[] average_cost;
+        public DServiceIdMapper[] dservice_mapper;
 
         public string Serialize()
         {

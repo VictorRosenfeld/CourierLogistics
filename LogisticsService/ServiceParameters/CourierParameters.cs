@@ -50,6 +50,9 @@ namespace LogisticsService.ServiceParameters
         [JsonProperty("is_taxi")]
         public bool IsTaxi { get; set; }
 
+        [JsonProperty("dservice_id")]
+        public int DServiceId { get; set; }
+
         public int GetTimeAndCost(Point fromShop, double weight, out double deliveryTime, out double executionTime, out double cost)
         {
             deliveryTime = 0;

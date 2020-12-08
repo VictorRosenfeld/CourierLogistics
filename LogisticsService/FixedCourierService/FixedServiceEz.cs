@@ -812,7 +812,8 @@ namespace LogisticsService.FixedCourierService
 
                     // 3.2. Выбираем курьров магазина
                     rc = 32;
-                    Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id);
+                    //Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id);
+                    Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id, false);
 
                     // 3.3 Строим отгрузки для магазина
                     rc = 33;
@@ -1048,18 +1049,20 @@ namespace LogisticsService.FixedCourierService
                     }
 
                     // delivery_service_id
-                    switch (delivery.DeliveryCourier.CourierType.VechicleType)
-                    {
-                        case CourierVehicleType.YandexTaxi:
-                            shipment.delivery_service_id = 14;
-                            break;
-                        case CourierVehicleType.GettTaxi:
-                            shipment.delivery_service_id = 12;
-                            break;
-                        default:
-                            shipment.delivery_service_id = 4;
-                            break;
-                    }
+                    shipment.delivery_service_id = delivery.DeliveryCourier.CourierType.DServiceId;
+
+                    //switch (delivery.DeliveryCourier.CourierType.VechicleType)
+                    //{
+                    //    case CourierVehicleType.YandexTaxi:
+                    //        shipment.delivery_service_id = 14;
+                    //        break;
+                    //    case CourierVehicleType.GettTaxi:
+                    //        shipment.delivery_service_id = 12;
+                    //        break;
+                    //    default:
+                    //        shipment.delivery_service_id = 4;
+                    //        break;
+                    //}
 
                     // orders
                     int[] orderId = new int[delivery.OrderCount];
@@ -1169,19 +1172,20 @@ namespace LogisticsService.FixedCourierService
                         shipment.date_target = delivery.StartDeliveryInterval;
                         shipment.date_target_end = delivery.EndDeliveryInterval;
                         shipment.info = CreateDeliveryInfo(delivery);
+                        shipment.delivery_service_id = delivery.DeliveryCourier.CourierType.DServiceId;
 
-                        switch (delivery.DeliveryCourier.CourierType.VechicleType)
-                        {
-                            case CourierVehicleType.YandexTaxi:
-                                shipment.delivery_service_id = 14;
-                                break;
-                            case CourierVehicleType.GettTaxi:
-                                shipment.delivery_service_id = 12;
-                                break;
-                            default:
-                                shipment.delivery_service_id = 4;
-                                break;
-                        }
+                        //switch (delivery.DeliveryCourier.CourierType.VechicleType)
+                        //{
+                        //    case CourierVehicleType.YandexTaxi:
+                        //        shipment.delivery_service_id = 14;
+                        //        break;
+                        //    case CourierVehicleType.GettTaxi:
+                        //        shipment.delivery_service_id = 12;
+                        //        break;
+                        //    default:
+                        //        shipment.delivery_service_id = 4;
+                        //        break;
+                        //}
 
                         // orders
                         int[] orderId = new int[delivery.OrderCount];

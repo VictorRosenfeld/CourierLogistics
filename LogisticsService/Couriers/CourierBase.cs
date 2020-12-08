@@ -82,6 +82,11 @@ namespace LogisticsService.Couriers
         public bool IsTaxi { get; private set; }
 
         /// <summary>
+        /// Id сервиса доставки
+        /// </summary>
+        public int DServiceId { get; private set; }
+
+        /// <summary>
         /// Параметрический конструктор класса CourierBase
         /// </summary>
         /// <param name="parameters">Параметры курьера</param>
@@ -101,18 +106,9 @@ namespace LogisticsService.Couriers
             FirstDistance = parameters.FirstDistance;
             AdditionalKilometerCost = parameters.AdditionalKilometerCost;
             IsTaxi = parameters.IsTaxi;
+            DServiceId = parameters.DServiceId;
         }
-
-        /// <summary>
-        /// Расчет времени и стоимости доставки одного заказа
-        /// от магазина до вручения
-        /// </summary>
-        /// <param name="fromShop">Расстояние и время движения от магазина до точки доставки</param>
-        /// <param name="weight">Вес заказа</param>
-        /// <param name="deliveryTime">Время доставки до вручения заказа</param>
-        /// <param name="executionTime">Общее время доставки</param>
-        /// <param name="cost">Стоимость доставки</param>
-        /// <returns>0 - расчет выполнен; иначе - расчет не выполнен</returns>
+        
         public virtual int GetTimeAndCost(Point fromShop, double weight, out double deliveryTime, out double executionTime, out double cost)
         {
             // 1. Инициализация

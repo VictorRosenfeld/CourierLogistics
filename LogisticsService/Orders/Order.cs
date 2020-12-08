@@ -1,6 +1,7 @@
 ﻿
 namespace LogisticsService.Orders
 {
+    using LogisticsService.Couriers;
     using System;
 
     /// <summary>
@@ -92,6 +93,12 @@ namespace LogisticsService.Orders
         /// может быть осуществлена доставка
         /// </summary>
         public EnabledCourierType EnabledTypes { get; set; }
+
+        /// <summary>
+        /// Типы курьеров, с помощью которых
+        /// может быть осуществлена доставка
+        /// </summary>
+        public CourierVehicleType[] EnabledTypesEx { get; set; } 
 
         /// <summary>
         /// Параметрический конструктор класса Order

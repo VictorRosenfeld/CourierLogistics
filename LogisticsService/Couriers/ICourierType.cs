@@ -89,6 +89,11 @@ namespace LogisticsService.Couriers
         /// </summary>
         bool IsTaxi { get; }
 
+        /// <summary>
+        /// ID сервиса доставки
+        /// </summary>
+        int DServiceId { get; }
+
         #endregion Properties
 
         #region Methods

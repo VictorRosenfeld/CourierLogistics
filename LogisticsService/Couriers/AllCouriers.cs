@@ -279,8 +279,9 @@ namespace LogisticsService.Couriers
         /// (Фиксированная модель)
         /// </summary>
         /// <param name="shopId">Id магазина</param>
+        /// <param name="readyOnly">true - только доступные для отгрузки; false - все курьеры</param>
         /// <returns>Курьры или null</returns>
-        public Courier[] GetShopCouriers(int shopId)
+        public Courier[] GetShopCouriers(int shopId, bool readyOnly = true)
         {
             lock (syncRoot)
             {
@@ -292,7 +293,7 @@ namespace LogisticsService.Couriers
 
                 foreach (Courier courier in couriers.Values)
                 {
-                    if (courier.Status != CourierStatus.Ready)
+                    if (readyOnly && courier.Status != CourierStatus.Ready)
                         continue;
                     if (courier.IsTaxi)
                     {

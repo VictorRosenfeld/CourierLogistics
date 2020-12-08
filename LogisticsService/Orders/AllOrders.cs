@@ -1,6 +1,7 @@
 ﻿
 namespace LogisticsService.Orders
 {
+    using LogisticsService.Couriers;
     using LogisticsService.Locations;
     using System;
     using System.Collections.Generic;
@@ -222,6 +223,56 @@ namespace LogisticsService.Orders
             catch
             {
                 return EnabledCourierType.Unknown;
+            }
+        }
+
+        /// <summary>
+        /// Построение маски доступных способов отгрузки
+        /// заказа в заданном магазине
+        /// </summary>
+        /// <param name="shopId">Id магазина</param>
+        /// <param name="availableService">Массив доступных сервисов отгрузки заказа</param>
+        /// <returns>Массив кодов спсобов отгрузки</returns>
+        private static CourierVehicleType[] GetDeliveryMaskEx(int shopId, ShopService[] availableService)
+        {
+            // 1. Инициализация
+            
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (availableService == null || availableService.Length <= 0)
+                    return new CourierVehicleType[0];
+
+                // 3. Строим маску доступных способов отгрузки в заданном магазине
+                List<CourierVehicleType> vehicleTypes = new List<CourierVehicleType>(32);
+
+                foreach(ShopService shopSevice in availableService)
+                {
+                    if (shopSevice.shop_id == shopId)
+                    {
+                        switch (shopSevice.dservice_id)
+                        {
+                            case 4:
+                                vehicleTypes.Add(CourierVehicleType.OnFoot);
+                                vehicleTypes.Add(CourierVehicleType.Bicycle);
+                                vehicleTypes.Add(CourierVehicleType.Car);
+                                break;
+                            case 12:
+                                vehicleTypes.Add(CourierVehicleType.GettTaxi);
+                                break;
+                            case 14:
+                                vehicleTypes.Add(CourierVehicleType.YandexTaxi);
+                                break;
+                        }
+                    }
+                }
+
+                // 4. Возвращаем результат
+                return vehicleTypes.ToArray();
+            }
+            catch
+            {
+                return null;
             }
         }
 
