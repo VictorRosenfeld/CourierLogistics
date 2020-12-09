@@ -2,6 +2,7 @@
 namespace LogisticsService.Couriers
 {
     using LogisticsService.API;
+    using LogisticsService.Log;
     using LogisticsService.ServiceParameters;
     using System;
     using System.Collections.Generic;
@@ -57,9 +58,26 @@ namespace LogisticsService.Couriers
         public int Count => (couriers == null ? 0 : couriers.Count);
 
         /// <summary>
+        /// Маппер dservice_id --> CourierVehicleType[]
+        /// </summary>
+        private Dictionary<int, CourierVehicleType[]> dServiceIdToVehicleType;
+
+        /// <summary>
+        /// Маппер CourierVehicleType --> dserive_id
+        /// </summary>
+        private Dictionary<CourierVehicleType, int> vehicleTypeTodServiceId;
+
+        /// <summary>
+        /// Маппер courier_type --> CourierVehicleType
+        /// </summary>
+        private Dictionary<string, CourierVehicleType> courierTypeToVehicleType;
+
+        /// <summary>
         /// Создание экземпляра
         /// </summary>
+        /// <param name="config">Параметры конфигурации</param>
         /// <param name="courierLimit">Ограничение на общее число курьеров</param>
+        /// <returns>0 - экземпляр создан; экземпляр не создан</returns>
         public int Create(ServiceConfig config, int courierLimit = -1)
         {
             lock (syncRoot)
@@ -81,20 +99,35 @@ namespace LogisticsService.Couriers
                         config.average_cost == null || config.average_cost.Length <= 0)
                         return rc;
 
-                    // 3. Создаём общую коллекцию курьеров
+                    // 3. Создаём прямой и обратный мапперы: dservice_id --> CourierVehicleType[] и CourierVehicleType --> dservice_id
                     rc = 3;
+                    int rc1 = CreateDServiceMapper(config.dservice_mapper, out dServiceIdToVehicleType, out vehicleTypeTodServiceId);
+                    if (rc1 != 0)
+                        return rc = 100 * rc + rc1;
+
+                    // 4. Создаём маппер: courier_type --> CourierVehicleType
+                    rc = 4;
+                    rc1 = CreateCourierTypeMapper(config.courier_type_mapper, out courierTypeToVehicleType);
+                    if (rc1 != 0)
+                        return rc = 100 * rc + rc1;
+
+                    // 5. Создаём общую коллекцию курьеров
+                    rc = 5;
                     if (courierLimit <= 0) courierLimit = 2000;
                     couriers = new Dictionary<int, Courier>(courierLimit);
 
-                    // 4. Создаём коллекцию типов курьеров
-                    rc = 4;
+                    // 6. Создаём коллекцию типов курьеров
+                    rc = 6;
                     courierTypes = new Dictionary<CourierVehicleType, ICourierType>(config.couriers.Length);
 
                     foreach (CourierParameters courierPararams in config.couriers)
                     {
+                        if (courierPararams.DServiceId == 0)
+                            courierPararams.DServiceId = GetCourierDServiceId(courierPararams.VechicleType);
                         courierTypes[courierPararams.VechicleType] = courierPararams;
-                        if (courierPararams.VechicleType == CourierVehicleType.YandexTaxi ||
-                            courierPararams.VechicleType == CourierVehicleType.GettTaxi)
+                        //if (courierPararams.VechicleType == CourierVehicleType.YandexTaxi ||
+                        //    courierPararams.VechicleType == CourierVehicleType.GettTaxi)
+                        if (courierPararams.IsTaxi)
                         {
                             CourierBase courierBase = new CourierBase(courierPararams);
                             Courier courier = new Courier((int)courierPararams.VechicleType, courierBase);
@@ -106,11 +139,10 @@ namespace LogisticsService.Couriers
                         }
                     }
 
-                    // 4. Создаём коллекцию средних времен доставки для каждого типа курьера в каждом магазине
-                    rc = 4;
+                    // 7. Создаём коллекцию средних времен доставки для каждого типа курьера в каждом магазине
+                    rc = 7;
                     averageCostKey = new ulong[config.average_cost.Length];
                     averageCost = new double[averageCostKey.Length];
-
 
                     for (int i = 0; i < averageCost.Length; i++)
                     {
@@ -121,7 +153,7 @@ namespace LogisticsService.Couriers
 
                     Array.Sort(averageCostKey, averageCost);
 
-                    // 5. Выход - Ok
+                    // 8. Выход - Ok
                     rc = 0;
                     IsCreated = true;
                     return rc;
@@ -130,6 +162,102 @@ namespace LogisticsService.Couriers
                 {
                     return rc;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Создание мапперов:
+        /// dservice_id --> CourierVehicleType[],
+        /// CourierVehicleType --> dserive_id
+        /// </summary>
+        /// <param name="mapperData">Данные мапперов</param>
+        /// <param name="serviceIdToVehicleType">Маппер dservice_id --> CourierVehicleType[]</param>
+        /// <param name="vehicleTypeToServiceId">Маппер CourierVehicleType --> dserive_id</param>
+        /// <returns>0 - мапперы созданы; иначе - мапперы не созданы</returns>
+        private static int CreateDServiceMapper(DServiceIdMapper[] mapperData, 
+            out Dictionary<int, CourierVehicleType[]> serviceIdToVehicleType, 
+            out Dictionary<CourierVehicleType, int> vehicleTypeToServiceId)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            serviceIdToVehicleType = new Dictionary<int, CourierVehicleType[]>(32);
+            vehicleTypeToServiceId = new Dictionary<CourierVehicleType, int>(64);
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (mapperData == null || mapperData.Length <= 0)
+                    return rc;
+
+                // 3. Создаём прямой и обратный мапперы
+                rc = 3;
+
+                foreach(DServiceIdMapper item in mapperData)
+                {
+                    serviceIdToVehicleType.Add(item.DserviceId, item.VechicleTypes);
+                    foreach(CourierVehicleType vehicleType in item.VechicleTypes)
+                    {
+                        vehicleTypeToServiceId.Add(vehicleType, item.DserviceId);
+                    }
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateDServiceMapper", "CreateDServiceMapper(...)"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateDServiceMapper", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateDServiceMapper", ex.ToString()));
+
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Создание мапперов:
+        /// courier_type --> CourierVehicleType,
+        /// </summary>
+        /// <param name="mapperData">Данные маппеа</param>
+        /// <param name="courierTypeToVehicleType">Маппер courier_type --> CourierVehicleType</param>
+        /// <returns>0 - маппер создан; иначе - маппер не создан</returns>
+        private static int CreateCourierTypeMapper(CourierTypeMapper[] mapperData, out Dictionary<string, CourierVehicleType> courierTypeToVehicleType)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            courierTypeToVehicleType = new Dictionary<string, CourierVehicleType>(64);
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (mapperData == null || mapperData.Length <= 0)
+                    return rc;
+
+                // 3. Создаём маппер
+                rc = 3;
+                foreach(CourierTypeMapper item in mapperData)
+                {
+                    string key = item.CourierType;
+                    if (string.IsNullOrWhiteSpace(key))
+                        continue;
+                    key = key.Trim().ToLower();
+                    courierTypeToVehicleType.Add(key, item.VechicleType);
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateCourierTypeMapper", "CreateCourierTypeMapper(...)"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateCourierTypeMapper", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateCourierTypeMapper", ex.ToString()));
+
+                return rc;
             }
         }
 
@@ -324,8 +452,8 @@ namespace LogisticsService.Couriers
         /// <summary>
         /// Построение ulong ключа для двух int
         /// </summary>
-        /// <param name="value1">Значение 1</param>
-        /// <param name="value2">Значение 2</param>
+        /// <param name="value1">Положительное значение 1</param>
+        /// <param name="value2">Положительное значение 2</param>
         /// <returns>Ключ</returns>
         private ulong GetCostKey(int value1, int value2)
         {
@@ -342,17 +470,28 @@ namespace LogisticsService.Couriers
         {
             if (string.IsNullOrWhiteSpace(courierEventType))
                 return CourierVehicleType.Unknown;
-            switch (courierEventType.Trim().ToUpper())
-            {
-                case "WALKING":
-                    return CourierVehicleType.OnFoot;
-                case "DRIVING":
-                    return CourierVehicleType.Car;
-                case "CYCLING":
-                    return CourierVehicleType.Bicycle;
-            }
+            if (courierTypeToVehicleType == null)
+                return CourierVehicleType.Unknown;
 
-            return CourierVehicleType.Unknown;
+            CourierVehicleType vehicleType;
+            if (!courierTypeToVehicleType.TryGetValue(courierEventType.Trim().ToLower(), out vehicleType))
+                return CourierVehicleType.Unknown;
+
+            return vehicleType;
+
+            //if (string.IsNullOrWhiteSpace(courierEventType))
+            //    return CourierVehicleType.Unknown;
+            //switch (courierEventType.Trim().ToUpper())
+            //{
+            //    case "WALKING":
+            //        return CourierVehicleType.OnFoot;
+            //    case "DRIVING":
+            //        return CourierVehicleType.Car;
+            //    case "CYCLING":
+            //        return CourierVehicleType.Bicycle;
+            //}
+
+            //return CourierVehicleType.Unknown;
         }
 
         /// <summary>
@@ -422,6 +561,36 @@ namespace LogisticsService.Couriers
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Извлечение dservice_id для заданного CourierVehicleType
+        /// </summary>
+        /// <param name="vehicleType">CourierVehicleType</param>
+        /// <returns>dservice_id или 0</returns>
+        private int GetCourierDServiceId(CourierVehicleType vehicleType)
+        {
+            if (vehicleTypeTodServiceId == null)
+                return 0;
+            int dServiceId;
+            if (!vehicleTypeTodServiceId.TryGetValue(vehicleType, out dServiceId))
+                dServiceId = 0;
+            return dServiceId;
+        }
+
+        /// <summary>
+        /// Извлечение CourierVehicleType для заданного dservice_id
+        /// </summary>
+        /// <param name="dServiceId">dservice_id</param>
+        /// <returns>CourierVehicleType[]</returns>
+        public CourierVehicleType[] GetDServiceIdVehicleTypes(int dServiceId)
+        {
+            if (dServiceIdToVehicleType == null)
+                return new CourierVehicleType[0];
+            CourierVehicleType[] vehicleTypes;
+            if (!dServiceIdToVehicleType.TryGetValue(dServiceId, out vehicleTypes))
+                vehicleTypes = new CourierVehicleType[0];
+            return vehicleTypes;
         }
     }
 }

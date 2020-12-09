@@ -1,6 +1,9 @@
 ﻿
 namespace LogisticsService.Orders
 {
+    using LogisticsService.Couriers;
+    using LogisticsService.Log;
+    using LogisticsService.ServiceParameters;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -32,12 +35,17 @@ namespace LogisticsService.Orders
         public Dictionary<int, Order> Orders => orders;
 
         /// <summary>
+        /// Маппер dservice_id --> CourierVehicleType[]
+        /// </summary>
+        private Dictionary<int, CourierVehicleType[]> dServiceIdToVehicleType;
+
+        /// <summary>
         /// Количество заказов
         /// </summary>
         public int Count => (orders == null ? 0 : orders.Count);
 
         /// <summary>
-        /// Создание экземпляра
+        /// Создание экземпляра AllOrdersEx
         /// </summary>
         /// <param name="orderLimit">Макимальное число заказов</param>
         /// <returns>0 - экземпляр создан; экземпляр не создан</returns>
@@ -58,6 +66,52 @@ namespace LogisticsService.Orders
                     orders = new Dictionary<int, Order>(orderLimit);
 
                     // 4. Выход - Ok
+                    rc = 0;
+                    IsCreated = true;
+                    return rc;
+                }
+                catch
+                {
+                    return rc;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Создание экземпляра AllOrdersEx
+        /// </summary>
+        /// <param name="config">Параметры конфигурации</param>
+        /// <param name="orderLimit">Макимальное число заказов</param>
+        /// <returns>0 - экземпляр создан; экземпляр не создан</returns>
+        public int CreateEx(ServiceConfig config, int orderLimit = -1)
+        {
+            lock (syncRoot)
+            {
+                // 1. Инициализация
+                int rc = 1;
+                IsCreated = false;
+
+                try
+                {
+                    // 2. Проверяем исходные данные
+                    rc = 2;
+                    if (config == null ||
+                        config.dservice_mapper == null ||
+                        config.dservice_mapper.Length <= 0)
+                        return rc;
+
+                    // 3. Создаём общую коллекцию заказов
+                    rc = 3;
+                    if (orderLimit <= 0) orderLimit = 20000;
+                    orders = new Dictionary<int, Order>(orderLimit);
+
+                    // 4. Строим маппер dservice_id ---> CourierVehicleType[]
+                    rc = 4;
+                    int rc1 = CreateDServiceMapper(config.dservice_mapper, out dServiceIdToVehicleType);
+                    if (rc1 != 0)
+                        return rc = 100 * rc + rc1;
+
+                    // 5. Выход - Ok
                     rc = 0;
                     IsCreated = true;
                     return rc;
@@ -117,6 +171,7 @@ namespace LogisticsService.Orders
                             order.DeliveryTimeFrom = orderEvent.delivery_frame_from;
                             order.DeliveryTimeTo = orderEvent.delivery_frame_to;
                             order.EnabledTypes = GetDeliveryMask(orderEvent.shop_id, orderEvent.service_available);
+                            order.EnabledTypesEx = GetDeliveryMaskEx(orderEvent.shop_id, orderEvent.service_available);
                             order.Status = OrderStatus.None;
                             order.Completed = false;
                             orders.Add(order.Id, order);
@@ -133,6 +188,7 @@ namespace LogisticsService.Orders
                             order.ShopId = orderEvent.shop_id;
                             order.Weight = orderEvent.weight;
                             order.EnabledTypes = GetDeliveryMask(orderEvent.shop_id, orderEvent.service_available);
+                            order.EnabledTypesEx = GetDeliveryMaskEx(orderEvent.shop_id, orderEvent.service_available);
                             order.DeliveryTimeFrom = orderEvent.delivery_frame_from;
                             order.DeliveryTimeTo = orderEvent.delivery_frame_to;
                         }
@@ -214,6 +270,53 @@ namespace LogisticsService.Orders
         }
 
         /// <summary>
+        /// Построение маски доступных способов отгрузки
+        /// заказа в заданном магазине
+        /// </summary>
+        /// <param name="shopId">Id магазина</param>
+        /// <param name="availableService">Доступные для доставки сервисы</param>
+        /// <returns>Массив доступных способов доставки или null</returns>
+        private CourierVehicleType[] GetDeliveryMaskEx(int shopId, ShopService[] availableService)
+        {
+            // 1. Инициализация
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (dServiceIdToVehicleType == null || availableService == null || availableService.Length <= 0)
+                    return new CourierVehicleType[0];
+
+                // 3. Строим маску доступных способов отгрузки в заданном магазине
+                List<CourierVehicleType> allVehicleTypes = new List<CourierVehicleType>(32);
+
+                foreach (ShopService shopSevice in availableService)
+                {
+                    if (shopSevice.shop_id == shopId)
+                    {
+                        CourierVehicleType[] vehicleTypes;
+                        if (dServiceIdToVehicleType.TryGetValue(shopSevice.dservice_id, out vehicleTypes))
+                        {
+                            if (vehicleTypes != null && vehicleTypes.Length > 0)
+                            {
+                                allVehicleTypes.AddRange(vehicleTypes);
+                            }
+                        }
+                    }
+                }
+
+                if (allVehicleTypes.Count <= 0)
+                    return new CourierVehicleType[0];
+
+                // 4. Выбираем не повторяющиеся типы
+                return allVehicleTypes.ToArray().Distinct().ToArray();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Преобразование Id сервиса доставки в 
         /// маску доступных способов доставки
         /// </summary>
@@ -281,6 +384,50 @@ namespace LogisticsService.Orders
             catch
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Создание маппера:
+        /// dservice_id --> CourierVehicleType[],
+        /// </summary>
+        /// <param name="mapperData">Данные маппера</param>
+        /// <param name="serviceIdToVehicleType">Маппер dservice_id --> CourierVehicleType[]</param>
+        /// <returns>0 - маппер создан; иначе - маппер не создан</returns>
+        private static int CreateDServiceMapper(DServiceIdMapper[] mapperData, out Dictionary<int, CourierVehicleType[]> serviceIdToVehicleType)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            serviceIdToVehicleType = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (mapperData == null || mapperData.Length <= 0)
+                {
+                    serviceIdToVehicleType = new Dictionary<int, CourierVehicleType[]>(4);
+                    return rc;
+                }
+
+                // 3. Создаём прямой и обратный мапперы
+                rc = 3;
+                foreach (DServiceIdMapper item in mapperData)
+                {
+                    serviceIdToVehicleType.Add(item.DserviceId, item.VechicleTypes);
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateDServiceMapper", "CreateDServiceMapper(...)"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateDServiceMapper", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateDServiceMapper", ex.ToString()));
+
+                return rc;
             }
         }
     }

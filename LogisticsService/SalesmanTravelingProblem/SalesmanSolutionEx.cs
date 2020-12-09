@@ -783,6 +783,8 @@ namespace LogisticsService.SalesmanTravelingProblem
                         if ((order.EnabledTypes & EnabledCourierType.OnFoot) != 0)
                             orderVehicleTypes[vcount++] = (int)CourierVehicleType.OnFoot;
 
+                        //CourierVehicleType[] orderVehicleTypesEx = order.EnabledTypesEx;
+
                         bool isCourier = false;
 
                         if (vcount > 0)
@@ -796,6 +798,18 @@ namespace LogisticsService.SalesmanTravelingProblem
                                 }
                             }
                         }
+
+                        //if (orderVehicleTypesEx != null && orderVehicleTypesEx.Length > 0)
+                        //{
+                        //    for (int j = 0; j < orderVehicleTypesEx.Length; j++)
+                        //    {
+                        //        if (Array.BinarySearch(courierVehicleTypes, orderVehicleTypesEx[j]) >= 0)
+                        //        {
+                        //            isCourier = true;
+                        //            break;
+                        //        }
+                        //    }
+                        //}
 
                         if (isCourier)
                         {

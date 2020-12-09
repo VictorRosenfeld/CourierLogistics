@@ -186,7 +186,8 @@ namespace LogisticsService.FixedCourierService
                 // 6. Создаём All orders
                 rc = 6;
                 allOrders = new AllOrdersEx();
-                rc1 = allOrders.Create();
+                //rc1 = allOrders.Create();
+                rc1 = allOrders.CreateEx(config);
                 if (rc1 != 0)
                     return rc = 100 * rc + rc1;
 
@@ -1464,18 +1465,24 @@ namespace LogisticsService.FixedCourierService
                     return null;
 
                 // 4. Выбираем доступные способы отгрузки
-                CourierVehicleType[] courierTypes = new CourierVehicleType[8];
-                int typeCount = 0;
-                if ((order.EnabledTypes & EnabledCourierType.Car) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.Car;
-                if ((order.EnabledTypes & EnabledCourierType.Bicycle) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.Bicycle;
-                if ((order.EnabledTypes & EnabledCourierType.OnFoot) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.OnFoot;
-                if ((order.EnabledTypes & EnabledCourierType.YandexTaxi) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.YandexTaxi;
-                if ((order.EnabledTypes & EnabledCourierType.GettTaxi) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.GettTaxi;
+                //CourierVehicleType[] courierTypes = new CourierVehicleType[8];
+                //int typeCount = 0;
+                //if ((order.EnabledTypes & EnabledCourierType.Car) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.Car;
+                //if ((order.EnabledTypes & EnabledCourierType.Bicycle) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.Bicycle;
+                //if ((order.EnabledTypes & EnabledCourierType.OnFoot) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.OnFoot;
+                //if ((order.EnabledTypes & EnabledCourierType.YandexTaxi) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.YandexTaxi;
+                //if ((order.EnabledTypes & EnabledCourierType.GettTaxi) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.GettTaxi;
+
+                //if (typeCount <= 0)
+                //    return null;
+
+                CourierVehicleType[] courierTypes = order.EnabledTypesEx;
+                int typeCount = (courierTypes == null ? 0 : courierTypes.Length);
 
                 if (typeCount <= 0)
                     return null;
@@ -1560,18 +1567,24 @@ namespace LogisticsService.FixedCourierService
                     return null;
 
                 // 4. Выбираем доступные способы отгрузки
-                CourierVehicleType[] courierTypes = new CourierVehicleType[8];
-                int typeCount = 0;
-                if ((order.EnabledTypes & EnabledCourierType.Car) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.Car;
-                if ((order.EnabledTypes & EnabledCourierType.Bicycle) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.Bicycle;
-                if ((order.EnabledTypes & EnabledCourierType.OnFoot) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.OnFoot;
-                if ((order.EnabledTypes & EnabledCourierType.YandexTaxi) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.YandexTaxi;
-                if ((order.EnabledTypes & EnabledCourierType.GettTaxi) != 0)
-                    courierTypes[typeCount++] = CourierVehicleType.GettTaxi;
+                //CourierVehicleType[] courierTypes = new CourierVehicleType[8];
+                //int typeCount = 0;
+                //if ((order.EnabledTypes & EnabledCourierType.Car) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.Car;
+                //if ((order.EnabledTypes & EnabledCourierType.Bicycle) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.Bicycle;
+                //if ((order.EnabledTypes & EnabledCourierType.OnFoot) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.OnFoot;
+                //if ((order.EnabledTypes & EnabledCourierType.YandexTaxi) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.YandexTaxi;
+                //if ((order.EnabledTypes & EnabledCourierType.GettTaxi) != 0)
+                //    courierTypes[typeCount++] = CourierVehicleType.GettTaxi;
+
+                //if (typeCount <= 0)
+                //    return null;
+
+                CourierVehicleType[] courierTypes = order.EnabledTypesEx;
+                int typeCount = (courierTypes == null ? 0 : courierTypes.Length);
 
                 if (typeCount <= 0)
                     return null;
@@ -1739,18 +1752,19 @@ namespace LogisticsService.FixedCourierService
                     shipment.info = CreateDeliveryInfo(delivery);
 
                     // delivery_service_id
-                    switch (delivery.DeliveryCourier.CourierType.VechicleType)
-                    {
-                        case CourierVehicleType.YandexTaxi:
-                            shipment.delivery_service_id = 14;
-                            break;
-                        case CourierVehicleType.GettTaxi:
-                            shipment.delivery_service_id = 12;
-                            break;
-                        default:
-                            shipment.delivery_service_id = 4;
-                            break;
-                    }
+                    shipment.delivery_service_id = delivery.DeliveryCourier.CourierType.DServiceId;
+                    //switch (delivery.DeliveryCourier.CourierType.VechicleType)
+                    //{
+                    //    case CourierVehicleType.YandexTaxi:
+                    //        shipment.delivery_service_id = 14;
+                    //        break;
+                    //    case CourierVehicleType.GettTaxi:
+                    //        shipment.delivery_service_id = 12;
+                    //        break;
+                    //    default:
+                    //        shipment.delivery_service_id = 4;
+                    //        break;
+                    //}
 
                     // orders
                     int[] orderId = new int[delivery.OrderCount];
@@ -2016,18 +2030,19 @@ namespace LogisticsService.FixedCourierService
                     shipment.date_target_end = delivery.EndDeliveryInterval;
                     shipment.info = CreateDeliveryInfo(delivery);
 
-                    switch (delivery.DeliveryCourier.CourierType.VechicleType)
-                    {
-                        case CourierVehicleType.YandexTaxi:
-                            shipment.delivery_service_id = 14;
-                            break;
-                        case CourierVehicleType.GettTaxi:
-                            shipment.delivery_service_id = 12;
-                            break;
-                        default:
-                            shipment.delivery_service_id = 4;
-                            break;
-                    }
+                    shipment.delivery_service_id = delivery.DeliveryCourier.CourierType.DServiceId;
+                    //switch (.VechicleType)
+                    //{
+                    //    case CourierVehicleType.YandexTaxi:
+                    //        shipment.delivery_service_id = 14;
+                    //        break;
+                    //    case CourierVehicleType.GettTaxi:
+                    //        shipment.delivery_service_id = 12;
+                    //        break;
+                    //    default:
+                    //        shipment.delivery_service_id = 4;
+                    //        break;
+                    //}
 
                     // orders
                     int[] orderId = new int[delivery.OrderCount];
@@ -2110,20 +2125,21 @@ namespace LogisticsService.FixedCourierService
                     rejectedOrder.date_target = delivery.StartDeliveryInterval;
                     rejectedOrder.date_target_end = delivery.EndDeliveryInterval;
                     rejectedOrder.orders = new int[] { order.Id };
-                    
-                    switch (delivery.DeliveryCourier.CourierType.VechicleType)
-                    {
-                        case CourierVehicleType.YandexTaxi:
-                            rejectedOrder.delivery_service_id = 14;
 
-                            break;
-                        case CourierVehicleType.GettTaxi:
-                            rejectedOrder.delivery_service_id = 12;
-                            break;
-                        default:
-                            rejectedOrder.delivery_service_id = 4;
-                            break;
-                    }
+                    rejectedOrder.delivery_service_id = delivery.DeliveryCourier.CourierType.DServiceId;
+                    //switch (delivery.DeliveryCourier.CourierType.VechicleType)
+                    //{
+                    //    case CourierVehicleType.YandexTaxi:
+                    //        rejectedOrder.delivery_service_id = 14;
+
+                    //        break;
+                    //    case CourierVehicleType.GettTaxi:
+                    //        rejectedOrder.delivery_service_id = 12;
+                    //        break;
+                    //    default:
+                    //        rejectedOrder.delivery_service_id = 4;
+                    //        break;
+                    //}
 
                     BeginShipment.RejectedInfo info = new BeginShipment.RejectedInfo();
                     info.calculationTime = rejectedOrder.date_target;
@@ -2263,18 +2279,20 @@ namespace LogisticsService.FixedCourierService
                     shipment.info = CreateDeliveryInfo(delivery);
 
                     // delivery_service_id
-                    switch (delivery.DeliveryCourier.CourierType.VechicleType)
-                    {
-                        case CourierVehicleType.YandexTaxi:
-                            shipment.delivery_service_id = 14;
-                            break;
-                        case CourierVehicleType.GettTaxi:
-                            shipment.delivery_service_id = 12;
-                            break;
-                        default:
-                            shipment.delivery_service_id = 4;
-                            break;
-                    }
+                    shipment.delivery_service_id = delivery.DeliveryCourier.CourierType.DServiceId;
+
+                    //switch (delivery.DeliveryCourier.CourierType.VechicleType)
+                    //{
+                    //    case CourierVehicleType.YandexTaxi:
+                    //        shipment.delivery_service_id = 14;
+                    //        break;
+                    //    case CourierVehicleType.GettTaxi:
+                    //        shipment.delivery_service_id = 12;
+                    //        break;
+                    //    default:
+                    //        shipment.delivery_service_id = 4;
+                    //        break;
+                    //}
 
                     // orders
                     int[] orderId = new int[delivery.OrderCount];
@@ -2436,18 +2454,19 @@ namespace LogisticsService.FixedCourierService
                     shipment.date_target = queueItem.EventTime;
 
                     // delivery_service_id
-                    switch (delivery.DeliveryCourier.CourierType.VechicleType)
-                    {
-                        case CourierVehicleType.YandexTaxi:
-                            shipment.delivery_service_id = 14;
-                            break;
-                        case CourierVehicleType.GettTaxi:
-                            shipment.delivery_service_id = 12;
-                            break;
-                        default:
-                            shipment.delivery_service_id = 4;
-                            break;
-                    }
+                    shipment.delivery_service_id = delivery.DeliveryCourier.CourierType.DServiceId;
+                    //switch (delivery.DeliveryCourier.CourierType.VechicleType)
+                    //{
+                    //    case CourierVehicleType.YandexTaxi:
+                    //        shipment.delivery_service_id = 14;
+                    //        break;
+                    //    case CourierVehicleType.GettTaxi:
+                    //        shipment.delivery_service_id = 12;
+                    //        break;
+                    //    default:
+                    //        shipment.delivery_service_id = 4;
+                    //        break;
+                    //}
 
                     // orders
                     int[] orderId = new int[delivery.OrderCount];

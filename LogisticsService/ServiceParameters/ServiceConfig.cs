@@ -2,7 +2,6 @@
 
 namespace LogisticsService.ServiceParameters
 {
-    using LogisticsService.Couriers;
     using Newtonsoft.Json;
     using System.IO;
 
@@ -12,9 +11,10 @@ namespace LogisticsService.ServiceParameters
     public class ServiceConfig
     {
         public FunctionalParameters functional_parameters;
+        public DServiceIdMapper[] dservice_mapper;
+        public CourierTypeMapper[] courier_type_mapper;
         public CourierParameters[] couriers;
         public AverageCostByVechicle[] average_cost;
-        public DServiceIdMapper[] dservice_mapper;
 
         public string Serialize()
         {

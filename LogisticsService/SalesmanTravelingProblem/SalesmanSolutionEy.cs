@@ -662,9 +662,9 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
             catch (Exception ex)
             {
-                Helper.WriteErrorToLog($"CreateShopDeliveries(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(allShopCouriers.Select(courier => courier.Id).ToArray())})");
-                Helper.WriteErrorToLog($"(rc = {rc})");
-                Helper.WriteToLog(ex.ToString());
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries", $"CreateShopDeliveries(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(allShopCouriers.Select(courier => courier.Id).ToArray())})"));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries", rc));
+                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries", ex.ToString()));
 
                 return rc;
             }
