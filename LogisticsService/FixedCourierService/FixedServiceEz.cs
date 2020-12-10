@@ -162,7 +162,7 @@ namespace LogisticsService.FixedCourierService
                 int capacity = config.functional_parameters.geo_cache_capacity;
                 if (capacity <= 10000)
                     capacity = 10000;
-                geoCache = new GeoCache(capacity);
+                geoCache = new GeoCache(config, capacity);
 
                 #region For Debug Only
 
@@ -1456,8 +1456,8 @@ namespace LogisticsService.FixedCourierService
                 if (geoCache == null)
                     if (order == null)
                         return null;
-                if (order.EnabledTypes == EnabledCourierType.Unknown)
-                    return null;
+                //if (order.EnabledTypes == EnabledCourierType.Unknown)
+                //    return null;
 
                 // 3. Извлекаем магазин
                 Shop shop = allShops.GetShop(order.ShopId);
@@ -1558,8 +1558,8 @@ namespace LogisticsService.FixedCourierService
                     return null;
                 if (order == null)
                     return null;
-                if (order.EnabledTypes == EnabledCourierType.Unknown)
-                    return null;
+                //if (order.EnabledTypes == EnabledCourierType.Unknown)
+                //    return null;
 
                 // 3. Извлекаем магазин
                 Shop shop = allShops.GetShop(order.ShopId);
@@ -2538,7 +2538,7 @@ namespace LogisticsService.FixedCourierService
 
                 // 4. Получаем гео-данные
                 rc = 4;
-                UpdateGeoCache(geoCache, filteredOrders);
+                UpdateGeoCacheEx(geoCache, allOrders, filteredOrders);
 
                 // 5. Добавляем (обновляем) для кадого заказа элемент в очередь предотвращения утечки
                 rc = 5;
@@ -2618,37 +2618,41 @@ namespace LogisticsService.FixedCourierService
 
                 // 5. Выбираем доступные способы отгрузки
                 rc = 5;
-                Dictionary<CourierVehicleType, bool> availableTypes = new Dictionary<CourierVehicleType, bool>(8);
+                //Dictionary<CourierVehicleType, bool> availableTypes = new Dictionary<CourierVehicleType, bool>(8);
 
-                for (int i = 0; i < order.service_available.Length; i++)
-                {
-                    ShopService shopService = order.service_available[i];
+                //for (int i = 0; i < order.service_available.Length; i++)
+                //{
+                //    ShopService shopService = order.service_available[i];
 
-                    if (shopService.shop_id == order.shop_id)
-                    {
-                        switch (shopService.dservice_id)
-                        {
-                            case 4: // курьеры
-                                availableTypes[CourierVehicleType.Car] = true;
-                                availableTypes[CourierVehicleType.Bicycle] = true;
-                                availableTypes[CourierVehicleType.OnFoot] = true;
-                                break;
-                            case 12: // Gett-такси
-                                availableTypes[CourierVehicleType.GettTaxi] = true;
-                                break;
-                            case 14: // Yandex-такси
-                                availableTypes[CourierVehicleType.YandexTaxi] = true;
-                                break;
-                        }
-                    }
-                }
+                //    if (shopService.shop_id == order.shop_id)
+                //    {
+                //        switch (shopService.dservice_id)
+                //        {
+                //            case 4: // курьеры
+                //                availableTypes[CourierVehicleType.Car] = true;
+                //                availableTypes[CourierVehicleType.Bicycle] = true;
+                //                availableTypes[CourierVehicleType.OnFoot] = true;
+                //                break;
+                //            case 12: // Gett-такси
+                //                availableTypes[CourierVehicleType.GettTaxi] = true;
+                //                break;
+                //            case 14: // Yandex-такси
+                //                availableTypes[CourierVehicleType.YandexTaxi] = true;
+                //                break;
+                //        }
+                //    }
+                //}
 
-                if (availableTypes.Count <= 0)
+                //if (availableTypes.Count <= 0)
+                //    return rc;
+
+                //CourierVehicleType[] allTypes = new CourierVehicleType[availableTypes.Count];
+                //availableTypes.Keys.CopyTo(allTypes, 0);
+                //availableTypes = null;
+
+                CourierVehicleType[] allTypes = shopOrder.EnabledTypesEx;
+                if (allTypes == null || allTypes.Length <= 0)
                     return rc;
-
-                CourierVehicleType[] allTypes = new CourierVehicleType[availableTypes.Count];
-                availableTypes.Keys.CopyTo(allTypes, 0);
-                availableTypes = null;
 
                 // 6. Обрабатываем каждый способ отгрузки и выбираем отгрузку, которую следет поестить в очередь
                 rc = 6;
@@ -2676,7 +2680,7 @@ namespace LogisticsService.FixedCourierService
                     // 6.3 Создаём одиночную отгрузку
                     rc = 63;
                     CourierDeliveryInfo singleDelivery;
-                    int rc1 = SalesmanSolutionEx.CreateSingleDelivery(shop, shopOrder, courier, !courier.IsTaxi, calcTime, geoCache, out singleDelivery);
+                    int rc1 = SalesmanSolutionEy.CreateSingleDelivery(shop, shopOrder, courier, !courier.IsTaxi, calcTime, geoCache, out singleDelivery);
                     if (rc1 == 0 && singleDelivery != null)
                     {
                         if (queueItemDelivery == null)
@@ -2725,13 +2729,170 @@ namespace LogisticsService.FixedCourierService
 
         }
 
+        ///// <summary>
+        ///// Запрос геоданных для заданных заказов
+        ///// </summary>
+        ///// <param name="geoCache">Гео-кэш</param>
+        ///// <param name="orderEvents">Заказы</param>
+        ///// <returns>0 - данные получены; иначе - данные не получены</returns>
+        //private static int UpdateGeoCache(GeoCache geoCache, OrderEvent[] orderEvents)
+        //{
+        //    // 1. Инициализация
+        //    int rc = 1;
+
+        //    try
+        //    {
+        //        // 2. Проверяем исходные данные
+        //        rc = 2;
+        //        if (geoCache == null)
+        //            return rc;
+        //        if (orderEvents == null || orderEvents.Length <= 0)
+        //            return rc;
+
+        //        // 3. Сортируем заказы по магазину
+        //        rc = 3;
+        //        Array.Sort(orderEvents, CompareOrderEventsByShopId);
+
+        //        // 4. Цикл получения данных по всем требуемым парам для всех доступных способов доставки
+        //        rc = 4;
+        //        int currentShopId = orderEvents[0].shop_id;
+        //        int startIndex = 0;
+        //        int endIndex = 0;
+        //        double[] latitude;
+        //        double[] longitude;
+        //        int count;
+        //        Dictionary<CourierVehicleType, bool> vehicleTypes = new Dictionary<CourierVehicleType, bool>(8);
+
+        //        for (int i = 1; i < orderEvents.Length; i++)
+        //        {
+        //            if (orderEvents[i].shop_id == currentShopId)
+        //            {
+        //                endIndex = i;
+        //            }
+        //            else
+        //            {
+        //                latitude = new double[endIndex - startIndex + 2];
+        //                longitude = new double[latitude.Length];
+        //                count = 0;
+        //                vehicleTypes.Clear();
+
+        //                for (int j = startIndex; j <= endIndex; j++)
+        //                {
+        //                    OrderEvent order = orderEvents[j];
+        //                    latitude[count] = order.geo_lat;
+        //                    longitude[count++] = order.geo_lon;
+
+        //                    if (order.service_available != null && order.service_available.Length > 0)
+        //                    {
+        //                        for (int k = 0; k < order.service_available.Length; k++)
+        //                        {
+        //                            ShopService shopService = order.service_available[k];
+
+        //                            if (shopService.shop_id == order.shop_id)
+        //                            {
+        //                                switch (shopService.dservice_id)
+        //                                {
+        //                                    case 4: // курьеры
+        //                                        vehicleTypes[CourierVehicleType.Car] = true;
+        //                                        vehicleTypes[CourierVehicleType.Bicycle] = true;
+        //                                        vehicleTypes[CourierVehicleType.OnFoot] = true;
+        //                                        break;
+        //                                    case 12: // Gett-такси
+        //                                        vehicleTypes[CourierVehicleType.GettTaxi] = true;
+        //                                        break;
+        //                                    case 14: // Yandex-такси
+        //                                        vehicleTypes[CourierVehicleType.YandexTaxi] = true;
+        //                                        break;
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+
+        //                if (vehicleTypes.Count > 0)
+        //                {
+        //                    latitude[count] = orderEvents[startIndex].shop_geo_lat;
+        //                    longitude[count] = orderEvents[startIndex].shop_geo_lon;
+
+        //                    foreach(CourierVehicleType vt in vehicleTypes.Keys)
+        //                    {
+        //                        geoCache.PutLocationInfo(latitude, longitude, vt);
+        //                    }
+        //                }
+
+        //                currentShopId = orderEvents[i].shop_id;
+        //                startIndex = i;
+        //                endIndex = i;
+        //            }
+        //        }
+
+        //        // заказы последнего магазина
+        //        latitude = new double[endIndex - startIndex + 2];
+        //        longitude = new double[latitude.Length];
+        //        count = 0;
+        //        vehicleTypes.Clear();
+
+        //        for (int j = startIndex; j <= endIndex; j++)
+        //        {
+        //            OrderEvent order = orderEvents[j];
+        //            latitude[count] = order.geo_lat;
+        //            longitude[count++] = order.geo_lon;
+
+        //            if (order.service_available != null && order.service_available.Length > 0)
+        //            {
+        //                for (int k = 0; k < order.service_available.Length; k++)
+        //                {
+        //                    ShopService shopService = order.service_available[k];
+
+        //                    if (shopService.shop_id == order.shop_id)
+        //                    {
+        //                        switch (shopService.dservice_id)
+        //                        {
+        //                            case 4: // курьеры
+        //                                vehicleTypes[CourierVehicleType.Car] = true;
+        //                                vehicleTypes[CourierVehicleType.Bicycle] = true;
+        //                                vehicleTypes[CourierVehicleType.OnFoot] = true;
+        //                                break;
+        //                            case 12: // Gett-такси
+        //                                vehicleTypes[CourierVehicleType.GettTaxi] = true;
+        //                                break;
+        //                            case 14: // Yandex-такси
+        //                                vehicleTypes[CourierVehicleType.YandexTaxi] = true;
+        //                                break;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        if (vehicleTypes.Count > 0)
+        //        {
+        //            latitude[count] = orderEvents[startIndex].shop_geo_lat;
+        //            longitude[count] = orderEvents[startIndex].shop_geo_lon;
+
+        //            foreach(CourierVehicleType vt in vehicleTypes.Keys)
+        //            {
+        //                geoCache.PutLocationInfo(latitude, longitude, vt);
+        //            }
+        //        }
+
+        //        // 5. Выход - Ok
+        //        rc = 0;
+        //        return rc;
+        //    }
+        //    catch
+        //    {
+        //        return rc;
+        //    }
+        //}
+
         /// <summary>
         /// Запрос геоданных для заданных заказов
         /// </summary>
         /// <param name="geoCache">Гео-кэш</param>
         /// <param name="orderEvents">Заказы</param>
         /// <returns>0 - данные получены; иначе - данные не получены</returns>
-        private static int UpdateGeoCache(GeoCache geoCache, OrderEvent[] orderEvents)
+        private static int UpdateGeoCacheEx(GeoCache geoCache, AllOrdersEx allOrders, OrderEvent[] orderEvents)
         {
             // 1. Инициализация
             int rc = 1;
@@ -2741,6 +2902,8 @@ namespace LogisticsService.FixedCourierService
                 // 2. Проверяем исходные данные
                 rc = 2;
                 if (geoCache == null)
+                    return rc;
+                if (allOrders == null)
                     return rc;
                 if (orderEvents == null || orderEvents.Length <= 0)
                     return rc;
@@ -2757,7 +2920,8 @@ namespace LogisticsService.FixedCourierService
                 double[] latitude;
                 double[] longitude;
                 int count;
-                Dictionary<CourierVehicleType, bool> vehicleTypes = new Dictionary<CourierVehicleType, bool>(8);
+                //List<CourierVehicleType> vehicleTypes = new List<CourierVehicleType>(64);
+                Dictionary<CourierVehicleType, bool> vehicleTypes = new Dictionary<CourierVehicleType, bool>(64);
 
                 for (int i = 1; i < orderEvents.Length; i++)
                 {
@@ -2780,26 +2944,12 @@ namespace LogisticsService.FixedCourierService
 
                             if (order.service_available != null && order.service_available.Length > 0)
                             {
-                                for (int k = 0; k < order.service_available.Length; k++)
+                                CourierVehicleType[] orderVehicleTypes = allOrders.GetDeliveryMaskEx(currentShopId, order.service_available);
+                                if (orderVehicleTypes != null && orderVehicleTypes.Length > 0)
                                 {
-                                    ShopService shopService = order.service_available[k];
-
-                                    if (shopService.shop_id == order.shop_id)
+                                    foreach (CourierVehicleType vt in orderVehicleTypes)
                                     {
-                                        switch (shopService.dservice_id)
-                                        {
-                                            case 4: // курьеры
-                                                vehicleTypes[CourierVehicleType.Car] = true;
-                                                vehicleTypes[CourierVehicleType.Bicycle] = true;
-                                                vehicleTypes[CourierVehicleType.OnFoot] = true;
-                                                break;
-                                            case 12: // Gett-такси
-                                                vehicleTypes[CourierVehicleType.GettTaxi] = true;
-                                                break;
-                                            case 14: // Yandex-такси
-                                                vehicleTypes[CourierVehicleType.YandexTaxi] = true;
-                                                break;
-                                        }
+                                        vehicleTypes[vt] = true;
                                     }
                                 }
                             }
@@ -2836,26 +2986,12 @@ namespace LogisticsService.FixedCourierService
 
                     if (order.service_available != null && order.service_available.Length > 0)
                     {
-                        for (int k = 0; k < order.service_available.Length; k++)
+                        CourierVehicleType[] orderVehicleTypes = allOrders.GetDeliveryMaskEx(currentShopId, order.service_available);
+                        if (orderVehicleTypes != null && orderVehicleTypes.Length > 0)
                         {
-                            ShopService shopService = order.service_available[k];
-
-                            if (shopService.shop_id == order.shop_id)
+                            foreach (CourierVehicleType vt in orderVehicleTypes)
                             {
-                                switch (shopService.dservice_id)
-                                {
-                                    case 4: // курьеры
-                                        vehicleTypes[CourierVehicleType.Car] = true;
-                                        vehicleTypes[CourierVehicleType.Bicycle] = true;
-                                        vehicleTypes[CourierVehicleType.OnFoot] = true;
-                                        break;
-                                    case 12: // Gett-такси
-                                        vehicleTypes[CourierVehicleType.GettTaxi] = true;
-                                        break;
-                                    case 14: // Yandex-такси
-                                        vehicleTypes[CourierVehicleType.YandexTaxi] = true;
-                                        break;
-                                }
+                                vehicleTypes[vt] = true;
                             }
                         }
                     }

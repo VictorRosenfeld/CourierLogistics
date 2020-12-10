@@ -71,6 +71,7 @@
     <Compile Include="FixedCourierService\ServiceQueue\QueueItemType.cs" />
     <Compile Include="Geo\GeoCache.cs" />
     <Compile Include="Geo\CacheItem.cs" />
+    <Compile Include="Geo\GeoDeliveryMethod.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Locations\LocationManager.cs" />
     <Compile Include="Log\MessagePatterns.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="ServiceParameters\SalesmanProblemLevel.cs" />
     <Compile Include="ServiceParameters\ServiceConfig.cs" />
     <Compile Include="ServiceParameters\AverageCostByVechicle.cs" />
+    <Compile Include="ServiceParameters\YandexVehicleMapper.cs" />
     <Compile Include="Shops\AllShops.cs" />
     <Compile Include="Shops\AllShopsEx.cs" />
     <Compile Include="Shops\Shop.cs" />

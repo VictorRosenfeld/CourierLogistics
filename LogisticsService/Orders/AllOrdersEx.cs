@@ -170,7 +170,7 @@ namespace LogisticsService.Orders
                             order.ReceiptedDate = DateTime.MaxValue;
                             order.DeliveryTimeFrom = orderEvent.delivery_frame_from;
                             order.DeliveryTimeTo = orderEvent.delivery_frame_to;
-                            order.EnabledTypes = GetDeliveryMask(orderEvent.shop_id, orderEvent.service_available);
+                            //order.EnabledTypes = GetDeliveryMask(orderEvent.shop_id, orderEvent.service_available);
                             order.EnabledTypesEx = GetDeliveryMaskEx(orderEvent.shop_id, orderEvent.service_available);
                             order.Status = OrderStatus.None;
                             order.Completed = false;
@@ -187,7 +187,7 @@ namespace LogisticsService.Orders
 
                             order.ShopId = orderEvent.shop_id;
                             order.Weight = orderEvent.weight;
-                            order.EnabledTypes = GetDeliveryMask(orderEvent.shop_id, orderEvent.service_available);
+                            //order.EnabledTypes = GetDeliveryMask(orderEvent.shop_id, orderEvent.service_available);
                             order.EnabledTypesEx = GetDeliveryMaskEx(orderEvent.shop_id, orderEvent.service_available);
                             order.DeliveryTimeFrom = orderEvent.delivery_frame_from;
                             order.DeliveryTimeTo = orderEvent.delivery_frame_to;
@@ -232,42 +232,42 @@ namespace LogisticsService.Orders
             }
         }
 
-        /// <summary>
-        /// Построение маски доступных способов отгрузки
-        /// заказа в заданном магазине
-        /// </summary>
-        /// <param name="shopId"></param>
-        /// <param name="availableService"></param>
-        /// <returns></returns>
-        private static EnabledCourierType GetDeliveryMask(int shopId, ShopService[] availableService)
-        {
-            // 1. Инициализация
+        ///// <summary>
+        ///// Построение маски доступных способов отгрузки
+        ///// заказа в заданном магазине
+        ///// </summary>
+        ///// <param name="shopId"></param>
+        ///// <param name="availableService"></param>
+        ///// <returns></returns>
+        //private static EnabledCourierType GetDeliveryMask(int shopId, ShopService[] availableService)
+        //{
+        //    // 1. Инициализация
 
-            try
-            {
-                // 2. Проверяем исходные данные
-                if (availableService == null || availableService.Length <= 0)
-                    return EnabledCourierType.Unknown;
+        //    try
+        //    {
+        //        // 2. Проверяем исходные данные
+        //        if (availableService == null || availableService.Length <= 0)
+        //            return EnabledCourierType.Unknown;
 
-                // 3. Строим маску доступных способов отгрузки в заданном магазине
-                EnabledCourierType mask = 0;
+        //        // 3. Строим маску доступных способов отгрузки в заданном магазине
+        //        EnabledCourierType mask = 0;
 
-                foreach (ShopService shopSevice in availableService)
-                {
-                    if (shopSevice.shop_id == shopId)
-                    {
-                        mask |= DserviceIdToEnabledCourierType(shopSevice.dservice_id);
-                    }
-                }
+        //        foreach (ShopService shopSevice in availableService)
+        //        {
+        //            if (shopSevice.shop_id == shopId)
+        //            {
+        //                mask |= DserviceIdToEnabledCourierType(shopSevice.dservice_id);
+        //            }
+        //        }
 
-                // 4. Возвращаем результат
-                return mask;
-            }
-            catch
-            {
-                return EnabledCourierType.Unknown;
-            }
-        }
+        //        // 4. Возвращаем результат
+        //        return mask;
+        //    }
+        //    catch
+        //    {
+        //        return EnabledCourierType.Unknown;
+        //    }
+        //}
 
         /// <summary>
         /// Построение маски доступных способов отгрузки
@@ -276,7 +276,7 @@ namespace LogisticsService.Orders
         /// <param name="shopId">Id магазина</param>
         /// <param name="availableService">Доступные для доставки сервисы</param>
         /// <returns>Массив доступных способов доставки или null</returns>
-        private CourierVehicleType[] GetDeliveryMaskEx(int shopId, ShopService[] availableService)
+        public CourierVehicleType[] GetDeliveryMaskEx(int shopId, ShopService[] availableService)
         {
             // 1. Инициализация
 
@@ -410,8 +410,10 @@ namespace LogisticsService.Orders
                     return rc;
                 }
 
-                // 3. Создаём прямой и обратный мапперы
+                // 3. Создаём маппер dservice_id --> CourierVehicleType[]
                 rc = 3;
+                serviceIdToVehicleType = new Dictionary<int, CourierVehicleType[]>(mapperData.Length);
+
                 foreach (DServiceIdMapper item in mapperData)
                 {
                     serviceIdToVehicleType.Add(item.DserviceId, item.VechicleTypes);

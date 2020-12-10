@@ -4,6 +4,7 @@ namespace LogisticsService.Geo
     using LogisticsService.API;
     using LogisticsService.Couriers;
     using LogisticsService.Log;
+    using LogisticsService.ServiceParameters;
     using System.Collections.Generic;
     using System.Device.Location;
     using System.Drawing;
@@ -13,29 +14,34 @@ namespace LogisticsService.Geo
     /// </summary>
     public class GeoCache
     {
-        #region vechicle ID constants
+        //#region vechicle ID constants
+
+        ///// <summary>
+        ///// ID передвижения с помощью автомобиля
+        ///// </summary>
+        //private const string DELIVERY_BY_CAR = "driving";
+
+        ///// <summary>
+        ///// ID передвижения с помощью велосипеда
+        ///// </summary>
+        //private const string DELIVERY_BY_BICYCLE = "cycling";
+
+        ///// <summary>
+        /////  ID пешего передвижения
+        ///// </summary>
+        //private const string DELIVERY_BY_ONFOOT = "walking";
+
+        ///// <summary>
+        ///// Названия методов отгрузки
+        ///// </summary>
+        //private string[] deliveryMethodName;
+
+        //#endregion vechicle ID constants
 
         /// <summary>
-        /// ID передвижения с помощью автомобиля
+        /// Способы доставки
         /// </summary>
-        private const string DELIVERY_BY_CAR = "driving";
-
-        /// <summary>
-        /// ID передвижения с помощью велосипеда
-        /// </summary>
-        private const string DELIVERY_BY_BICYCLE = "cycling";
-
-        /// <summary>
-        ///  ID пешего передвижения
-        /// </summary>
-        private const string DELIVERY_BY_ONFOOT = "walking";
-
-        /// <summary>
-        /// Названия методов отгрузки
-        /// </summary>
-        private string[] deliveryMethodName;
-
-        #endregion vechicle ID constants
+        private Dictionary<CourierVehicleType, GeoDeliveryMethod> deliveryMethods;
 
         /// <summary>
         /// Экземпляр для получения хэша координат
@@ -67,15 +73,34 @@ namespace LogisticsService.Geo
         /// <summary>
         /// Параметрический конструктор класса GeoCache
         /// </summary>
+        /// <param name="config">Параметры программы</param>
         /// <param name="hashCapacity">Ёмкость кэша (число хранимых попарных расстояний и времени движения)</param>
-        public GeoCache(int hashCapacity)
+        public GeoCache(ServiceConfig config, int hashCapacity)
         {
+            // 1. Инициализация
             HashCapacity = hashCapacity;
             cacheItems = new CacheItem[hashCapacity];
             cacheItemCount = 0;
             cacheItemIndex = new Dictionary<ulong, int>(hashCapacity);
             coordinateHash = new GeoCoordinate();
-            deliveryMethodName = new string[] { DELIVERY_BY_CAR, DELIVERY_BY_BICYCLE, DELIVERY_BY_ONFOOT };
+            //deliveryMethodName = new string[] { DELIVERY_BY_CAR, DELIVERY_BY_BICYCLE, DELIVERY_BY_ONFOOT };
+
+            // 2. Построение словаря способов доставки
+            deliveryMethods = new Dictionary<CourierVehicleType, GeoDeliveryMethod>(8);
+
+            foreach (YandexVehicleMapper item in config.yandex_vehicle_mapper)
+            {
+                if (item.VechicleTypes != null && item.VechicleTypes.Length > 0)
+                {
+                    foreach (CourierVehicleType vehicleType in item.VechicleTypes)
+                    {
+                        if (!deliveryMethods.ContainsKey(vehicleType))
+                        {
+                            deliveryMethods.Add(vehicleType, new GeoDeliveryMethod(deliveryMethods.Count, vehicleType, item.YandexType));
+                        }
+                    }
+                }
+            }
         }
 
         ///// <summary>
@@ -188,7 +213,8 @@ namespace LogisticsService.Geo
                 // 7. Запрашиваем расстояния и время движения, которые неизвестны в прямом направлении
                 rc = 7;
                 GetShippingInfo.ShippingInfoRequestEx requestData = new GetShippingInfo.ShippingInfoRequestEx();
-                string deliveryMethod = deliveryMethodName[deliveryMethodIndex];
+                //string deliveryMethod = deliveryMethodName[deliveryMethodIndex];
+                string deliveryMethod = VehicleTypeToDeliveryMethod(vehicleType);
                 requestData.modes = new string[] { deliveryMethod };
                 double[][] source_points = new double[sourceCount][];
                 double[][] destination_points = new double[destinationCount][];
@@ -426,7 +452,8 @@ namespace LogisticsService.Geo
                 // 7. Запрашиваем расстояния и время движения, которые неизвестны в прямом направлении
                 rc = 7;
                 GetShippingInfo.ShippingInfoRequestEx requestData = new GetShippingInfo.ShippingInfoRequestEx();
-                string deliveryMethod = deliveryMethodName[deliveryMethodIndex];
+                //string deliveryMethod = deliveryMethodName[deliveryMethodIndex];
+                string deliveryMethod = VehicleTypeToDeliveryMethod(vehicleType);
                 requestData.modes = new string[] { deliveryMethod };
                 double[][] source_points = new double[sourceCount][];
                 double[][] destination_points = new double[destinationCount][];
@@ -497,8 +524,6 @@ namespace LogisticsService.Geo
                 return rc;
             }
         }
-
-
 
         /// <summary>
         /// Запрос попарных расстояний и времени движения между точками
@@ -620,7 +645,7 @@ namespace LogisticsService.Geo
                 item = cacheItems[itemIndex];
                 if (item == null)
                 {
-                    item = new CacheItem(key, deliveryMethodName.Length);
+                    item = new CacheItem(key, deliveryMethods.Count);
                     cacheItems[itemIndex] = item;
                 }
 
@@ -652,21 +677,20 @@ namespace LogisticsService.Geo
         /// </summary>
         /// <param name="vehicleType">CourierVehicleType</param>
         /// <returns>API-название способа доставки</returns>
-        private static string VehicleTypeToDeliveryMethod(CourierVehicleType vehicleType)
+        private string VehicleTypeToDeliveryMethod(CourierVehicleType vehicleType)
         {
-            switch (vehicleType)
+            string deliveryName;
+            GeoDeliveryMethod gdm;
+            if (deliveryMethods.TryGetValue(vehicleType, out gdm))
             {
-                case CourierVehicleType.Car:
-                case CourierVehicleType.YandexTaxi:
-                case CourierVehicleType.GettTaxi:
-                    return DELIVERY_BY_CAR;
-                case CourierVehicleType.Bicycle:
-                    return DELIVERY_BY_BICYCLE;
-                case CourierVehicleType.OnFoot:
-                    return DELIVERY_BY_ONFOOT;
+                deliveryName = gdm.Name;
+            }
+            else
+            {
+                deliveryName = null;
             }
 
-            return DELIVERY_BY_CAR;
+            return deliveryName = null;
         }
 
         /// <summary>
@@ -677,14 +701,18 @@ namespace LogisticsService.Geo
         /// <returns></returns>
         private int GetDeliveryMethodIndex(CourierVehicleType vehicleType)
         {
-            string methodName = VehicleTypeToDeliveryMethod(vehicleType);
-            for (int i = 0; i < deliveryMethodName.Length; i++)
+            int deliveryIndex;
+            GeoDeliveryMethod gdm;
+            if (deliveryMethods.TryGetValue(vehicleType, out gdm))
             {
-                if (deliveryMethodName[i] == methodName)
-                    return i;
+                deliveryIndex = gdm.Index;
+            }
+            else
+            {
+                deliveryIndex = -1;
             }
 
-            return -1;
+            return deliveryIndex;
         }
     }
 }

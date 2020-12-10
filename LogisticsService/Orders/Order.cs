@@ -101,6 +101,21 @@ namespace LogisticsService.Orders
         public CourierVehicleType[] EnabledTypesEx { get; set; } 
 
         /// <summary>
+        /// Проверка способа доставки на возможность доставки заказа
+        /// </summary>
+        /// <param name="vehicleType">Проверяемый способ доставки</param>
+        /// <returns>true - способ доставки является подходящим; false - способ доставки не является подходящим</returns>
+        public bool IsVehicleTypeEnabled(CourierVehicleType vehicleType)
+        {
+            if (EnabledTypesEx == null || EnabledTypesEx.Length <= 0)
+                return false;
+            for (int i = 0; i < EnabledTypesEx.Length; i++)
+                if (EnabledTypesEx[i] == vehicleType)
+                    return true;
+            return false;
+        }
+
+        /// <summary>
         /// Параметрический конструктор класса Order
         /// </summary>
         /// <param name="id">Id заказа</param>

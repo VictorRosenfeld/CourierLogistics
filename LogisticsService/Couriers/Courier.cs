@@ -89,7 +89,8 @@ namespace LogisticsService.Couriers
         /// <summary>
         /// Такси ?
         /// </summary>
-        public bool IsTaxi => (CourierType.VechicleType == CourierVehicleType.GettTaxi || CourierType.VechicleType == CourierVehicleType.YandexTaxi);
+        //public bool IsTaxi => (CourierType.VechicleType == CourierVehicleType.GettTaxi || CourierType.VechicleType == CourierVehicleType.YandexTaxi);
+        public bool IsTaxi => CourierType.IsTaxi;
 
         /// <summary>
         /// Флаг сервиса доставки для курьера
@@ -121,7 +122,7 @@ namespace LogisticsService.Couriers
         {
             CourierType = courierType;
             Id = id;
-            ServiceFlags = GetEnabledCourierType();
+            //ServiceFlags = GetEnabledCourierType();
         }
 
         /// <summary>
@@ -170,12 +171,15 @@ namespace LogisticsService.Couriers
                 Point[] nodeInfo = new Point[orders.Length + 2];
                 int shopLocIndex = fromShop.LocationIndex;
                 int prevLocIndex = shopLocIndex;
-                EnabledCourierType serviceFlag = ServiceFlags;
+                //EnabledCourierType serviceFlag = ServiceFlags;
+                CourierVehicleType thisVehicleType = CourierType.VechicleType;
 
                 for (int i = 0; i < orders.Length; i++)
                 {
                     Order order = orders[i];
-                    if ((order.EnabledTypes & serviceFlag) == 0)
+                    //if ((order.EnabledTypes & serviceFlag) == 0)
+                    //    return rc;
+                    if (!order.IsVehicleTypeEnabled(thisVehicleType))
                         return rc;
 
                     weight += order.Weight;
@@ -355,18 +359,9 @@ namespace LogisticsService.Couriers
             courierClone.Longitude = Longitude;
             //courierClone.ServiceFlags = ServiceFlags;
             courierClone.ShopId = ShopId;
-
             return courierClone;
         }
-
-        /// <summary>
-        /// Расчет стоимости курьра c почасовой оплатой за день
-        /// </summary>
-        /// <param name="workStart">Начало работы</param>
-        /// <param name="workEnd">Конец работы</param>
-        /// <param name="workInterval">Округленная для целей расчета стоимости длительность работы</param>
-        /// <param name="cost">Расчитанная стоимость</param>
-        /// <returns>true - стоимость расчитана; false </returns>
+        
         public bool GetCourierDayCost(DateTime workStart, DateTime workEnd, int orderCount, out double workInterval, out double cost)
         {
             // 1. Инициализация
@@ -412,30 +407,30 @@ namespace LogisticsService.Couriers
             }
         }
 
-        /// <summary>
-        /// Получить флаг сервиса доставки
-        /// </summary>
-        /// <returns>Флаг сервиса доставки</returns>
-        private EnabledCourierType GetEnabledCourierType()
-        {
-            if (CourierType == null)
-                return EnabledCourierType.Unknown;
+        ///// <summary>
+        ///// Получить флаг сервиса доставки
+        ///// </summary>
+        ///// <returns>Флаг сервиса доставки</returns>
+        //private EnabledCourierType GetEnabledCourierType()
+        //{
+        //    if (CourierType == null)
+        //        return EnabledCourierType.Unknown;
 
-            switch (CourierType.VechicleType)
-            {
-                case CourierVehicleType.Car:
-                    return EnabledCourierType.Car;
-                case CourierVehicleType.Bicycle:
-                    return EnabledCourierType.Bicycle;
-                case CourierVehicleType.OnFoot:
-                    return EnabledCourierType.OnFoot;
-                case CourierVehicleType.YandexTaxi:
-                    return EnabledCourierType.YandexTaxi;
-                case CourierVehicleType.GettTaxi:
-                    return EnabledCourierType.GettTaxi;
-            }
+        //    switch (CourierType.VechicleType)
+        //    {
+        //        case CourierVehicleType.Car:
+        //            return EnabledCourierType.Car;
+        //        case CourierVehicleType.Bicycle:
+        //            return EnabledCourierType.Bicycle;
+        //        case CourierVehicleType.OnFoot:
+        //            return EnabledCourierType.OnFoot;
+        //        case CourierVehicleType.YandexTaxi:
+        //            return EnabledCourierType.YandexTaxi;
+        //        case CourierVehicleType.GettTaxi:
+        //            return EnabledCourierType.GettTaxi;
+        //    }
 
-            return EnabledCourierType.Unknown;
-        }
+        //    return EnabledCourierType.Unknown;
+        //}
     }
 }

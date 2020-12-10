@@ -13,6 +13,7 @@ namespace LogisticsService.ServiceParameters
         public FunctionalParameters functional_parameters;
         public DServiceIdMapper[] dservice_mapper;
         public CourierTypeMapper[] courier_type_mapper;
+        public YandexVehicleMapper[] yandex_vehicle_mapper;
         public CourierParameters[] couriers;
         public AverageCostByVechicle[] average_cost;
 
