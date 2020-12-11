@@ -53,6 +53,9 @@ namespace LogisticsService.ServiceParameters
         [JsonProperty("dservice_id")]
         public int DServiceId { get; set; }
 
+        [JsonProperty("calc_method")]
+        public string CalcMethod { get; set; }
+
         public int GetTimeAndCost(Point fromShop, double weight, out double deliveryTime, out double executionTime, out double cost)
         {
             deliveryTime = 0;

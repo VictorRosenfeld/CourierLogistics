@@ -94,6 +94,11 @@ namespace LogisticsService.Couriers
         /// </summary>
         int DServiceId { get; }
 
+        /// <summary>
+        /// Метод расчета времени и стоимости отгрузки 
+        /// </summary>
+        string CalcMethod { get; }
+
         #endregion Properties
 
         #region Methods

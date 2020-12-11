@@ -467,7 +467,7 @@ namespace CourierLogistics
             //AnalyzerConfig analyzerConfig = new AnalyzerConfig();
             //analyzerConfig.OpenReport = true;
             //analyzerConfig.ReportFile = @"C:\T2\Report\report.xlsx";
-            //analyzerConfig.ExcelPatternFile = @"C:\Users\Виктор\source\repos\CourierLogisticsEx\LogAnalyzer\ReportPattern\LogAnalysis.xlsx";
+            //analyzerConfig.ExcelPatternFile = @"C:\Users\Виктор\source\repos\CourierLogisticsEx\CourierLogistics\bin\Debug\ReportPattern\LogAnalysis.xlsx";
             //ServiceLogAnalyzer analyzer = new ServiceLogAnalyzer(analyzerConfig);
             ////int rcd = analyzer.Create(@"C:\Users\Виктор\source\repos\CourierLogisticsEx\CourierLogistics\bin\Debug\CourierLogistics.log", @"C:\T2\Report\report.xlsx");
             //int rcd = analyzer.Create(@"C:\T2\CourierLogistics.log", @"C:\T2\Report\report.xlsx");

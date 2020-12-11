@@ -61,6 +61,7 @@
     <Compile Include="Couriers\CourierStatus.cs" />
     <Compile Include="Couriers\CourierVehicleType.cs" />
     <Compile Include="Couriers\ICourierType.cs" />
+    <Compile Include="Couriers\TimeAndCostCalculator.cs" />
     <Compile Include="FixedCourierService\FixedService.cs" />
     <Compile Include="FixedCourierService\FixedServiceEx.cs" />
     <Compile Include="FixedCourierService\FixedServiceEy.cs" />

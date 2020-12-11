@@ -253,221 +253,226 @@ namespace LogAnalyzer.Analyzer
 
                     // 7.4 Обрабатываем сообщение
                     rc = 74;
-                    switch (messageNo)
+                    try
                     {
-                        case 1: // Shipment request
-                            break;
-                        case 2: // Shipment post data
-                            using (StringReader sr = new StringReader(messageData))
-                            {
-                                Shipment[] shipments = (Shipment[])serializer.Deserialize(sr, typeof(Shipment[]));
-                                PrintDeliveryCommands.Print(messageDateTime, shipments, deliveryCommands, ref deliveryCommandsRow);
-                                allOrders.AddCommand(messageDateTime, shipments);
-                            }
-                            break;
-                        case 3: // Shipment response
-                            break;
-                        case 4: // Shipment error
-                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "BeginShipment.Begin", statusDescription, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "BeginShipment.Begin", messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 5: // Cancel request
-                           break;
-                        case 6: // Cancel post data
-                            using (StringReader sr = new StringReader(messageData))
-                            {
-                                RejectedOrder[] rejectedOrders = (RejectedOrder[])serializer.Deserialize(sr, typeof(RejectedOrder[]));
-                                PrintCancelCommands.Print(messageDateTime, rejectedOrders, cancelCommands, ref cancelCommandsRow);
-                                allOrders.AddCommand(messageDateTime, rejectedOrders);
-                            }
-                             break;
-                        case 7: // Cancel response
-                            break;
-                        case 8: // Cancel error
-                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "BeginShipment.Reject", statusDescription, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "BeginShipment.Reject", messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 9: // Courier events request
-                            break;
-                        case 10: // Courier events response
-                            using (StringReader sr = new StringReader(messageData))
-                            {
-                                CourierEvent[] events = (CourierEvent[])serializer.Deserialize(sr, typeof(CourierEvent[]));
-                                if (events != null && events.Length > 0)
-                                    PrintCourierEvents.Print(messageDateTime, events, courierEvents, ref courierEventsRow);
-                            }
-                            break;
-                        case 11: // Courier events error
-                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetCourierEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetCourierEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 12: // Order events request
-                            break;
-                        case 13: // Order events response
-                            using (StringReader sr = new StringReader(messageData))
-                            {
-                                OrderEvent[]  events = (OrderEvent[])serializer.Deserialize(sr, typeof(OrderEvent[]));
-                                if (events != null && events.Length > 0)
+                        switch (messageNo)
+                        {
+                            case 1: // Shipment request
+                                break;
+                            case 2: // Shipment post data
+                                using (StringReader sr = new StringReader(messageData))
                                 {
-                                    PrintOrderEvents.Print(messageDateTime, events, orderEvents, ref orderEventsRow);
-                                    allOrders.AddOrderEvent(messageDateTime, events);
+                                    Shipment[] shipments = (Shipment[])serializer.Deserialize(sr, typeof(Shipment[]));
+                                    PrintDeliveryCommands.Print(messageDateTime, shipments, deliveryCommands, ref deliveryCommandsRow);
+                                    allOrders.AddCommand(messageDateTime, shipments);
                                 }
-                            }
-                            break;
-                        case 14: // Order events error
-                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetOrderEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetOrderEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 15: // Shop events request
-                            break;
-                        case 16: // Shop events response
-                            using (StringReader sr = new StringReader(messageData))
-                            {
-                                ShopEvent[] events = (ShopEvent[])serializer.Deserialize(sr, typeof(ShopEvent[]));
-                                PrintShopEvents.Print(messageDateTime, events, shopEvents, ref shopEventsRow);
-                            }
-                            break;
-                        case 17: // Shop events error
-                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetShopEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetShopEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 18: // ACK request
-                            break;
-                        case 19: // ACK post data
-                            break;
-                        case 20: // ACK response
-                            break;
-                        case 21: // ACK error
-                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "SendAck.Send", statusDescription, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "SendAck.Send", messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 22: // Time-Dist request
-                            break;
-                        case 23: // Time-Dist post data
-                            break;
-                        case 24: // Time-Dist response
-                            break;
-                        case 25: // Time-Dist error
-                            if (TryParseApiError(messageData, out statusCode, out statusDescription))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetShippingInfo.GetInfo", statusDescription, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetShippingInfo.GetInfo", messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 26: // Queue timer elapsed
-                            break;
-                        case 27: // Create shipment queue
-                            break;
-                        case 28: // Queue info timer elapsed
-                            break;
-                        case 29: // Start service
-                            break;
-                        case 30: // Stop service
-                            break;
-                        case 31: // GeoCache info
-                            break;
-                        case 32: // Queue state
-                            break;
-                        case 33: // Queue state item
-                            break;
-                        case 34: // ((((( Shipmtnt from checking queue
-                            break;
-                        case 35: // ))))) Shipmtnt from checking queue
-                            break;
-                        case 36: // ((((( Cancel from checking queue
-                            break;
-                        case 37: // ))))) Cancel from checking queue
-                            break;
-                        case 38: // Cancel order by time
-                            break;
-                        case 39: // Cancel order by courier
-                            break;
-                        case 40: // Cancel assembled order by courier
-                            break;
-                        case 41: // Cancel receipted order by courier
-                            break;
-                        case 42: // Checking queue timer elapsed
-                            break;
-                        case 43: // GeoCache.PutLocationInfo error
-                            if (TryParseMsg43(messageData, out method, out errorCode))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, errorCode, method, messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 666: // method exception
-                            if (TryParseMsg666(messageData, out method, out exceptionText))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, method, exceptionText, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 667: // Returned method rc
-                            if (TryParseMsg667(messageData, out method, out errorCode))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, errorCode, method, messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
-                        case 668: // Called method
-                            if (TryParseMsg668(messageData, out method, out methodArgs))
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, method, methodArgs, errorsSummary, ref errorsSummaryRow);
-                            }
-                            else
-                            {
-                                PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
-                            }
-                            break;
+                                break;
+                            case 3: // Shipment response
+                                break;
+                            case 4: // Shipment error
+                                if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "BeginShipment.Begin", statusDescription, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, "BeginShipment.Begin", messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 5: // Cancel request
+                                break;
+                            case 6: // Cancel post data
+                                using (StringReader sr = new StringReader(messageData))
+                                {
+                                    RejectedOrder[] rejectedOrders = (RejectedOrder[])serializer.Deserialize(sr, typeof(RejectedOrder[]));
+                                    PrintCancelCommands.Print(messageDateTime, rejectedOrders, cancelCommands, ref cancelCommandsRow);
+                                    allOrders.AddCommand(messageDateTime, rejectedOrders);
+                                }
+                                break;
+                            case 7: // Cancel response
+                                break;
+                            case 8: // Cancel error
+                                if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "BeginShipment.Reject", statusDescription, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, "BeginShipment.Reject", messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 9: // Courier events request
+                                break;
+                            case 10: // Courier events response
+                                using (StringReader sr = new StringReader(messageData))
+                                {
+                                    CourierEvent[] events = (CourierEvent[])serializer.Deserialize(sr, typeof(CourierEvent[]));
+                                    if (events != null && events.Length > 0)
+                                        PrintCourierEvents.Print(messageDateTime, events, courierEvents, ref courierEventsRow);
+                                }
+                                break;
+                            case 11: // Courier events error
+                                if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetCourierEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetCourierEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 12: // Order events request
+                                break;
+                            case 13: // Order events response
+                                using (StringReader sr = new StringReader(messageData))
+                                {
+                                    OrderEvent[] events = (OrderEvent[])serializer.Deserialize(sr, typeof(OrderEvent[]));
+                                    if (events != null && events.Length > 0)
+                                    {
+                                        PrintOrderEvents.Print(messageDateTime, events, orderEvents, ref orderEventsRow);
+                                        allOrders.AddOrderEvent(messageDateTime, events);
+                                    }
+                                }
+                                break;
+                            case 14: // Order events error
+                                if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetOrderEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetOrderEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 15: // Shop events request
+                                break;
+                            case 16: // Shop events response
+                                using (StringReader sr = new StringReader(messageData))
+                                {
+                                    ShopEvent[] events = (ShopEvent[])serializer.Deserialize(sr, typeof(ShopEvent[]));
+                                    PrintShopEvents.Print(messageDateTime, events, shopEvents, ref shopEventsRow);
+                                }
+                                break;
+                            case 17: // Shop events error
+                                if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetShopEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetShopEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 18: // ACK request
+                                break;
+                            case 19: // ACK post data
+                                break;
+                            case 20: // ACK response
+                                break;
+                            case 21: // ACK error
+                                if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "SendAck.Send", statusDescription, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, "SendAck.Send", messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 22: // Time-Dist request
+                                break;
+                            case 23: // Time-Dist post data
+                                break;
+                            case 24: // Time-Dist response
+                                break;
+                            case 25: // Time-Dist error
+                                if (TryParseApiError(messageData, out statusCode, out statusDescription))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetShippingInfo.GetInfo", statusDescription, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetShippingInfo.GetInfo", messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 26: // Queue timer elapsed
+                                break;
+                            case 27: // Create shipment queue
+                                break;
+                            case 28: // Queue info timer elapsed
+                                break;
+                            case 29: // Start service
+                                break;
+                            case 30: // Stop service
+                                break;
+                            case 31: // GeoCache info
+                                break;
+                            case 32: // Queue state
+                                break;
+                            case 33: // Queue state item
+                                break;
+                            case 34: // ((((( Shipmtnt from checking queue
+                                break;
+                            case 35: // ))))) Shipmtnt from checking queue
+                                break;
+                            case 36: // ((((( Cancel from checking queue
+                                break;
+                            case 37: // ))))) Cancel from checking queue
+                                break;
+                            case 38: // Cancel order by time
+                                break;
+                            case 39: // Cancel order by courier
+                                break;
+                            case 40: // Cancel assembled order by courier
+                                break;
+                            case 41: // Cancel receipted order by courier
+                                break;
+                            case 42: // Checking queue timer elapsed
+                                break;
+                            case 43: // GeoCache.PutLocationInfo error
+                                if (TryParseMsg43(messageData, out method, out errorCode))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, errorCode, method, messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 666: // method exception
+                                if (TryParseMsg666(messageData, out method, out exceptionText))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, method, exceptionText, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 667: // Returned method rc
+                                if (TryParseMsg667(messageData, out method, out errorCode))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, errorCode, method, messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                            case 668: // Called method
+                                if (TryParseMsg668(messageData, out method, out methodArgs))
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, method, methodArgs, errorsSummary, ref errorsSummaryRow);
+                                }
+                                else
+                                {
+                                    PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+                                }
+                                break;
+                        }
                     }
+                    catch
+                    { }
 
                     // 7.2 Переходим к следующему сообщению
                     NextMessage:
