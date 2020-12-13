@@ -56,6 +56,21 @@ namespace LogisticsService.ServiceParameters
         [JsonProperty("calc_method")]
         public string CalcMethod { get; set; }
 
+        [JsonProperty("first_get_order_time")]
+        public double FirstGetOrderTime { get; set; }
+
+        [JsonProperty("first_get_order_rate")]
+        public double FirstGetOrderRate { get; set; }
+
+        [JsonProperty("first_time")]
+        public double FirstTime { get; set; }
+
+        [JsonProperty("first_time_rate")]
+        public double FirstTimeRate { get; set; }
+
+        [JsonProperty("second_time_rate")]
+        public double SeсondTimeRate { get; set; }
+
         public int GetTimeAndCost(Point fromShop, double weight, out double deliveryTime, out double executionTime, out double cost)
         {
             deliveryTime = 0;

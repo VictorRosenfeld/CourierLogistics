@@ -99,6 +99,32 @@ namespace LogisticsService.Couriers
         /// </summary>
         string CalcMethod { get; }
 
+        /// <summary>
+        /// Максимальное бесплатное время передачи отгрузки, мин
+        /// </summary>
+        double FirstGetOrderTime { get; }
+
+        /// <summary>
+        /// Плата за превышение бесплатного времени передачи отгрузки
+        /// (руб/мин)
+        /// </summary>
+        double FirstGetOrderRate { get; }
+
+        /// <summary>
+        /// Предоплаченое время, мин
+        /// </summary>
+        double FirstTime { get; }
+
+        /// <summary>
+        /// Плата за превышение FirstTime для первого заказа
+        /// </summary>
+        double FirstTimeRate { get; }
+
+        /// <summary>
+        /// Плата за время для заказов, начиная со второго
+        /// </summary>
+        double SeсondTimeRate { get; }
+
         #endregion Properties
 
         #region Methods

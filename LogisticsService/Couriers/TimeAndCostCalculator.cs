@@ -98,7 +98,7 @@ namespace LogisticsService.Couriers
             }
         }
 
-        #region HourlyCourier. Почасовые курьеры 
+        #region HourlyCourier. Почасовые курьеры
 
         /// <summary>
         /// Подсчет времени и стоимости доставки одного заказа
@@ -469,5 +469,474 @@ namespace LogisticsService.Couriers
         }
 
         #endregion Taxi. Такси
+
+        #region YandexTaxi. Новый тариф
+
+        /// <summary>
+        /// Подсчет времени и стоимости доставки одного заказа
+        /// без возврата в магазин для Yandex-такси c новыми тарифами
+        /// </summary>
+        /// <param name="courierType">Параметры курьера</param>
+        /// <param name="fromShop">Растояние и время движения из магазина в точку вручения</param>
+        /// <param name="weight">Вес заказа</param>
+        /// <param name="deliveryTime">Время до момента вручения, мин</param>
+        /// <param name="executionTime">Время до момента вручения, мин</param>
+        /// <param name="cost">Стоимость отгрузки</param>
+        /// <returns>0 - подсчет выполнен; иначе - подсчет не выполнен</returns>
+        public static int GetTimeAndCost_YandexTaxi(ICourierType courierType, Point fromShop, double weight, out double deliveryTime, out double executionTime, out double cost)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            deliveryTime = 0;
+            executionTime = 0;
+            cost = 0;
+
+            try
+            {
+
+                // 2. Проверяем исходные данные
+                rc = 20;
+                if (courierType == null)
+                    return rc;
+                rc = 21;
+                if (fromShop.X > 1000 * courierType.MaxDistance)
+                    return rc;
+                rc = 22;
+                if (weight > courierType.MaxWeight)
+                    return rc;
+
+                // 3. Производим вычисление времени и стоимости
+                rc = 3;
+                deliveryTime = courierType.StartDelay + courierType.GetOrderTime + fromShop.Y / 60.0 + courierType.HandInTime;
+                executionTime = deliveryTime;
+
+                cost = courierType.FirstPay;
+                if (courierType.GetOrderTime > courierType.FirstGetOrderTime)
+                {
+                    cost += (courierType.GetOrderTime - courierType.FirstGetOrderTime) * courierType.FirstGetOrderRate;
+                }
+
+                double distance = fromShop.X / 1000.0;
+                if (distance > courierType.FirstDistance)
+                    //cost += courierType.AdditionalKilometerCost * Math.Ceiling(distance - courierType.FirstDistance);
+                    cost += courierType.AdditionalKilometerCost * (distance - courierType.FirstDistance);
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Подсчет времени и стоимости доставки одного заказа
+        /// с возвратом в магазин для Yandex-такси c новыми тарифами
+        /// </summary>
+        /// <param name="courierType">Параметры курьера</param>
+        /// <param name="fromShop">Растояние и время движения из магазина в точку вручения</param>
+        /// <param name="toShop">Растояние и время движенияв из точки вручения в магазин</param>
+        /// <param name="weight">Вес заказа</param>
+        /// <param name="deliveryTime">Время до момента вручения, мин</param>
+        /// <param name="executionTime">Время до момента вручения, мин</param>
+        /// <param name="cost">Стоимость отгрузки</param>
+        /// <returns>0 - подсчет выполнен; иначе - подсчет не выполнен</returns>
+        public static int GetTimeAndCost_YandexTaxi(ICourierType courierType, Point fromShop, Point toShop, double weight, out double deliveryTime, out double executionTime, out double cost)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            deliveryTime = 0;
+            executionTime = 0;
+            cost = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 20;
+                if (courierType == null)
+                    return rc;
+                rc = 21;
+                if (fromShop.X > 1000 * courierType.MaxDistance)
+                    return rc;
+                rc = 22;
+                if (weight > courierType.MaxWeight)
+                    return rc;
+
+                // 3. Производим вычисление времени и стоимости
+                rc = 3;
+                deliveryTime = courierType.GetOrderTime + fromShop.Y / 60.0 + courierType.HandInTime;
+                executionTime = deliveryTime + toShop.Y / 60.0 + courierType.HandInTime;
+
+                // 3.1 Стоимость доставки в первую точку вручения
+                rc = 31;
+                cost = courierType.FirstPay;
+                double distance = fromShop.X / 1000.0;
+                if (distance > courierType.FirstDistance)
+                    //cost += courierType.AdditionalKilometerCost * Math.Ceiling(distance - courierType.FirstDistance);
+                    cost += courierType.AdditionalKilometerCost * (distance - courierType.FirstDistance);
+
+                // 3.2 Стоимость возврата в магазин
+                rc = 32;
+                cost += courierType.AdditionalKilometerCost * (toShop.X / 1000.0);
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Расчет времени и стоимости отгрузки из нескольких заказов Yandex-такси с новыми тарифами
+        /// </summary>
+        /// <param name="courierType">Параметры курьера</param>
+        /// <param name="nodeInfo">
+        /// nodeInfo[i] - расстояние и время движения от точки i-1 до точки i
+        /// (nodeInfo[0] = (0,0) - соотв. магазину; общее число точек = число заказов + 2)
+        /// </param>
+        /// <param name="totalWeight">Общий вес всех заказов</param>
+        /// <param name="isLoop">true - возврат в магазин; false - без возврата в магазин</param>
+        /// <param name="nodeDeliveryTime">Расчетное время доставки в заданную точку, мин</param>
+        /// <param name="totalDeliveryTime">Суммарное время доставки всех заказов (время от старта до вручения последнего заказа)</param>
+        /// <param name="totalExecutionTime">Общее время отгрузки (при isLoop = false совпадает с nodeDeliveryTime)</param>
+        /// <param name="totalCost">Общая стоимость отгрузки</param>
+        /// <returns>0 - расчет выполнен; иначе - расчет не выполнен</returns>
+        public static int GetTimeAndCost_YandexTaxi(ICourierType courierType, Point[] nodeInfo, double totalWeight, bool isLoop, out double[] nodeDeliveryTime, out double totalDeliveryTime, out double totalExecutionTime, out double totalCost)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            nodeDeliveryTime = null;
+            totalDeliveryTime = 0;
+            totalExecutionTime = 0;
+            totalCost = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 20;
+                if (courierType == null)
+                    return rc;
+                if (nodeInfo == null || nodeInfo.Length < 3)
+                    return rc;
+                rc = 22;
+                if (totalWeight > courierType.MaxWeight)
+                    return rc;
+                int nodeCount = nodeInfo.Length;
+                rc = 23;
+                if (nodeCount - 2 > courierType.MaxOrderCount)
+                    return rc;
+
+                // 3. Расчитываем время доставки до всех точек доставки
+                rc = 3;
+                nodeDeliveryTime = new double[nodeCount];
+                nodeDeliveryTime[0] = courierType.StartDelay + courierType.GetOrderTime;
+
+                int sumDist = 0;
+
+                for (int i = 1; i < nodeCount; i++)
+                {
+                    sumDist += nodeInfo[i].X;
+                    nodeDeliveryTime[i] = nodeDeliveryTime[i - 1] + courierType.HandInTime + nodeInfo[i].Y / 60.0;
+                }
+
+                totalDeliveryTime = nodeDeliveryTime[nodeCount - 2];
+                if (isLoop)
+                {
+                    totalExecutionTime = totalDeliveryTime;
+                }
+                else
+                {
+                    totalExecutionTime = totalDeliveryTime;
+                    sumDist -= nodeInfo[nodeCount - 1].X;
+                }
+
+                // Проверяем дальность
+                double distance = sumDist / 1000.0;
+                if (distance > courierType.MaxDistance)
+                    return rc;
+
+                // 4. Расчитываем стоимость
+                rc = 4;
+                totalCost = courierType.FirstPay;
+                if (courierType.GetOrderTime > courierType.FirstGetOrderTime)
+                    totalCost += courierType.FirstGetOrderRate * (courierType.GetOrderTime - courierType.FirstGetOrderTime);
+
+                double dist1 = nodeInfo[1].X / 1000.0;
+
+                if (dist1 > courierType.FirstDistance)
+                    totalCost += courierType.AdditionalKilometerCost * (dist1 - courierType.FirstDistance);
+
+                //totalCost += courierType.AdditionalKilometerCost * Math.Ceiling(distance - dist1);
+                totalCost += courierType.AdditionalKilometerCost * (distance - dist1);
+
+                if (nodeCount > 3)
+                    totalCost += (nodeCount - 3) * courierType.SecondPay;
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        #endregion YandexTaxi. Новый тариф
+
+        #region GettTaxi. Новый тариф
+
+        /// <summary>
+        /// Подсчет времени и стоимости доставки одного заказа
+        /// без возврата в магазин для Gett-такси c новыми тарифами
+        /// </summary>
+        /// <param name="courierType">Параметры курьера</param>
+        /// <param name="fromShop">Растояние и время движения из магазина в точку вручения</param>
+        /// <param name="weight">Вес заказа</param>
+        /// <param name="deliveryTime">Время до момента вручения, мин</param>
+        /// <param name="executionTime">Время до момента вручения, мин</param>
+        /// <param name="cost">Стоимость отгрузки</param>
+        /// <returns>0 - подсчет выполнен; иначе - подсчет не выполнен</returns>
+        public static int GetTimeAndCost_GettTaxi(ICourierType courierType, Point fromShop, double weight, out double deliveryTime, out double executionTime, out double cost)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            deliveryTime = 0;
+            executionTime = 0;
+            cost = 0;
+
+            try
+            {
+
+                // 2. Проверяем исходные данные
+                rc = 20;
+                if (courierType == null)
+                    return rc;
+                rc = 21;
+                if (fromShop.X > 1000 * courierType.MaxDistance)
+                    return rc;
+                rc = 22;
+                if (weight > courierType.MaxWeight)
+                    return rc;
+
+                // 3. Производим вычисление времени и стоимости
+                rc = 3;
+                double time1 = fromShop.Y / 60.0;
+                deliveryTime = courierType.StartDelay + courierType.GetOrderTime + time1 + courierType.HandInTime;
+                executionTime = deliveryTime;
+
+                cost = courierType.FirstPay;
+
+                // 3.1 Временная составляющая стоимости (A)
+                if (time1 > courierType.FirstTime)
+                    cost += courierType.FirstTimeRate * (time1 - courierType.FirstTime);
+
+                // 3.2 Составляющая стоимости по расстоянию (B)
+                double distance = fromShop.X / 1000.0;
+
+                if (distance > courierType.FirstDistance)
+                    cost += courierType.AdditionalKilometerCost * (distance - courierType.FirstDistance);
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Подсчет времени и стоимости доставки одного заказа
+        /// с возвратом в магазин для Gett-такси c новыми тарифами
+        /// </summary>
+        /// <param name="courierType">Параметры курьера</param>
+        /// <param name="fromShop">Растояние и время движения из магазина в точку вручения</param>
+        /// <param name="toShop">Растояние и время движенияв из точки вручения в магазин</param>
+        /// <param name="weight">Вес заказа</param>
+        /// <param name="deliveryTime">Время до момента вручения, мин</param>
+        /// <param name="executionTime">Время до момента вручения, мин</param>
+        /// <param name="cost">Стоимость отгрузки</param>
+        /// <returns>0 - подсчет выполнен; иначе - подсчет не выполнен</returns>
+        public static int GetTimeAndCost_GettTaxi(ICourierType courierType, Point fromShop, Point toShop, double weight, out double deliveryTime, out double executionTime, out double cost)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            deliveryTime = 0;
+            executionTime = 0;
+            cost = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 20;
+                if (courierType == null)
+                    return rc;
+                rc = 21;
+                if (fromShop.X > 1000 * courierType.MaxDistance)
+                    return rc;
+                rc = 22;
+                if (weight > courierType.MaxWeight)
+                    return rc;
+
+                // 3. Производим вычисление времени и стоимости
+                rc = 3;
+                double time1 = fromShop.Y / 60.0;
+                double time2 = toShop.Y / 60.0;
+                deliveryTime = courierType.GetOrderTime + time1 + courierType.HandInTime;
+                executionTime = deliveryTime + time2 + courierType.HandInTime;
+
+                // 3.1 Стоимость доставки в первую точку вручения
+                rc = 31;
+                cost = courierType.FirstPay;
+
+                // временная составляющая
+                if (time1 > courierType.FirstTime)
+                    cost += courierType.FirstTimeRate * (time1 - courierType.FirstTime);
+
+                // составляющая по расстоянию
+                double distance = fromShop.X / 1000.0;
+
+                if (distance > courierType.FirstDistance)
+                    cost += courierType.AdditionalKilometerCost * (distance - courierType.FirstDistance);
+
+                // 3.2 Стоимость возврата в магазин
+                rc = 32;
+
+                // временная составляющая
+                cost += courierType.SeсondTimeRate * time2;
+
+                // составляющая по расстоянию
+                cost += courierType.AdditionalKilometerCost * (toShop.X / 1000.0);
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Расчет времени и стоимости отгрузки из нескольких заказов Gett-такси с новыми тарифами
+        /// </summary>
+        /// <param name="courierType">Параметры курьера</param>
+        /// <param name="nodeInfo">
+        /// nodeInfo[i] - расстояние и время движения от точки i-1 до точки i
+        /// (nodeInfo[0] = (0,0) - соотв. магазину; общее число точек = число заказов + 2)
+        /// </param>
+        /// <param name="totalWeight">Общий вес всех заказов</param>
+        /// <param name="isLoop">true - возврат в магазин; false - без возврата в магазин</param>
+        /// <param name="nodeDeliveryTime">Расчетное время доставки в заданную точку, мин</param>
+        /// <param name="totalDeliveryTime">Суммарное время доставки всех заказов (время от старта до вручения последнего заказа)</param>
+        /// <param name="totalExecutionTime">Общее время отгрузки (при isLoop = false совпадает с nodeDeliveryTime)</param>
+        /// <param name="totalCost">Общая стоимость отгрузки</param>
+        /// <returns>0 - расчет выполнен; иначе - расчет не выполнен</returns>
+        public static int GetTimeAndCost_GettTaxi(ICourierType courierType, Point[] nodeInfo, double totalWeight, bool isLoop, out double[] nodeDeliveryTime, out double totalDeliveryTime, out double totalExecutionTime, out double totalCost)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            nodeDeliveryTime = null;
+            totalDeliveryTime = 0;
+            totalExecutionTime = 0;
+            totalCost = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 20;
+                if (courierType == null)
+                    return rc;
+                if (nodeInfo == null || nodeInfo.Length < 3)
+                    return rc;
+                rc = 22;
+                if (totalWeight > courierType.MaxWeight)
+                    return rc;
+                int nodeCount = nodeInfo.Length;
+                rc = 23;
+                if (nodeCount - 2 > courierType.MaxOrderCount)
+                    return rc;
+
+                // 3. Расчитываем время доставки до всех точек доставки
+                rc = 3;
+                nodeDeliveryTime = new double[nodeCount];
+                nodeDeliveryTime[0] = courierType.StartDelay + courierType.GetOrderTime;
+
+                int sumDist = 0;
+
+                for (int i = 1; i < nodeCount; i++)
+                {
+                    sumDist += nodeInfo[i].X;
+                    nodeDeliveryTime[i] = nodeDeliveryTime[i - 1] + courierType.HandInTime + nodeInfo[i].Y / 60.0;
+                }
+
+                totalDeliveryTime = nodeDeliveryTime[nodeCount - 2];
+                if (isLoop)
+                {
+                    totalExecutionTime = totalDeliveryTime;
+                }
+                else
+                {
+                    totalExecutionTime = totalDeliveryTime;
+                    sumDist -= nodeInfo[nodeCount - 1].X;
+                }
+
+                // Проверяем дальность
+                double distance = sumDist / 1000.0;
+                if (distance > courierType.MaxDistance)
+                    return rc;
+
+                // 4. Расчитываем стоимость
+                rc = 4;
+                totalCost = courierType.FirstPay;
+
+                //if (distance > courierType.FirstDistance)
+                //{
+                //    totalCost += courierType.AdditionalKilometerCost * (distance - courierType.FirstDistance);
+                //}
+
+                // 4.1 Первая точка вручения
+                rc = 41;
+                double dist1 = nodeInfo[1].X / 1000.0;
+                double time1 = nodeInfo[1].Y / 60.0;
+
+                // стоимость по расстоянию
+                if (dist1 > courierType.FirstDistance)
+                    totalCost += courierType.AdditionalKilometerCost * (dist1 - courierType.FirstDistance);
+
+                // стоимость по времени
+                if (time1 > courierType.FirstTime)
+                    totalCost += courierType.FirstTimeRate * (time1 - courierType.FirstTime);
+
+                // 4.2 Последующие точки вручения
+                rc = 42;
+
+                // стоимость по расстоянию
+                distance -= dist1;
+                totalCost += courierType.AdditionalKilometerCost * distance;
+
+                // стоимость по времени
+                double time = totalExecutionTime - courierType.HandInTime - courierType.GetOrderTime - courierType.StartDelay;
+                totalCost += courierType.SeсondTimeRate * time;
+
+                // 5. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        #endregion GettTaxi. Новый тариф
     }
 }

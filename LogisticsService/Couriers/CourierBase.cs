@@ -112,6 +112,32 @@ namespace LogisticsService.Couriers
         public string CalcMethod { get; private set; }
 
         /// <summary>
+        /// Максимальное бесплатное время вручения, мин
+        /// </summary>
+        public double FirstGetOrderTime { get; private set; }
+
+        /// <summary>
+        /// Плата за превышение бесплатного времени
+        /// вручения (руб/мин)
+        /// </summary>
+        public double FirstGetOrderRate { get; private set; }
+
+        /// <summary>
+        /// Предоплаченое время, мин
+        /// </summary>
+        public double FirstTime { get; private set; }
+
+        /// <summary>
+        /// Плата за превышение FirstTime для первого заказа (руб/мин)
+        /// </summary>
+        public double FirstTimeRate { get; private set; }
+
+        /// <summary>
+        /// Плата за время для заказов, начиная со второго (руб/мин)
+        /// </summary>
+        public double SeсondTimeRate { get; private set; }
+
+        /// <summary>
         /// Параметрический конструктор класса CourierBase
         /// </summary>
         /// <param name="parameters">Параметры курьера</param>
@@ -133,6 +159,11 @@ namespace LogisticsService.Couriers
             IsTaxi = parameters.IsTaxi;
             DServiceId = parameters.DServiceId;
             CalcMethod = parameters.CalcMethod;
+            FirstGetOrderTime = parameters.FirstGetOrderTime;
+            FirstGetOrderRate = parameters.FirstGetOrderRate;
+            FirstTime = parameters.FirstTime;
+            FirstTimeRate = parameters.FirstTimeRate;
+            SeсondTimeRate = parameters.SeсondTimeRate;
             SelectGetAndTimeDelegates(CalcMethod);
         }
         
@@ -342,7 +373,18 @@ namespace LogisticsService.Couriers
         //    }
         //}
         
-        public virtual int GetTimeAndCost(Point fromShop, double weight, out double deliveryTime, out double executionTime, out double cost)
+        /// <summary>
+        /// Расчет времени и стоимости доставки одного заказа
+        /// без возврата в магазин
+        /// </summary>
+        /// <param name="fromShop">Расстояние и время движения от магазина до точки доставки</param>
+        /// <param name="toShop">Расстояние и время движения от точки доставки до магазина</param>
+        /// <param name="weight">Вес заказа</param>
+        /// <param name="deliveryTime">Время доставки до вручения заказа</param>
+        /// <param name="executionTime">Общее время доставки</param>
+        /// <param name="cost">Стоимость доставки</param>
+        /// <returns>0 - расчет выполнен; иначе - расчет не выполнен</returns>
+       public virtual int GetTimeAndCost(Point fromShop, double weight, out double deliveryTime, out double executionTime, out double cost)
         {
             return getCostAndTime1(this, fromShop, weight, out deliveryTime, out executionTime, out cost);
         }
@@ -382,6 +424,11 @@ namespace LogisticsService.Couriers
             return getCostAndTime3(this, nodeInfo, totalWeight, isLoop, out nodeDeliveryTime, out totalDeliveryTime, out totalExecutionTime, out totalCost);
         }
 
+        /// <summary>
+        /// Установка делегатов для расчета времени
+        /// и стоимости отгрузки
+        /// </summary>
+        /// <param name="calcMethod">Способ расчетов</param>
         private void SelectGetAndTimeDelegates(string calcMethod)
         {
             int rc = GetTimeAndCostDelеgates(calcMethod, out getCostAndTime1, out getCostAndTime2, out getCostAndTime3);

@@ -35,5 +35,20 @@ namespace LogisticsService.Couriers
         /// Доставка с помощью Gett-такси
         /// </summary>
         GettTaxi = 5,
+
+        /// <summary>
+        /// Доставка с помощью Yandex-такси по новым тарифам
+        /// </summary>
+        YandexTaxiNew = 6,
+
+        /// <summary>
+        /// Доставка с помощью Gett-такси по новым тарифам
+        /// </summary>
+        GettTaxiNew = 7,
+
+        /// <summary>
+        /// Доставка с помощью Ситимобайл-такси
+        /// </summary>
+        CityMobileTaxi = 8,
     }
 }
