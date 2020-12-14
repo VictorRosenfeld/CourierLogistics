@@ -471,6 +471,7 @@ namespace CourierLogistics
             //ServiceLogAnalyzer analyzer = new ServiceLogAnalyzer(analyzerConfig);
             ////int rcd = analyzer.Create(@"C:\Users\Виктор\source\repos\CourierLogisticsEx\CourierLogistics\bin\Debug\CourierLogistics.log", @"C:\T2\Report\report.xlsx");
             //int rcd = analyzer.Create(@"C:\T2\CourierLogistics.log", @"C:\T2\Report\report.xlsx");
+            //LogisticsService.Log.Logger.Create();
 
             try
             {
@@ -580,7 +581,13 @@ namespace CourierLogistics
                 if (!Directory.Exists(reportFolder))
                     Directory.CreateDirectory(reportFolder);
                 string reportFile = $@"{reportFolder}\Report_{DateTime.Now:dd_MM_yy_HH_mm_ss}.xlsx";
-                int rc = analyzer.Create(service.LogFileName, reportFile);
+                string tempFile = Path.GetTempFileName();
+
+                File.Copy(service.LogFileName, tempFile, true);
+
+                //int rc = analyzer.Create(service.LogFileName, reportFile);
+                int rc = analyzer.Create(tempFile, reportFile);
+                try { File.Delete(tempFile); } catch { }
             }
             catch (Exception ex)
             {

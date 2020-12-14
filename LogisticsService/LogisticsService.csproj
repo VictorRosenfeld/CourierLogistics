@@ -31,13 +31,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Device" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -75,6 +80,7 @@
     <Compile Include="Geo\GeoDeliveryMethod.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Locations\LocationManager.cs" />
+    <Compile Include="Log\Logger.cs" />
     <Compile Include="Log\MessagePatterns.cs" />
     <Compile Include="Orders\AllOrders.cs" />
     <Compile Include="Orders\AllOrdersEx.cs" />
@@ -92,6 +98,7 @@
     <Compile Include="ServiceParameters\CourierTypeMapper.cs" />
     <Compile Include="ServiceParameters\DServiceIdMapper.cs" />
     <Compile Include="ServiceParameters\FunctionalParameters.cs" />
+    <Compile Include="ServiceParameters\LoggerParameters.cs" />
     <Compile Include="ServiceParameters\SalesmanProblemLevel.cs" />
     <Compile Include="ServiceParameters\ServiceConfig.cs" />
     <Compile Include="ServiceParameters\AverageCostByVechicle.cs" />

@@ -26,77 +26,77 @@ namespace LogisticsService
             return (intersectionLeft <= intersectionRight);
         }
 
-        /// <summary>
-        /// Запись сообщения в лог
-        /// </summary>
-        /// <param name="message">Сообщение</param>
-        public static void WriteToLog(string message)
-        {
-            try
-            {
-                //string xx = Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
-                using (StreamWriter sw = new StreamWriter(Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log"), true))
-                {
-                    sw.WriteLine($"@{DateTime.Now:dd.MM.yy HH:mm:ss} {message}");
-                }
-            }
-            catch
-            { }
-        }
+        ///// <summary>
+        ///// Запись сообщения в лог
+        ///// </summary>
+        ///// <param name="message">Сообщение</param>
+        //public static void WriteToLog(string message)
+        //{
+        //    try
+        //    {
+        //        //string xx = Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
+        //        using (StreamWriter sw = new StreamWriter(Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log"), true))
+        //        {
+        //            sw.WriteLine($"@{DateTime.Now:dd.MM.yy HH:mm:ss} {message}");
+        //        }
+        //    }
+        //    catch
+        //    { }
+        //}
 
-        /// <summary>
-        /// Запись сообщения в лог
-        /// </summary>
-        /// <param name="message">Сообщение</param>
-        public static void WriteInfoToLog(string message)
-        {
-            try
-            {
-                //string xx = Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
-                using (StreamWriter sw = new StreamWriter(Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log"), true))
-                {
-                    sw.WriteLine($"{DateTime.Now} > Info {message}");
-                }
-            }
-            catch
-            { }
-        }
+        ///// <summary>
+        ///// Запись сообщения в лог
+        ///// </summary>
+        ///// <param name="message">Сообщение</param>
+        //public static void WriteInfoToLog(string message)
+        //{
+        //    try
+        //    {
+        //        //string xx = Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
+        //        using (StreamWriter sw = new StreamWriter(Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log"), true))
+        //        {
+        //            sw.WriteLine($"{DateTime.Now} > Info {message}");
+        //        }
+        //    }
+        //    catch
+        //    { }
+        //}
 
-        /// <summary>
-        /// Запись сообщения в лог
-        /// </summary>
-        /// <param name="message">Сообщение</param>
-        public static void WriteWarningToLog(string message)
-        {
-            try
-            {
-                //string xx = Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
-                using (StreamWriter sw = new StreamWriter(Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log"), true))
-                {
-                    sw.WriteLine($"{DateTime.Now} > Warning {message}");
-                }
-            }
-            catch
-            { }
-        }
+        ///// <summary>
+        ///// Запись сообщения в лог
+        ///// </summary>
+        ///// <param name="message">Сообщение</param>
+        //public static void WriteWarningToLog(string message)
+        //{
+        //    try
+        //    {
+        //        //string xx = Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
+        //        using (StreamWriter sw = new StreamWriter(Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log"), true))
+        //        {
+        //            sw.WriteLine($"{DateTime.Now} > Warning {message}");
+        //        }
+        //    }
+        //    catch
+        //    { }
+        //}
 
-        /// <summary>
-        /// Запись сообщения в лог
-        /// </summary>
-        /// <param name="message">Сообщение</param>
-        public static void WriteErrorToLog(string message)
-        {
-            try
-            {
-                //string xx = Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
-                using (StreamWriter sw = new StreamWriter(Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log"), true))
-                {
-                    sw.WriteLine($"{DateTime.Now} > Error {message}");
-                }
-            }
-            catch
-            { }
-        }
+        ///// <summary>
+        ///// Запись сообщения в лог
+        ///// </summary>
+        ///// <param name="message">Сообщение</param>
+        //public static void WriteErrorToLog(string message)
+        //{
+        //    try
+        //    {
+        //        //string xx = Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
+        //        using (StreamWriter sw = new StreamWriter(Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log"), true))
+        //        {
+        //            sw.WriteLine($"{DateTime.Now} > Error {message}");
+        //        }
+        //    }
+        //    catch
+        //    { }
+        //}
 
         /// <summary>
         /// Преобразование массива в строку

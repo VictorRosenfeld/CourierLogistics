@@ -943,9 +943,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries", $"CreateShopDeliveries(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(allShopCouriers.Select(courier => courier.Id).ToArray())})"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries", $"CreateShopDeliveries(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(allShopCouriers.Select(courier => courier.Id).ToArray())})"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries", ex.ToString()));
 
                 return rc;
             }
@@ -1174,7 +1174,7 @@ SetOrderLabel:
                         Order order = onTimeOrders[i];
                         order.RejectionReason = OrderRejectionReason.CourierNa;
                         //Helper.WriteWarningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
-                        Helper.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+                        Logger.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
                         undelivOrders[undeliveredCount++] = order;
                     }
                     else if (onTimeOrders[i].Status == OrderStatus.Receipted)
@@ -1217,7 +1217,7 @@ SetOrderLabel:
                     Order order = onTimeOrders[i];
                     if (!orderCoverMap[i] && order.Status == OrderStatus.Assembled)
                     {
-                        Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ASSEMBLED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+                        Logger.WriteToLog(string.Format(MessagePatterns.REJECT_ASSEMBLED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
                         undelivOrders[undeliveredCount++] = order;
                     }
                 }
@@ -1237,11 +1237,11 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"CreateShopDeliveriesEx(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
+                //Logger.WriteToLog(ex.ToString());
 
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries_OnTime", $"Shop {shop.Id}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries_OnTime", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries_OnTime", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries_OnTime", $"Shop {shop.Id}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries_OnTime", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries_OnTime", ex.ToString()));
 
                 return rc;
             }
@@ -1409,7 +1409,7 @@ SetOrderLabel:
                         Order order = behindTimeOrders[i];
                         order.RejectionReason = OrderRejectionReason.CourierNa;
                         //Helper.WriteWarningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
-                        Helper.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+                        Logger.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
                         undelivOrders[undeliveredCount++] = order;
                     }
                     else if (behindTimeOrders[i].Status == OrderStatus.Receipted)
@@ -1453,7 +1453,7 @@ SetOrderLabel:
                     Order order = behindTimeOrders[i];
                     if (!orderCoverMap[i] && order.Status == OrderStatus.Assembled)
                     {
-                        Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ASSEMBLED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+                        Logger.WriteToLog(string.Format(MessagePatterns.REJECT_ASSEMBLED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
                         undelivOrders[undeliveredCount++] = order;
                     }
                 }
@@ -1472,9 +1472,9 @@ SetOrderLabel:
             catch (Exception ex)
             {
 
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries_OnTime", $"Shop {shop.Id}, Orders {Helper.ArrayToString(behindTimeOrders.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries_OnTime", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries_OnTime", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries_OnTime", $"Shop {shop.Id}, Orders {Helper.ArrayToString(behindTimeOrders.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries_OnTime", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries_OnTime", ex.ToString()));
 
                 return rc;
             }
@@ -1868,9 +1868,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries_OnTimeAndBehindTime", $"Shop {shop.Id}, BehindTimeOrders {Helper.ArrayToString(behindTimeOrders.Select(order => order.Id).ToArray())}, OnTimeOrders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries_OnTimeAndBehindTime", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries_OnTimeAndBehindTime", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries_OnTimeAndBehindTime", $"Shop {shop.Id}, BehindTimeOrders {Helper.ArrayToString(behindTimeOrders.Select(order => order.Id).ToArray())}, OnTimeOrders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries_OnTimeAndBehindTime", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries_OnTimeAndBehindTime", ex.ToString()));
 
                 return rc;
             }
@@ -1966,7 +1966,7 @@ SetOrderLabel:
         //            {
         //                undeliveredOnTimeOrders[undeliveredOnTimeCount++] = order;
         //                //Helper.WriteWarningToLog($"Undelivered By Time. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
-        //                Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ORDER_BY_TIME, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+        //                Logger.WriteToLog(string.Format(MessagePatterns.REJECT_ORDER_BY_TIME, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
 
         //                order.RejectionReason = OrderRejectionReason.LateStart;
         //            }
@@ -2006,7 +2006,7 @@ SetOrderLabel:
         //                {
         //                    undelivOrders[undeliveredCount++] = order;
         //                    //Helper.WriteWarningToLog($"Order Rejected. Courier is not available. CreateShopDeliveries. Shop {shop.Id}. Order {order.Id}, order.DeliveryTimeTo {order.DeliveryTimeTo}, calcTime {calcTime}");
-        //                    Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+        //                    Logger.WriteToLog(string.Format(MessagePatterns.REJECT_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
 
         //                    order.RejectionReason = OrderRejectionReason.CourierNa;
         //                }
@@ -2231,7 +2231,7 @@ SetOrderLabel:
         //            {
         //                Order order = shopOrders[i];
         //                //Helper.WriteWarningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
-        //                Helper.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+        //                Logger.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
         //                undelivOrders[undeliveredCount++] = order;
         //            }
         //            else if (shopOrders[i].Status == OrderStatus.Receipted)
@@ -2373,7 +2373,7 @@ SetOrderLabel:
         //            {
         //                Order order = shopOrders[i];
         //                //Helper.WriteWarningToLog($"Assembled order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
-        //                Helper.WriteToLog(string.Format(MessagePatterns.REJECT_ASSEMBLED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+        //                Logger.WriteToLog(string.Format(MessagePatterns.REJECT_ASSEMBLED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
         //                undelivOrders[undeliveredCount++] = order;
         //            }
         //        }
@@ -2393,11 +2393,11 @@ SetOrderLabel:
         //    {
         //        //Helper.WriteErrorToLog($"CreateShopDeliveriesEx(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())})");
         //        //Helper.WriteErrorToLog($"(rc = {rc})");
-        //        //Helper.WriteToLog(ex.ToString());
+        //        //Logger.WriteToLog(ex.ToString());
 
-        //        Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveriesEx", $"Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
-        //        Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveriesEx", rc));
-        //        Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveriesEx", ex.ToString()));
+        //        Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveriesEx", $"Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
+        //        Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveriesEx", rc));
+        //        Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveriesEx", ex.ToString()));
 
         //        return rc;
         //    }
@@ -2789,9 +2789,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveriesEx", $"Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveriesEx", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveriesEx", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveriesEx", $"Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveriesEx", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveriesEx", ex.ToString()));
 
                 return rc;
             }
@@ -2888,9 +2888,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveriesEx", $"Shop {shop.Id}, behindTimeOrders {Helper.ArrayToString(behindTimeOrders.Select(order => order.Id).ToArray())}, onTimeOrders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveriesEx", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveriesEx", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveriesEx", $"Shop {shop.Id}, behindTimeOrders {Helper.ArrayToString(behindTimeOrders.Select(order => order.Id).ToArray())}, onTimeOrders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveriesEx", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveriesEx", ex.ToString()));
 
                 return rc;
             }
@@ -3081,10 +3081,10 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"CreateShopDeliveries8(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries8", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries8", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries8", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries8", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries8", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries8", ex.ToString()));
 
                 return rc;
             }
@@ -3255,10 +3255,10 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"CreateShopDeliveries7(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries7", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries7", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries7", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries7", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries7", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries7", ex.ToString()));
 
                 return rc;
             }
@@ -3416,10 +3416,10 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"CreateShopDeliveries6(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries6", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries6", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries6", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries6", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries6", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries6", ex.ToString()));
 
                 return rc;
             }
@@ -3565,10 +3565,10 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"CreateShopDeliveries5(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries5", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries5", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries5", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries5", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries5", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries5", ex.ToString()));
 
                 return rc;
             }
@@ -3700,10 +3700,10 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"CreateShopDeliveries4(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries4", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries4", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries4", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries4", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries4", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries4", ex.ToString()));
 
                 return rc;
             }
@@ -3822,10 +3822,10 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"CreateShopDeliveries3(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries3", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries3", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries3", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries3", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries3", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries3", ex.ToString()));
 
                 return rc;
             }
@@ -3931,10 +3931,10 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"CreateShopDeliveries2(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries2", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries2", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries2", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries2", $"Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries2", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries2", ex.ToString()));
 
                 return rc;
             }
@@ -4121,9 +4121,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries8_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries8_FirstFixed", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries8_FirstFixed", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries8_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries8_FirstFixed", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries8_FirstFixed", ex.ToString()));
 
                 return rc;
             }
@@ -4297,9 +4297,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries6_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries6_FirstFixed", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries6_FirstFixed", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries6_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries6_FirstFixed", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries6_FirstFixed", ex.ToString()));
 
                 return rc;
             }
@@ -4460,9 +4460,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries6_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries6_FirstFixed", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries6_FirstFixed", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries6_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries6_FirstFixed", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries6_FirstFixed", ex.ToString()));
 
                 return rc;
             }
@@ -4610,9 +4610,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries5_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries5_FirstFixed", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries5_FirstFixed", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries5_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries5_FirstFixed", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries5_FirstFixed", ex.ToString()));
 
                 return rc;
             }
@@ -4747,9 +4747,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries4_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries4_FirstFixed", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries4_FirstFixed", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries4_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries4_FirstFixed", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries4_FirstFixed", ex.ToString()));
 
                 return rc;
             }
@@ -4871,9 +4871,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries3_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries3_FirstFixed", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries3_FirstFixed", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries3_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries3_FirstFixed", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries3_FirstFixed", ex.ToString()));
 
                 return rc;
             }
@@ -4982,9 +4982,9 @@ SetOrderLabel:
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries2_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries2_FirstFixed", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries2_FirstFixed", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries2_FirstFixed", $"Shop {shop.Id}, Fixed {Helper.ArrayToString(firstFixedOrders.Select(order => order.Id).ToArray())}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries2_FirstFixed", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries2_FirstFixed", ex.ToString()));
 
                 return rc;
             }
@@ -5077,10 +5077,10 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"FindSalesmanProblemSolution(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Take(orderCount).Select(order => order.Id).ToArray())}, courier {courier.Id}, isloop {isLoop}, calcTime {calcTime})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "FindSalesmanProblemSolution", $"Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Take(orderCount).Select(order => order.Id).ToArray())}, courier {courier.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "FindSalesmanProblemSolution", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "FindSalesmanProblemSolution", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "FindSalesmanProblemSolution", $"Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Take(orderCount).Select(order => order.Id).ToArray())}, courier {courier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "FindSalesmanProblemSolution", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "FindSalesmanProblemSolution", ex.ToString()));
 
                 return rc;
             }
@@ -5368,10 +5368,10 @@ SetOrderLabel:
 
                 //Helper.WriteErrorToLog($"BuildDeliveryCoverEx(...)");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "BuildDeliveryCoverEx", "..."));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "BuildDeliveryCoverEx", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "BuildDeliveryCoverEx", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "BuildDeliveryCoverEx", "..."));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "BuildDeliveryCoverEx", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "BuildDeliveryCoverEx", ex.ToString()));
                 return rc;
             }
         }
@@ -5494,10 +5494,10 @@ SetOrderLabel:
 
                 //Helper.WriteErrorToLog($"BuildDeliveryCoverEy(...)");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "BuildDeliveryCoverEy", "..."));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "BuildDeliveryCoverEy", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "BuildDeliveryCoverEy", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "BuildDeliveryCoverEy", "..."));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "BuildDeliveryCoverEy", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "BuildDeliveryCoverEy", ex.ToString()));
 
                 return rc;
             }
@@ -5734,10 +5734,10 @@ SetOrderLabel:
             {
                 //Helper.WriteErrorToLog($"CreateSingleDelivery(Shop {shop.Id}, OrderId {shop}, courier {order.Id}, isloop {isLoop}, calcTime {calcTime})");
                 //Helper.WriteErrorToLog($"(rc = {rc})");
-                //Helper.WriteToLog(ex.ToString());
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateSingleDeliveryEx", $"Shop {shop.Id}, OrderId {shop}, courier {order.Id}, isloop {isLoop}, calcTime {calcTime}"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateSingleDeliveryEx", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateSingleDeliveryEx", ex.ToString()));
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateSingleDeliveryEx", $"Shop {shop.Id}, OrderId {shop}, courier {order.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateSingleDeliveryEx", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateSingleDeliveryEx", ex.ToString()));
 
                 return rc;
             }

@@ -1,6 +1,7 @@
 ﻿
 namespace LogisticsService.API
 {
+    using LogisticsService.Log;
     using Newtonsoft.Json;
     using System;
     using System.IO;
@@ -46,7 +47,7 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                Helper.WriteToLog(request.Address.OriginalString);
+                Logger.WriteToLog(request.Address.OriginalString);
 
                 string postData;
                 JsonSerializerSettings settings = new JsonSerializerSettings();
@@ -59,7 +60,7 @@ namespace LogisticsService.API
                     postData = sw.ToString();
                 }
 
-                Helper.WriteToLog(postData);
+                Logger.WriteToLog(postData);
 
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
                 request.ContentLength = byteArray.Length;

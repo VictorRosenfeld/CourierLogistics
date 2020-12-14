@@ -1,6 +1,7 @@
 ﻿
 namespace LogisticsService.FixedCourierService
 {
+    using log4net.Appender;
     using LogisticsService.API;
     using LogisticsService.Couriers;
     using LogisticsService.FixedCourierService.ServiceQueue;
@@ -41,7 +42,8 @@ namespace LogisticsService.FixedCourierService
         /// <summary>
         /// Путь к файлу лога
         /// </summary>
-        public string LogFileName => Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
+        //public string LogFileName => Path.ChangeExtension(Process.GetCurrentProcess().MainModule.FileName, "log");
+        public string LogFileName => Logger.File;
 
         /// <summary>
         /// Менеджер расстояний и времени движения
@@ -139,7 +141,7 @@ namespace LogisticsService.FixedCourierService
             salesmanSolution = null;
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             //Helper.WriteInfoToLog($"---> FixedServiceEy. Ver {fileVersionInfo.ProductVersion}");
-            Helper.WriteToLog(string.Format(MessagePatterns.START_SERVICE, "FixedServiceEz", fileVersionInfo.ProductVersion));
+
 
             try
             {
@@ -153,6 +155,9 @@ namespace LogisticsService.FixedCourierService
                 config = ServiceConfig.Deserialize(jsonFilename);
                 if (config == null)
                     return rc;
+
+                Logger.Create(config.logger.LogFile, config.logger.SavedDays);
+                Logger.WriteToLog(string.Format(MessagePatterns.START_SERVICE, "FixedServiceEz", fileVersionInfo.ProductVersion));
 
                 RequestParameters.API_ROOT = config.functional_parameters.api_root;
                 RequestParameters.SERVICE_ID = config.functional_parameters.service_id;
@@ -269,7 +274,7 @@ namespace LogisticsService.FixedCourierService
                 checkingQueueTimer.Enabled = false;
                 isCatched = syncMutex.WaitOne(300000);
                 //Helper.WriteInfoToLog($"CheckingQueueTimer_Elapsed CheckingItemCount = {checkingQueue.Count}");
-                //Helper.WriteToLog(string.Format(MessagePatterns.CHECKING_QUEUE_INFO_TIMER_ELAPSED, checkingQueue.Count));
+                //Logger.WriteToLog(string.Format(MessagePatterns.CHECKING_QUEUE_INFO_TIMER_ELAPSED, checkingQueue.Count));
 
                 // 3. Запускаем обработчик очереди
                 CheckingQueueHandler(checkingQueue, queue);
@@ -320,7 +325,7 @@ namespace LogisticsService.FixedCourierService
             {
                 isCatched = syncMutex.WaitOne(400000);
                 //Helper.WriteInfoToLog($"QueueInfoTimer_Elapsed ItemCount = {currentQueue.Count}");
-                Helper.WriteToLog(string.Format(MessagePatterns.QUEUE_INFO_TIMER_ELAPSED, currentQueue.Count));
+                Logger.WriteToLog(string.Format(MessagePatterns.QUEUE_INFO_TIMER_ELAPSED, currentQueue.Count));
                 
                 QueueInfoToServer(currentQueue);
             }
@@ -415,7 +420,7 @@ namespace LogisticsService.FixedCourierService
                 isCatched = syncMutex.WaitOne(config.functional_parameters.data_request_interval);
                 Refresh(0);
                 //Helper.WriteInfoToLog($"GeoCache capacity {geoCache.HashCapacity}. ItemCount = {geoCache.CacheItemCount}");
-                Helper.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_INFO, geoCache.HashCapacity, geoCache.CacheItemCount));
+                Logger.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_INFO, geoCache.HashCapacity, geoCache.CacheItemCount));
             }
             catch
             { }
@@ -448,7 +453,7 @@ namespace LogisticsService.FixedCourierService
                 currentQueue = queue;
 
                 //Helper.WriteInfoToLog($"QueueTimer_Elapsed ItemCount = {currentQueue.Count}");
-                Helper.WriteToLog(string.Format(MessagePatterns.QUEUE_TIMER_ELAPSED, currentQueue.Count));
+                Logger.WriteToLog(string.Format(MessagePatterns.QUEUE_TIMER_ELAPSED, currentQueue.Count));
                 QueueHandler(currentQueue);
                 QueueItem item = currentQueue.GetCurrentItem();
                 if (item != null)
@@ -914,7 +919,7 @@ namespace LogisticsService.FixedCourierService
                     Array.Resize(ref allQueueItems, itemCount);
                     deliveryQueue = new EventQueue();
                     //Helper.WriteInfoToLog($"Создание очереди отгрузок ({itemCount})");
-                    Helper.WriteToLog(string.Format(MessagePatterns.CREATE_SHIPMENT_QUEUE, itemCount));
+                    Logger.WriteToLog(string.Format(MessagePatterns.CREATE_SHIPMENT_QUEUE, itemCount));
 
                     int rc1 = deliveryQueue.Create(allQueueItems);
                     if (rc1 == 0)
@@ -1945,10 +1950,10 @@ namespace LogisticsService.FixedCourierService
                     }
 
                     //Helper.WriteInfoToLog("(((( Send delivery command from checking queue");
-                    Helper.WriteToLog(MessagePatterns.SHIPMENT_FROM_CHECKING_QUEUE1);
+                    Logger.WriteToLog(MessagePatterns.SHIPMENT_FROM_CHECKING_QUEUE1);
                     SendDeliveryCommand(sendDelivery);
                     //Helper.WriteInfoToLog(")))) Send delivery command from checking queue");
-                    Helper.WriteToLog(MessagePatterns.SHIPMENT_FROM_CHECKING_QUEUE2);
+                    Logger.WriteToLog(MessagePatterns.SHIPMENT_FROM_CHECKING_QUEUE2);
                 }
 
                 // 6. Отправляем команды об отмене
@@ -1961,10 +1966,10 @@ namespace LogisticsService.FixedCourierService
                     }
 
                     //Helper.WriteInfoToLog("(((( Send reject command from checking queue");
-                    Helper.WriteToLog(MessagePatterns.REJECT_ORDER_FROM_CHECKING_QUEUE1);
+                    Logger.WriteToLog(MessagePatterns.REJECT_ORDER_FROM_CHECKING_QUEUE1);
                     SendRejectCommand(rejectDelivery);
                     //Helper.WriteInfoToLog(")))) Send reject command from checking queue");
-                    Helper.WriteToLog(MessagePatterns.REJECT_ORDER_FROM_CHECKING_QUEUE2);
+                    Logger.WriteToLog(MessagePatterns.REJECT_ORDER_FROM_CHECKING_QUEUE2);
                 }
 
                 //// 6. Удаляем отработанные элементы
@@ -2342,7 +2347,7 @@ namespace LogisticsService.FixedCourierService
                 if (disposing)
                 {
                     FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-                    Helper.WriteToLog(string.Format(MessagePatterns.STOP_SERVICE, "FixedServiceEz", fileVersionInfo.ProductVersion));
+                    Logger.WriteToLog(string.Format(MessagePatterns.STOP_SERVICE, "FixedServiceEz", fileVersionInfo.ProductVersion));
 
                     if (requestTimer != null)
                     {
@@ -2429,7 +2434,7 @@ namespace LogisticsService.FixedCourierService
 
                 // 3. Печатаем заголовок
                 //Helper.WriteInfoToLog("Состояние очереди");
-                Helper.WriteToLog(MessagePatterns.QUEUE_STATE);
+                Logger.WriteToLog(MessagePatterns.QUEUE_STATE);
                 
                 // 4. Печатаем все активные элементы
                 BeginShipment.Shipment shipment = new BeginShipment.Shipment();
@@ -2489,7 +2494,7 @@ namespace LogisticsService.FixedCourierService
 
                     // 4.4 Печатаем в лог
                     //Helper.WriteInfoToLog($"   Элемент {i}: {json}");
-                    Helper.WriteToLog(string.Format(MessagePatterns.QUEUE_ITEM, i, json));
+                    Logger.WriteToLog(string.Format(MessagePatterns.QUEUE_ITEM, i, json));
                 }
             }
             catch

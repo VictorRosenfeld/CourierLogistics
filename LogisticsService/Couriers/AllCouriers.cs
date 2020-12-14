@@ -208,9 +208,9 @@ namespace LogisticsService.Couriers
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateDServiceMapper", "CreateDServiceMapper(...)"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateDServiceMapper", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateDServiceMapper", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateDServiceMapper", "CreateDServiceMapper(...)"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateDServiceMapper", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateDServiceMapper", ex.ToString()));
 
                 return rc;
             }
@@ -253,9 +253,9 @@ namespace LogisticsService.Couriers
             }
             catch (Exception ex)
             {
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateCourierTypeMapper", "CreateCourierTypeMapper(...)"));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateCourierTypeMapper", rc));
-                Helper.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateCourierTypeMapper", ex.ToString()));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateCourierTypeMapper", "CreateCourierTypeMapper(...)"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateCourierTypeMapper", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateCourierTypeMapper", ex.ToString()));
 
                 return rc;
             }

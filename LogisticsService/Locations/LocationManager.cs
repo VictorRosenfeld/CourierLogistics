@@ -584,7 +584,7 @@
 //            catch (Exception ex)
 //            {
 //                Helper.WriteErrorToLog($"LocationManager1.PutLocationInfo deliveryMethod = {deliveryMethod}, rc = {rc}");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 //                return rc;
 //            }
 //        }

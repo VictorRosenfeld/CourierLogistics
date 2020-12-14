@@ -239,7 +239,7 @@ namespace LogisticsService.Geo
                 if (rc1 != 0)
                 {
                     //Helper.WriteErrorToLog($"LocationManager1.PutLocationInfo deliveryMethod = {deliveryMethod}, origin_count = {sourceCount}, destination_count = {destinationCount}, rc = {rc1}");
-                    Helper.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_PUT_INFO_ERROR, deliveryMethod, sourceCount, destinationCount, rc1));
+                    Logger.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_PUT_INFO_ERROR, deliveryMethod, sourceCount, destinationCount, rc1));
                     return rc = 1000 * rc + rc1;
                 }
 
@@ -294,7 +294,7 @@ namespace LogisticsService.Geo
                 if (rc1 != 0)
                 {
                     //Helper.WriteErrorToLog($"LocationManager1.PutLocationInfo deliveryMethod = {deliveryMethod}, origin_count = {destinationCount}, destination_count = {sourceCount}, rc = {rc1}");
-                    Helper.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_PUT_INFO_ERROR, deliveryMethod, destinationCount, sourceCount, rc1));
+                    Logger.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_PUT_INFO_ERROR, deliveryMethod, destinationCount, sourceCount, rc1));
 
                     return rc = 1000 * rc + rc1;
                 }
@@ -478,7 +478,7 @@ namespace LogisticsService.Geo
                 if (rc1 != 0)
                 {
                     //Helper.WriteErrorToLog($"LocationManager1.PutLocationInfo deliveryMethod = {deliveryMethod}, origin_count = {sourceCount}, destination_count = {destinationCount}, rc = {rc1}");
-                    Helper.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_PUT_INFO_ERROR, deliveryMethod, sourceCount, destinationCount, rc1));
+                    Logger.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_PUT_INFO_ERROR, deliveryMethod, sourceCount, destinationCount, rc1));
                     return rc = 1000 * rc + rc1;
                 }
 

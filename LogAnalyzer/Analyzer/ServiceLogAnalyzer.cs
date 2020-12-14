@@ -151,6 +151,7 @@ namespace LogAnalyzer.Analyzer
 
                 // 3. Загружаем файл лога
                 rc = 3;
+
                 string log = File.ReadAllText(sourceLogFile);
                 if (log == null || log.Length <= 0)
                     return rc;

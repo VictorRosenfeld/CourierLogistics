@@ -15,6 +15,7 @@ namespace LogisticsService.ServiceParameters
         public CourierTypeMapper[] courier_type_mapper;
         public YandexVehicleMapper[] yandex_vehicle_mapper;
         public CourierParameters[] couriers;
+        public LoggerParameters logger;
         public AverageCostByVechicle[] average_cost;
 
         public string Serialize()

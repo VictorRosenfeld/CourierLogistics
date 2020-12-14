@@ -54,8 +54,8 @@ namespace LogisticsService.API
                 request.Headers.Add(RequestParameters.HEADER_AUTHORIZATION);
                 request.Timeout = RequestParameters.TIMEOUT;
                 request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                //Helper.WriteToLog(request.Address.OriginalString);
-                Helper.WriteToLog(string.Format(MessagePatterns.ORDER_EVENTS_REQUEST, request.Address.OriginalString));
+                //Logger.WriteToLog(request.Address.OriginalString);
+                Logger.WriteToLog(string.Format(MessagePatterns.ORDER_EVENTS_REQUEST, request.Address.OriginalString));
 
                 // 3. Посылаем Get-запрос и обрабатываем отклик
                 rc = 3;
@@ -63,7 +63,7 @@ namespace LogisticsService.API
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        Helper.WriteToLog(string.Format(MessagePatterns.ORDER_EVENTS_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
+                        Logger.WriteToLog(string.Format(MessagePatterns.ORDER_EVENTS_ERROR_RESPONSE, response.StatusCode, response.StatusDescription));
                         throw new HttpListenerException((int)response.StatusCode, response.StatusDescription);
                     }
 
@@ -75,8 +75,8 @@ namespace LogisticsService.API
                         //events = (OrderEvent[])serializer.Deserialize(reader, typeof(OrderEvent[]));
 
                         string json = reader.ReadToEnd();
-                        //Helper.WriteToLog(json);
-                        Helper.WriteToLog(string.Format(MessagePatterns.ORDER_EVENTS_RESPONSE, json));
+                        //Logger.WriteToLog(json);
+                        Logger.WriteToLog(string.Format(MessagePatterns.ORDER_EVENTS_RESPONSE, json));
 
                         using (StringReader sr = new StringReader(json))
                         {

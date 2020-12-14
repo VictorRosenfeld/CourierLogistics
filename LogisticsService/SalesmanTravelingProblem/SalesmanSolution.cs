@@ -596,7 +596,7 @@
 //            {
 //                Helper.WriteErrorToLog($"CreateShopDeliveries(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}, isloop {isLoop})");
 //                Helper.WriteErrorToLog($"(rc = {rc})");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 
 //                return rc;
 //            }
@@ -937,7 +937,7 @@
 //        //    {
 //        //        Helper.WriteErrorToLog($"CreateShopDeliveriesEx(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrdersX.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
 //        //        Helper.WriteErrorToLog($"(rc = {rc})");
-//        //        Helper.WriteToLog(ex.ToString());
+//        //        Logger.WriteToLog(ex.ToString());
 
 //        //        return rc;
 //        //    }
@@ -1117,7 +1117,7 @@
 //        //    {
 //        //        Helper.WriteErrorToLog($"CreateShopDeliveriesEx(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
 //        //        Helper.WriteErrorToLog($"(rc = {rc})");
-//        //        Helper.WriteToLog(ex.ToString());
+//        //        Logger.WriteToLog(ex.ToString());
 
 //        //        return rc;
 //        //    }
@@ -1196,7 +1196,7 @@
 //            {
 //                Helper.WriteErrorToLog($"CreateShopDeliveriesForCourier(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
 //                Helper.WriteErrorToLog($"(rc = {rc})");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 
 //                return rc;
 //            }
@@ -1354,7 +1354,7 @@
 //            {
 //                Helper.WriteErrorToLog($"CreateShopDeliveries7(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
 //                Helper.WriteErrorToLog($"(rc = {rc})");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 
 //                return rc;
 //            }
@@ -1502,7 +1502,7 @@
 //            {
 //                Helper.WriteErrorToLog($"CreateShopDeliveries7(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
 //                Helper.WriteErrorToLog($"(rc = {rc})");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 
 //                return rc;
 //            }
@@ -1640,7 +1640,7 @@
 //            {
 //                Helper.WriteErrorToLog($"CreateShopDeliveries7(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
 //                Helper.WriteErrorToLog($"(rc = {rc})");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 
 //                return rc;
 //            }
@@ -1768,7 +1768,7 @@
 //            {
 //                Helper.WriteErrorToLog($"CreateShopDeliveries7(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
 //                Helper.WriteErrorToLog($"(rc = {rc})");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 
 //                return rc;
 //            }
@@ -1886,7 +1886,7 @@
 //            {
 //                Helper.WriteErrorToLog($"CreateShopDeliveries7(Shop {shop.Id}, Orders {Helper.ArrayToString(courierOrders.Select(order => order.Id).ToArray())}, courier {shopCourier.Id}, isloop {isLoop}, calcTime {calcTime})");
 //                Helper.WriteErrorToLog($"(rc = {rc})");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 
 //                return rc;
 //            }
@@ -1979,7 +1979,7 @@
 //            {
 //                Helper.WriteErrorToLog($"FindSalesmanProblemSolution(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Take(orderCount).Select(order => order.Id).ToArray())}, courier {courier.Id}, isloop {isLoop}, calcTime {calcTime})");
 //                Helper.WriteErrorToLog($"(rc = {rc})");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 
 //                return rc;
 //            }
@@ -2210,7 +2210,7 @@
                 
 //                Helper.WriteErrorToLog($"BuildDeliveryCoverEx(...)");
 //                Helper.WriteErrorToLog($"(rc = {rc})");
-//                Helper.WriteToLog(ex.ToString());
+//                Logger.WriteToLog(ex.ToString());
 //                return rc;
 //            }
 //        }
