@@ -124,13 +124,424 @@ namespace LogAnalyzer.Analyzer
             Config = config;
         }
 
+        ///// <summary>
+        ///// Создание отчета по результатам обработки лога
+        ///// </summary>
+        ///// <param name="sourceLogFile">Исходный файл лога</param>
+        ///// <param name="reportFile">Файл с построенным отчетом</param>
+        ///// <returns></returns>
+        //public int Create(string sourceLogFile, string reportFile)
+        //{
+        //    // 1. Инициализация
+        //    int rc = 1;
+        //    IXLWorkbook report = null;
+
+        //    try
+        //    {
+        //        // 2. Проверяем исходные данные
+        //        rc = 2;
+        //        if (Config == null)
+        //            return rc;
+        //        if (string.IsNullOrWhiteSpace(sourceLogFile))
+        //            return rc;
+        //        if (string.IsNullOrWhiteSpace(reportFile))
+        //        {
+        //            reportFile = Path.Combine(Path.GetDirectoryName(sourceLogFile), $"{Path.GetFileNameWithoutExtension(sourceLogFile)}_{DateTime.Now:dd_MM_yy_HH_mm_ss}.xlsx");
+        //        }
+
+        //        // 3. Загружаем файл лога
+        //        rc = 3;
+
+        //        string log = File.ReadAllText(sourceLogFile);
+        //        if (log == null || log.Length <= 0)
+        //            return rc;
+
+        //        // 4. Клонируем шаблон
+        //        rc = 4;
+        //        report = new XLWorkbook(Config.ExcelPatternFile);
+        //        report.SaveAs(reportFile);
+
+        //        // 5. Извлекаем листы отчета
+        //        rc = 5;
+        //        IXLWorksheet ordersSummary = report.Worksheets.Worksheet(ORDERS_SUMMARY_PAGE);
+        //        if (ordersSummary == null)
+        //            return rc;
+        //        IXLWorksheet errorsSummary = report.Worksheets.Worksheet(ERRORS_SUMMARY_PAGE);
+        //        if (errorsSummary == null)
+        //            return rc;
+        //        IXLWorksheet orderEvents = report.Worksheets.Worksheet(ORDER_EVENTS_PAGE);
+        //        if (orderEvents == null)
+        //            return rc;
+        //        IXLWorksheet courierEvents = report.Worksheets.Worksheet(COURIER_EVENTS_PAGE);
+        //        if (courierEvents == null)
+        //            return rc;
+        //        IXLWorksheet shopEvents = report.Worksheets.Worksheet(SHOP_EVENTS_PAGE);
+        //        if (shopEvents == null)
+        //            return rc;
+        //        IXLWorksheet deliveryCommands = report.Worksheets.Worksheet(DELIVERY_COMMANDS_PAGE);
+        //        if (deliveryCommands == null)
+        //            return rc;
+        //        IXLWorksheet cancelCommands = report.Worksheets.Worksheet(CANCEL_COMMANDS_PAGE);
+        //        if (cancelCommands == null)
+        //            return rc;
+
+        //        // 6. Продвигаемся до начала первого сообщения
+        //        rc = 6;
+        //        int startMessagePos = log.IndexOf(MESSAGE_START_CHAR, 0);
+        //        if (startMessagePos < 0)
+        //            return rc;
+
+        //        startMessagePos++;
+
+        //        // 7. Цикл обработки сообщений лога
+        //        rc = 7;
+        //        int size = log.Length;
+        //        JsonSerializer serializer = JsonSerializer.Create();
+        //        int deliveryCommandsRow = 0;
+        //        int cancelCommandsRow = 0;
+        //        int courierEventsRow = 0;
+        //        int orderEventsRow = 0;
+        //        int shopEventsRow = 0;
+        //        int errorsSummaryRow = 0;
+        //        //int orderSummaryRow = 0;
+        //        string method = null;
+        //        string exceptionText;
+        //        int errorCode;
+        //        string methodArgs;
+
+        //        AllOrders allOrders = new AllOrders();
+        //        int statusCode;
+        //        string statusDescription;
+
+        //        while (startMessagePos < size)
+        //        {
+        //            // 7.1 Находим индекс последнего символа сообщения
+        //            rc = 71;
+        //            int endMessagePos = log.IndexOf(MESSAGE_START_CHAR, startMessagePos);
+        //            if (endMessagePos < 0)
+        //            {
+        //                endMessagePos = size - 1;
+        //            }
+        //            else
+        //            {
+        //                endMessagePos--;
+        //            }
+
+        //            // 7.2 Извлекаем дату-время, номер сообщения
+        //            rc = 72;
+        //            DateTime messageDateTime;
+        //            int messageNo;
+
+        //            int iPos1 = log.IndexOf(' ', startMessagePos, 11);
+        //            if (iPos1 < 0) goto NextMessage;
+        //            int iPos2 = log.IndexOf(' ', iPos1 + 2, 10);
+        //            if (iPos2 < 0) goto NextMessage;
+        //            int iPos3 = log.IndexOf(' ', iPos2 + 2, 5);
+        //            if (iPos3 < 0) goto NextMessage;
+
+        //            if (!DateTime.TryParse(log.Substring(startMessagePos, iPos2 - startMessagePos).Trim(), out messageDateTime))
+        //                goto NextMessage;
+        //            if (!int.TryParse(log.Substring(iPos2, iPos3 - iPos2).Trim(), out messageNo) || messageNo <= 0)
+        //                goto NextMessage;
+
+        //            // 7.3 Извлекаем данные сообщения
+        //            rc = 73;
+        //            int startDataPos = log.IndexOf(MESSAGE_START_DATA_TEXT, iPos3, 12);
+        //            if (startDataPos < 0 || startDataPos > endMessagePos)
+        //                goto NextMessage;
+        //            startDataPos += MESSAGE_START_DATA_TEXT.Length;
+        //            string messageData = log.Substring(startDataPos, endMessagePos - startDataPos + 1).Trim();
+
+        //            // 7.4 Обрабатываем сообщение
+        //            rc = 74;
+        //            try
+        //            {
+        //                switch (messageNo)
+        //                {
+        //                    case 1: // Shipment request
+        //                        break;
+        //                    case 2: // Shipment post data
+        //                        using (StringReader sr = new StringReader(messageData))
+        //                        {
+        //                            Shipment[] shipments = (Shipment[])serializer.Deserialize(sr, typeof(Shipment[]));
+        //                            PrintDeliveryCommands.Print(messageDateTime, shipments, deliveryCommands, ref deliveryCommandsRow);
+        //                            allOrders.AddCommand(messageDateTime, shipments);
+        //                        }
+        //                        break;
+        //                    case 3: // Shipment response
+        //                        break;
+        //                    case 4: // Shipment error
+        //                        if (TryParseApiError(messageData, out statusCode, out statusDescription))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "BeginShipment.Begin", statusDescription, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, "BeginShipment.Begin", messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 5: // Cancel request
+        //                        break;
+        //                    case 6: // Cancel post data
+        //                        using (StringReader sr = new StringReader(messageData))
+        //                        {
+        //                            RejectedOrder[] rejectedOrders = (RejectedOrder[])serializer.Deserialize(sr, typeof(RejectedOrder[]));
+        //                            PrintCancelCommands.Print(messageDateTime, rejectedOrders, cancelCommands, ref cancelCommandsRow);
+        //                            allOrders.AddCommand(messageDateTime, rejectedOrders);
+        //                        }
+        //                        break;
+        //                    case 7: // Cancel response
+        //                        break;
+        //                    case 8: // Cancel error
+        //                        if (TryParseApiError(messageData, out statusCode, out statusDescription))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "BeginShipment.Reject", statusDescription, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, "BeginShipment.Reject", messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 9: // Courier events request
+        //                        break;
+        //                    case 10: // Courier events response
+        //                        using (StringReader sr = new StringReader(messageData))
+        //                        {
+        //                            CourierEvent[] events = (CourierEvent[])serializer.Deserialize(sr, typeof(CourierEvent[]));
+        //                            if (events != null && events.Length > 0)
+        //                                PrintCourierEvents.Print(messageDateTime, events, courierEvents, ref courierEventsRow);
+        //                        }
+        //                        break;
+        //                    case 11: // Courier events error
+        //                        if (TryParseApiError(messageData, out statusCode, out statusDescription))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetCourierEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetCourierEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 12: // Order events request
+        //                        break;
+        //                    case 13: // Order events response
+        //                        using (StringReader sr = new StringReader(messageData))
+        //                        {
+        //                            OrderEvent[] events = (OrderEvent[])serializer.Deserialize(sr, typeof(OrderEvent[]));
+        //                            if (events != null && events.Length > 0)
+        //                            {
+        //                                PrintOrderEvents.Print(messageDateTime, events, orderEvents, ref orderEventsRow);
+        //                                allOrders.AddOrderEvent(messageDateTime, events);
+        //                            }
+        //                        }
+        //                        break;
+        //                    case 14: // Order events error
+        //                        if (TryParseApiError(messageData, out statusCode, out statusDescription))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetOrderEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetOrderEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 15: // Shop events request
+        //                        break;
+        //                    case 16: // Shop events response
+        //                        using (StringReader sr = new StringReader(messageData))
+        //                        {
+        //                            ShopEvent[] events = (ShopEvent[])serializer.Deserialize(sr, typeof(ShopEvent[]));
+        //                            PrintShopEvents.Print(messageDateTime, events, shopEvents, ref shopEventsRow);
+        //                        }
+        //                        break;
+        //                    case 17: // Shop events error
+        //                        if (TryParseApiError(messageData, out statusCode, out statusDescription))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetShopEvents.GetEvents", statusDescription, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetShopEvents.GetEvents", messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 18: // ACK request
+        //                        break;
+        //                    case 19: // ACK post data
+        //                        break;
+        //                    case 20: // ACK response
+        //                        break;
+        //                    case 21: // ACK error
+        //                        if (TryParseApiError(messageData, out statusCode, out statusDescription))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "SendAck.Send", statusDescription, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, "SendAck.Send", messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 22: // Time-Dist request
+        //                        break;
+        //                    case 23: // Time-Dist post data
+        //                        break;
+        //                    case 24: // Time-Dist response
+        //                        break;
+        //                    case 25: // Time-Dist error
+        //                        if (TryParseApiError(messageData, out statusCode, out statusDescription))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, statusCode, "GetShippingInfo.GetInfo", statusDescription, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, "GetShippingInfo.GetInfo", messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 26: // Queue timer elapsed
+        //                        break;
+        //                    case 27: // Create shipment queue
+        //                        break;
+        //                    case 28: // Queue info timer elapsed
+        //                        break;
+        //                    case 29: // Start service
+        //                        break;
+        //                    case 30: // Stop service
+        //                        break;
+        //                    case 31: // GeoCache info
+        //                        break;
+        //                    case 32: // Queue state
+        //                        break;
+        //                    case 33: // Queue state item
+        //                        break;
+        //                    case 34: // ((((( Shipmtnt from checking queue
+        //                        break;
+        //                    case 35: // ))))) Shipmtnt from checking queue
+        //                        break;
+        //                    case 36: // ((((( Cancel from checking queue
+        //                        break;
+        //                    case 37: // ))))) Cancel from checking queue
+        //                        break;
+        //                    case 38: // Cancel order by time
+        //                        break;
+        //                    case 39: // Cancel order by courier
+        //                        break;
+        //                    case 40: // Cancel assembled order by courier
+        //                        break;
+        //                    case 41: // Cancel receipted order by courier
+        //                        break;
+        //                    case 42: // Checking queue timer elapsed
+        //                        break;
+        //                    case 43: // GeoCache.PutLocationInfo error
+        //                        if (TryParseMsg43(messageData, out method, out errorCode))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, errorCode, method, messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 666: // method exception
+        //                        if (TryParseMsg666(messageData, out method, out exceptionText))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, method, exceptionText, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 667: // Returned method rc
+        //                        if (TryParseMsg667(messageData, out method, out errorCode))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, errorCode, method, messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                    case 668: // Called method
+        //                        if (TryParseMsg668(messageData, out method, out methodArgs))
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, method, methodArgs, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        else
+        //                        {
+        //                            PrintErrorSummary.Print(messageDateTime, messageNo, -1, null, messageData, errorsSummary, ref errorsSummaryRow);
+        //                        }
+        //                        break;
+        //                }
+        //            }
+        //            catch
+        //            { }
+
+        //            // 7.2 Переходим к следующему сообщению
+        //            NextMessage:
+        //            rc = 72;
+        //            startMessagePos = endMessagePos + 2;
+        //        }
+
+        //        // 8. Печать OrdersSummary
+        //        rc = 8;
+        //        OrderSummary[] orders = new OrderSummary[allOrders.Orders.Count];
+        //        allOrders.Orders.Values.CopyTo(orders, 0);
+        //        PrintOrderSummary.Print(orders, ordersSummary);
+        //        orders = null;
+
+        //        // 9. Сохраняем построенный отчет
+        //        rc = 9;
+        //        report.Save();
+
+        //        // 10. Открываем сохраненный отчет
+        //        rc = 10;
+        //        try
+        //        {
+        //            if (Config.OpenReport)
+        //            {
+        //                using (Process process = new Process())
+        //                {
+        //                    process.StartInfo.FileName = reportFile;
+        //                    process.StartInfo.UseShellExecute = true;
+        //                    process.Start();
+        //                }
+        //            }
+        //        }
+        //        catch { }
+
+        //        ordersSummary = null;
+        //        errorsSummary = null;
+        //        orderEvents = null;
+        //        courierEvents = null;
+        //        shopEvents = null;
+        //        deliveryCommands = null;
+        //        cancelCommands = null;
+        //        allOrders = null;
+
+        //        // 11. Выход - Ok
+        //        rc = 0;
+        //        return rc;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return rc;
+        //    }
+        //    finally
+        //    {
+        //        if (report != null)
+        //        {
+        //            report.Dispose();
+        //            report = null;
+        //        }
+        //    }
+        //}
+
         /// <summary>
         /// Создание отчета по результатам обработки лога
         /// </summary>
         /// <param name="sourceLogFile">Исходный файл лога</param>
         /// <param name="reportFile">Файл с построенным отчетом</param>
         /// <returns></returns>
-        public int Create(string sourceLogFile, string reportFile)
+        public int Create(string log, string reportFile)
         {
             // 1. Инициализация
             int rc = 1;
@@ -142,19 +553,15 @@ namespace LogAnalyzer.Analyzer
                 rc = 2;
                 if (Config == null)
                     return rc;
-                if (string.IsNullOrWhiteSpace(sourceLogFile))
+                if (string.IsNullOrWhiteSpace(log))
                     return rc;
                 if (string.IsNullOrWhiteSpace(reportFile))
                 {
-                    reportFile = Path.Combine(Path.GetDirectoryName(sourceLogFile), $"{Path.GetFileNameWithoutExtension(sourceLogFile)}_{DateTime.Now:dd_MM_yy_HH_mm_ss}.xlsx");
+                    string exePath = Process.GetCurrentProcess().MainModule.FileName;
+                    string folder = Path.GetDirectoryName(exePath);
+                    string reportName = $"{Path.GetFileNameWithoutExtension(exePath)}_{DateTime.Now:dd_MM_yy_HH_mm_ss}.xlsx";
+                    reportFile = Path.Combine(folder, reportName);
                 }
-
-                // 3. Загружаем файл лога
-                rc = 3;
-
-                string log = File.ReadAllText(sourceLogFile);
-                if (log == null || log.Length <= 0)
-                    return rc;
 
                 // 4. Клонируем шаблон
                 rc = 4;

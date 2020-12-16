@@ -581,13 +581,13 @@ namespace CourierLogistics
                 if (!Directory.Exists(reportFolder))
                     Directory.CreateDirectory(reportFolder);
                 string reportFile = $@"{reportFolder}\Report_{DateTime.Now:dd_MM_yy_HH_mm_ss}.xlsx";
-                string tempFile = Path.GetTempFileName();
+                //string tempFile = Path.GetTempFileName();
 
-                File.Copy(service.LogFileName, tempFile, true);
+                //File.Copy(service.LogFileName, tempFile, true);
 
                 //int rc = analyzer.Create(service.LogFileName, reportFile);
-                int rc = analyzer.Create(tempFile, reportFile);
-                try { File.Delete(tempFile); } catch { }
+                int rc = analyzer.Create(service.ReadLogToEnd(), reportFile);
+                //try { File.Delete(tempFile); } catch { }
             }
             catch (Exception ex)
             {

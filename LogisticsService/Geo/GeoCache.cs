@@ -690,7 +690,7 @@ namespace LogisticsService.Geo
                 deliveryName = null;
             }
 
-            return deliveryName = null;
+            return deliveryName;
         }
 
         /// <summary>

@@ -173,5 +173,31 @@ namespace LogisticsService.Log
             catch
             { }
         }
+
+        /// <summary>
+        /// Чтение файла лога целиком в строку
+        /// </summary>
+        /// <returns>Прочитанный лог или null</returns>
+        public static string ReadToEnd()
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (appender == null ||
+                    string.IsNullOrWhiteSpace(appender.File))
+                    return null;
+
+                // 3. Читаем файл в строку
+                using (FileStream sharedReader = new FileStream(appender.File, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (StreamReader reader = new StreamReader(sharedReader))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

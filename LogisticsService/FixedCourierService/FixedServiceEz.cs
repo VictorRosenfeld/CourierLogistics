@@ -46,6 +46,15 @@ namespace LogisticsService.FixedCourierService
         public string LogFileName => Logger.File;
 
         /// <summary>
+        /// Чтение файла лога целиком в строку
+        /// </summary>
+        /// <returns></returns>
+        public string ReadLogToEnd()
+        {
+            return Logger.ReadToEnd();
+        }
+
+        /// <summary>
         /// Менеджер расстояний и времени движения
         /// между точками разными способами
         /// </summary>
