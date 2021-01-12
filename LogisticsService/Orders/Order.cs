@@ -95,6 +95,11 @@ namespace LogisticsService.Orders
         public EnabledCourierType EnabledTypes { get; set; }
 
         /// <summary>
+        /// Доступные сервисы для отгрузки заказа из заданного магазина
+        /// </summary>
+        public int[] dservice_id { get; set; }
+
+        /// <summary>
         /// Типы курьеров, с помощью которых
         /// может быть осуществлена доставка
         /// </summary>

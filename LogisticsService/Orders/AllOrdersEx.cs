@@ -172,6 +172,8 @@ namespace LogisticsService.Orders
                             order.DeliveryTimeTo = orderEvent.delivery_frame_to;
                             //order.EnabledTypes = GetDeliveryMask(orderEvent.shop_id, orderEvent.service_available);
                             order.EnabledTypesEx = GetDeliveryMaskEx(orderEvent.shop_id, orderEvent.service_available);
+                            if (orderEvent.service_available != null)
+                                order.dservice_id = orderEvent.service_available.Where(p => p.shop_id == orderEvent.shop_id).Select(p => p.dservice_id).ToArray();
                             order.Status = OrderStatus.None;
                             order.Completed = false;
                             orders.Add(order.Id, order);
@@ -189,6 +191,8 @@ namespace LogisticsService.Orders
                             order.Weight = orderEvent.weight;
                             //order.EnabledTypes = GetDeliveryMask(orderEvent.shop_id, orderEvent.service_available);
                             order.EnabledTypesEx = GetDeliveryMaskEx(orderEvent.shop_id, orderEvent.service_available);
+                            if (orderEvent.service_available != null)
+                                order.dservice_id = orderEvent.service_available.Where(p => p.shop_id == orderEvent.shop_id).Select(p => p.dservice_id).ToArray();
                             order.DeliveryTimeFrom = orderEvent.delivery_frame_from;
                             order.DeliveryTimeTo = orderEvent.delivery_frame_to;
                         }
