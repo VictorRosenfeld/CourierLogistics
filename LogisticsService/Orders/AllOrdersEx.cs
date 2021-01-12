@@ -321,6 +321,23 @@ namespace LogisticsService.Orders
         }
 
         /// <summary>
+        /// Маппер dservice_id --> CourierVehicleType[]
+        /// </summary>
+        /// <param name="dservice_id">ID службы доставки</param>
+        /// <returns>сопоставленные типы</returns>
+        public CourierVehicleType[] VehicleTypesFromDserviceId(int dservice_id)
+        {
+
+            // 2. Проверяем исходные данные
+            if (dServiceIdToVehicleType == null || dServiceIdToVehicleType.Count <= 0)
+                return new CourierVehicleType[0];
+
+            CourierVehicleType[] vehicleTypes;
+            dServiceIdToVehicleType.TryGetValue(dservice_id, out vehicleTypes);
+            return vehicleTypes;
+        }
+
+        /// <summary>
         /// Преобразование Id сервиса доставки в 
         /// маску доступных способов доставки
         /// </summary>

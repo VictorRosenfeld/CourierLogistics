@@ -310,6 +310,11 @@ namespace LogisticsService.API
             public int delivery_service_id { get; set; }
 
             /// <summary>
+            /// Альтернативные службы доставки
+            /// </summary>
+            public int[] alternative_delivery_service_id { get; set; }
+
+            /// <summary>
             /// Id курьера
             /// (имеет смысл для 12 и 14; для 12 - 0; для 14 - 1)
             /// </summary>

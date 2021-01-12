@@ -1,7 +1,6 @@
 ﻿
 namespace LogisticsService.FixedCourierService
 {
-    using log4net.Appender;
     using LogisticsService.API;
     using LogisticsService.Couriers;
     using LogisticsService.FixedCourierService.ServiceQueue;
@@ -1088,6 +1087,7 @@ namespace LogisticsService.FixedCourierService
 
                     shipment.orders = orderId;
 
+                    shipment.alternative_delivery_service_id = new int[0];
                     shipments[i] = shipment;
                 }
 
@@ -1210,6 +1210,7 @@ namespace LogisticsService.FixedCourierService
                         }
 
                         shipment.orders = orderId;
+                        SetAlternativeDeliveryServices(shipment);
                         shipments[shipmentCount++] = shipment;
                     }
                     else
@@ -1788,6 +1789,7 @@ namespace LogisticsService.FixedCourierService
                     }
 
                     shipment.orders = orderId;
+                    SetAlternativeDeliveryServices(shipment);
                     shipments[count++] = shipment;
                 }
 
@@ -1834,7 +1836,7 @@ namespace LogisticsService.FixedCourierService
         /// <param name="checkingQueue">Очередь предотвращения утечек</param>
         /// <param name="eventQueue">Очередь отгрузок</param>
         /// <returns>0 - обрабочик отраработал успешно; иначе - обработчик не отработал успешно</returns>
-        private static int CheckingQueueHandler(CheckingQueue checkingQueue, EventQueue eventQueue)
+        private int CheckingQueueHandler(CheckingQueue checkingQueue, EventQueue eventQueue)
         {
             // 1. Инициализация
             int rc = 1;
@@ -2004,7 +2006,7 @@ namespace LogisticsService.FixedCourierService
         /// </summary>
         /// <param name="checkingOrders">Отгрузки с целиком собранными заказами</param>
         /// <returns>0 - отгрузки переданы серверу; иначе - отгрузки серверу не переданы</returns>
-        private static int SendDeliveryCommand(CourierDeliveryInfo[] checkingOrders)
+        private int SendDeliveryCommand(CourierDeliveryInfo[] checkingOrders)
         {
             // 1. Инициализация
             int rc = 1;
@@ -2066,6 +2068,7 @@ namespace LogisticsService.FixedCourierService
                     }
 
                     shipment.orders = orderId;
+                    SetAlternativeDeliveryServices(shipment);
                     shipments[shipmentCount++] = shipment;
                 }
 
@@ -2316,6 +2319,7 @@ namespace LogisticsService.FixedCourierService
                     }
 
                     shipment.orders = orderId;
+                    SetAlternativeDeliveryServices(shipment);
                     shipments[count++] = shipment;
                 }
 
@@ -3045,6 +3049,126 @@ namespace LogisticsService.FixedCourierService
             if (event1.shop_id > event2.shop_id)
                 return 1;
             return 0;
+        }
+
+        /// <summary>
+        /// Присвоение альтернативных служб доставки такси
+        /// </summary>
+        /// <param name="shipment"></param>
+        /// <returns>0 - альтернативные службы присвоены; иначе - альтернативные службы не присвоены</returns>
+        private int SetAlternativeDeliveryServices(BeginShipment.Shipment shipment)
+        {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (shipment == null)
+                    return rc;
+
+                shipment.alternative_delivery_service_id = new int[0];
+
+                if (shipment.orders == null || shipment.orders.Length <= 0)
+                    return rc;
+
+                // 3. Извлекаем заказы
+                rc = 3;
+                Order[] orders = new Order[shipment.orders.Length];
+                double totalWeight = 0;
+
+                for (int i = 0; i < orders.Length; i++)
+                {
+                    Order order = allOrders.GetOrder(shipment.orders[i]);
+                    if (order == null)
+                        return rc;
+                    orders[i] = order;
+                    totalWeight += order.Weight;
+                }
+
+                // 4. Извлекаем dservice_id общие для всех заказов
+                rc = 4;
+                Dictionary<int, int> itemCount = new Dictionary<int, int>(4 * orders.Length);
+                List<int> common_dservice_id = new List<int>(16);
+                int shipment_dservice_id = shipment.delivery_service_id;
+
+                for (int i = 0; i < orders.Length; i++)
+                {
+                    int[] order_dservice_id = orders[i].dservice_id;
+                    if (order_dservice_id != null)
+                    {
+                        for(int j = 0; j < order_dservice_id.Length; j++)
+                        {
+                            int dservice_id = order_dservice_id[j];
+                            if (dservice_id != shipment_dservice_id)
+                            {
+                                if (itemCount.ContainsKey(dservice_id))
+                                {
+                                    itemCount[dservice_id]++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                foreach (KeyValuePair<int, int> kvp in itemCount)
+                {
+                    if (kvp.Value >= orders.Length)
+                    {
+                        common_dservice_id.Add(kvp.Key);
+                    }
+                }
+
+                if (common_dservice_id.Count <= 0)
+                    return rc = 0;
+
+                // 4. Отбираем типы такси
+                rc = 4;
+                itemCount.Clear();
+                int[] result_dservice_id = new int[common_dservice_id.Count];
+                
+                int count = 0;
+
+                for (int i = 0; i < common_dservice_id.Count; i++)
+                {
+                    int dservice_id = common_dservice_id[i];
+                    CourierVehicleType[] vehicleTypes =  allOrders.VehicleTypesFromDserviceId(dservice_id);
+                    if (vehicleTypes != null && vehicleTypes.Length > 0)
+                    {
+                        for (int j = 0; j < vehicleTypes.Length; j++)
+                        {
+                            Courier courier = allCouriers.FindFirstByType(vehicleTypes[j]);
+                            if (courier != null && courier.IsTaxi)
+                            {
+                                if (totalWeight <= courier.CourierType.MaxWeight && orders.Length <= courier.CourierType.MaxOrderCount)
+                                {
+                                    result_dservice_id[count++] = dservice_id;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (count > 0)
+                {
+                    if (count < result_dservice_id.Length)
+                    {
+                        Array.Resize(ref result_dservice_id, count);
+                    }
+
+                    shipment.alternative_delivery_service_id = result_dservice_id;
+                }
+
+                // 5. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
         }
     }
 }
