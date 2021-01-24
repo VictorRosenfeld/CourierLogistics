@@ -924,7 +924,8 @@ namespace LogisticsService.Couriers
                 totalCost += courierType.AdditionalKilometerCost * distance;
 
                 // стоимость по времени
-                double time = totalExecutionTime - courierType.HandInTime - courierType.GetOrderTime - courierType.StartDelay;
+                //double time = totalExecutionTime - courierType.HandInTime - courierType.GetOrderTime - courierType.StartDelay;
+                double time = totalExecutionTime - nodeDeliveryTime[1];
                 totalCost += courierType.SeсondTimeRate * time;
 
                 // 5. Выход - Ok

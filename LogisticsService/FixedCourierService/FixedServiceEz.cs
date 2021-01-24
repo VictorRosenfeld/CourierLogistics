@@ -3107,6 +3107,10 @@ namespace LogisticsService.FixedCourierService
                                 {
                                     itemCount[dservice_id]++;
                                 }
+                                else
+                                {
+                                    itemCount.Add(dservice_id, 1);
+                                }
                             }
                         }
                     }

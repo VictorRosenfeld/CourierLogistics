@@ -2755,7 +2755,7 @@ SetOrderLabel:
                     Array.Resize(ref courierOrders, orderCount);
                 }
 
-                // 4. Строим отгрузки в зависимомти от числа заказов
+                // 4. Строим отгрузки в зависимости от числа заказов
                 rc = 4;
 
                 if (orderCount <= orderLimitsForPathLength[8])
