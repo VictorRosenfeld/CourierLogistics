@@ -1169,15 +1169,15 @@ SetOrderLabel:
 
                 for (int i = 0; i < orderCoverMap.Length; i++)
                 {
-                    if (!orderCoverMap[i] && onTimeOrders[i].Status == OrderStatus.Receipted)
-                    {
-                        Order order = onTimeOrders[i];
-                        order.RejectionReason = OrderRejectionReason.CourierNa;
-                        //Helper.WriteWarningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
-                        Logger.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
-                        undelivOrders[undeliveredCount++] = order;
-                    }
-                    else if (onTimeOrders[i].Status == OrderStatus.Receipted)
+                    //if (!orderCoverMap[i] && onTimeOrders[i].Status != OrderStatus.Receipted)
+                    //{
+                    //    Order order = onTimeOrders[i];
+                    //    order.RejectionReason = OrderRejectionReason.CourierNa;
+                    //    //Helper.WriteWarningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
+                    //    Logger.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+                    //    undelivOrders[undeliveredCount++] = order;
+                    //}
+                    if (orderCoverMap[i] && onTimeOrders[i].Status == OrderStatus.Receipted)
                     {
                         receiptedCount++;
                     }
