@@ -2,6 +2,7 @@
 namespace LogisticsService.Shops
 {
     using System.Collections.Generic;
+    using static LogisticsService.API.GetOrderEvents;
     using static LogisticsService.API.GetShopEvents;
 
     /// <summary>
@@ -116,6 +117,66 @@ namespace LogisticsService.Shops
                         rc = 35;
                         shop.WorkStart = shopEvent.work_start.TimeOfDay;
                         shop.WorkEnd = shopEvent.work_end.TimeOfDay;
+                    }
+
+                    // 4. Выход - Ok
+                    rc = 0;
+                    return rc;
+                }
+                catch
+                {
+                    return rc;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Обновление информации о магазинах
+        /// </summary>
+        /// <param name="events">События закзаов</param>
+        /// <returns>0 - данные магазинов обновлены; иначе - данные о магазинах не обновлены</returns>
+        public int Refresh(OrderEvent[] events)
+        {
+            lock (syncRoot)
+            {
+                // 1. Инициализация
+                int rc = 1;
+
+                try
+                {
+                    // 2. Проверяем исходные данные
+                    rc = 2;
+                    if (!IsCreated)
+                        return rc;
+                    if (events == null || events.Length <= 0)
+                        return rc;
+
+                    // 3. Отрабатываем изменения
+                    rc = 3;
+                    for (int i = 0; i < events.Length; i++)
+                    {
+                        // 3.1 Извлекаем событие 
+                        rc = 31;
+                        OrderEvent orderEvent = events[i];
+
+                        // 3.2 Проверяем наличие магазина
+                        rc = 32;
+
+                        if (!shops.ContainsKey(orderEvent.shop_id))
+                        {
+                            // 3.4 Создаём магазин
+                            rc = 34;
+                            Shop shop = new Shop(orderEvent.shop_id);
+                            shop.Latitude = orderEvent.shop_geo_lat;
+                            shop.Longitude = orderEvent.shop_geo_lon;
+                            shop.WorkStart = new System.TimeSpan(10, 0, 0);
+                            shop.WorkEnd = new System.TimeSpan(23, 0, 0);
+                            //shop.LocationIndex = -1;
+                            shops.Add(shop.Id, shop);
+                        }
+
+                        // 3.5. Обновляем параметры магазина
+                        rc = 35;
                     }
 
                     // 4. Выход - Ok

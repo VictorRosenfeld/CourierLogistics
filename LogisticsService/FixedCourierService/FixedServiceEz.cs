@@ -119,7 +119,7 @@ namespace LogisticsService.FixedCourierService
         /// Решение задачи комивояжера
         /// </summary>
         //private SalesmanSolutionEx salesmanSolution;
-        private SalesmanSolutionEy salesmanSolution;
+        private SalesmanSolutionEz salesmanSolution;
 
         /// <summary>
         /// Создание сервиса
@@ -212,7 +212,7 @@ namespace LogisticsService.FixedCourierService
                     return rc = 100 * rc + rc1;
 
                 //salesmanSolution = new SalesmanSolutionEx(geoCache, config.functional_parameters.salesman_problem_levels);
-                salesmanSolution = new SalesmanSolutionEy(geoCache, config.functional_parameters.salesman_problem_levels);
+                salesmanSolution = new SalesmanSolutionEz(geoCache, config.functional_parameters.salesman_problem_levels);
 
                 //salesmanSolution.CheckPath(allCouriers.Couriers[4]);
 
@@ -587,7 +587,10 @@ namespace LogisticsService.FixedCourierService
                     rcShopEvents = allShops.Refresh(shopEvents);
 
                 if (rcOrderEvents == 0)
+                {
+                    allShops.Refresh(orderEvents);
                     rcOrderEvents = allOrders.Refresh(orderEvents);
+                }
 
                 // 9.1 Добавляем элементы в очередь предотвращения отгрузок
                 rc = 91;

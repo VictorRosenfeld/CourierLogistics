@@ -18,7 +18,7 @@ namespace LogisticsService.SalesmanTravelingProblem
     /// Решение задачи доставки заказов магазина
     /// с помощью имеющихся курьеров и такси
     /// </summary>
-    public class SalesmanSolutionEy
+    public class SalesmanSolutionEz
     {
         /// <summary>
         /// Менеджер расстояний и времени движения между точками
@@ -39,7 +39,7 @@ namespace LogisticsService.SalesmanTravelingProblem
         /// Параметрический конструктор класса SalesmanSolution
         /// </summary>
         /// <param name="geoCache">Менеджер расстояний и времени движения между точками</param>
-        public SalesmanSolutionEy(GeoCache geoCache, SalesmanProblemLevel[] orderLimits)
+        public SalesmanSolutionEz(GeoCache geoCache, SalesmanProblemLevel[] orderLimits)
         {
             this.geoCache = geoCache;
             orderLimitsForPathLength = CreateOrderLimits(orderLimits);
@@ -824,7 +824,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                             }
                         }
                     }
-SetOrderLabel:
+                    SetOrderLabel:
                     orderLabel[i] = label;
                     order.RejectionReason = rejectionReason;
                 }
@@ -874,7 +874,7 @@ SetOrderLabel:
         /// <param name="tabuOrders">Заказы, которые вообще не могут быть доставлены</param>
         /// <returns>0 - отгрузки созданы; иначе - отгрузки не созданы</returns>
         public int CreateShopDeliveries(
-            Shop shop, Order[] allOrdersOfShop, Courier[] allShopCouriers, 
+            Shop shop, Order[] allOrdersOfShop, Courier[] allShopCouriers,
             out CourierDeliveryInfo[] assembledOrders, out CourierDeliveryInfo[] receiptedOrders, out Order[] undeliveredOrders, out Order[] tabuOrders)
         {
             // 1. Инициализация
@@ -1001,7 +1001,7 @@ SetOrderLabel:
                 if (onTimeOrders == null || onTimeOrders.Length <= 0)
                     return rc;
 
-                // 3. Выбираем по одному курьру каждого типа среди заданных
+                // 3. Выбираем по одному курьеру каждого типа среди заданных
                 rc = 3;
                 Dictionary<CourierVehicleType, Courier> allTypeCouriers = new Dictionary<CourierVehicleType, Courier>(8);
                 for (int i = 0; i < shopCouriers.Length; i++)
@@ -1924,7 +1924,7 @@ SetOrderLabel:
                 }
             }
             catch
-            {   }
+            { }
         }
 
         ///// <summary>
@@ -2968,8 +2968,8 @@ SetOrderLabel:
 
                 // 3. Выбираем расстояния и времена движения между точками для заданного способа передвижения
                 rc = 3;
-                Point[,] locInfo;
-                int rc1 = GetDistTimeTable(shop, courierOrders, shopCourier.CourierType.VechicleType, geoCache, out locInfo);
+                Point[,] geoData;
+                int rc1 = GetDistTimeTable(shop, courierOrders, shopCourier.CourierType.VechicleType, geoCache, out geoData);
                 if (rc1 != 0)
                     return rc = 10000 * rc + rc1;
 
@@ -3020,11 +3020,16 @@ SetOrderLabel:
                 CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[size];
                 int count = 0;
                 int rcFind = 1;
+                int shopIndex = orderCount;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < orderCount; i1++)
                 {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = courierOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, geoData, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -3033,8 +3038,11 @@ SetOrderLabel:
 
                     for (int i2 = i1 + 1; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = courierOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, geoData, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -3043,8 +3051,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = courierOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, geoData, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -3053,8 +3064,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = courierOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, geoData, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -3063,8 +3077,11 @@ SetOrderLabel:
 
                                 for (int i5 = i4 + 1; i5 < orderCount; i5++)
                                 {
+                                    orderGeoIndex[4] = i5;
+                                    orderGeoIndex[5] = shopIndex;
+
                                     orders[4] = courierOrders[i5];
-                                    rcFind = FindSalesmanProblemSolution(shop, orders, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
+                                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 5, shopCourier, isLoop, permutations5, geoData, calcTime, out delivery);
                                     if (rcFind != 0 || delivery == null)
                                         continue;
                                     if (count >= allDeliveries.Length)
@@ -3073,8 +3090,11 @@ SetOrderLabel:
 
                                     for (int i6 = i5 + 1; i6 < orderCount; i6++)
                                     {
+                                        orderGeoIndex[5] = i6;
+                                        orderGeoIndex[6] = shopIndex;
+
                                         orders[5] = courierOrders[i6];
-                                        rcFind = FindSalesmanProblemSolution(shop, orders, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
+                                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 6, shopCourier, isLoop, permutations6, geoData, calcTime, out delivery);
                                         if (rcFind != 0 || delivery == null)
                                             continue;
                                         if (count >= allDeliveries.Length)
@@ -3083,8 +3103,11 @@ SetOrderLabel:
 
                                         for (int i7 = i6 + 1; i7 < orderCount; i7++)
                                         {
+                                            orderGeoIndex[6] = i7;
+                                            orderGeoIndex[7] = shopIndex;
+
                                             orders[6] = courierOrders[i7];
-                                            rcFind = FindSalesmanProblemSolution(shop, orders, 7, shopCourier, isLoop, permutations7, locInfo, calcTime, out delivery);
+                                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 7, shopCourier, isLoop, permutations7, geoData, calcTime, out delivery);
                                             if (rcFind != 0 || delivery == null)
                                                 continue;
                                             if (count >= allDeliveries.Length)
@@ -3093,8 +3116,11 @@ SetOrderLabel:
 
                                             for (int i8 = i7 + 1; i8 < orderCount; i8++)
                                             {
+                                                orderGeoIndex[7] = i7;
+                                                orderGeoIndex[8] = shopIndex;
+
                                                 orders[7] = courierOrders[i8];
-                                                rcFind = FindSalesmanProblemSolution(shop, orders, 8, shopCourier, isLoop, permutations8, locInfo, calcTime, out delivery);
+                                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 8, shopCourier, isLoop, permutations8, geoData, calcTime, out delivery);
                                                 if (rcFind != 0 || delivery == null)
                                                     continue;
                                                 if (count >= allDeliveries.Length)
@@ -3191,12 +3217,18 @@ SetOrderLabel:
                 int[,] permutations7 = null;
 
                 permutations1 = permutations.GetPermutations(1);
-                if (orderCount >= 2) permutations2 = permutations.GetPermutations(2);
-                if (orderCount >= 3) permutations3 = permutations.GetPermutations(3);
-                if (orderCount >= 4) permutations4 = permutations.GetPermutations(4);
-                if (orderCount >= 5) permutations5 = permutations.GetPermutations(5);
-                if (orderCount >= 6) permutations6 = permutations.GetPermutations(6);
-                if (orderCount >= 7) permutations7 = permutations.GetPermutations(7);
+                if (orderCount >= 2)
+                    permutations2 = permutations.GetPermutations(2);
+                if (orderCount >= 3)
+                    permutations3 = permutations.GetPermutations(3);
+                if (orderCount >= 4)
+                    permutations4 = permutations.GetPermutations(4);
+                if (orderCount >= 5)
+                    permutations5 = permutations.GetPermutations(5);
+                if (orderCount >= 6)
+                    permutations6 = permutations.GetPermutations(6);
+                if (orderCount >= 7)
+                    permutations7 = permutations.GetPermutations(7);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -3205,11 +3237,16 @@ SetOrderLabel:
                 CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[size];
                 int count = 0;
                 int rcFind = 1;
+                int shopIndex = orderCount;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < orderCount; i1++)
                 {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = courierOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -3218,8 +3255,11 @@ SetOrderLabel:
 
                     for (int i2 = i1 + 1; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = courierOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -3228,8 +3268,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = courierOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -3238,8 +3281,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = courierOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -3248,8 +3294,11 @@ SetOrderLabel:
 
                                 for (int i5 = i4 + 1; i5 < orderCount; i5++)
                                 {
+                                    orderGeoIndex[4] = i5;
+                                    orderGeoIndex[5] = shopIndex;
+
                                     orders[4] = courierOrders[i5];
-                                    rcFind = FindSalesmanProblemSolution(shop, orders, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
+                                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
                                     if (rcFind != 0 || delivery == null)
                                         continue;
                                     if (count >= allDeliveries.Length)
@@ -3258,8 +3307,11 @@ SetOrderLabel:
 
                                     for (int i6 = i5 + 1; i6 < orderCount; i6++)
                                     {
+                                        orderGeoIndex[5] = i6;
+                                        orderGeoIndex[6] = shopIndex;
+
                                         orders[5] = courierOrders[i6];
-                                        rcFind = FindSalesmanProblemSolution(shop, orders, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
+                                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
                                         if (rcFind != 0 || delivery == null)
                                             continue;
                                         if (count >= allDeliveries.Length)
@@ -3268,8 +3320,11 @@ SetOrderLabel:
 
                                         for (int i7 = i6 + 1; i7 < orderCount; i7++)
                                         {
+                                            orderGeoIndex[6] = i7;
+                                            orderGeoIndex[7] = shopIndex;
+
                                             orders[6] = courierOrders[i7];
-                                            rcFind = FindSalesmanProblemSolution(shop, orders, 7, shopCourier, isLoop, permutations7, locInfo, calcTime, out delivery);
+                                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 7, shopCourier, isLoop, permutations7, locInfo, calcTime, out delivery);
                                             if (rcFind != 0 || delivery == null)
                                                 continue;
                                             if (count >= allDeliveries.Length)
@@ -3364,11 +3419,16 @@ SetOrderLabel:
                 int[,] permutations6 = null;
 
                 permutations1 = permutations.GetPermutations(1);
-                if (orderCount >= 2) permutations2 = permutations.GetPermutations(2);
-                if (orderCount >= 3) permutations3 = permutations.GetPermutations(3);
-                if (orderCount >= 4) permutations4 = permutations.GetPermutations(4);
-                if (orderCount >= 5) permutations5 = permutations.GetPermutations(5);
-                if (orderCount >= 6) permutations6 = permutations.GetPermutations(6);
+                if (orderCount >= 2)
+                    permutations2 = permutations.GetPermutations(2);
+                if (orderCount >= 3)
+                    permutations3 = permutations.GetPermutations(3);
+                if (orderCount >= 4)
+                    permutations4 = permutations.GetPermutations(4);
+                if (orderCount >= 5)
+                    permutations5 = permutations.GetPermutations(5);
+                if (orderCount >= 6)
+                    permutations6 = permutations.GetPermutations(6);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -3377,11 +3437,16 @@ SetOrderLabel:
                 CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[size];
                 int count = 0;
                 int rcFind = 1;
+                int shopIndex = orderCount;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < orderCount; i1++)
                 {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = courierOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -3390,8 +3455,11 @@ SetOrderLabel:
 
                     for (int i2 = i1 + 1; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = courierOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -3400,8 +3468,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = courierOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -3410,8 +3481,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = courierOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -3420,8 +3494,11 @@ SetOrderLabel:
 
                                 for (int i5 = i4 + 1; i5 < orderCount; i5++)
                                 {
+                                    orderGeoIndex[4] = i5;
+                                    orderGeoIndex[5] = shopIndex;
+
                                     orders[4] = courierOrders[i5];
-                                    rcFind = FindSalesmanProblemSolution(shop, orders, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
+                                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
                                     if (rcFind != 0 || delivery == null)
                                         continue;
                                     if (count >= allDeliveries.Length)
@@ -3430,8 +3507,11 @@ SetOrderLabel:
 
                                     for (int i6 = i5 + 1; i6 < orderCount; i6++)
                                     {
+                                        orderGeoIndex[5] = i6;
+                                        orderGeoIndex[6] = shopIndex;
+
                                         orders[5] = courierOrders[i6];
-                                        rcFind = FindSalesmanProblemSolution(shop, orders, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
+                                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
                                         if (rcFind != 0 || delivery == null)
                                             continue;
                                         if (count >= allDeliveries.Length)
@@ -3525,10 +3605,14 @@ SetOrderLabel:
                 int[,] permutations5 = null;
 
                 permutations1 = permutations.GetPermutations(1);
-                if (orderCount >= 2) permutations2 = permutations.GetPermutations(2);
-                if (orderCount >= 3) permutations3 = permutations.GetPermutations(3);
-                if (orderCount >= 4) permutations4 = permutations.GetPermutations(4);
-                if (orderCount >= 5) permutations5 = permutations.GetPermutations(5);
+                if (orderCount >= 2)
+                    permutations2 = permutations.GetPermutations(2);
+                if (orderCount >= 3)
+                    permutations3 = permutations.GetPermutations(3);
+                if (orderCount >= 4)
+                    permutations4 = permutations.GetPermutations(4);
+                if (orderCount >= 5)
+                    permutations5 = permutations.GetPermutations(5);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -3537,11 +3621,16 @@ SetOrderLabel:
                 CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[size];
                 int count = 0;
                 int rcFind = 1;
+                int shopIndex = orderCount;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < orderCount; i1++)
                 {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = courierOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -3550,8 +3639,11 @@ SetOrderLabel:
 
                     for (int i2 = i1 + 1; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = courierOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -3560,8 +3652,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = courierOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -3570,8 +3665,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = courierOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -3580,8 +3678,11 @@ SetOrderLabel:
 
                                 for (int i5 = i4 + 1; i5 < orderCount; i5++)
                                 {
+                                    orderGeoIndex[4] = i5;
+                                    orderGeoIndex[5] = shopIndex;
+
                                     orders[4] = courierOrders[i5];
-                                    rcFind = FindSalesmanProblemSolution(shop, orders, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
+                                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
                                     if (rcFind != 0 || delivery == null)
                                         continue;
                                     if (count >= allDeliveries.Length)
@@ -3672,9 +3773,12 @@ SetOrderLabel:
                 int[,] permutations4 = null;
 
                 permutations1 = permutations.GetPermutations(1);
-                if (orderCount >= 2) permutations2 = permutations.GetPermutations(2);
-                if (orderCount >= 3) permutations3 = permutations.GetPermutations(3);
-                if (orderCount >= 4) permutations4 = permutations.GetPermutations(4);
+                if (orderCount >= 2)
+                    permutations2 = permutations.GetPermutations(2);
+                if (orderCount >= 3)
+                    permutations3 = permutations.GetPermutations(3);
+                if (orderCount >= 4)
+                    permutations4 = permutations.GetPermutations(4);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -3683,11 +3787,16 @@ SetOrderLabel:
                 CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[size];
                 int count = 0;
                 int rcFind = 1;
+                int shopIndex = orderCount;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < orderCount; i1++)
                 {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = courierOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -3696,8 +3805,11 @@ SetOrderLabel:
 
                     for (int i2 = i1 + 1; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = courierOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -3706,8 +3818,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = courierOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -3716,8 +3831,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = courierOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -3806,8 +3924,10 @@ SetOrderLabel:
                 int[,] permutations3 = null;
 
                 permutations1 = permutations.GetPermutations(1);
-                if (orderCount >= 2) permutations2 = permutations.GetPermutations(2);
-                if (orderCount >= 3) permutations3 = permutations.GetPermutations(3);
+                if (orderCount >= 2)
+                    permutations2 = permutations.GetPermutations(2);
+                if (orderCount >= 3)
+                    permutations3 = permutations.GetPermutations(3);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -3816,11 +3936,16 @@ SetOrderLabel:
                 CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[size];
                 int count = 0;
                 int rcFind = 1;
+                int shopIndex = orderCount;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < orderCount; i1++)
                 {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = courierOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -3829,8 +3954,11 @@ SetOrderLabel:
 
                     for (int i2 = i1 + 1; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = courierOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -3839,8 +3967,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = courierOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -3927,7 +4058,8 @@ SetOrderLabel:
                 int[,] permutations2 = null;
 
                 permutations1 = permutations.GetPermutations(1);
-                if (orderCount >= 2) permutations2 = permutations.GetPermutations(2);
+                if (orderCount >= 2)
+                    permutations2 = permutations.GetPermutations(2);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -3936,11 +4068,16 @@ SetOrderLabel:
                 CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[size];
                 int count = 0;
                 int rcFind = 1;
+                int shopIndex = orderCount;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < orderCount; i1++)
                 {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = courierOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -3949,8 +4086,11 @@ SetOrderLabel:
 
                     for (int i2 = i1 + 1; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = courierOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -4046,13 +4186,20 @@ SetOrderLabel:
                 int[,] permutations8 = null;
 
                 permutations1 = permutations.GetPermutationsWithFirstFixed(1);
-                if (n >= 2) permutations2 = permutations.GetPermutationsWithFirstFixed(2);
-                if (n >= 3) permutations3 = permutations.GetPermutationsWithFirstFixed(3);
-                if (n >= 4) permutations4 = permutations.GetPermutationsWithFirstFixed(4);
-                if (n >= 5) permutations5 = permutations.GetPermutationsWithFirstFixed(5);
-                if (n >= 6) permutations6 = permutations.GetPermutationsWithFirstFixed(6);
-                if (n >= 7) permutations7 = permutations.GetPermutationsWithFirstFixed(7);
-                if (n >= 8) permutations8 = permutations.GetPermutationsWithFirstFixed(8);
+                if (n >= 2)
+                    permutations2 = permutations.GetPermutationsWithFirstFixed(2);
+                if (n >= 3)
+                    permutations3 = permutations.GetPermutationsWithFirstFixed(3);
+                if (n >= 4)
+                    permutations4 = permutations.GetPermutationsWithFirstFixed(4);
+                if (n >= 5)
+                    permutations5 = permutations.GetPermutationsWithFirstFixed(5);
+                if (n >= 6)
+                    permutations6 = permutations.GetPermutationsWithFirstFixed(6);
+                if (n >= 7)
+                    permutations7 = permutations.GetPermutationsWithFirstFixed(7);
+                if (n >= 8)
+                    permutations8 = permutations.GetPermutationsWithFirstFixed(8);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -4062,11 +4209,16 @@ SetOrderLabel:
                 int count = 0;
                 int rcFind = 1;
                 int m = firstFixedOrders.Length;
+                int shopIndex = onTimeOrders.Length + firstFixedOrders.Length;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < m; i1++)
                 {
+                    orderGeoIndex[0] = orderCount + i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = firstFixedOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -4075,8 +4227,11 @@ SetOrderLabel:
 
                     for (int i2 = 0; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = onTimeOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -4085,8 +4240,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = onTimeOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -4095,8 +4253,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = onTimeOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -4105,8 +4266,11 @@ SetOrderLabel:
 
                                 for (int i5 = i4 + 1; i5 < orderCount; i5++)
                                 {
+                                    orderGeoIndex[4] = i5;
+                                    orderGeoIndex[5] = shopIndex;
+
                                     orders[4] = onTimeOrders[i5];
-                                    rcFind = FindSalesmanProblemSolution(shop, orders, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
+                                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
                                     if (rcFind != 0 || delivery == null)
                                         continue;
                                     if (count >= allDeliveries.Length)
@@ -4115,8 +4279,11 @@ SetOrderLabel:
 
                                     for (int i6 = i5 + 1; i6 < orderCount; i6++)
                                     {
+                                        orderGeoIndex[5] = i5;
+                                        orderGeoIndex[6] = shopIndex;
+
                                         orders[5] = onTimeOrders[i6];
-                                        rcFind = FindSalesmanProblemSolution(shop, orders, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
+                                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
                                         if (rcFind != 0 || delivery == null)
                                             continue;
                                         if (count >= allDeliveries.Length)
@@ -4125,8 +4292,11 @@ SetOrderLabel:
 
                                         for (int i7 = i6 + 1; i7 < orderCount; i7++)
                                         {
+                                            orderGeoIndex[6] = i6;
+                                            orderGeoIndex[7] = shopIndex;
+
                                             orders[6] = onTimeOrders[i7];
-                                            rcFind = FindSalesmanProblemSolution(shop, orders, 7, shopCourier, isLoop, permutations7, locInfo, calcTime, out delivery);
+                                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 7, shopCourier, isLoop, permutations7, locInfo, calcTime, out delivery);
                                             if (rcFind != 0 || delivery == null)
                                                 continue;
                                             if (count >= allDeliveries.Length)
@@ -4135,8 +4305,11 @@ SetOrderLabel:
 
                                             for (int i8 = i7 + 1; i8 < orderCount; i8++)
                                             {
+                                                orderGeoIndex[7] = i7;
+                                                orderGeoIndex[8] = shopIndex;
+
                                                 orders[7] = onTimeOrders[i8];
-                                                rcFind = FindSalesmanProblemSolution(shop, orders, 8, shopCourier, isLoop, permutations8, locInfo, calcTime, out delivery);
+                                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 8, shopCourier, isLoop, permutations8, locInfo, calcTime, out delivery);
                                                 if (rcFind != 0 || delivery == null)
                                                     continue;
                                                 if (count >= allDeliveries.Length)
@@ -4234,12 +4407,18 @@ SetOrderLabel:
                 int[,] permutations7 = null;
 
                 permutations1 = permutations.GetPermutationsWithFirstFixed(1);
-                if (n >= 2) permutations2 = permutations.GetPermutationsWithFirstFixed(2);
-                if (n >= 3) permutations3 = permutations.GetPermutationsWithFirstFixed(3);
-                if (n >= 4) permutations4 = permutations.GetPermutationsWithFirstFixed(4);
-                if (n >= 5) permutations5 = permutations.GetPermutationsWithFirstFixed(5);
-                if (n >= 6) permutations6 = permutations.GetPermutationsWithFirstFixed(6);
-                if (n >= 7) permutations7 = permutations.GetPermutationsWithFirstFixed(7);
+                if (n >= 2)
+                    permutations2 = permutations.GetPermutationsWithFirstFixed(2);
+                if (n >= 3)
+                    permutations3 = permutations.GetPermutationsWithFirstFixed(3);
+                if (n >= 4)
+                    permutations4 = permutations.GetPermutationsWithFirstFixed(4);
+                if (n >= 5)
+                    permutations5 = permutations.GetPermutationsWithFirstFixed(5);
+                if (n >= 6)
+                    permutations6 = permutations.GetPermutationsWithFirstFixed(6);
+                if (n >= 7)
+                    permutations7 = permutations.GetPermutationsWithFirstFixed(7);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -4249,11 +4428,16 @@ SetOrderLabel:
                 int count = 0;
                 int rcFind = 1;
                 int m = firstFixedOrders.Length;
+                int shopIndex = onTimeOrders.Length + firstFixedOrders.Length;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < m; i1++)
                 {
+                    orderGeoIndex[0] = orderCount + i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = firstFixedOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -4262,8 +4446,11 @@ SetOrderLabel:
 
                     for (int i2 = 0; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = onTimeOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -4272,8 +4459,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = onTimeOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -4282,8 +4472,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = onTimeOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -4292,8 +4485,11 @@ SetOrderLabel:
 
                                 for (int i5 = i4 + 1; i5 < orderCount; i5++)
                                 {
+                                    orderGeoIndex[4] = i5;
+                                    orderGeoIndex[5] = shopIndex;
+
                                     orders[4] = onTimeOrders[i5];
-                                    rcFind = FindSalesmanProblemSolution(shop, orders, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
+                                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
                                     if (rcFind != 0 || delivery == null)
                                         continue;
                                     if (count >= allDeliveries.Length)
@@ -4302,8 +4498,11 @@ SetOrderLabel:
 
                                     for (int i6 = i5 + 1; i6 < orderCount; i6++)
                                     {
+                                        orderGeoIndex[5] = i5;
+                                        orderGeoIndex[6] = shopIndex;
+
                                         orders[5] = onTimeOrders[i6];
-                                        rcFind = FindSalesmanProblemSolution(shop, orders, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
+                                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
                                         if (rcFind != 0 || delivery == null)
                                             continue;
                                         if (count >= allDeliveries.Length)
@@ -4312,8 +4511,11 @@ SetOrderLabel:
 
                                         for (int i7 = i6 + 1; i7 < orderCount; i7++)
                                         {
+                                            orderGeoIndex[6] = i6;
+                                            orderGeoIndex[7] = shopIndex;
+
                                             orders[6] = onTimeOrders[i7];
-                                            rcFind = FindSalesmanProblemSolution(shop, orders, 7, shopCourier, isLoop, permutations7, locInfo, calcTime, out delivery);
+                                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 7, shopCourier, isLoop, permutations7, locInfo, calcTime, out delivery);
                                             if (rcFind != 0 || delivery == null)
                                                 continue;
                                             if (count >= allDeliveries.Length)
@@ -4409,11 +4611,16 @@ SetOrderLabel:
                 int[,] permutations6 = null;
 
                 permutations1 = permutations.GetPermutationsWithFirstFixed(1);
-                if (n >= 2) permutations2 = permutations.GetPermutationsWithFirstFixed(2);
-                if (n >= 3) permutations3 = permutations.GetPermutationsWithFirstFixed(3);
-                if (n >= 4) permutations4 = permutations.GetPermutationsWithFirstFixed(4);
-                if (n >= 5) permutations5 = permutations.GetPermutationsWithFirstFixed(5);
-                if (n >= 6) permutations6 = permutations.GetPermutationsWithFirstFixed(6);
+                if (n >= 2)
+                    permutations2 = permutations.GetPermutationsWithFirstFixed(2);
+                if (n >= 3)
+                    permutations3 = permutations.GetPermutationsWithFirstFixed(3);
+                if (n >= 4)
+                    permutations4 = permutations.GetPermutationsWithFirstFixed(4);
+                if (n >= 5)
+                    permutations5 = permutations.GetPermutationsWithFirstFixed(5);
+                if (n >= 6)
+                    permutations6 = permutations.GetPermutationsWithFirstFixed(6);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -4423,11 +4630,16 @@ SetOrderLabel:
                 int count = 0;
                 int rcFind = 1;
                 int m = firstFixedOrders.Length;
+                int shopIndex = onTimeOrders.Length + firstFixedOrders.Length;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < m; i1++)
                 {
+                    orderGeoIndex[0] = orderCount + i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = firstFixedOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -4436,8 +4648,11 @@ SetOrderLabel:
 
                     for (int i2 = 0; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = onTimeOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -4446,8 +4661,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = onTimeOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -4456,8 +4674,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = onTimeOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -4466,8 +4687,11 @@ SetOrderLabel:
 
                                 for (int i5 = i4 + 1; i5 < orderCount; i5++)
                                 {
+                                    orderGeoIndex[4] = i5;
+                                    orderGeoIndex[5] = shopIndex;
+
                                     orders[4] = onTimeOrders[i5];
-                                    rcFind = FindSalesmanProblemSolution(shop, orders, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
+                                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
                                     if (rcFind != 0 || delivery == null)
                                         continue;
                                     if (count >= allDeliveries.Length)
@@ -4476,8 +4700,11 @@ SetOrderLabel:
 
                                     for (int i6 = i5 + 1; i6 < orderCount; i6++)
                                     {
+                                        orderGeoIndex[5] = i5;
+                                        orderGeoIndex[6] = shopIndex;
+
                                         orders[5] = onTimeOrders[i6];
-                                        rcFind = FindSalesmanProblemSolution(shop, orders, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
+                                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 6, shopCourier, isLoop, permutations6, locInfo, calcTime, out delivery);
                                         if (rcFind != 0 || delivery == null)
                                             continue;
                                         if (count >= allDeliveries.Length)
@@ -4571,10 +4798,14 @@ SetOrderLabel:
                 int[,] permutations5 = null;
 
                 permutations1 = permutations.GetPermutationsWithFirstFixed(1);
-                if (n >= 2) permutations2 = permutations.GetPermutationsWithFirstFixed(2);
-                if (n >= 3) permutations3 = permutations.GetPermutationsWithFirstFixed(3);
-                if (n >= 4) permutations4 = permutations.GetPermutationsWithFirstFixed(4);
-                if (n >= 5) permutations5 = permutations.GetPermutationsWithFirstFixed(5);
+                if (n >= 2)
+                    permutations2 = permutations.GetPermutationsWithFirstFixed(2);
+                if (n >= 3)
+                    permutations3 = permutations.GetPermutationsWithFirstFixed(3);
+                if (n >= 4)
+                    permutations4 = permutations.GetPermutationsWithFirstFixed(4);
+                if (n >= 5)
+                    permutations5 = permutations.GetPermutationsWithFirstFixed(5);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -4584,11 +4815,16 @@ SetOrderLabel:
                 int count = 0;
                 int rcFind = 1;
                 int m = firstFixedOrders.Length;
+                int shopIndex = onTimeOrders.Length + firstFixedOrders.Length;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < m; i1++)
                 {
+                    orderGeoIndex[0] = orderCount + i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = firstFixedOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -4597,8 +4833,11 @@ SetOrderLabel:
 
                     for (int i2 = 0; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = onTimeOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -4607,8 +4846,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = onTimeOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -4617,8 +4859,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = onTimeOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -4627,8 +4872,11 @@ SetOrderLabel:
 
                                 for (int i5 = i4 + 1; i5 < orderCount; i5++)
                                 {
+                                    orderGeoIndex[4] = i5;
+                                    orderGeoIndex[5] = shopIndex;
+
                                     orders[4] = onTimeOrders[i5];
-                                    rcFind = FindSalesmanProblemSolution(shop, orders, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
+                                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 5, shopCourier, isLoop, permutations5, locInfo, calcTime, out delivery);
                                     if (rcFind != 0 || delivery == null)
                                         continue;
                                     if (count >= allDeliveries.Length)
@@ -4720,9 +4968,12 @@ SetOrderLabel:
                 int[,] permutations4 = null;
 
                 permutations1 = permutations.GetPermutationsWithFirstFixed(1);
-                if (n >= 2) permutations2 = permutations.GetPermutationsWithFirstFixed(2);
-                if (n >= 3) permutations3 = permutations.GetPermutationsWithFirstFixed(3);
-                if (n >= 4) permutations4 = permutations.GetPermutationsWithFirstFixed(4);
+                if (n >= 2)
+                    permutations2 = permutations.GetPermutationsWithFirstFixed(2);
+                if (n >= 3)
+                    permutations3 = permutations.GetPermutationsWithFirstFixed(3);
+                if (n >= 4)
+                    permutations4 = permutations.GetPermutationsWithFirstFixed(4);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -4732,11 +4983,16 @@ SetOrderLabel:
                 int count = 0;
                 int rcFind = 1;
                 int m = firstFixedOrders.Length;
+                int shopIndex = onTimeOrders.Length + firstFixedOrders.Length;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < m; i1++)
                 {
+                    orderGeoIndex[0] = orderCount + i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = firstFixedOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -4745,8 +5001,11 @@ SetOrderLabel:
 
                     for (int i2 = 0; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = onTimeOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -4755,8 +5014,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = onTimeOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -4765,8 +5027,11 @@ SetOrderLabel:
 
                             for (int i4 = i3 + 1; i4 < orderCount; i4++)
                             {
+                                orderGeoIndex[3] = i4;
+                                orderGeoIndex[4] = shopIndex;
+
                                 orders[3] = onTimeOrders[i4];
-                                rcFind = FindSalesmanProblemSolution(shop, orders, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
+                                rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 4, shopCourier, isLoop, permutations4, locInfo, calcTime, out delivery);
                                 if (rcFind != 0 || delivery == null)
                                     continue;
                                 if (count >= allDeliveries.Length)
@@ -4856,8 +5121,10 @@ SetOrderLabel:
                 int[,] permutations3 = null;
 
                 permutations1 = permutations.GetPermutationsWithFirstFixed(1);
-                if (n >= 2) permutations2 = permutations.GetPermutationsWithFirstFixed(2);
-                if (n >= 3) permutations3 = permutations.GetPermutationsWithFirstFixed(3);
+                if (n >= 2)
+                    permutations2 = permutations.GetPermutationsWithFirstFixed(2);
+                if (n >= 3)
+                    permutations3 = permutations.GetPermutationsWithFirstFixed(3);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -4867,11 +5134,16 @@ SetOrderLabel:
                 int count = 0;
                 int rcFind = 1;
                 int m = firstFixedOrders.Length;
+                int shopIndex = onTimeOrders.Length + firstFixedOrders.Length;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < m; i1++)
                 {
+                    orderGeoIndex[0] = orderCount + i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = firstFixedOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -4880,8 +5152,11 @@ SetOrderLabel:
 
                     for (int i2 = 0; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = onTimeOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -4890,8 +5165,11 @@ SetOrderLabel:
 
                         for (int i3 = i2 + 1; i3 < orderCount; i3++)
                         {
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+
                             orders[2] = onTimeOrders[i3];
-                            rcFind = FindSalesmanProblemSolution(shop, orders, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
+                            rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 3, shopCourier, isLoop, permutations3, locInfo, calcTime, out delivery);
                             if (rcFind != 0 || delivery == null)
                                 continue;
                             if (count >= allDeliveries.Length)
@@ -4979,7 +5257,8 @@ SetOrderLabel:
                 int[,] permutations2 = null;
 
                 permutations1 = permutations.GetPermutationsWithFirstFixed(1);
-                if (n >= 2) permutations2 = permutations.GetPermutationsWithFirstFixed(2);
+                if (n >= 2)
+                    permutations2 = permutations.GetPermutationsWithFirstFixed(2);
 
                 // 7. Цикл построения всех возможных отгрузок
                 rc = 7;
@@ -4989,11 +5268,16 @@ SetOrderLabel:
                 int count = 0;
                 int rcFind = 1;
                 int m = firstFixedOrders.Length;
+                int shopIndex = onTimeOrders.Length + firstFixedOrders.Length;
+                int[] orderGeoIndex = new int[9];
 
                 for (int i1 = 0; i1 < m; i1++)
                 {
+                    orderGeoIndex[0] = orderCount + i1;
+                    orderGeoIndex[1] = shopIndex;
+
                     orders[0] = firstFixedOrders[i1];
-                    rcFind = FindSalesmanProblemSolution(shop, orders, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
+                    rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 1, shopCourier, isLoop, permutations1, locInfo, calcTime, out delivery);
                     if (rcFind != 0 || delivery == null)
                         continue;
                     if (count >= allDeliveries.Length)
@@ -5002,8 +5286,11 @@ SetOrderLabel:
 
                     for (int i2 = 0; i2 < orderCount; i2++)
                     {
+                        orderGeoIndex[1] = i2;
+                        orderGeoIndex[2] = shopIndex;
+
                         orders[1] = onTimeOrders[i2];
-                        rcFind = FindSalesmanProblemSolution(shop, orders, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
+                        rcFind = FindSalesmanProblemSolution(shop, orders, orderGeoIndex, 2, shopCourier, isLoop, permutations2, locInfo, calcTime, out delivery);
                         if (rcFind != 0 || delivery == null)
                             continue;
                         if (count >= allDeliveries.Length)
@@ -5042,11 +5329,11 @@ SetOrderLabel:
         /// <param name="courier">Курьер</param>
         /// <param name="isLoop">Флаг возврата в магазин: true - требуется возврат в магазин; false - отгрузка завершается после вручения последнего заказа</param>
         /// <param name="permutations">Перестановки, среди которых осуществляется поиск</param>
-        /// <param name="courierLocationInfo">Расстояния и время движения между точками</param>
+        /// <param name="orderLocationInfo">Расстояния и время движения между точками</param>
         /// <param name="calcTime">Время, начиная с которого можно использовать курьера</param>
         /// <param name="bestDelivery">Путь с минимальной стоимостью</param>
         /// <returns>0 - путь найден; иначе - путь не найден</returns>
-        private static int FindSalesmanProblemSolution(Shop shop, Order[] shopOrders, int orderCount, Courier courier, bool isLoop, int[,] permutations, Point[,] courierLocationInfo, DateTime calcTime, out CourierDeliveryInfo bestDelivery)
+        private static int FindSalesmanProblemSolution_old(Shop shop, Order[] shopOrders, int orderCount, Courier courier, bool isLoop, int[,] permutations, Point[,] orderLocationInfo, DateTime calcTime, out CourierDeliveryInfo bestDelivery)
         {
             // 1. Инициализация
             int rc = 1;
@@ -5065,7 +5352,7 @@ SetOrderLabel:
                 if (orderCount < 0 || orderCount >= shopOrders.Length)
                     return rc;
 
-                if (courierLocationInfo == null || courierLocationInfo.Length <= 0)
+                if (orderLocationInfo == null || orderLocationInfo.Length <= 0)
                     return rc;
 
                 if (permutations == null || permutations.Length <= 0)
@@ -5092,7 +5379,112 @@ SetOrderLabel:
                     // 4.2 Проверяем построенный путь и отбираем наилучший среди всех перестановок
                     rc = 42;
                     CourierDeliveryInfo pathInfo;
-                    int rc1 = courier.DeliveryCheck(calcTime, shop, (Order[])permutOrders.Clone(), isLoop, courierLocationInfo, out pathInfo);
+                    int rc1 = courier.DeliveryCheck(calcTime, shop, (Order[])permutOrders.Clone(), isLoop, orderLocationInfo, out pathInfo);
+                    if (rc1 == 0)
+                    {
+                        if (bestOrderCount < pathInfo.OrderCount)
+                        {
+                            bestOrderCount = pathInfo.OrderCount;
+                            bestCost = pathInfo.Cost;
+                            bestDelivery = pathInfo;
+                        }
+                        else if (bestOrderCount == pathInfo.OrderCount && pathInfo.Cost < bestCost)
+                        {
+                            bestCost = pathInfo.Cost;
+                            bestDelivery = pathInfo;
+                        }
+                    }
+                }
+
+                if (bestDelivery == null)
+                    return rc;
+
+                // 5. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                //Helper.WriteErrorToLog($"FindSalesmanProblemSolution(Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Take(orderCount).Select(order => order.Id).ToArray())}, courier {courier.Id}, isloop {isLoop}, calcTime {calcTime})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Logger.WriteToLog(ex.ToString());
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "FindSalesmanProblemSolution", $"Shop {shop.Id}, Orders {Helper.ArrayToString(shopOrders.Take(orderCount).Select(order => order.Id).ToArray())}, courier {courier.Id}, isloop {isLoop}, calcTime {calcTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "FindSalesmanProblemSolution", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "FindSalesmanProblemSolution", ex.ToString()));
+
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Поиск пути с минимальной стоимостью среди заданных перестановок
+        /// </summary>
+        /// <param name="shop">Магазин, из которого осуществляется отгрузка</param>
+        /// <param name="shopOrders">Отгружаемые заказы</param>
+        /// <param name="orderGeoIndex">Гео-индексы заказов и магазина (сначала заказы в порядке следования; последний - магазин)</param>
+        /// <param name="orderCount">Количество заказов</param>
+        /// <param name="courier">Курьер</param>
+        /// <param name="isLoop">Флаг возврата в магазин: true - требуется возврат в магазин; false - отгрузка завершается после вручения последнего заказа</param>
+        /// <param name="permutations">Перестановки, среди которых осуществляется поиск</param>
+        /// <param name="geoData">Расстояния и время движения между точками</param>
+        /// <param name="calcTime">Время, начиная с которого можно использовать курьера</param>
+        /// <param name="bestDelivery">Путь с минимальной стоимостью</param>
+        /// <returns>0 - путь найден; иначе - путь не найден</returns>
+        private static int FindSalesmanProblemSolution(Shop shop, Order[] shopOrders, int[] orderGeoIndex, int orderCount, Courier courier, bool isLoop, int[,] permutations, Point[,] geoData, DateTime calcTime, out CourierDeliveryInfo bestDelivery)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            bestDelivery = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (shop == null)
+                    return rc;
+                if (courier == null)
+                    return rc;
+                if (shopOrders == null || shopOrders.Length <= 0)
+                    return rc;
+                if (orderCount < 0 || orderCount >= shopOrders.Length)
+                    return rc;
+
+                if (orderGeoIndex == null || orderGeoIndex.Length < orderCount + 1)
+                    return rc;
+
+                if (geoData == null || geoData.Length <= 0)
+                    return rc;
+
+                if (permutations == null || permutations.Length <= 0)
+                    return rc;
+                if (permutations.GetLength(1) != orderCount)
+                    return rc;
+
+                // 3. Решаем задачу комивояжера - построение пути обхода c минимальной стоимостью
+                rc = 3;
+                int permutationCount = permutations.GetLength(0);
+                Order[] permutOrders = new Order[orderCount];
+                int[] geoIndex = new int[orderCount + 1];
+                geoIndex[orderCount] = orderGeoIndex[orderCount];
+                
+                double bestCost = double.MaxValue;
+                int bestOrderCount = -1;
+
+                for (int i = 0; i < permutationCount; i++)
+                {
+                    // 4.1 Строим перестановку заказов
+                    rc = 41;
+                    for (int j = 0; j < orderCount; j++)
+                    {
+                        int orderIndex = permutations[i, j];
+                        permutOrders[j] = shopOrders[orderIndex];
+                        geoIndex[j] = orderIndex;
+                    }
+
+                    // 4.2 Проверяем построенный путь и отбираем наилучший среди всех перестановок
+                    rc = 42;
+                    CourierDeliveryInfo pathInfo;
+                    int rc1 = courier.DeliveryCheck_new(calcTime, shop, (Order[])permutOrders.Clone(), geoIndex, isLoop, geoData, out pathInfo);
                     if (rc1 == 0)
                     {
                         if (bestOrderCount < pathInfo.OrderCount)
@@ -5197,7 +5589,6 @@ SetOrderLabel:
 
             return 0;
         }
-
 
         /// <summary>
         /// Построение покрытия из заданных отгрузок
@@ -5657,7 +6048,7 @@ SetOrderLabel:
                 for (int i = 0; i < orders.Length; i++)
                 {
                     Order order = orders[i];
-                    order.LocationIndex = i;
+                    //order.LocationIndex = i;
                     latitude[i] = order.Latitude;
                     longitude[i] = order.Longitude;
                 }

@@ -94,6 +94,7 @@
     <Compile Include="SalesmanTravelingProblem\SalesmanSolution.cs" />
     <Compile Include="SalesmanTravelingProblem\SalesmanSolutionEx.cs" />
     <Compile Include="SalesmanTravelingProblem\SalesmanSolutionEy.cs" />
+    <Compile Include="SalesmanTravelingProblem\SalesmanSolutionEz.cs" />
     <Compile Include="ServiceParameters\CourierParameters.cs" />
     <Compile Include="ServiceParameters\CourierTypeMapper.cs" />
     <Compile Include="ServiceParameters\DServiceIdMapper.cs" />
