@@ -1007,8 +1007,8 @@ namespace LogisticsService.SalesmanTravelingProblem
                 for (int i = 0; i < shopCouriers.Length; i++)
                 {
                     Courier courier = shopCouriers[i];
-                    if (courier.Status != CourierStatus.Ready)
-                        continue;
+                    //if (courier.Status != CourierStatus.Ready)
+                    //    continue;
 
                     if (!allTypeCouriers.ContainsKey(courier.CourierType.VechicleType))
                     {
@@ -1055,7 +1055,10 @@ namespace LogisticsService.SalesmanTravelingProblem
                 {
                     rc1 = geoCache.PutLocationInfo(latitude, longitude, allCouriers[i].CourierType.VechicleType);
                     if (rc1 != 0)
+                    {
+                        Logger.WriteToLog($"[debug] CreateShopDeliveries_OnTime. geoCache.PutLocationInfo ({rc1})");
                         return rc = 100 * rc + rc1;
+                    }
                 }
 
                 // 5. Запускаем построение всех возможных путей всеми возможными способами
@@ -1148,6 +1151,11 @@ namespace LogisticsService.SalesmanTravelingProblem
                         onTimeOrders[i].RejectionReason = OrderRejectionReason.CourierNa;
                     }
 
+                    for (int i = 0; i < tasks.Length; i++)
+                    {
+                        tasks[i].Dispose();
+                    }
+
                     undeliveredOrders = onTimeOrders;
                     return rc = 0;
                 }
@@ -1165,6 +1173,8 @@ namespace LogisticsService.SalesmanTravelingProblem
                             deliveryCount += taskDeliveries[i].Length;
                         }
                     }
+
+                    tasks[i].Dispose();
                 }
 
                 // 7. Сортируем по средней стоимости доставки одного заказа
@@ -1802,6 +1812,8 @@ namespace LogisticsService.SalesmanTravelingProblem
                                 deliveryCount += taskDeliveries[i].Length;
                             }
                         }
+
+                        tasks[i].Dispose();
                     }
 
                     // 9.2 Сортируем по средней стоимости доставки одного заказа
@@ -1821,6 +1833,13 @@ namespace LogisticsService.SalesmanTravelingProblem
                     else
                     {
                         behindTimeDeliveries = null;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < tasks.Length; i++)
+                    {
+                        tasks[i].Dispose();
                     }
                 }
 
@@ -2834,7 +2853,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                     }
                     else
                     {
-                        Logger.WriteToLog($"[debug] CreateShopDeliveriesEx. finnaly rc = {rc} orders = ({Helper.ArrayToString(shopOrders.Select(p => p.Id).ToArray())})");
+                        Logger.WriteToLog($"[debug] CreateShopDeliveriesEx. finnaly rc = {rc} courier_id = {shopCourier.Id}  orders = ({Helper.ArrayToString(shopOrders.Select(p => p.Id).ToArray())})");
                     }
                 }
             }

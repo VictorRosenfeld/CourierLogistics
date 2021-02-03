@@ -5,6 +5,7 @@ namespace LogisticsService.Geo
     using LogisticsService.Couriers;
     using LogisticsService.Log;
     using LogisticsService.ServiceParameters;
+    using System;
     using System.Collections.Generic;
     using System.Device.Location;
     using System.Drawing;
@@ -42,6 +43,11 @@ namespace LogisticsService.Geo
         /// Способы доставки
         /// </summary>
         private Dictionary<CourierVehicleType, GeoDeliveryMethod> deliveryMethods;
+
+        /// <summary>
+        /// Количество различных типов перемещений в Yandex-запросах
+        /// </summary>
+        private int yandexTypeCount;
 
         /// <summary>
         /// Экземпляр для получения хэша координат
@@ -86,21 +92,33 @@ namespace LogisticsService.Geo
             //deliveryMethodName = new string[] { DELIVERY_BY_CAR, DELIVERY_BY_BICYCLE, DELIVERY_BY_ONFOOT };
 
             // 2. Построение словаря способов доставки
-            deliveryMethods = new Dictionary<CourierVehicleType, GeoDeliveryMethod>(8);
+            yandexTypeCount = 0;
+            deliveryMethods = new Dictionary<CourierVehicleType, GeoDeliveryMethod>(64);
+            Dictionary<string, int> yandexTypeToIndex = new Dictionary<string, int>(16);
+            int deliveryIndex = 0;
 
             foreach (YandexVehicleMapper item in config.yandex_vehicle_mapper)
             {
                 if (item.VechicleTypes != null && item.VechicleTypes.Length > 0)
                 {
+                    if (!yandexTypeToIndex.TryGetValue(item.YandexType, out deliveryIndex))
+                    {
+                        deliveryIndex = yandexTypeCount++;
+                        yandexTypeToIndex.Add(item.YandexType, deliveryIndex);
+                    }
+
                     foreach (CourierVehicleType vehicleType in item.VechicleTypes)
                     {
                         if (!deliveryMethods.ContainsKey(vehicleType))
                         {
-                            deliveryMethods.Add(vehicleType, new GeoDeliveryMethod(deliveryMethods.Count, vehicleType, item.YandexType));
+                            deliveryMethods.Add(vehicleType, new GeoDeliveryMethod(deliveryIndex, vehicleType, item.YandexType));
                         }
                     }
                 }
             }
+
+            if (yandexTypeCount <= 0)
+                yandexTypeCount = 1;
         }
 
         ///// <summary>
@@ -845,8 +863,8 @@ namespace LogisticsService.Geo
                 if (longitude == null || longitude.Length !=  latitude.Length)
                     return rc;
 
-                // 3. Запрашиваем индекс способа доставки
-                rc = 3;
+                // 21. Запрашиваем индекс способа доставки
+                rc = 21;
                 int deliveryMethodIndex = GetDeliveryMethodIndex(vehicleType);
                 if (deliveryMethodIndex < 0)
                     return rc;
@@ -871,7 +889,7 @@ namespace LogisticsService.Geo
 
                 // 5. Заполняем таблицу результата
                 rc = 5;
-                int rc3 = PutLocationInfo(latitude, longitude, vehicleType);
+                //int rc3 = PutLocationInfo(latitude, longitude, vehicleType);
 
                 dataTable = new Point[n, n];
 
@@ -882,13 +900,17 @@ namespace LogisticsService.Geo
                     for (int j = i + 1; j < n; j++)
                     {
                         int hash2 = pointHash[j];
-                        ulong key1 = GetKey(hash1, hash2);
-                        ulong key2 = GetKey(hash2, hash1);
 
-                        CacheItem item1 = cacheItems[cacheItemIndex[GetKey(hash1, hash2)]];
-                        CacheItem item2 = cacheItems[cacheItemIndex[GetKey(hash2, hash1)]];
-                        dataTable[i, j] = item1.Data[deliveryMethodIndex];
-                        dataTable[j, i] = item2.Data[deliveryMethodIndex];
+                        if (hash1 != hash2)
+                        {
+                            ulong key1 = GetKey(hash1, hash2);
+                            ulong key2 = GetKey(hash2, hash1);
+
+                            CacheItem item1 = cacheItems[cacheItemIndex[GetKey(hash1, hash2)]];
+                            CacheItem item2 = cacheItems[cacheItemIndex[GetKey(hash2, hash1)]];
+                            dataTable[i, j] = item1.Data[deliveryMethodIndex];
+                            dataTable[j, i] = item2.Data[deliveryMethodIndex];
+                        }
                     }
                 }
 
@@ -896,8 +918,11 @@ namespace LogisticsService.Geo
                 rc = 0;
                 return rc;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.WriteToLog($"[debug] GetPointsDataTable. finnaly rc = {rc} vehicle_type = {vehicleType}  latitude = ({Helper.ArrayToString(latitude)}) longitude = ({Helper.ArrayToString(longitude)})");
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, " GetPointsDataTable", ex.ToString()));
+
                 return rc;
             }
         }
@@ -946,7 +971,7 @@ namespace LogisticsService.Geo
                 item = cacheItems[itemIndex];
                 if (item == null)
                 {
-                    item = new CacheItem(key, deliveryMethods.Count);
+                    item = new CacheItem(key, yandexTypeCount);
                     cacheItems[itemIndex] = item;
                 }
 

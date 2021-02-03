@@ -1165,6 +1165,8 @@ SetOrderLabel:
                             deliveryCount += taskDeliveries[i].Length;
                         }
                     }
+
+                    tasks[i].Dispose();
                 }
 
                 // 7. Сортируем по средней стоимости доставки одного заказа
@@ -1778,6 +1780,8 @@ SetOrderLabel:
                         if (taskDeliveries[i] != null)
                             deliveryCount += taskDeliveries[i].Length;
                     }
+
+                    tasks[i].Dispose();
                 }
 
                 // 9. Стром покрытие для просроченных заказов
@@ -1802,6 +1806,8 @@ SetOrderLabel:
                                 deliveryCount += taskDeliveries[i].Length;
                             }
                         }
+                        tasks[i].Dispose();
+
                     }
 
                     // 9.2 Сортируем по средней стоимости доставки одного заказа

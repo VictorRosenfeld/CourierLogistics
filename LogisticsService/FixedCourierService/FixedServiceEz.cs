@@ -177,17 +177,25 @@ namespace LogisticsService.FixedCourierService
                     capacity = 10000;
                 geoCache = new GeoCache(config, capacity);
 
-                #region For Debug Only
+                #region For Debug Only GeoCahe
 
-                //double[] latitude = new double[]  { 53.196871, 53.18774, 53.224951598824, 53.189827799216, 53.205591699608 };
-                //double[] longitude = new double[] { 45.005578, 44.97662, 44.9953245,      44.9854697,      44.9902701 };
+                //double[] latitude1 = new double[] { 53.196871, 53.18774, 53.224951598824, 53.189827799216, 53.205591699608 };
+                //double[] longitude1 = new double[] { 45.005578, 44.97662, 44.9953245, 44.9854697, 44.9902701 };
 
-                //int rcGeo = geoCache.PutLocationInfo(latitude, longitude, CourierVehicleType.YandexTaxi);
+                //int rcGeo1 = geoCache.PutLocationInfo(latitude1, longitude1, CourierVehicleType.GettTaxiNew);
+
+                //Point[,] dataTable1;
+                //rcGeo1 = geoCache.GetPointsDataTable(latitude1, longitude1, CourierVehicleType.GettTaxiNew, out dataTable1);
+
+                //double[] latitude = new double[] { 55.691299, 55.7024, 55.69761, 55.69699};
+                //double[] longitude = new double[] { 37.494202, 37.515099, 37.50684, 37.501499 };
 
                 //Point[,] dataTable;
-                //rcGeo = geoCache.GetPointsDataTable(latitude, longitude, CourierVehicleType.YandexTaxi, out dataTable);
+                //int rcGeo = geoCache.GetPointsDataTable(latitude, longitude, (CourierVehicleType)6, out dataTable);
 
-                #endregion For Debug Only
+                //Point p = dataTable[0, 0];
+
+                #endregion For Debug Only GeoCache
 
                 // 5. Создаём All couriers
                 rc = 5;
@@ -577,6 +585,7 @@ namespace LogisticsService.FixedCourierService
                 // 8. Дожидаемся завершения обработки очереди отгрузок
                 rc = 8;
                 queueHandlerTask.Wait(30000);
+                queueHandlerTask.Dispose();
 
                 // 9. Отрабатываем считанные данные
                 rc = 9;
@@ -830,7 +839,8 @@ namespace LogisticsService.FixedCourierService
                     // 3.2. Выбираем курьров магазина
                     rc = 32;
                     //Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id);
-                    Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id, false);
+                    //Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id, false);
+                    Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id, true);
 
                     // 3.3 Строим отгрузки для магазина
                     rc = 33;

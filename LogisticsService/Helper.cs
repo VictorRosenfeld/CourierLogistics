@@ -103,7 +103,7 @@ namespace LogisticsService
         /// </summary>
         /// <param name="id">Массив int</param>
         /// <returns>Строковое представление массива</returns>
-        public static string ArrayToString(int[] id)
+        public static string ArrayToString<T>(T[] id)
         {
             if (id == null || id.Length <= 0)
                 return "[]";
