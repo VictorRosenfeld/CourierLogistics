@@ -895,6 +895,11 @@ namespace LogisticsService.FixedCourierService
                         //rc1 = SendUndeliveryOrdersEx(undeliveredOrders);
                         rc1 = SendUndeliveryOrdersEy(undeliveredOrders);
                     }
+
+                    if (tabuOrders != null && tabuOrders.Length > 0)
+                    {
+                        rc1 = SendTabuOrders(tabuOrders);
+                    }
                 }
 
                 // 4. Сливаем построенные элементы с существующими элементами для других магазинов
@@ -1430,6 +1435,77 @@ namespace LogisticsService.FixedCourierService
                     BeginShipment.RejectedOrder rejectedOrder = new BeginShipment.RejectedOrder();
                     rejectedOrder.id = Guid.NewGuid().ToString();
                     rejectedOrder.status = (order.Status == OrderStatus.Assembled ? 2 : 3);
+                    rejectedOrder.shop_id = shopId;
+                    rejectedOrder.courier_id = 0;
+                    rejectedOrder.date_target = DateTime.Now;
+                    rejectedOrder.date_target_end = rejectedOrder.date_target;
+                    rejectedOrder.delivery_service_id = 0;
+                    rejectedOrder.orders = new int[] { order.Id };
+
+                    // 3.2 Информация о времени доставки всеми возможными способами
+                    BeginShipment.RejectedInfoItem[] items = GetUndeliveredInfoForOrder(order);
+                    if (items != null && items.Length > 0)
+                    {
+                        BeginShipment.RejectedInfo info = new BeginShipment.RejectedInfo();
+                        info.calculationTime = rejectedOrder.date_target;
+                        info.weight = order.Weight;
+
+                        info.delivery_method = items;
+                        rejectedOrder.info = info;
+                    }
+
+                    rejectedOrders[i] = rejectedOrder;
+                }
+
+                // 4. Отправляем запрос на сервер
+                rc = 4;
+                int rc1 = BeginShipment.Reject(rejectedOrders);
+                if (rc1 != 0)
+                    return rc = 1000 * rc + rc1;
+
+                // 5. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Передачу серверу заказов которые не могут быть отгружены из-за
+        /// ограничений не связанных со временем
+        /// </summary>
+        /// <param name="tabuOrders">Заказы, которые не могут быть отгружены в срок</param>
+        /// <returns>0 - отгрузки переданы серверу; иначе - отгрузки серверу не переданы</returns>
+        private int SendTabuOrders(Order[] tabuOrders)
+        {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (tabuOrders == null || tabuOrders.Length <= 0)
+                    return rc;
+
+                int shopId = tabuOrders[0].ShopId;
+
+                // 3. Строим данные для отправки на сервер
+                rc = 3;
+                BeginShipment.RejectedOrder[] rejectedOrders = new BeginShipment.RejectedOrder[tabuOrders.Length];
+
+                for (int i = 0; i < tabuOrders.Length; i++)
+                {
+                    // 3.0 Извлекаем заказ
+                    Order order = tabuOrders[i];
+
+                    // 3.1 Общая информация о заказе
+                    BeginShipment.RejectedOrder rejectedOrder = new BeginShipment.RejectedOrder();
+                    rejectedOrder.id = Guid.NewGuid().ToString();
+                    rejectedOrder.status = 4;
                     rejectedOrder.shop_id = shopId;
                     rejectedOrder.courier_id = 0;
                     rejectedOrder.date_target = DateTime.Now;

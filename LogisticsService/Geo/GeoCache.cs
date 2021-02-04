@@ -825,8 +825,11 @@ namespace LogisticsService.Geo
                     for (int j = 0; j < destinationCount; j++)
                     {
                         int j1 = destinationLocationIndex[j];
-                        int hash2 = dstPointHash[j1];
-                        SaveCacheItem(hash1, hash2, new Point(postInfoRow[j].distance, postInfoRow[j].duration), deliveryMethodIndex);
+                        if (j1 != i1)
+                        {
+                            int hash2 = dstPointHash[j1];
+                            SaveCacheItem(hash1, hash2, new Point(postInfoRow[j].distance, postInfoRow[j].duration), deliveryMethodIndex);
+                        }
                     }
                 }
 
@@ -981,8 +984,11 @@ namespace LogisticsService.Geo
                 rc = 0;
                 return rc;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "GeoCache.SaveCacheItem", $"hash1 = {hash1}, hash2 = {hash2}, deliveryMethodIndex = {deliveryMethodIndex}, data={distTime}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "GeoCache.SaveCacheItem", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "GeoCache.SaveCacheItem", ex.ToString()));
                 return rc;
             }
         }

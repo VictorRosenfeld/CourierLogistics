@@ -932,7 +932,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                     rc1 = CreateShopDeliveries_BehindTime(shop, behindTimeOrders, shopCouriers, calcTime, out assembledOrders, out receiptedOrders, out undeliveredOrders);
                     if (undeliveredOrders != null && undeliveredOrders.Length > 0)
                     {
-                        Logger.WriteToLog($"[debug] SalesmanSolutionEy.CreateShopDeliveries.CreateShopDeliveries_BehindTime // 4 rc1 = {rc1} orders =({Helper.ArrayToString(undeliveredOrders.Select(p => p.Id).ToArray())})");
+                        Logger.WriteToLog($"[debug] SalesmanSolutionEz.CreateShopDeliveries.CreateShopDeliveries_BehindTime // 4 rc1 = {rc1} orders =({Helper.ArrayToString(undeliveredOrders.Select(p => p.Id).ToArray())})");
 
                     }
 
@@ -1344,7 +1344,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                 {
                     Order order = behindTimeOrders[i];
                     saveTimeTo[i] = order.DeliveryTimeTo;
-                    order.DeliveryTimeTo = calcTime.AddHours(2);
+                    order.DeliveryTimeTo = DateTime.Now.AddHours(2);
                 }
 
                 // 4. Обеспечиваем наличие всех необходимых расстояний и времени движения между парами точек в двух направлениях
@@ -6175,7 +6175,8 @@ namespace LogisticsService.SalesmanTravelingProblem
 
                 // 4. Строим отгрузку
                 rc = 4;
-                rc1 = shopCourier.DeliveryCheck(calcTime, shop, orders, isLoop, locInfo, out singleDelivery);
+                int[] orderGeoIndex = new int[] { 0, 1 };
+                rc1 = shopCourier.DeliveryCheck_new(calcTime, shop, orders, orderGeoIndex, isLoop, locInfo, out singleDelivery);
                 if (rc1 != 0 || singleDelivery == null)
                     return rc = 10000 * rc + rc1;
 

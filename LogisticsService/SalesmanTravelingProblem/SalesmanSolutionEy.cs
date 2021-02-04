@@ -767,7 +767,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                                 {
                                     // 5.5.2 Доставка курьером
                                     rc = 552;
-                                    if (courier.Status != CourierStatus.Ready)
+                                    if (!courier.IsTaxi && courier.Status != CourierStatus.Ready)
                                     {
                                         if (label > 2)
                                         {
