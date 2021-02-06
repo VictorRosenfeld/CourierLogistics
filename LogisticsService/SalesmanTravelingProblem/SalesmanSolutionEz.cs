@@ -981,7 +981,7 @@ namespace LogisticsService.SalesmanTravelingProblem
         /// <param name="receiptedOrders">Отгрузки, в которые могут попасть поступившие, но не собранные заказы</param>
         /// <param name="undeliveredOrders">Заказы, которые не могут быть доставлены в срок</param>
         /// <returns>0 - отгрузки созданы; иначе - отгрузки не созданы</returns>
-        private int CreateShopDeliveries_OnTime(Shop shop, Order[] onTimeOrders, Courier[] shopCouriers, DateTime calcTime, out CourierDeliveryInfo[] assembledOrders, out CourierDeliveryInfo[] receiptedOrders, out Order[] undeliveredOrders)
+        private int CreateShopDeliveries_OnTime_old(Shop shop, Order[] onTimeOrders, Courier[] shopCouriers, DateTime calcTime, out CourierDeliveryInfo[] assembledOrders, out CourierDeliveryInfo[] receiptedOrders, out Order[] undeliveredOrders)
         {
             // 1. Инициализация
             int rc = 1;
@@ -1009,6 +1009,318 @@ namespace LogisticsService.SalesmanTravelingProblem
                 for (int i = 0; i < shopCouriers.Length; i++)
                 {
                     Courier courier = shopCouriers[i];
+                    //if (courier.Status != CourierStatus.Ready)
+                    //    continue;
+
+                    if (!allTypeCouriers.ContainsKey(courier.CourierType.VechicleType))
+                    {
+                        if (courier.IsTaxi)
+                        {
+                            allTypeCouriers.Add(courier.CourierType.VechicleType, courier);
+                        }
+                        else
+                        {
+                            Courier courierClone = courier.Clone();
+                            courierClone.WorkStart = TimeSpan.Zero;
+                            courierClone.WorkEnd = new TimeSpan(23, 59, 59);
+                            courierClone.LunchTimeStart = TimeSpan.Zero;
+                            courierClone.LunchTimeEnd = TimeSpan.Zero;
+                            allTypeCouriers.Add(courierClone.CourierType.VechicleType, courierClone);
+                        }
+                    }
+                }
+
+                if (allTypeCouriers.Count <= 0)
+                    return rc;
+
+                // 4. Обеспечиваем наличие всех необходимых расстояний и времени движения между парами точек в двух направлениях
+                rc = 4;
+                Courier[] allCouriers = new Courier[allTypeCouriers.Count];
+                allTypeCouriers.Values.CopyTo(allCouriers, 0);
+                int size = onTimeOrders.Length + 1;
+                double[] latitude = new double[size];
+                double[] longitude = new double[size];
+
+                latitude[size - 1] = shop.Latitude;
+                longitude[size - 1] = shop.Longitude;
+                shop.LocationIndex = size - 1;
+
+                for (int i = 0; i < onTimeOrders.Length; i++)
+                {
+                    Order order = onTimeOrders[i];
+                    order.LocationIndex = i;
+                    latitude[i] = order.Latitude;
+                    longitude[i] = order.Longitude;
+                }
+
+                for (int i = 0; i < allTypeCouriers.Count; i++)
+                {
+                    rc1 = geoCache.PutLocationInfo(latitude, longitude, allCouriers[i].CourierType.VechicleType);
+                    if (rc1 != 0)
+                    {
+                        Logger.WriteToLog($"[debug] CreateShopDeliveries_OnTime. geoCache.PutLocationInfo ({rc1})");
+                        return rc = 100 * rc + rc1;
+                    }
+                }
+
+                // 5. Запускаем построение всех возможных путей всеми возможными способами
+                //    Каждый способ доставки обрабатывается в отдельном потоке
+                rc = 5;
+                //DateTime calcTime = new DateTime(2020, 11, 4, 18, 50, 0);
+                Task<int>[] tasks = new Task<int>[allTypeCouriers.Count];
+                CourierDeliveryInfo[][] taskDeliveries = new CourierDeliveryInfo[allTypeCouriers.Count][];
+
+                switch (allCouriers.Length)
+                {
+                    case 1:
+                        tasks[0] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[0], !allCouriers[0].IsTaxi, calcTime, out taskDeliveries[0]));
+                        break;
+                    case 2:
+                        tasks[0] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[0], !allCouriers[0].IsTaxi, calcTime, out taskDeliveries[0]));
+                        tasks[1] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[1], !allCouriers[1].IsTaxi, calcTime, out taskDeliveries[1]));
+                        break;
+                    case 3:
+                        tasks[0] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[0], !allCouriers[0].IsTaxi, calcTime, out taskDeliveries[0]));
+                        tasks[1] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[1], !allCouriers[1].IsTaxi, calcTime, out taskDeliveries[1]));
+                        tasks[2] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[2], !allCouriers[2].IsTaxi, calcTime, out taskDeliveries[2]));
+                        break;
+                    case 4:
+                        tasks[0] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[0], !allCouriers[0].IsTaxi, calcTime, out taskDeliveries[0]));
+                        tasks[1] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[1], !allCouriers[1].IsTaxi, calcTime, out taskDeliveries[1]));
+                        tasks[2] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[2], !allCouriers[2].IsTaxi, calcTime, out taskDeliveries[2]));
+                        tasks[3] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[3], !allCouriers[3].IsTaxi, calcTime, out taskDeliveries[3]));
+                        break;
+                    case 5:
+                        tasks[0] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[0], !allCouriers[0].IsTaxi, calcTime, out taskDeliveries[0]));
+                        tasks[1] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[1], !allCouriers[1].IsTaxi, calcTime, out taskDeliveries[1]));
+                        tasks[2] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[2], !allCouriers[2].IsTaxi, calcTime, out taskDeliveries[2]));
+                        tasks[3] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[3], !allCouriers[3].IsTaxi, calcTime, out taskDeliveries[3]));
+                        tasks[4] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[4], !allCouriers[4].IsTaxi, calcTime, out taskDeliveries[4]));
+                        break;
+                    case 6:
+                        tasks[0] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[0], !allCouriers[0].IsTaxi, calcTime, out taskDeliveries[0]));
+                        tasks[1] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[1], !allCouriers[1].IsTaxi, calcTime, out taskDeliveries[1]));
+                        tasks[2] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[2], !allCouriers[2].IsTaxi, calcTime, out taskDeliveries[2]));
+                        tasks[3] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[3], !allCouriers[3].IsTaxi, calcTime, out taskDeliveries[3]));
+                        tasks[4] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[4], !allCouriers[4].IsTaxi, calcTime, out taskDeliveries[4]));
+                        tasks[5] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[5], !allCouriers[5].IsTaxi, calcTime, out taskDeliveries[5]));
+                        break;
+                    case 7:
+                        tasks[0] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[0], !allCouriers[0].IsTaxi, calcTime, out taskDeliveries[0]));
+                        tasks[1] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[1], !allCouriers[1].IsTaxi, calcTime, out taskDeliveries[1]));
+                        tasks[2] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[2], !allCouriers[2].IsTaxi, calcTime, out taskDeliveries[2]));
+                        tasks[3] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[3], !allCouriers[3].IsTaxi, calcTime, out taskDeliveries[3]));
+                        tasks[4] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[4], !allCouriers[4].IsTaxi, calcTime, out taskDeliveries[4]));
+                        tasks[5] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[5], !allCouriers[5].IsTaxi, calcTime, out taskDeliveries[5]));
+                        tasks[6] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[6], !allCouriers[6].IsTaxi, calcTime, out taskDeliveries[6]));
+                        break;
+                    case 8:
+                        tasks[0] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[0], !allCouriers[0].IsTaxi, calcTime, out taskDeliveries[0]));
+                        tasks[1] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[1], !allCouriers[1].IsTaxi, calcTime, out taskDeliveries[1]));
+                        tasks[2] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[2], !allCouriers[2].IsTaxi, calcTime, out taskDeliveries[2]));
+                        tasks[3] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[3], !allCouriers[3].IsTaxi, calcTime, out taskDeliveries[3]));
+                        tasks[4] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[4], !allCouriers[4].IsTaxi, calcTime, out taskDeliveries[4]));
+                        tasks[5] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[5], !allCouriers[5].IsTaxi, calcTime, out taskDeliveries[5]));
+                        tasks[6] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[6], !allCouriers[6].IsTaxi, calcTime, out taskDeliveries[6]));
+                        tasks[7] = Task.Run(() => CreateShopDeliveriesEx(shop, onTimeOrders, allCouriers[7], !allCouriers[7].IsTaxi, calcTime, out taskDeliveries[7]));
+                        break;
+                }
+
+                // Дожидаёмся завершения обработки
+                Task.WaitAll(tasks);
+
+                // 6. Объединяем все построенные отгрузки
+                rc = 6;
+                int deliveryCount = 0;
+                CourierDeliveryInfo[] allDeliveries;
+
+                for (int i = 0; i < tasks.Length; i++)
+                {
+                    int rcx = tasks[i].Result;
+
+                    if (rcx == 0)
+                    {
+                        if (taskDeliveries[i] != null)
+                            deliveryCount += taskDeliveries[i].Length;
+                    }
+                }
+
+                if (deliveryCount <= 0)
+                {
+                    Logger.WriteToLog("[debug] CreateShopDeliveries_OnTime. // Не удалось постромить отгрузки");
+                    for (int i = 0; i < onTimeOrders.Length; i++)
+                    {
+                        onTimeOrders[i].RejectionReason = OrderRejectionReason.CourierNa;
+                    }
+
+                    for (int i = 0; i < tasks.Length; i++)
+                    {
+                        tasks[i].Dispose();
+                    }
+
+                    undeliveredOrders = onTimeOrders;
+                    return rc = 0;
+                }
+
+                allDeliveries = new CourierDeliveryInfo[deliveryCount];
+                deliveryCount = 0;
+
+                for (int i = 0; i < tasks.Length; i++)
+                {
+                    if (tasks[i].Result == 0)
+                    {
+                        if (taskDeliveries[i] != null)
+                        {
+                            taskDeliveries[i].CopyTo(allDeliveries, deliveryCount);
+                            deliveryCount += taskDeliveries[i].Length;
+                        }
+                    }
+
+                    tasks[i].Dispose();
+                }
+
+                // 7. Сортируем по средней стоимости доставки одного заказа
+                rc = 7;
+                Array.Sort(allDeliveries, CompareByOrderCost);
+
+                // 8. Строим покрытие из всех построенных отгрузок
+                rc = 8;
+                CourierDeliveryInfo[] deiveryCover;
+                bool[] orderCoverMap;
+                rc1 = BuildDeliveryCoverEy(shopCouriers, allDeliveries, onTimeOrders, false, geoCache, out deiveryCover, out orderCoverMap);
+                if (rc1 != 0)
+                    return rc = 100 * rc + rc1;
+
+                // 9. Отбираем не доставленные заказы и подсчитываем число не собранных
+                rc = 9;
+                int receiptedCount = 0;
+                Order[] undelivOrders = new Order[onTimeOrders.Length];
+                int undeliveredCount = 0;
+
+                for (int i = 0; i < orderCoverMap.Length; i++)
+                {
+                    //if (!orderCoverMap[i] && onTimeOrders[i].Status != OrderStatus.Receipted)
+                    //{
+                    //    Order order = onTimeOrders[i];
+                    //    order.RejectionReason = OrderRejectionReason.CourierNa;
+                    //    //Helper.WriteWarningToLog($"Receipted order can't delivery By Courier. CreateShopDeliveries. Shop {shop.Id}. Order {shopOrders[i].Id}, calcTime {calcTime}");
+                    //    Logger.WriteToLog(string.Format(MessagePatterns.REJECT_RECEIPTED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+                    //    undelivOrders[undeliveredCount++] = order;
+                    //}
+                    if (orderCoverMap[i] && onTimeOrders[i].Status == OrderStatus.Receipted)
+                    {
+                        receiptedCount++;
+                    }
+                }
+
+                // 10. Если в покрытии есть не собранные заказы
+                rc = 10;
+                if (receiptedCount > 0)
+                {
+                    receiptedOrders = new CourierDeliveryInfo[receiptedCount];
+                    receiptedCount = 0;
+
+                    for (int i = 0; i < deiveryCover.Length; i++)
+                    {
+                        if (!deiveryCover[i].HasAssembledOnly)
+                        {
+                            receiptedOrders[receiptedCount++] = deiveryCover[i];
+                        }
+                    }
+
+                    if (receiptedCount < receiptedOrders.Length)
+                    {
+                        Array.Resize(ref receiptedOrders, receiptedCount);
+                    }
+
+                    rc1 = BuildDeliveryCoverEy(shopCouriers, allDeliveries, onTimeOrders, true, geoCache, out deiveryCover, out orderCoverMap);
+                    if (rc1 != 0)
+                        return rc = 100 * rc + rc1;
+                }
+
+                assembledOrders = deiveryCover;
+
+                // 11. Формируем список заказов которые не могут быть доставлены в срок
+                rc = 11;
+                for (int i = 0; i < onTimeOrders.Length; i++)
+                {
+                    Order order = onTimeOrders[i];
+                    if (!orderCoverMap[i] && order.Status == OrderStatus.Assembled)
+                    {
+                        Logger.WriteToLog(string.Format(MessagePatterns.REJECT_ASSEMBLED_ORDER_BY_COURIER, order.Id, shop.Id, order.DeliveryTimeTo, calcTime));
+                        undelivOrders[undeliveredCount++] = order;
+                    }
+                }
+
+                if (undeliveredCount < undelivOrders.Length)
+                {
+                    Array.Resize(ref undelivOrders, undeliveredCount);
+                }
+
+                undeliveredOrders = undelivOrders;
+
+                // 12. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                //Helper.WriteErrorToLog($"CreateShopDeliveriesEx(Shop {shop.Id}, Orders {Helper.ArrayToString(allOrdersOfShop.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())})");
+                //Helper.WriteErrorToLog($"(rc = {rc})");
+                //Logger.WriteToLog(ex.ToString());
+
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_CALL, "CreateShopDeliveries_OnTime", $"Shop {shop.Id}, Orders {Helper.ArrayToString(onTimeOrders.Select(order => order.Id).ToArray())}, couriers { Helper.ArrayToString(shopCouriers.Select(courier => courier.Id).ToArray())}"));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_RC, "CreateShopDeliveries_OnTime", rc));
+                Logger.WriteToLog(string.Format(MessagePatterns.METHOD_FAIL, "CreateShopDeliveries_OnTime", ex.ToString()));
+
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Создание отгрузок для заказов магазина
+        /// </summary>
+        /// <param name="shop">Магазин</param>
+        /// <param name="onTimeOrders">Заказы магазина, для которых создаются отгрузки</param>
+        /// <param name="shopCouriers">Доступные для доставки заказов курьеры и такси</param>
+        /// <param name="calcTime">Время проведения расчетов</param>
+        /// <param name="assembledOrders">Отгрузки покрывающие все собранные заказы</param>
+        /// <param name="receiptedOrders">Отгрузки, в которые могут попасть поступившие, но не собранные заказы</param>
+        /// <param name="undeliveredOrders">Заказы, которые не могут быть доставлены в срок</param>
+        /// <returns>0 - отгрузки созданы; иначе - отгрузки не созданы</returns>
+        private int CreateShopDeliveries_OnTime(Shop shop, Order[] onTimeOrders, Courier[] shopCouriers, DateTime calcTime, out CourierDeliveryInfo[] assembledOrders, out CourierDeliveryInfo[] receiptedOrders, out Order[] undeliveredOrders)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            int rc1 = 1;
+            assembledOrders = null;
+            receiptedOrders = null;
+            undeliveredOrders = null;
+
+            try
+            {
+                // 2. Проверяем исходные 
+                rc = 2;
+                if (geoCache == null)
+                    return rc;
+                if (shop == null)
+                    return rc;
+                if (shopCouriers == null || shopCouriers.Length <= 0)
+                    return rc;
+                if (onTimeOrders == null || onTimeOrders.Length <= 0)
+                    return rc;
+
+                // 3. Выбираем по одному курьеру каждого типа среди заданных
+                rc = 3;
+                int[] oderVehicleType = GetOrderVehicleTypes(onTimeOrders);
+                Array.Sort(oderVehicleType);
+
+                Dictionary<CourierVehicleType, Courier> allTypeCouriers = new Dictionary<CourierVehicleType, Courier>(8);
+                for (int i = 0; i < shopCouriers.Length; i++)
+                {
+                    Courier courier = shopCouriers[i];
+                    if (Array.BinarySearch(oderVehicleType, courier.CourierType.VechicleType) < 0)
+                        continue;
                     //if (courier.Status != CourierStatus.Ready)
                     //    continue;
 
