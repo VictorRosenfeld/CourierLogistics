@@ -421,7 +421,7 @@ namespace LogisticsService.Couriers
 
                 foreach (Courier courier in couriers.Values)
                 {
-                    if (readyOnly && courier.Status != CourierStatus.Ready)
+                    if (!courier.IsTaxi && readyOnly && courier.Status != CourierStatus.Ready)
                         continue;
                     if (courier.IsTaxi)
                     {

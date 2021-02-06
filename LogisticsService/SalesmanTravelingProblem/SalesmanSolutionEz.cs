@@ -630,7 +630,8 @@ namespace LogisticsService.SalesmanTravelingProblem
                 double[] srcLongitude = new double[] { shop.Longitude };
                 double[] dstLatitude = new double[orderCount];
                 double[] dstLongitude = new double[orderCount];
-                int[] allVechicleTypes = GetCourierVehicleTypes(shopCouriers);
+                //int[] allVechicleTypes = GetCourierVehicleTypes(shopCouriers);
+                int[] allVechicleTypes = GetOrderVehicleTypes(shopOrders);
 
                 for (int i = 0; i < orderCount; i++)
                 {
@@ -646,7 +647,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                     rc1 = geoCache.PutLocationInfo(dstLatitude, dstLongitude, srcLatitude, srcLongitude, (CourierVehicleType)allVechicleTypes[i]);
                 }
 
-                // 4. Выбираем по одному курьру каждого типа среди всех курьров магазина 
+                // 4. Выбираем по одному курьеру каждого типа среди всех курьров магазина 
                 rc = 4;
                 Dictionary<CourierVehicleType, Courier> allTypeCouriers = new Dictionary<CourierVehicleType, Courier>(8);
 
@@ -707,6 +708,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                     // 5.4 Извлекаем возможные способы доставки заказа
                     rc = 54;
                     CourierVehicleType[] orderVehicleTypes = order.EnabledTypesEx;
+
                     if (orderVehicleTypes == null || orderVehicleTypes.Length <= 0)
                     {
                         label = 3;
@@ -6029,6 +6031,8 @@ namespace LogisticsService.SalesmanTravelingProblem
             }
         }
 
+        private static object syncGeo = new object();
+
         /// <summary>
         /// Запрос таблицы попарных расстояний и времени движения для магазина и заказов
         /// </summary>
@@ -6040,51 +6044,54 @@ namespace LogisticsService.SalesmanTravelingProblem
         /// <returns>0 - таблица построена; иначе - таблица не построена</returns>
         private static int GetDistTimeTable(Shop shop, Order[] orders, CourierVehicleType vehicleType, GeoCache geoCache, out Point[,] distTimeTable)
         {
-            // 1. Инициализация
-            int rc = 1;
-            distTimeTable = null;
-
-            try
+            lock (syncGeo)
             {
-                // 2. Проверяем исходные данные
-                rc = 2;
-                if (shop == null)
-                    return rc;
-                if (orders == null || orders.Length <= 0)
-                    return rc;
-                if (geoCache == null)
-                    return rc;
+                // 1. Инициализация
+                int rc = 1;
+                distTimeTable = null;
 
-                // 3. создаём массивы с аргументами
-                rc = 3;
-                int size = orders.Length + 1;
-                double[] latitude = new double[size];
-                double[] longitude = new double[size];
-                latitude[size - 1] = shop.Latitude;
-                longitude[size - 1] = shop.Longitude;
-                shop.LocationIndex = size - 1;
-
-                for (int i = 0; i < orders.Length; i++)
+                try
                 {
-                    Order order = orders[i];
-                    //order.LocationIndex = i;
-                    latitude[i] = order.Latitude;
-                    longitude[i] = order.Longitude;
+                    // 2. Проверяем исходные данные
+                    rc = 2;
+                    if (shop == null)
+                        return rc;
+                    if (orders == null || orders.Length <= 0)
+                        return rc;
+                    if (geoCache == null)
+                        return rc;
+
+                    // 3. создаём массивы с аргументами
+                    rc = 3;
+                    int size = orders.Length + 1;
+                    double[] latitude = new double[size];
+                    double[] longitude = new double[size];
+                    latitude[size - 1] = shop.Latitude;
+                    longitude[size - 1] = shop.Longitude;
+                    shop.LocationIndex = size - 1;
+
+                    for (int i = 0; i < orders.Length; i++)
+                    {
+                        Order order = orders[i];
+                        //order.LocationIndex = i;
+                        latitude[i] = order.Latitude;
+                        longitude[i] = order.Longitude;
+                    }
+
+                    // 4. Запрашиваем таблицу результата
+                    rc = 4;
+                    int rc1 = geoCache.GetPointsDataTable(latitude, longitude, vehicleType, out distTimeTable);
+                    if (rc1 != 0 || distTimeTable == null)
+                        return rc = 1000 * rc + rc1;
+
+                    // 5. Выход - Ok
+                    rc = 0;
+                    return rc;
                 }
-
-                // 4. Запрашиваем таблицу результата
-                rc = 4;
-                int rc1 = geoCache.GetPointsDataTable(latitude, longitude, vehicleType, out distTimeTable);
-                if (rc1 != 0 || distTimeTable == null)
-                    return rc = 1000 * rc + rc1;
-
-                // 5. Выход - Ok
-                rc = 0;
-                return rc;
-            }
-            catch
-            {
-                return rc;
+                catch
+                {
+                    return rc;
+                }
             }
         }
 
@@ -6134,6 +6141,31 @@ namespace LogisticsService.SalesmanTravelingProblem
             int[] vehicleTypes = couriers.Select(courier => (int)courier.CourierType.VechicleType).Distinct().ToArray();
             Array.Sort(vehicleTypes);
             return vehicleTypes;
+        }
+
+        /// <summary>
+        /// Построение отсортированного списка кодов способов доставки
+        /// для заданных курьеров
+        /// </summary>
+        /// <param name="couriers">Курьеры</param>
+        /// <returns>Отсортированные способы доставки</returns>
+        private static int[] GetOrderVehicleTypes(Order[] orders)
+        {
+            if (orders == null || orders.Length <= 0)
+                return new int[0];
+
+            Dictionary<int, int> allTypes = new Dictionary<int, int>(128);
+
+            for (int i = 0; i < orders.Length; i++)
+            {
+                foreach (int vt in orders[i].EnabledTypesEx)
+                {
+                    if (!allTypes.ContainsKey(vt))
+                        allTypes.Add(vt, vt);
+                }
+            }
+
+            return allTypes.Values.ToArray();
         }
 
         /// <summary>

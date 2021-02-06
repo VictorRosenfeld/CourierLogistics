@@ -49,10 +49,10 @@ namespace LogisticsService.Geo
         /// </summary>
         private int yandexTypeCount;
 
-        /// <summary>
-        /// Экземпляр для получения хэша координат
-        /// </summary>
-        private GeoCoordinate coordinateHash;
+        ///// <summary>
+        ///// Экземпляр для получения хэша координат
+        ///// </summary>
+        //private GeoCoordinate coordinateHash;
 
         /// <summary>
         /// Ёмкость кэша
@@ -88,7 +88,7 @@ namespace LogisticsService.Geo
             cacheItems = new CacheItem[hashCapacity];
             cacheItemCount = 0;
             cacheItemIndex = new Dictionary<ulong, int>(hashCapacity);
-            coordinateHash = new GeoCoordinate();
+            //coordinateHash = new GeoCoordinate();
             //deliveryMethodName = new string[] { DELIVERY_BY_CAR, DELIVERY_BY_BICYCLE, DELIVERY_BY_ONFOOT };
 
             // 2. Построение словаря способов доставки
@@ -119,6 +119,15 @@ namespace LogisticsService.Geo
 
             if (yandexTypeCount <= 0)
                 yandexTypeCount = 1;
+
+            //double lat = 37.1112345;
+            //double lon = 55.9876543;
+            //coordinateHash.Latitude = lat;
+            //coordinateHash.Longitude = lon;
+            //int h1 = coordinateHash.GetHashCode();
+            //int h2 = lat.GetHashCode() ^ lon.GetHashCode();
+            //bool equal = (h1 == h2);
+
         }
 
         ///// <summary>
@@ -168,9 +177,10 @@ namespace LogisticsService.Geo
 
                 for (int i = 0; i < n; i++)
                 {
-                    coordinateHash.Latitude = latitude[i];
-                    coordinateHash.Longitude = longitude[i];
-                    pointHash[i] = coordinateHash.GetHashCode();
+                    //coordinateHash.Latitude = latitude[i];
+                    //coordinateHash.Longitude = longitude[i];
+                    //pointHash[i] = coordinateHash.GetHashCode();
+                    pointHash[i] = GetCoordinateHash(latitude[i], longitude[i]);
                 }
 
                 // 5. Выделяем пары, для которых расстояния неизвестны
@@ -396,9 +406,11 @@ namespace LogisticsService.Geo
 
                 for (int i = 0; i < n; i++)
                 {
-                    coordinateHash.Latitude = latitude[i];
-                    coordinateHash.Longitude = longitude[i];
-                    pointHash[i] = coordinateHash.GetHashCode();
+                    //coordinateHash.Latitude = latitude[i];
+                    //coordinateHash.Longitude = longitude[i];
+                    //pointHash[i] = coordinateHash.GetHashCode();
+                    pointHash[i] = GetCoordinateHash(latitude[i], longitude[i]);
+
                 }
 
                 // 5. Выделяем пары, для которых расстояния неизвестны в прямом (i < j)
@@ -705,17 +717,20 @@ namespace LogisticsService.Geo
 
                 for (int i = 0; i < n1; i++)
                 {
-                    coordinateHash.Latitude = srcLatitude[i];
-                    coordinateHash.Longitude = srcLongitude[i];
-                    srcPointHash[i] = coordinateHash.GetHashCode();
+                    //coordinateHash.Latitude = srcLatitude[i];
+                    //coordinateHash.Longitude = srcLongitude[i];
+                    //srcPointHash[i] = coordinateHash.GetHashCode();
+                    srcPointHash[i] = GetCoordinateHash(srcLatitude[i], srcLongitude[i]);
+
                 }
 
                 for (int i = 0; i < n2; i++)
                 {
-                    coordinateHash.Latitude = dstLatitude[i];
-                    coordinateHash.Longitude = dstLongitude[i];
-                    dstPointHash[i] = coordinateHash.GetHashCode();
-                }
+                    //coordinateHash.Latitude = dstLatitude[i];
+                    //coordinateHash.Longitude = dstLongitude[i];
+                    //dstPointHash[i] = coordinateHash.GetHashCode();
+                    dstPointHash[i] = GetCoordinateHash(dstLatitude[i], dstLongitude[i]);
+               }
 
                 // 5. Выделяем пары, для которых расстояния неизвестны
                 rc = 5;
@@ -825,11 +840,11 @@ namespace LogisticsService.Geo
                     for (int j = 0; j < destinationCount; j++)
                     {
                         int j1 = destinationLocationIndex[j];
-                        if (j1 != i1)
-                        {
-                            int hash2 = dstPointHash[j1];
-                            SaveCacheItem(hash1, hash2, new Point(postInfoRow[j].distance, postInfoRow[j].duration), deliveryMethodIndex);
-                        }
+                        //if (j1 != i1)
+                        //{
+                        int hash2 = dstPointHash[j1];
+                        SaveCacheItem(hash1, hash2, new Point(postInfoRow[j].distance, postInfoRow[j].duration), deliveryMethodIndex);
+                        //}
                     }
                 }
 
@@ -885,9 +900,10 @@ namespace LogisticsService.Geo
 
                 for (int i = 0; i < n; i++)
                 {
-                    coordinateHash.Latitude = latitude[i];
-                    coordinateHash.Longitude = longitude[i];
-                    pointHash[i] = coordinateHash.GetHashCode();
+                    //coordinateHash.Latitude = latitude[i];
+                    //coordinateHash.Longitude = longitude[i];
+                    //pointHash[i] = coordinateHash.GetHashCode();
+                    pointHash[i] = GetCoordinateHash(latitude[i], longitude[i]);
                 }
 
                 // 5. Заполняем таблицу результата
@@ -1046,5 +1062,27 @@ namespace LogisticsService.Geo
 
             return deliveryIndex;
         }
+
+        /// <summary>
+        /// Построение hash-значения для координат (latitude, longitude)
+        /// </summary>
+        /// <param name="latitude">Широта</param>
+        /// <param name="longitude">Долгота</param>
+        /// <returns>Hash-значение координат</returns>
+        private static int GetCoordinateHash(double latitude, double longitude)
+        {
+            return latitude.GetHashCode() ^ longitude.GetHashCode();
+        }
+
+        //public static unsafe int GetHashCode(double d)
+        //{
+        //    if (d == 0)
+        //    {
+        //        // Ensure that 0 and -0 have the same hash code
+        //        return 0;
+        //    }
+        //    long value = *(long*)(&d);
+        //    return unchecked((int)value) ^ ((int)(value >> 32));
+        //}
     }
 }
