@@ -1625,11 +1625,16 @@ namespace LogisticsService.SalesmanTravelingProblem
 
                 // 3. Выбираем по одному курьру каждого типа среди заданных
                 rc = 3;
+                int[] oderVehicleType = GetOrderVehicleTypes(behindTimeOrders);
+                Array.Sort(oderVehicleType);
+
                 Dictionary<CourierVehicleType, Courier> allTypeCouriers = new Dictionary<CourierVehicleType, Courier>(8);
                 for (int i = 0; i < shopCouriers.Length; i++)
                 {
                     Courier courier = shopCouriers[i];
                     if (courier.Status != CourierStatus.Ready)
+                        continue;
+                    if (Array.BinarySearch(oderVehicleType, courier.CourierType.VechicleType) < 0)
                         continue;
 
                     if (!allTypeCouriers.ContainsKey(courier.CourierType.VechicleType))
@@ -1946,11 +1951,16 @@ namespace LogisticsService.SalesmanTravelingProblem
 
                 // 4. Выбираем по одному курьру каждого типа среди заданных
                 rc = 4;
+                int[] oderVehicleType = GetOrderVehicleTypes(onTimeOrders.Concat(behindTimeOrders).ToArray());
+                Array.Sort(oderVehicleType);
+
                 Dictionary<CourierVehicleType, Courier> allTypeCouriers = new Dictionary<CourierVehicleType, Courier>(8);
                 for (int i = 0; i < shopCouriers.Length; i++)
                 {
                     Courier courier = shopCouriers[i];
                     if (courier.Status != CourierStatus.Ready)
+                        continue;
+                    if (Array.BinarySearch(oderVehicleType, courier.CourierType.VechicleType) < 0)
                         continue;
 
                     if (!allTypeCouriers.ContainsKey(courier.CourierType.VechicleType))
