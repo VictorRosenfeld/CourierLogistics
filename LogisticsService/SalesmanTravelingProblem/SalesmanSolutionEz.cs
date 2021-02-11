@@ -1319,7 +1319,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                 for (int i = 0; i < shopCouriers.Length; i++)
                 {
                     Courier courier = shopCouriers[i];
-                    if (Array.BinarySearch(oderVehicleType, courier.CourierType.VechicleType) < 0)
+                    if (Array.BinarySearch(oderVehicleType, (int) courier.CourierType.VechicleType) < 0)
                         continue;
                     //if (courier.Status != CourierStatus.Ready)
                     //    continue;
@@ -1634,7 +1634,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                     Courier courier = shopCouriers[i];
                     if (courier.Status != CourierStatus.Ready)
                         continue;
-                    if (Array.BinarySearch(oderVehicleType, courier.CourierType.VechicleType) < 0)
+                    if (Array.BinarySearch(oderVehicleType, (int) courier.CourierType.VechicleType) < 0)
                         continue;
 
                     if (!allTypeCouriers.ContainsKey(courier.CourierType.VechicleType))
@@ -1960,7 +1960,7 @@ namespace LogisticsService.SalesmanTravelingProblem
                     Courier courier = shopCouriers[i];
                     if (courier.Status != CourierStatus.Ready)
                         continue;
-                    if (Array.BinarySearch(oderVehicleType, courier.CourierType.VechicleType) < 0)
+                    if (Array.BinarySearch(oderVehicleType, (int) courier.CourierType.VechicleType) < 0)
                         continue;
 
                     if (!allTypeCouriers.ContainsKey(courier.CourierType.VechicleType))

@@ -118,6 +118,15 @@ namespace LogisticsService.Couriers
             }
 
             Completed = value;
+
+            if (value)
+            {
+                if (DeliveryCourier != null)
+                {
+                    if (!DeliveryCourier.IsTaxi)
+                        DeliveryCourier.Status = CourierStatus.DeliversOrder;
+                }
+            }
         }
 
         /// <summary>
