@@ -182,6 +182,9 @@ namespace LogisticsService.Couriers
                     if (!order.IsVehicleTypeEnabled(thisVehicleType))
                         return rc;
 
+                    if (order.Weight > CourierType.MaxOrderWeight)
+                        return rc;
+
                     weight += order.Weight;
 
                     int orderLocIndex = order.LocationIndex;
@@ -394,6 +397,9 @@ namespace LogisticsService.Couriers
                     //if ((order.EnabledTypes & serviceFlag) == 0)
                     //    return rc;
                     if (!order.IsVehicleTypeEnabled(thisVehicleType))
+                        return rc;
+
+                    if (order.Weight > CourierType.MaxOrderWeight)
                         return rc;
 
                     weight += order.Weight;

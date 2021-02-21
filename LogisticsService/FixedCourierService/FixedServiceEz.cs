@@ -1734,7 +1734,8 @@ namespace LogisticsService.FixedCourierService
                                     }
                                     else
                                     {
-                                        if (order.Weight > courier.CourierType.MaxWeight)
+                                        //if (order.Weight > courier.CourierType.MaxWeight)
+                                        if (order.Weight > courier.CourierType.MaxOrderWeight)
                                         {
                                             infoItem.rejection_reason = (int)OrderRejectionReason.Overweight;
                                         }

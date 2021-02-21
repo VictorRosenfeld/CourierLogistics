@@ -130,7 +130,8 @@ namespace LogisticsService.Couriers
                 if (fromShop.X > 1000 * courierType.MaxDistance)
                     return rc;
                 rc = 22;
-                if (weight > courierType.MaxWeight)
+                //if (weight > courierType.MaxWeight)
+                if (weight > courierType.MaxOrderWeight)
                     return rc;
 
                 // 3. Производим вычисление времени и стоимости
@@ -180,7 +181,8 @@ namespace LogisticsService.Couriers
                 if (fromShop.X > 1000 * courierType.MaxDistance)
                     return rc;
                 rc = 22;
-                if (weight > courierType.MaxWeight)
+                //if (weight > courierType.MaxWeight)
+                if (weight > courierType.MaxOrderWeight)
                     return rc;
 
                 // 3. Производим вычисление времени и стоимости
@@ -308,7 +310,8 @@ namespace LogisticsService.Couriers
                 if (fromShop.X > 1000 * courierType.MaxDistance)
                     return rc;
                 rc = 22;
-                if (weight > courierType.MaxWeight)
+                //if (weight > courierType.MaxWeight)
+                if (weight > courierType.MaxOrderWeight)
                     return rc;
 
                 // 3. Производим вычисление времени и стоимости
@@ -360,7 +363,8 @@ namespace LogisticsService.Couriers
                 if (fromShop.X > 1000 * courierType.MaxDistance)
                     return rc;
                 rc = 22;
-                if (weight > courierType.MaxWeight)
+                //if (weight > courierType.MaxWeight)
+                if (weight > courierType.MaxOrderWeight)
                     return rc;
 
                 // 3. Производим вычисление времени и стоимости
@@ -502,7 +506,8 @@ namespace LogisticsService.Couriers
                 if (fromShop.X > 1000 * courierType.MaxDistance)
                     return rc;
                 rc = 22;
-                if (weight > courierType.MaxWeight)
+                //if (weight > courierType.MaxWeight)
+                if (weight > courierType.MaxOrderWeight)
                     return rc;
 
                 // 3. Производим вычисление времени и стоимости
@@ -561,7 +566,8 @@ namespace LogisticsService.Couriers
                 if (fromShop.X > 1000 * courierType.MaxDistance)
                     return rc;
                 rc = 22;
-                if (weight > courierType.MaxWeight)
+                //if (weight > courierType.MaxWeight)
+                if (weight > courierType.MaxOrderWeight)
                     return rc;
 
                 // 3. Производим вычисление времени и стоимости
@@ -721,7 +727,8 @@ namespace LogisticsService.Couriers
                 if (fromShop.X > 1000 * courierType.MaxDistance)
                     return rc;
                 rc = 22;
-                if (weight > courierType.MaxWeight)
+                //if (weight > courierType.MaxWeight)
+                if (weight > courierType.MaxOrderWeight)
                     return rc;
 
                 // 3. Производим вычисление времени и стоимости
@@ -782,7 +789,8 @@ namespace LogisticsService.Couriers
                 if (fromShop.X > 1000 * courierType.MaxDistance)
                     return rc;
                 rc = 22;
-                if (weight > courierType.MaxWeight)
+                //if (weight > courierType.MaxWeight)
+                if (weight > courierType.MaxOrderWeight)
                     return rc;
 
                 // 3. Производим вычисление времени и стоимости

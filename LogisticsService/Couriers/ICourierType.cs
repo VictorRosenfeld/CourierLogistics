@@ -28,6 +28,11 @@ namespace LogisticsService.Couriers
         double MaxWeight { get; }
 
         /// <summary>
+        /// Максимальный вес одного заказа
+        /// </summary>
+        double MaxOrderWeight { get; }
+
+        /// <summary>
         /// Часовая ставка
         /// </summary>
         double HourlyRate { get; }

@@ -14,6 +14,9 @@ namespace LogisticsService.ServiceParameters
         [JsonProperty("max_weight")]
         public double MaxWeight { get; set; }
 
+        [JsonProperty("max_order_weight")]
+        public double MaxOrderWeight { get; set; }
+
         [JsonProperty("hourly_rate")]
         public double HourlyRate { get; set; }
 

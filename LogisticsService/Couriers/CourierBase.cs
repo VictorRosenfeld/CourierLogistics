@@ -42,6 +42,11 @@ namespace LogisticsService.Couriers
         public double MaxWeight { get; private set; }
 
         /// <summary>
+        /// Максимальный вес доставляемых заказов, кг
+        /// </summary>
+        public double MaxOrderWeight { get; private set; }
+
+        /// <summary>
         /// Стоимость часа работы, руб
         /// </summary>
         public double HourlyRate { get; private set; }
@@ -145,6 +150,7 @@ namespace LogisticsService.Couriers
         {
             VechicleType = parameters.VechicleType;
             MaxWeight = parameters.MaxWeight;
+            MaxOrderWeight = parameters.MaxOrderWeight;
             HourlyRate = parameters.HourlyRate;
             MaxDistance = parameters.MaxDistance;
             MaxOrderCount = parameters.MaxOrderCount;
