@@ -3459,7 +3459,7 @@ namespace LogisticsService.SalesmanTravelingProblem
 
                                             for (int i8 = i7 + 1; i8 < orderCount; i8++)
                                             {
-                                                orderGeoIndex[7] = i7;
+                                                orderGeoIndex[7] = i8;
                                                 orderGeoIndex[8] = shopIndex;
 
                                                 orders[7] = courierOrders[i8];
@@ -5789,7 +5789,8 @@ namespace LogisticsService.SalesmanTravelingProblem
                     return rc;
                 if (shopOrders == null || shopOrders.Length <= 0)
                     return rc;
-                if (orderCount < 0 || orderCount >= shopOrders.Length)
+                //if (orderCount < 0 || orderCount >= shopOrders.Length)
+                if (orderCount < 0 || orderCount > shopOrders.Length)
                     return rc;
 
                 if (orderGeoIndex == null || orderGeoIndex.Length < orderCount + 1)
@@ -5821,7 +5822,10 @@ namespace LogisticsService.SalesmanTravelingProblem
                     {
                         int orderIndex = permutations[i, j];
                         permutOrders[j] = shopOrders[orderIndex];
-                        geoIndex[j] = orderIndex;
+                        // ???????????????????????????????????????????????????????????????
+                        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        //geoIndex[j] = orderIndex;
+                        geoIndex[j] = orderGeoIndex[orderIndex];
                     }
 
                     // 4.2 Проверяем построенный путь и отбираем наилучший среди всех перестановок

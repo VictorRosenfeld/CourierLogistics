@@ -922,8 +922,8 @@ namespace LogisticsService.Geo
 
                         if (hash1 != hash2)
                         {
-                            ulong key1 = GetKey(hash1, hash2);
-                            ulong key2 = GetKey(hash2, hash1);
+                            //ulong key1 = GetKey(hash1, hash2);
+                            //ulong key2 = GetKey(hash2, hash1);
 
                             CacheItem item1 = cacheItems[cacheItemIndex[GetKey(hash1, hash2)]];
                             CacheItem item2 = cacheItems[cacheItemIndex[GetKey(hash2, hash1)]];

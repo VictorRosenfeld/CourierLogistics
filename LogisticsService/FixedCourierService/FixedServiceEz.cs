@@ -1254,6 +1254,12 @@ namespace LogisticsService.FixedCourierService
                     for (int i = 0; i < sentCount; i++)
                     {
                         sentOrders[i].SetCompleted(true);
+
+                        foreach (var order in sentOrders[i].Orders)
+                        {
+                            if (order != null)
+                                allOrders.RemoveOrder(order.Id);
+                        }
                     }
                 }
 
@@ -1902,6 +1908,12 @@ namespace LogisticsService.FixedCourierService
                         if (activeEvent != null && activeEvent.Delivery != null)
                         {
                             activeEvent.Delivery.SetCompleted(true);
+
+                            foreach (var order in activeEvent.Delivery.Orders)
+                            {
+                                if (order != null)
+                                    allOrders.RemoveOrder(order.Id);
+                            }
                         }
                     }
                 }
@@ -2176,6 +2188,11 @@ namespace LogisticsService.FixedCourierService
                     for (int i = 0; i < sentCount; i++)
                     {
                         sentOrders[i].SetCompleted(true);
+                        foreach(var order in sentOrders[i].Orders)
+                        {
+                            if (order != null)
+                                allOrders.RemoveOrder(order.Id);
+                        }
                     }
                 }
 

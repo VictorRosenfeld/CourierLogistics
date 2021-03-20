@@ -464,6 +464,22 @@ namespace CourierLogistics
         /// <param name="e">Аргументы события</param>
         private void MainForm_Load(object sender, EventArgs e)
         {
+            //double lat1 = 54.602901;
+            //double lon1 = 39.8339;
+            //double lat2 = 54.602402;
+            //double lon2 = 39.8321;
+            //double shop_lat = 54.622085;
+            //double shop_lon = 39.757539;
+
+            //int hash1 = lat1.GetHashCode() ^ lon1.GetHashCode();
+            //int hash2 = lat2.GetHashCode() ^ lon2.GetHashCode();
+            //int hash3 = shop_lat.GetHashCode() ^ shop_lon.GetHashCode();
+
+            //ulong key13 = (((ulong)hash1) << 32 & 0xFFFFFFFF00000000) | ((ulong)hash3 & 0x00000000FFFFFFFF);
+            //ulong key23 = (((ulong)hash2) << 32 & 0xFFFFFFFF00000000) | ((ulong)hash3 & 0x00000000FFFFFFFF);
+            //ulong key31 = (((ulong)hash3) << 32 & 0xFFFFFFFF00000000) | ((ulong)hash1 & 0x00000000FFFFFFFF);
+            //ulong key32 = (((ulong)hash3) << 32 & 0xFFFFFFFF00000000) | ((ulong)hash2 & 0x00000000FFFFFFFF);
+
             //AnalyzerConfig analyzerConfig = new AnalyzerConfig();
             //analyzerConfig.OpenReport = true;
             //analyzerConfig.ReportFile = @"C:\T2\Report\report.xlsx";

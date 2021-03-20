@@ -453,5 +453,35 @@ namespace LogisticsService.Orders
                 return rc;
             }
         }
+
+        /// <summary>
+        /// Удаление заказа из коллекции
+        /// </summary>
+        /// <param name="orderId">ID удаляемого заказа</param>
+        /// <returns>0 - заказ удален; иначе - заказ не удален</returns>
+        public int RemoveOrder(int orderId)
+        {
+            lock (syncRoot)
+            {
+                // 1. Инициализация
+                int rc = 1;
+
+                try
+                {
+                    // 2. Удаляем элемент
+                    rc = 2;
+                    if (orders != null)
+                        orders.Remove(orderId);
+
+                    // 3. Выход - Ok
+                    rc = 0;
+                    return rc;
+                }
+                catch
+                {
+                    return rc;
+                }
+            }
+        }
     }
 }
