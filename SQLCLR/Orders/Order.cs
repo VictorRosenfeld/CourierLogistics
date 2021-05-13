@@ -1,5 +1,5 @@
 
-namespace SQLCLR
+namespace SQLCLR.Orders
 {
     using System;
 
@@ -69,6 +69,23 @@ namespace SQLCLR
         public int RejectionReason { get; set; }
 
         /// <summary>
+        /// ѕриоритет заказа
+        /// </summary>
+        public int Priority { get; set; }
+
+        /// <summary>
+        /// ‘лаг отмены проверок временных ограничений:
+        /// true - проверки отменены; false - проверки остаютс€ в силе
+        /// </summary>
+        public bool TimeCheckDisabled { get; set; }
+
+        /// <summary>
+        /// ID допустимых способов доставки заказа (VehicleID),
+        /// осортированных по возрастанию
+        /// </summary>
+        public int[] VehicleTypes { get; set; }
+
+        /// <summary>
         /// ѕереопределенный ToString()
         /// </summary>
         /// <returns>“екстовое представление экземпл€ра</returns>
@@ -76,12 +93,6 @@ namespace SQLCLR
         {
             return $"{Id}, {Status}, {Completed}";
         }
-
-        /// <summary>
-        /// ID допустимых способов доставки заказа (VehicleID),
-        /// осортированных по возрастанию
-        /// </summary>
-        public int[] VehicleTypes { get; set; }
 
         /// <summary>
         /// ѕроверка способа доставки на возможность доставки заказа

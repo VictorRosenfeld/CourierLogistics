@@ -1,12 +1,14 @@
-using System;
+using Microsoft.SqlServer.Server;
+using SQLCLR.Orders;
+using SQLCLR.Shop;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
-using Microsoft.SqlServer.Server;
-using SQLCLR.Shop;
 
 public partial class StoredProcedures
 {
+    #region SQL instructions
+
     /// <summary>
     /// Доступные курьеры и такси
     /// </summary>
@@ -26,6 +28,16 @@ public partial class StoredProcedures
     /// </summary>
     private const string SELECT_SHOP = "SELECT * FROM lsvShops WHERE shpShopID = @shop_id";
 
+    /// <summary>
+    /// Выбор заказов магазина
+    /// </summary>
+    private const string SELECT_ORDERS =
+        "SELECT lsvOrders.*, lsvOrderVehicleTypes.lsvOrderVehicleTypes.ovtVehicleID " +
+        "FROM   lsvOrders INNER JOIN " +
+        "          lsvOrderVehicleTypes ON lsvOrders.ordOrderID = lsvOrderVehicleTypes.ovtOrderID " +
+        "WHERE  (lsvOrders.ordShopID = @shop_id) AND (lsvOrders.ordStatusID = 1 OR lsvOrders.ordStatusID = 2);";
+
+    #endregion SQL instructions
 
 
     [SqlProcedure]
@@ -52,7 +64,7 @@ public partial class StoredProcedures
 
                 // 3.2 Создаём объект - магазин
                 Shop shop;
-                rc1 = LoadShop(shopId.Value, connection, out shop);
+                rc1 = SelectShop(shopId.Value, connection, out shop);
                 if (rc1 != 0)
                     return rc = 1000 * rc + rc1;
 
@@ -80,7 +92,7 @@ public partial class StoredProcedures
     /// <param name="connection"></param>
     /// <param name="shop"></param>
     /// <returns></returns>
-    private static int LoadShop(int shop_id, SqlConnection connection, out Shop shop)
+    private static int SelectShop(int shop_id, SqlConnection connection, out Shop shop)
     {
         // 1. Инициализация
         int rc = 1;
@@ -127,5 +139,10 @@ public partial class StoredProcedures
         {
             return rc;
         }
+    }
+
+    private static int SelectOrders(int shop_id, SqlConnection connection, out Order[] orders)
+    {
+
     }
 }
