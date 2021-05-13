@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticsService", "Logisti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogAnalyzer", "LogAnalyzer\LogAnalyzer.csproj", "{56D4E7A3-114F-4073-8AAA-F58EC754AAFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalcDeliveryThresholds", "CalcDeliveryThresholds\CalcDeliveryThresholds.csproj", "{F3CD160D-DBE4-4445-ADAA-80D630356DB3}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SQLCLR", "SQLCLR\SQLCLR.sqlproj", "{2209FCCB-4580-45E9-95B7-9CB028C6D7EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,16 @@ Global
 		{56D4E7A3-114F-4073-8AAA-F58EC754AAFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56D4E7A3-114F-4073-8AAA-F58EC754AAFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56D4E7A3-114F-4073-8AAA-F58EC754AAFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3CD160D-DBE4-4445-ADAA-80D630356DB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3CD160D-DBE4-4445-ADAA-80D630356DB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3CD160D-DBE4-4445-ADAA-80D630356DB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3CD160D-DBE4-4445-ADAA-80D630356DB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2209FCCB-4580-45E9-95B7-9CB028C6D7EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2209FCCB-4580-45E9-95B7-9CB028C6D7EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2209FCCB-4580-45E9-95B7-9CB028C6D7EB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{2209FCCB-4580-45E9-95B7-9CB028C6D7EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2209FCCB-4580-45E9-95B7-9CB028C6D7EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2209FCCB-4580-45E9-95B7-9CB028C6D7EB}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
