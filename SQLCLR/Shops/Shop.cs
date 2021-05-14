@@ -1,5 +1,5 @@
 ﻿
-namespace SQLCLR.Shop
+namespace SQLCLR.Shops
 {
     using System;
 

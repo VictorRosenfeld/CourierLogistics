@@ -60,6 +60,7 @@
     <Folder Include="Properties" />
     <Folder Include="Orders" />
     <Folder Include="Shops" />
+    <Folder Include="Deliveries" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -71,5 +72,9 @@
     <Compile Include="LoadCourierTypes.cs" />
     <Compile Include="Shops\Shop.cs" />
     <Compile Include="Orders\Order.cs" />
+    <Compile Include="Orders\OrderStatus.cs" />
+    <Compile Include="Orders\OrderRejectionReason.cs" />
+    <Compile Include="Orders\AllOrders.cs" />
+    <Compile Include="Deliveries\CreateDeliveries.cs" />
   </ItemGroup>
 </Project>

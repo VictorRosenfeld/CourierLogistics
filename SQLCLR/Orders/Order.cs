@@ -16,7 +16,7 @@ namespace SQLCLR.Orders
         /// <summary>
         /// Состояние заказа
         /// </summary>
-        public int Status { get; set; }
+        public OrderStatus Status { get; set; }
 
         /// <summary>
         /// Id магазина в который поступил заказ
@@ -58,15 +58,15 @@ namespace SQLCLR.Orders
         /// </summary>
         public DateTime DeliveryTimeTo { get; set; }
 
-        /// <summary>
-        /// Флаг: true - заказ отгружен; false - заказ не отгружен
-        /// </summary>
-        public bool Completed { get; set; }
+        ///// <summary>
+        ///// Флаг: true - заказ отгружен; false - заказ не отгружен
+        ///// </summary>
+        //public bool Completed { get; set; }
 
         /// <summary>
         /// Причина отказа в доставке
         /// </summary>
-        public int RejectionReason { get; set; }
+        public OrderRejectionReason RejectionReason { get; set; }
 
         /// <summary>
         /// Приоритет заказа
@@ -81,9 +81,14 @@ namespace SQLCLR.Orders
 
         /// <summary>
         /// ID допустимых способов доставки заказа (VehicleID),
-        /// осортированных по возрастанию
+        /// осортированные по возрастанию
         /// </summary>
         public int[] VehicleTypes { get; set; }
+
+        /// <summary>
+        /// Число доступных способов доставки заказа
+        /// </summary>
+        public int VehicleTypeCount => (VehicleTypes == null ? 0 : VehicleTypes.Length);
 
         /// <summary>
         /// Переопределенный ToString()
@@ -91,7 +96,7 @@ namespace SQLCLR.Orders
         /// <returns>Текстовое представление экземпляра</returns>
         public override string ToString()
         {
-            return $"{Id}, {Status}, {Completed}";
+            return $"{Id}, {Status}";
         }
 
         /// <summary>
