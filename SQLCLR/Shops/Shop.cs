@@ -1,42 +1,42 @@
-
+п»ї
 namespace SQLCLR.Shop
 {
     using System;
 
     /// <summary>
-    /// Магазин
+    /// РњР°РіР°Р·РёРЅ
     /// </summary>
     internal class Shop
     {
         /// <summary>
-        /// Id магазина
+        /// Id РјР°РіР°Р·РёРЅР° 1
         /// </summary>
         public int Id { get; private set; }
 
         /// <summary>
-        /// Начало работы
+        /// РќР°С‡Р°Р»Рѕ СЂР°Р±РѕС‚С‹
         /// </summary>
         public TimeSpan WorkStart { get; set; }
 
         /// <summary>
-        /// Конец работы
+        /// РљРѕРЅРµС† СЂР°Р±РѕС‚С‹
         /// </summary>
         public TimeSpan WorkEnd { get; set; }
 
         /// <summary>
-        /// Широта магазина
+        /// РЁРёСЂРѕС‚Р° РјР°РіР°Р·РёРЅР°
         /// </summary>
         public double Latitude { get; set; }
 
         /// <summary>
-        /// Долгота магазина
+        /// Р”РѕР»РіРѕС‚Р° РјР°РіР°Р·РёРЅР°
         /// </summary>
         public double Longitude { get; set; }
 
         /// <summary>
-        /// Параметрический конструктор класса Shop
+        /// РџР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРёР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° Shop
         /// </summary>
-        /// <param name="id">Id магазина</param>
+        /// <param name="id">Id РјР°РіР°Р·РёРЅР°</param>
         public Shop(int id)
         {
             Id = id;
