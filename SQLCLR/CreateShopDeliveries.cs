@@ -1,4 +1,4 @@
-using Microsoft.SqlServer.Server;
+п»їusing Microsoft.SqlServer.Server;
 using SQLCLR.Orders;
 using SQLCLR.Shop;
 using System.Data;
@@ -10,7 +10,7 @@ public partial class StoredProcedures
     #region SQL instructions
 
     /// <summary>
-    /// Доступные курьеры и такси
+    /// Р”РѕСЃС‚СѓРїРЅС‹Рµ РєСѓСЂСЊРµСЂС‹ Рё С‚Р°РєСЃРё
     /// </summary>
     private const string SELECT_AVAILABLE_COURIERS =
         "SELECT DISTINCT lsvCourierTypes.crtVehicleID, lsvCouriers.crsCourierID " +
@@ -24,12 +24,12 @@ public partial class StoredProcedures
         "      (lsvOrders.ordStatusID = 1 OR lsvOrders.ordStatusID = 2);";
 
     /// <summary>
-    /// Выбор данных магазина
+    /// Р’С‹Р±РѕСЂ РґР°РЅРЅС‹С… РјР°РіР°Р·РёРЅР°
     /// </summary>
     private const string SELECT_SHOP = "SELECT * FROM lsvShops WHERE shpShopID = @shop_id";
 
     /// <summary>
-    /// Выбор заказов магазина
+    /// Р’С‹Р±РѕСЂ Р·Р°РєР°Р·РѕРІ РјР°РіР°Р·РёРЅР°
     /// </summary>
     private const string SELECT_ORDERS =
         "SELECT lsvOrders.*, lsvOrderVehicleTypes.lsvOrderVehicleTypes.ovtVehicleID " +
@@ -43,32 +43,32 @@ public partial class StoredProcedures
     [SqlProcedure]
     public static SqlInt32 CreateShopDeliveries(SqlInt32 serviceId, SqlInt32 shopId)
     {
-        // 1. Инициализация
+        // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
         int rc = 1;
         int rc1 = 1;
 
         try
         {
-            // 2. Проверяем исходные данные
+            // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
             rc = 2;
             if (!SqlContext.IsAvailable)
                 return rc;
 
-            // 3. Открываем соединение в контексте текущей сессии
+            // 3. РћС‚РєСЂС‹РІР°РµРј СЃРѕРµРґРёРЅРµРЅРёРµ РІ РєРѕРЅС‚РµРєСЃС‚Рµ С‚РµРєСѓС‰РµР№ СЃРµСЃСЃРёРё
             rc = 3;
             using (SqlConnection connection = new SqlConnection("context connection=true"))
             {
-                // 3.1 Открываем соединение
+                // 3.1 РћС‚РєСЂС‹РІР°РµРј СЃРѕРµРґРёРЅРµРЅРёРµ
                 rc = 31;
                 connection.Open();
 
-                // 3.2 Создаём объект - магазин
+                // 3.2 РЎРѕР·РґР°С‘Рј РѕР±СЉРµРєС‚ - РјР°РіР°Р·РёРЅ
                 Shop shop;
                 rc1 = SelectShop(shopId.Value, connection, out shop);
                 if (rc1 != 0)
                     return rc = 1000 * rc + rc1;
 
-                // 3.3 Создаём объекты - заказы
+                // 3.3 РЎРѕР·РґР°С‘Рј РѕР±СЉРµРєС‚С‹ - Р·Р°РєР°Р·С‹
 
 
             }
@@ -87,29 +87,29 @@ public partial class StoredProcedures
     }
 
     /// <summary>
-    /// Загружаем данные магазина
+    /// Р—Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ РјР°РіР°Р·РёРЅР°
     /// </summary>
     /// <param name="connection"></param>
     /// <param name="shop"></param>
     /// <returns></returns>
     private static int SelectShop(int shop_id, SqlConnection connection, out Shop shop)
     {
-        // 1. Инициализация
+        // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
         int rc = 1;
         shop = null;
 
         try
         {
-            // 2. Проверяем исходные данные
+            // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
             rc = 2;
             if (connection == null || connection.State != ConnectionState.Open)
                 return rc;
 
-            // 3. Выбираем данные
+            // 3. Р’С‹Р±РёСЂР°РµРј РґР°РЅРЅС‹Рµ
             rc = 3;
             using (SqlCommand cmd = new SqlCommand(SELECT_SHOP, connection))
             {
-                // 3.1 Строим команду
+                // 3.1 РЎС‚СЂРѕРёРј РєРѕРјР°РЅРґСѓ
                 rc = 31;
                 SqlParameter param = new SqlParameter("@shop_id", SqlDbType.Int);
                 param.IsNullable = false;
@@ -117,7 +117,7 @@ public partial class StoredProcedures
                 param.Value = shop_id;
                 cmd.Parameters.Add(param);
 
-                // 3.2 Исполняем команду и строим результат
+                // 3.2 РСЃРїРѕР»РЅСЏРµРј РєРѕРјР°РЅРґСѓ Рё СЃС‚СЂРѕРёРј СЂРµР·СѓР»СЊС‚Р°С‚
                 rc = 32;
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -131,7 +131,7 @@ public partial class StoredProcedures
                 }
             }
 
-            // 4. Выход - Ok
+            // 4. Р’С‹С…РѕРґ - Ok
             rc = 0;
             return rc;
         }
@@ -143,6 +143,71 @@ public partial class StoredProcedures
 
     private static int SelectOrders(int shop_id, SqlConnection connection, out Order[] orders)
     {
+        // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
+        int rc = 1;
+        orders = null;
+
+        try
+        {
+            // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
+            rc = 2;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Р’С‹Р±РёСЂР°РµРј РґР°РЅРЅС‹Рµ
+            rc = 3;
+            using (SqlCommand cmd = new SqlCommand(SELECT_ORDERS, connection))
+            {
+                // 3.1 РЎС‚СЂРѕРёРј РєРѕРјР°РЅРґСѓ
+                rc = 31;
+                SqlParameter param = new SqlParameter("@shop_id", SqlDbType.Int);
+                param.IsNullable = false;
+                param.Direction = ParameterDirection.Input;
+                param.Value = shop_id;
+                cmd.Parameters.Add(param);
+
+                // 3.2 РСЃРїРѕР»РЅСЏРµРј РєРѕРјР°РЅРґСѓ Рё СЃС‚СЂРѕРёРј СЂРµР·СѓР»СЊС‚Р°С‚
+                rc = 32;
+                Order[] readOrders = new Order[100];
+                int count = 0;
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    int iOrderID = reader.GetOrdinal("ordOrderID");
+                    int iStatusID = reader.GetOrdinal("ordStatusID");
+                    int iShopID = reader.GetOrdinal("ordShopID");
+                    int iPriority = reader.GetOrdinal("ordPriority");
+                    int iWeight = reader.GetOrdinal("ordWeight");
+                    int iLatitude = reader.GetOrdinal("ordLatitude");
+                    int iLongitude = reader.GetOrdinal("ordLongitude");
+                    int iAssembledDate = reader.GetOrdinal("ordAssembledDate");
+                    int iReceiptedDate = reader.GetOrdinal("ordReceiptedDate");
+                    int iDeliveryTimeFrom = reader.GetOrdinal("ordDeliveryTimeFrom");
+                    int iDeliveryTimeTo = reader.GetOrdinal("ordDeliveryTimeTo");
+                    int iCompleted = reader.GetOrdinal("ordCompleted");
+                    int iTimeCheckDisabled = reader.GetOrdinal("ordTimeCheckDisabled");
+
+                    while (reader.Read())
+                    {
+                        Order order = new Order(reader.GetInt32(iOrderID));
+                        //shop = new Shop(shop_id);
+                        //shop.Latitude = reader.GetDouble(reader.GetOrdinal("shpLatitude"));
+                        //shop.Longitude = reader.GetDouble(reader.GetOrdinal("shpLongitude"));
+                        //shop.WorkStart = reader.GetTimeSpan(reader.GetOrdinal("shpWorkStart"));
+                        //shop.WorkEnd = reader.GetTimeSpan(reader.GetOrdinal("shpWorkEnd"));
+                    }
+                }
+            }
+
+            // 4. Р’С‹С…РѕРґ - Ok
+            rc = 0;
+            return rc;
+        }
+        catch
+        {
+            return rc;
+        }
+
 
     }
 }
