@@ -9,7 +9,7 @@ namespace SQLCLR.Shop
     internal class Shop
     {
         /// <summary>
-        /// Id магазина 1
+        /// Id магазина
         /// </summary>
         public int Id { get; private set; }
 
