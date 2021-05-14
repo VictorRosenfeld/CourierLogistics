@@ -1,104 +1,104 @@
-
+п»ї
 namespace SQLCLR.Orders
 {
     using System;
 
     /// <summary>
-    /// Заказ
+    /// Р—Р°РєР°Р·
     /// </summary>
     internal class Order
     {
         /// <summary>
-        /// Id заказа
+        /// Id Р·Р°РєР°Р·Р°
         /// </summary>
         public int Id { get; private set; }
 
         /// <summary>
-        /// Состояние заказа
+        /// РЎРѕСЃС‚РѕСЏРЅРёРµ Р·Р°РєР°Р·Р°
         /// </summary>
         public int Status { get; set; }
 
         /// <summary>
-        /// Id магазина в который поступил заказ
+        /// Id РјР°РіР°Р·РёРЅР° РІ РєРѕС‚РѕСЂС‹Р№ РїРѕСЃС‚СѓРїРёР» Р·Р°РєР°Р·
         /// </summary>
         public int ShopId { get; set; }
 
         /// <summary>
-        /// Вес заказа
+        /// Р’РµСЃ Р·Р°РєР°Р·Р°
         /// </summary>
         public double Weight { get; set; }
 
         /// <summary>
-        /// Широта точки доставки
+        /// РЁРёСЂРѕС‚Р° С‚РѕС‡РєРё РґРѕСЃС‚Р°РІРєРё
         /// </summary>
         public double Latitude { get; set; }
 
         /// <summary>
-        /// Долгота точки доставки
+        /// Р”РѕР»РіРѕС‚Р° С‚РѕС‡РєРё РґРѕСЃС‚Р°РІРєРё
         /// </summary>
         public double Longitude { get; set; }
 
         /// <summary>
-        /// Дата-время сборки заказа
+        /// Р”Р°С‚Р°-РІСЂРµРјСЏ СЃР±РѕСЂРєРё Р·Р°РєР°Р·Р°
         /// </summary>
         public DateTime AssembledDate { get; set; }
 
         /// <summary>
-        /// Дата-время поступления заказа в магазин
+        /// Р”Р°С‚Р°-РІСЂРµРјСЏ РїРѕСЃС‚СѓРїР»РµРЅРёСЏ Р·Р°РєР°Р·Р° РІ РјР°РіР°Р·РёРЅ
         /// </summary>
         public DateTime ReceiptedDate { get; set; }
 
         /// <summary>
-        /// Время начала интервала вручения
+        /// Р’СЂРµРјСЏ РЅР°С‡Р°Р»Р° РёРЅС‚РµСЂРІР°Р»Р° РІСЂСѓС‡РµРЅРёСЏ
         /// </summary>
         public DateTime DeliveryTimeFrom { get; set; }
 
         /// <summary>
-        /// Время конца интервала вручения
+        /// Р’СЂРµРјСЏ РєРѕРЅС†Р° РёРЅС‚РµСЂРІР°Р»Р° РІСЂСѓС‡РµРЅРёСЏ
         /// </summary>
         public DateTime DeliveryTimeTo { get; set; }
 
         /// <summary>
-        /// Флаг: true - заказ отгружен; false - заказ не отгружен
+        /// Р¤Р»Р°Рі: true - Р·Р°РєР°Р· РѕС‚РіСЂСѓР¶РµРЅ; false - Р·Р°РєР°Р· РЅРµ РѕС‚РіСЂСѓР¶РµРЅ
         /// </summary>
         public bool Completed { get; set; }
 
         /// <summary>
-        /// Причина отказа в доставке
+        /// РџСЂРёС‡РёРЅР° РѕС‚РєР°Р·Р° РІ РґРѕСЃС‚Р°РІРєРµ
         /// </summary>
         public int RejectionReason { get; set; }
 
         /// <summary>
-        /// Приоритет заказа
+        /// РџСЂРёРѕСЂРёС‚РµС‚ Р·Р°РєР°Р·Р°
         /// </summary>
         public int Priority { get; set; }
 
         /// <summary>
-        /// Флаг отмены проверок временных ограничений:
-        /// true - проверки отменены; false - проверки остаются в силе
+        /// Р¤Р»Р°Рі РѕС‚РјРµРЅС‹ РїСЂРѕРІРµСЂРѕРє РІСЂРµРјРµРЅРЅС‹С… РѕРіСЂР°РЅРёС‡РµРЅРёР№:
+        /// true - РїСЂРѕРІРµСЂРєРё РѕС‚РјРµРЅРµРЅС‹; false - РїСЂРѕРІРµСЂРєРё РѕСЃС‚Р°СЋС‚СЃСЏ РІ СЃРёР»Рµ
         /// </summary>
         public bool TimeCheckDisabled { get; set; }
 
         /// <summary>
-        /// ID допустимых способов доставки заказа (VehicleID),
-        /// осортированных по возрастанию
+        /// ID РґРѕРїСѓСЃС‚РёРјС‹С… СЃРїРѕСЃРѕР±РѕРІ РґРѕСЃС‚Р°РІРєРё Р·Р°РєР°Р·Р° (VehicleID),
+        /// РѕСЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹С… РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ
         /// </summary>
         public int[] VehicleTypes { get; set; }
 
         /// <summary>
-        /// Переопределенный ToString()
+        /// РџРµСЂРµРѕРїСЂРµРґРµР»РµРЅРЅС‹Р№ ToString()
         /// </summary>
-        /// <returns>Текстовое представление экземпляра</returns>
+        /// <returns>РўРµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ СЌРєР·РµРјРїР»СЏСЂР°</returns>
         public override string ToString()
         {
             return $"{Id}, {Status}, {Completed}";
         }
 
         /// <summary>
-        /// Проверка способа доставки на возможность доставки заказа
+        /// РџСЂРѕРІРµСЂРєР° СЃРїРѕСЃРѕР±Р° РґРѕСЃС‚Р°РІРєРё РЅР° РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РґРѕСЃС‚Р°РІРєРё Р·Р°РєР°Р·Р°
         /// </summary>
-        /// <param name="vehicleType">Проверяемый способ доставки</param>
-        /// <returns>true - способ доставки является подходящим; false - способ доставки не является подходящим</returns>
+        /// <param name="vehicleType">РџСЂРѕРІРµСЂСЏРµРјС‹Р№ СЃРїРѕСЃРѕР± РґРѕСЃС‚Р°РІРєРё</param>
+        /// <returns>true - СЃРїРѕСЃРѕР± РґРѕСЃС‚Р°РІРєРё СЏРІР»СЏРµС‚СЃСЏ РїРѕРґС…РѕРґСЏС‰РёРј; false - СЃРїРѕСЃРѕР± РґРѕСЃС‚Р°РІРєРё РЅРµ СЏРІР»СЏРµС‚СЃСЏ РїРѕРґС…РѕРґСЏС‰РёРј</returns>
         public bool IsVehicleTypeEnabled(int vehicleType)
         {
             if (VehicleTypes == null || VehicleTypes.Length <= 0)
@@ -107,9 +107,9 @@ namespace SQLCLR.Orders
         }
 
         /// <summary>
-        /// Параметрический конструктор класса Order
+        /// РџР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРёР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° Order
         /// </summary>
-        /// <param name="id">Id заказа</param>
+        /// <param name="id">Id Р·Р°РєР°Р·Р°</param>
         public Order(int id)
         {
             Id = id;

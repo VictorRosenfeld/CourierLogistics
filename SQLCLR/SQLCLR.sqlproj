@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <Name>SQLCLR</Name>
     <SchemaVersion>2.0</SchemaVersion>
-    <CodePage>UTF-8</CodePage>
+    <CodePage>65001</CodePage>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{2209fccb-4580-45e9-95b7-9cb028c6d7eb}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
@@ -59,7 +59,7 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Orders" />
-    <Folder Include="Shop" />
+    <Folder Include="Shops" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -69,7 +69,7 @@
   <ItemGroup>
     <Compile Include="CreateShopDeliveries.cs" />
     <Compile Include="LoadCourierTypes.cs" />
-    <Compile Include="Shop\Shop.cs" />
+    <Compile Include="Shops\Shop.cs" />
     <Compile Include="Orders\Order.cs" />
   </ItemGroup>
 </Project>
