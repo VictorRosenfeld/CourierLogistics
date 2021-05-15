@@ -61,6 +61,7 @@
     <Folder Include="Orders" />
     <Folder Include="Shops" />
     <Folder Include="Deliveries" />
+    <Folder Include="Couriers" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -69,12 +70,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreateShopDeliveries.cs" />
-    <Compile Include="LoadCourierTypes.cs" />
     <Compile Include="Shops\Shop.cs" />
     <Compile Include="Orders\Order.cs" />
     <Compile Include="Orders\OrderStatus.cs" />
     <Compile Include="Orders\OrderRejectionReason.cs" />
     <Compile Include="Orders\AllOrders.cs" />
     <Compile Include="Deliveries\CreateDeliveries.cs" />
+    <Compile Include="Couriers\Courier.cs" />
+    <Compile Include="Couriers\ICourierType.cs" />
+    <Compile Include="Couriers\CourierTypeData.cs" />
+    <Compile Include="Deliveries\Point.cs" />
+    <Compile Include="Couriers\CourierBase.cs" />
+    <Compile Include="Couriers\CourierTypeRecord.cs" />
   </ItemGroup>
 </Project>
