@@ -6,7 +6,7 @@ namespace SQLCLR.Shops
     /// <summary>
     /// Магазин
     /// </summary>
-    internal class Shop
+    public class Shop
     {
         /// <summary>
         /// Id магазина

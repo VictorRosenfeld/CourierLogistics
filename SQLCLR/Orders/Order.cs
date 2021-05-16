@@ -6,7 +6,7 @@ namespace SQLCLR.Orders
     /// <summary>
     /// Заказ
     /// </summary>
-    internal class Order
+    public class Order
     {
         /// <summary>
         /// Id заказа

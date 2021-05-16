@@ -6,7 +6,7 @@
     /// Интерфейс описывающий параметры
     /// расчета стоимости и времени доставки
     /// </summary>
-    internal interface ICourierType
+    public interface ICourierType
     {
         /// <summary>
         /// ID способа доставки

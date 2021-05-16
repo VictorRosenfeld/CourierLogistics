@@ -62,6 +62,7 @@
     <Folder Include="Shops" />
     <Folder Include="Deliveries" />
     <Folder Include="Couriers" />
+    <Folder Include="AverageDeliveryCost" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -82,5 +83,12 @@
     <Compile Include="Deliveries\Point.cs" />
     <Compile Include="Couriers\CourierBase.cs" />
     <Compile Include="Couriers\CourierTypeRecord.cs" />
+    <Compile Include="Couriers\TimeAndCostCalculator.cs" />
+    <Compile Include="Couriers\ICourierTypeCalculator.cs" />
+    <Compile Include="Couriers\CourierStatus.cs" />
+    <Compile Include="Couriers\CourierRecord.cs" />
+    <Compile Include="AverageDeliveryCost\AverageDeliveryCostRecord.cs" />
+    <Compile Include="AverageDeliveryCost\AverageCostThresholds.cs" />
+    <Compile Include="Couriers\AllCouriers.cs" />
   </ItemGroup>
 </Project>

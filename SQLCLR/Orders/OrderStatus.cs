@@ -4,7 +4,7 @@ namespace SQLCLR.Orders
     /// <summary>
     /// Состояние заказа
     /// </summary>
-    internal enum OrderStatus
+    public enum OrderStatus
     {
         /// <summary>
         /// Неопределенное состояние

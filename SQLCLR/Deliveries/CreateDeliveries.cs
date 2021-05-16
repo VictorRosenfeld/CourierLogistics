@@ -6,6 +6,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.SqlServer.Server;
+using SQLCLR.AverageDeliveryCost;
 using SQLCLR.Couriers;
 using SQLCLR.Orders;
 using SQLCLR.Shops;
@@ -46,16 +47,17 @@ public partial class StoredProcedures
     /// </summary>
     private const string SELECT_COURIER_TYPES = "SELECT * FROM lsvCourierTypes WHERE crtVehicleID IN ({0});";
 
-
-
     /// <summary>
-    /// Выбор способов доставки заказов
+    /// Выбор курьеров, доступных для доставки заказов
     /// </summary>
     private const string SELECT_COURIERS =
         "SELECT lsvCouriers.* " +
-        "FROM   lsvCouriers INNER JOIN " +
-        "          lsvShops ON lsvCouriers.crsShopID = lsvShops.shpShopID " +
-        "WHERE  (lsvCouriers.crsStatusID = 1) AND (lsvShops.shpUpdated = 1 OR lsvShops.shpShopID = 0);";
+        "FROM lsvCouriers LEFT JOIN " +
+        "        lsvShops ON lsvCouriers.crsShopID = lsvShops.shpShopID " +
+        " WHERE  (lsvCouriers.crsStatusID = 1) AND " +
+        "        (lsvCouriers.crsShopID = 0 OR lsvShops.shpUpdated = 1);";
+
+    private const string SELECT_AVERAGE_COST_THRESHOLDS = "SELECT * FROM lsvAverageDeliveryCost";
 
     #endregion SQL instructions
 
@@ -80,7 +82,15 @@ public partial class StoredProcedures
                 return rc;
 
             // 3. Открываем соединение в контексте текущей сессии
+            //    и загружаем все необходимые данные
             rc = 3;
+            Shop[] shops = null;
+            Order[] orders = null;
+            int[] requiredVehicleTypes = null;
+            CourierTypeRecord[] courierTypeRecords = null;
+            CourierRecord[] courierRecords = null;
+            AverageDeliveryCostRecord[] thresholdRecords;
+
             using (SqlConnection connection = new SqlConnection("context connection=true"))
             {
                 // 3.1 Открываем соединение
@@ -88,7 +98,6 @@ public partial class StoredProcedures
                 connection.Open();
 
                 // 3.2 Выбираем магазины для пересчета отгрузок
-                Shop[] shops;
                 rc = 32;
                 rc1 = SelectShops(connection, out shops);
                 if (rc1 != 0)
@@ -98,7 +107,6 @@ public partial class StoredProcedures
 
                 // 3.3 Выбираем заказы, для которых нужно построить отгрузки
                 rc = 33;
-                Order[] orders;
                 rc1 = SelectOrders(connection, out orders);
                 if (rc1 != 0)
                     return rc = 1000 * rc + rc1;
@@ -108,21 +116,59 @@ public partial class StoredProcedures
                 // 3.4 Выбираем способы доставки заказов,
                 //     которые могут быть использованы
                 rc = 34;
-                int[] requiredVehicleTypes = AllOrders.GetOrderVehicleTypes(orders);
+                requiredVehicleTypes = AllOrders.GetOrderVehicleTypes(orders);
                 if (requiredVehicleTypes == null || requiredVehicleTypes.Length <= 0)
                     return rc;
 
-                // 3.5 Загружаем требуемые типы
+                // 3.5 Загружаем параметры способов отгрузки
                 rc = 35;
-                CourierTypeRecord[] courierTypeRecords = null;
                 rc1 = SelectCourierTypes(requiredVehicleTypes, connection, out courierTypeRecords);
                 if (rc1 != 0)
                     return rc = 1000 * rc + rc1;
                 if (courierTypeRecords == null || courierTypeRecords.Length <= 0)
-                    return rc = 0;
+                    return rc;
 
+                // 3.6 Загружаем информацию о курьерах
+                rc = 36;
+                rc1 = SelectCouriers(connection, out courierRecords);
+                if (rc1 != 0)
+                    return rc = 1000 * rc + rc1;
+                if (courierRecords == null || courierRecords.Length <= 0)
+                    return rc;
 
+                // 3.7 Загружаем пороги для среднего времени доставки заказов
+                rc = 37;
+                rc1 = SelectThresholds(connection, out thresholdRecords);
+                if (rc1 != 0)
+                    return rc = 1000 * rc + rc1;
+                if (thresholdRecords == null || thresholdRecords.Length <= 0)
+                    return rc;
             }
+
+            // 4. Создаём объект c курьерами
+            rc = 4;
+            AllCouriers allCouriers = new AllCouriers();
+            rc1 = allCouriers.Create(courierTypeRecords, courierRecords);
+            if (rc1 != 0)
+                return rc = 1000 * rc + rc1;
+
+            // 5. Создаём объект c заказами
+            rc = 5;
+            AllOrders allOrders = new AllOrders();
+            rc1 = allOrders.Create(orders);
+            if (rc1 != 0)
+                return rc = 1000 * rc + rc1;
+
+            // 6. Создаём объект c порогами средней стоимости доставки
+            rc = 6;
+            AverageCostThresholds thresholds = new AverageCostThresholds();
+            rc1 = thresholds.Create(thresholdRecords);
+            if (rc1 != 0)
+                return rc = 1000 * rc + rc1;
+
+
+            // WE ARE READY TO BUILD ALL DELIVERIES NOW !
+
 
             return rc;
         }
@@ -464,5 +510,165 @@ public partial class StoredProcedures
             return rc;
         }
     }
+
+    /// <summary>
+    /// Выбор курьеров и такси, доступных для построения отгрузок
+    /// </summary>
+    /// <param name="connection">Открытое соединение</param>
+    /// <param name="records">Выбранные курьеры и такси или null</param>
+    /// <returns>0 - курьеры выбраны; иначе - курьеры не выбраны</returns>
+    private static int SelectCouriers(SqlConnection connection, out CourierRecord[] records)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        records = null;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Выбираем заказы
+            rc = 3;
+            CourierRecord[] allRecords = new CourierRecord[3000];
+            int count = 0;
+
+            using (SqlCommand cmd = new SqlCommand(SELECT_COURIERS, connection))
+            {
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    int iCourierID = reader.GetOrdinal("crsCourierID");
+                    int iVehicleID = reader.GetOrdinal("crsVehicleID");
+                    int iStatusID = reader.GetOrdinal("crsStatusID");
+                    int iWorkStart = reader.GetOrdinal("crsWorkStart");
+                    int iWorkEnd = reader.GetOrdinal("crsWorkEnd");
+                    int iLunchStart = reader.GetOrdinal("crsLunchTimeStart");
+                    int iLunchEnd = reader.GetOrdinal("crsLunchTimeEnd");
+                    int iLastDeliveryStart = reader.GetOrdinal("crsLastDeliveryStart");
+                    int iLastDeliveryEnd = reader.GetOrdinal("crsLastDeliveryEnd");
+                    int iOrderCount = reader.GetOrdinal("crsOrderCount");
+                    int iTotalDeliveryTime = reader.GetOrdinal("crsTotalDeliveryTime");
+                    int iTotalCost = reader.GetOrdinal("crsTotalCost");
+                    int iAverageOrderCost = reader.GetOrdinal("crsAverageOrderCost");
+                    int iShopID = reader.GetOrdinal("crsShopID");
+                    int iLatitude = reader.GetOrdinal("crsLatitude");
+                    int iLongitude = reader.GetOrdinal("crsLongitude");
+
+                    while (reader.Read())
+                    {
+                        CourierRecord record = new CourierRecord();
+                        record.CourierId = reader.GetInt32(iCourierID);
+                        record.VehicleId = reader.GetInt32(iVehicleID);
+                        record.Status = (CourierStatus)reader.GetInt32(iStatusID);
+                        record.WorkStart = reader.GetTimeSpan(iWorkStart);
+                        record.WorkEnd = reader.GetTimeSpan(iWorkEnd);
+                        record.LunchTimeStart = reader.GetTimeSpan(iLunchStart);
+                        record.LunchTimeEnd = reader.GetTimeSpan(iLunchEnd);
+                        record.LastDeliveryStart = reader.GetDateTime(iLastDeliveryStart);
+                        record.LastDeliveryEnd = reader.GetDateTime(iLastDeliveryEnd);
+                        record.OrderCount = reader.GetInt32(iOrderCount);
+                        record.TotalDeliveryTime = reader.GetDouble(iTotalDeliveryTime);
+                        record.TotalCost = reader.GetDouble(iTotalCost);
+                        record.AverageOrderCost = reader.GetDouble(iAverageOrderCost);
+                        record.ShopId = reader.GetInt32(iShopID);
+                        record.Latitude = reader.GetDouble(iLatitude);
+                        record.Longitude = reader.GetDouble(iLongitude);
+
+                        if (count >= allRecords.Length)
+                        {
+                            Array.Resize(ref allRecords, (int)(1.25 * allRecords.Length));
+                        }
+
+                        allRecords[count++] = record;
+                    }
+                }
+            }
+
+            if (count < allRecords.Length)
+            {
+                Array.Resize(ref allRecords, count);
+            }
+
+            records = allRecords;
+
+            // 5. Выход - Ok
+            rc = 0;
+            return rc;
+        }
+        catch
+        {
+            return rc;
+        }
+    }
+
+    /// <summary>
+    /// Выбор порогов для средней стоимости доставки заказа
+    /// </summary>
+    /// <param name="connection">Открытое соединение</param>
+    /// <param name="records">Записи таблицы lsvAverageDeliveryCost</param>
+    /// <returns>0 - пороги выбраны; иначе - попроги не выбраны</returns>
+    private static int SelectThresholds(SqlConnection connection, out AverageDeliveryCostRecord[] records)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        records = null;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Выбираем заказы
+            rc = 3;
+            AverageDeliveryCostRecord[] allRecords = new AverageDeliveryCostRecord[30000];
+            int count = 0;
+
+            using (SqlCommand cmd = new SqlCommand(SELECT_COURIERS, connection))
+            {
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    int iShopId = reader.GetOrdinal("adcShopID");
+                    int iVehicleId = reader.GetOrdinal("adcVehicleTypeID");
+                    int iCost = reader.GetOrdinal("adcCost");
+
+                    while (reader.Read())
+                    {
+                        AverageDeliveryCostRecord record = new AverageDeliveryCostRecord();
+                        record.ShopId = reader.GetInt32(iShopId);
+                        record.VehicleId = reader.GetInt32(iVehicleId);
+                        record.Cost = reader.GetDouble(iCost);
+
+                        if (count >= allRecords.Length)
+                        {
+                            Array.Resize(ref allRecords, (int)(1.25 * allRecords.Length));
+                        }
+
+                        allRecords[count++] = record;
+                    }
+                }
+            }
+
+            if (count < allRecords.Length)
+            {
+                Array.Resize(ref allRecords, count);
+            }
+
+            records = allRecords;
+
+            // 5. Выход - Ok
+            rc = 0;
+            return rc;
+        }
+        catch
+        {
+            return rc;
+        }
+    }
+
+
 
 }

@@ -4,7 +4,7 @@ namespace SQLCLR.Couriers
     /// <summary>
     /// Запись таблицы lsvCourierTypes
     /// </summary>
-    class CourierTypeRecord: ICourierType
+    public class CourierTypeRecord: ICourierType
     {
         #region ICourierType Implementation
 

@@ -1,27 +1,73 @@
 ﻿
 namespace SQLCLR.Orders
 {
+    using SQLCLR.Deliveries;
     using System;
 
     /// <summary>
     /// Все заказы требующие отгрузки
     /// </summary>
-    internal class AllOrders
+    public class AllOrders
     {
+        #region Заказы, отсортированные по OrderID
+
         /// <summary>
         /// Отсортированные по ID заказы
         /// </summary>
         private Order[] orders;
 
         /// <summary>
-        /// Id отсортированных orders
+        /// Отсортированные ключи (OrderID)
         /// </summary>
-        private int[] orderId;
+        private int[] orderKeys;
 
         /// <summary>
-        /// Все заказы
+        /// Отсортированные заказы
         /// </summary>
         public Order[] Orders => orders;
+
+        /// <summary>
+        /// Отсортированные ключи (OrderID)
+        /// </summary>
+        private int[] OrderKeys => orderKeys;
+
+        #endregion Заказы, отсортированные по OrderID
+
+        #region Заказы, отсортированные по ShopID
+
+        /// <summary>
+        /// Заказы отсортированные по ShopID
+        /// </summary>
+        private Order[] shopOrders;
+
+        /// <summary>
+        /// Отсортированные ключи магазинов (ShopId)
+        /// </summary>
+        private int[] shopKeys;
+
+        /// <summary>
+        /// Дипазоны заказов одного магазина в shopOrders
+        /// (startIndex = Point.X, endIndex = Point.Y)
+        /// </summary>
+        private Point[] orderRange;
+
+        /// <summary>
+        /// Заказы отсортированные по ShopID
+        /// </summary>
+        public Order[] ShopOrders => shopOrders;
+
+        /// <summary>
+        /// Отсортированные ключи магазинов (ShopId)
+        /// </summary>
+        private int[] ShopKeys => shopKeys;
+
+        /// <summary>
+        /// Дипазоны заказов одного магазина в shopOrders
+        /// (startIndex = Point.X, endIndex = Point.Y)
+        /// </summary>
+        private Point[] OrderRange => orderRange;
+
+        #endregion Заказы, отсортированные по ShopID
 
         /// <summary>
         /// Флаг: true - класс создан; false - класс не создан
@@ -42,9 +88,14 @@ namespace SQLCLR.Orders
         {
             // 1. Инициализация
             int rc = 1;
-            orders = null;
-            orderId = null;
             IsCreated = false;
+
+            orders = null;
+            orderKeys = null;
+
+            shopOrders = null;
+            shopKeys = null;
+            orderRange = null;
 
             try
             {
@@ -55,15 +106,55 @@ namespace SQLCLR.Orders
 
                 // 3. Строим индекс заказов
                 rc = 3;
-                orderId = new int[allOrders.Length];
+                orderKeys = new int[allOrders.Length];
                 orders = (Order[])allOrders.Clone();
 
                 for (int i = 0; i < orders.Length; i++)
                 {
-                    orderId[i] = allOrders[i].Id;
+                    orderKeys[i] = allOrders[i].Id;
                 }
 
-                Array.Sort(orderId, orders);
+                Array.Sort(orderKeys, orders);
+
+                // 4. Строим индекс для быстрой выборки всех курьеров магазина
+                rc = 6;
+                shopOrders = (Order[])orders.Clone();
+                Array.Sort(shopOrders, CompareOrderByShop);
+
+                shopKeys = new int[orders.Length];
+                orderRange = new Point[orders.Length];
+                int count = 0;
+                int currentShopId = shopOrders[0].ShopId;
+                int startIndex = 0;
+                int endIndex = 0;
+
+                for (int i = 1; i < shopOrders.Length; i++)
+                {
+                    if (shopOrders[i].ShopId == currentShopId)
+                    {
+                        endIndex = i;
+                    }
+                    else
+                    {
+                        shopKeys[count] = currentShopId;
+                        orderRange[count].X = startIndex;
+                        orderRange[count++].Y = endIndex;
+
+                        currentShopId = shopOrders[i].ShopId;
+                        startIndex = i;
+                        endIndex = i;
+                    }
+                }
+
+                shopKeys[count] = currentShopId;
+                orderRange[count].X = startIndex;
+                orderRange[count++].Y = endIndex;
+
+                if (count < shopKeys.Length)
+                {
+                    Array.Resize(ref shopKeys, count);
+                    Array.Resize(ref orderRange, count);
+                }
 
                 // 4. Выход - Ok
                 rc = 0;
@@ -88,12 +179,10 @@ namespace SQLCLR.Orders
                 // 2. Проверяем исходные данные
                 if (!IsCreated)
                     return null;
-                if (Count <= 0)
-                    return null;
 
                 // 3. Находим заказ
                 Order order = null;
-                int index = Array.BinarySearch(this.orderId, orderId);
+                int index = Array.BinarySearch(this.orderKeys, orderId);
                 if (index >= 0)
                     order = orders[index];
 
@@ -118,28 +207,19 @@ namespace SQLCLR.Orders
                 // 2. Проверяем исходные данные
                 if (!IsCreated)
                     return null;
-                if (Count <= 0)
-                    return new Order[0];
 
                 // 3. Выбираем заказы магазина требующие доставки
-                int orderCount = 0;
-                Order[] shopOrders = new Order[Count];
+                int index = Array.BinarySearch(shopKeys, shopId);
+                if (index < 0)
+                    return new Order[0];
 
-                for (int i = 0; i < shopOrders.Length; i++)
-                {
-                    Order order = orders[i];
-                    if (order.ShopId == shopId &&
-                        order.Status == OrderStatus.Assembled || order.Status == OrderStatus.Receipted)
-                        shopOrders[orderCount++] = order;
-                }
-
-                if (orderCount < shopOrders.Length)
-                {
-                    Array.Resize(ref shopOrders, orderCount);
-                }
+                Point pt = orderRange[index];
+                int count = pt.Y - pt.X + 1;
+                Order[] result = new Order[count];
+                Array.Copy(shopOrders, pt.X, result, 0, count);
 
                 // 4. Выход - Ok
-                return shopOrders;
+                return result;
             }
             catch
             {
@@ -217,6 +297,21 @@ namespace SQLCLR.Orders
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Сравнение двух заказов по принадлежности одному магазину
+        /// </summary>
+        /// <param name="order1">Заказ 1</param>
+        /// <param name="order2">Заказ 2</param>
+        /// <returns>- 1  - Заказ1 меньше Заказ2; 0 - Заказ1 = Заказ2; 1 - Заказ1 больше Заказ2</returns>
+        private static int CompareOrderByShop(Order order1, Order order2)
+        {
+            if (order1.ShopId < order2.ShopId)
+                return -1;
+            if (order1.ShopId > order2.ShopId)
+                return 1;
+            return 0;
         }
     }
 }

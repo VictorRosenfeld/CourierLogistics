@@ -1,5 +1,4 @@
 ﻿
-
 namespace SQLCLR.Couriers
 {
     using SQLCLR.Deliveries;
@@ -7,8 +6,15 @@ namespace SQLCLR.Couriers
     /// <summary>
     /// Базовый тип для курьера
     /// </summary>
-    internal class CourierBase : ICourierType
+    public class CourierBase : ICourierType, ICourierTypeCalculator
     {
+        /// <summary>
+        /// Калькулятор расчета времени и стоимости доставки
+        /// </summary>
+        public GetTimeAndCostDelegate Calculator {get; private set;}
+
+        #region ICourierType Implementation
+
         /// <summary>
         /// ID способа доставки
         /// </summary>
@@ -80,33 +86,14 @@ namespace SQLCLR.Couriers
         public CourierTypeData CourierData { get; private set; }
 
         /// <summary>
-        /// Параметрический конструктор класса CourierBase
-        /// </summary>
-        /// <param name="parameters">Параметры курьера</param>
-        public CourierBase(ICourierType parameters)
-        {
-            VehicleID = parameters.VehicleID;
-            IsTaxi = parameters.IsTaxi;
-            YandexType = parameters.YandexType;
-            DServiceType = parameters.DServiceType;
-            InputType = parameters.InputType;
-            CalcMethod = parameters.CalcMethod;
-            MaxWeight = parameters.MaxWeight;
-            //MaxOrderWeight = parameters.MaxOrderWeight;
-            MaxOrderCount = parameters.MaxOrderCount;
-            MaxDistance = parameters.MaxDistance;
-            GetOrderTime = parameters.GetOrderTime;
-            HandInTime = parameters.HandInTime;
-            StartDelay = parameters.StartDelay;
-            CourierData = parameters.CourierData;
-            //SetGetAndTimeDelegate(CalcMethod);
-        }
-
-        /// <summary>
         /// Оригинальный гео-тип Yandex
         /// </summary>
         /// <returns></returns>
         public string GetYandexTypeName() =>(CourierData != null && CourierData.IsCreated ? CourierData.Mapper.Yandex.Value : null);
+
+        #endregion ICourierType Implementation
+
+        #region ICourierTypeCalculator Implementation
 
         /// <summary>
         /// Подсчет времени и стоимости отгрузки
@@ -123,11 +110,49 @@ namespace SQLCLR.Couriers
         /// <returns>0 - результат получен; иначе - результат не получен</returns>
         public virtual int GetTimeAndCost(Point[] nodeInfo, double totalWeight, bool isLoop, out double[] nodeDeliveryTime, out double totalDeliveryTime, out double totalExecutionTime, out double totalCost)
         {
-            nodeDeliveryTime = null;
-            totalDeliveryTime = 0;
-            totalExecutionTime = 0;
-            totalCost = 0;
-            return -1;
+            if (Calculator == null)
+            {
+                nodeDeliveryTime = null;
+                totalDeliveryTime = 0;
+                totalExecutionTime = 0;
+                totalCost = 0;
+                return -1;
+            }
+
+            return Calculator(this, nodeInfo, totalWeight, isLoop, out nodeDeliveryTime, out totalDeliveryTime, out totalExecutionTime, out totalCost);
+        }
+        
+        #endregion ICourierTypeCalculator Implementation
+
+        /// <summary>
+        /// Параметрический конструктор класса CourierBase
+        /// </summary>
+        /// <param name="parameters">Параметры курьера</param>
+        public CourierBase(ICourierType parameters)
+        {
+            VehicleID = parameters.VehicleID;
+            IsTaxi = parameters.IsTaxi;
+            YandexType = parameters.YandexType;
+            DServiceType = parameters.DServiceType;
+            InputType = parameters.InputType;
+            CalcMethod = parameters.CalcMethod;
+            MaxOrderWeight = parameters.MaxOrderWeight;
+            MaxWeight = parameters.MaxWeight;
+            MaxOrderCount = parameters.MaxOrderCount;
+            MaxDistance = parameters.MaxDistance;
+            GetOrderTime = parameters.GetOrderTime;
+            HandInTime = parameters.HandInTime;
+            StartDelay = parameters.StartDelay;
+            CourierData = parameters.CourierData;
+        }
+
+        /// <summary>
+        /// Установка калькулятора расчета времени и стоимости доставки
+        /// </summary>
+        /// <param name="vehicleTypeCalculator">Делегат калькулятора</param>
+        public void SetCalculator(GetTimeAndCostDelegate vehicleTypeCalculator)
+        {
+            Calculator = vehicleTypeCalculator;
         }
     }
 }

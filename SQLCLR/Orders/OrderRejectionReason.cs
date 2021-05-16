@@ -4,7 +4,7 @@ namespace SQLCLR.Orders
     /// <summary>
     /// Причины отклонения заказа
     /// </summary>
-    internal enum OrderRejectionReason
+    public enum OrderRejectionReason
     {
         /// <summary>
         /// Нет
