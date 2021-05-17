@@ -90,5 +90,7 @@
     <Compile Include="AverageDeliveryCost\AverageDeliveryCostRecord.cs" />
     <Compile Include="AverageDeliveryCost\AverageCostThresholds.cs" />
     <Compile Include="Couriers\AllCouriers.cs" />
+    <Compile Include="Deliveries\ThreadContext.cs" />
+    <Compile Include="Deliveries\CourierDeliveryInfo.cs" />
   </ItemGroup>
 </Project>
