@@ -4,6 +4,7 @@ namespace SQLCLR.Deliveries
     using SQLCLR.Couriers;
     using SQLCLR.Orders;
     using SQLCLR.Shops;
+    using System;
     using System.Threading;
 
     /// <summary>
@@ -15,7 +16,7 @@ namespace SQLCLR.Deliveries
         /// <summary>
         /// Объект синхронизации
         /// </summary>
-        public ManualResetEvent SyncEvent { get; private set; }
+        public ManualResetEvent SyncEvent { get; set; }
 
         #region Аргументы расчета
 
@@ -30,9 +31,24 @@ namespace SQLCLR.Deliveries
         public Order[] Orders { get; private set; }
 
         /// <summary>
+        /// Количество заказов
+        /// </summary>
+        public int OrderCount => (Orders == null ? 0 : Orders.Length);
+
+        /// <summary>
         /// Курьер, c помощью которого выполняются отгрузки
         /// </summary>
         public Courier ShopCourier { get; private set; }
+
+        /// <summary>
+        /// Максимальная длина маршрута
+        /// </summary>
+        public int MaxRootLength { get; set; }
+
+        /// <summary>
+        /// Время, на которое создаются отгрузки
+        /// </summary>
+        public DateTime CalcTime { get; set; }
 
         #endregion Аргументы расчета
 
@@ -62,6 +78,7 @@ namespace SQLCLR.Deliveries
             ShopFrom = shop;
             Orders = orders;
             ShopCourier = courier;
+            SyncEvent = syncEvent;
             ExitCode = -1;
         }
     }

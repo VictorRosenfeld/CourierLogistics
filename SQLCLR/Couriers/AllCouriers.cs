@@ -437,5 +437,55 @@ namespace SQLCLR.Couriers
                 return null;
             }
         }
+
+        public static int[] GetCourierVehicleTypes(Courier[] couriers)
+        {
+            // 1. Инициализация
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (couriers == null || couriers.Length <= 0)
+                    return null;
+
+                // 3. Выбираем все типы в один массив
+                int[] allTypes = new int[couriers.Length];
+                int vehicleTypeCount = 0;
+
+                for (int i = 0; i < couriers.Length; i++)
+                {
+                    allTypes[vehicleTypeCount++] = couriers[i].VehicleID;
+                }
+
+                // 4. Сортируем все типы
+                Array.Sort(allTypes);
+
+                // 5. Отбираем различные типы
+                vehicleTypeCount = 1;
+                int currentVehicleType = allTypes[0];
+
+                for (int i = 1; i < allTypes.Length; i++)
+                {
+                    if (allTypes[i] != currentVehicleType)
+                    {
+                        currentVehicleType = allTypes[i];
+                        allTypes[vehicleTypeCount++] = currentVehicleType;
+                    }
+                }
+
+                if (vehicleTypeCount < allTypes.Length)
+                {
+                    Array.Resize(ref allTypes, vehicleTypeCount);
+                }
+
+                // 6. Выход - Ok
+                return allTypes;
+            }
+            catch
+            {
+                return null;
+            }
+
+        }
     }
 }

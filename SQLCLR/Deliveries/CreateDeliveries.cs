@@ -3,11 +3,13 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Text;
+using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.SqlServer.Server;
 using SQLCLR.AverageDeliveryCost;
 using SQLCLR.Couriers;
+using SQLCLR.Deliveries;
 using SQLCLR.Orders;
 using SQLCLR.Shops;
 
@@ -166,8 +168,74 @@ public partial class StoredProcedures
             if (rc1 != 0)
                 return rc = 1000 * rc + rc1;
 
+            // 7. Определяем число потоков для расчетов
+            rc = 7;
+            int threadCount = 2 * Environment.ProcessorCount;
+            if (threadCount < 8)
+            {
+                threadCount = 8;
+            }
+            else if (threadCount > 16)
+            {
+                threadCount = 16;
+            }
 
-            // WE ARE READY TO BUILD ALL DELIVERIES NOW !
+            // 8. Строим порции расчетов (ThreadContext), выполняемые в одном потоке
+            //    (порция - это все заказы для одного способа доставки (курьера) в одном магазине)
+            rc = 8;
+            ThreadContext[] context = GetThreadContext(shops, allOrders, allCouriers);
+            if (context == null || context.Length <= 0)
+                return rc;
+            if (context.Length < threadCount)
+                threadCount = context.Length;
+
+            // 9. Сортируем контексты по убыванию числа заказов
+            rc = 9;
+            Array.Sort(context, CompareContextByOrderCount);
+
+            // 10. Создаём объекты синхронизации
+            rc = 10;
+            ManualResetEvent[] syncEvents = new ManualResetEvent[threadCount];
+            int[] contextIndex = new int[threadCount];
+
+            // 11. Запускаем первые threadCount- потоков
+            rc = 11;
+
+            for (int i = 0; i < threadCount; i++)
+            {
+                int m = i;
+                contextIndex[i] = i;
+                ThreadContext threadContext = context[m];
+                threadContext.SyncEvent = syncEvents[m];
+                threadContext.SyncEvent.Reset();
+                ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+            }
+
+            for (int i = threadCount + 1; i < context.Length; i++)
+            {
+                int threadIndex = WaitHandle.WaitAny(syncEvents);
+                ThreadContext executedThreadContext = context[contextIndex[threadIndex]];
+
+                contextIndex[threadIndex] = i;
+                int m = i;
+                ThreadContext threadContext = context[m];
+                threadContext.SyncEvent = syncEvents[m];
+                threadContext.SyncEvent.Reset();
+                ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+
+                // Обработка завершившегося потока
+            }
+
+            WaitHandle.WaitAll(syncEvents);
+            for (int i = 0; i < threadCount; i++)
+            {
+                syncEvents[i].Dispose();
+                // Обработка последних завершившихся потоков
+                ThreadContext executedThreadContext = context[contextIndex[i]];
+            }
+
+            // 12. Подводим итоги
+            rc = 12;
 
 
             return rc;
@@ -176,6 +244,11 @@ public partial class StoredProcedures
         {
             return rc;
         }
+
+    }
+
+    private static void CalcThread(object status)
+    {
 
     }
 
@@ -669,6 +742,137 @@ public partial class StoredProcedures
         }
     }
 
+    /// <summary>
+    /// Построение всех расчетных контекстов
+    /// </summary>
+    /// <param name="shops">Магазины</param>
+    /// <param name="allOrders">Заказы</param>
+    /// <param name="allCouriers">Курьеры</param>
+    /// <returns>Контексты или null</returns>
+    private static ThreadContext[] GetThreadContext(Shop[] shops, AllOrders allOrders, AllCouriers allCouriers)
+    {
+        // 1. Инициализация
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            if (shops == null || shops.Length <= 0)
+                return null;
+            if (allOrders == null || !allOrders.IsCreated)
+                return null;
+            if (allCouriers == null || !allCouriers.IsCreated)
+                return null;
+
+            // 3. Строим контексты всех потоков
+            int size = shops.Length * allCouriers.BaseKeys.Length;
+            ThreadContext[] context = new ThreadContext[size];
+            int contextCount = 0;
+
+            for (int i = 0; i < shops.Length; i++)
+            {
+                // 3.1 Извлекаем магазин
+                Shop shop = shops[i];
+
+                // 3.2 Извлекаем заказы магазина
+                Order[] shopOrders = allOrders.GetShopOrders(shop.Id);
+                if (shopOrders == null || shopOrders.Length <= 0)
+                    continue;
+
+                // 3.3 Извлекаем курьеров магазина
+                Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id, true);
+                if (shopCouriers == null || shopCouriers.Length <= 0)
+                    continue;
+
+                // 3.4 Выбираем возможные способы доставки
+                int[] courierVehicleTypes = AllCouriers.GetCourierVehicleTypes(shopCouriers);
+                if (courierVehicleTypes == null || courierVehicleTypes.Length <= 0)
+                    continue;
+
+                int[] orderVehicleTypes = AllOrders.GetOrderVehicleTypes(shopOrders);
+                if (orderVehicleTypes == null || orderVehicleTypes.Length <= 0)
+                    continue;
+
+                Array.Sort(courierVehicleTypes);
+                int vehicleTypeCount = 0;
+
+                for (int j = 0; j < orderVehicleTypes.Length; j++)
+                {
+                    if (Array.BinarySearch(courierVehicleTypes, orderVehicleTypes[j]) >= 0)
+                        orderVehicleTypes[vehicleTypeCount++] = orderVehicleTypes[j];
+                }
+
+                if (vehicleTypeCount <= 0)
+                    continue;
+
+                // 3.5 Раскладываем заказы по способам доставки
+                Array.Sort(orderVehicleTypes, 0, vehicleTypeCount);
+                Order[,] vehicleTypeOrders = new Order[vehicleTypeCount, shopOrders.Length];
+                int[] vehicleTypeOrderCount = new int[vehicleTypeCount];
+
+                for (int j = 0; j < shopOrders.Length; j++)
+                {
+                    Order order = shopOrders[j];
+                    int[] vehicleTypes = order.VehicleTypes;
+                    if (vehicleTypes != null)
+                    {
+                        for (int k = 0; k < vehicleTypes.Length; k++)
+                        {
+                            int index = Array.BinarySearch(orderVehicleTypes, 0, vehicleTypeCount, vehicleTypes[k]);
+                            if (index >= 0)
+                            {
+                                vehicleTypeOrders[index, vehicleTypeOrderCount[index]++] = order;
+                            }
+                        }
+                    }
+                }
+
+                // 3.6 Добавляем контексты потоков
+                for (int j = 0; j < vehicleTypeCount; j++)
+                {
+                    int count = vehicleTypeOrderCount[j];
+                    if (count > 0)
+                    {
+                        Order[] contextOrders = new Order[count];
+                        for (int k = 0; k < count; k++)
+                        {
+                            contextOrders[k] = vehicleTypeOrders[j, k];
+                        }
+
+                        Courier courier = allCouriers.CreateReferenceCourier(orderVehicleTypes[j]);
+                        if (courier != null)
+                            context[contextCount++] = new ThreadContext(shop, contextOrders, courier, null);
+                    }
+                }
+            }
+
+            if (contextCount < context.Length)
+            {
+                Array.Resize(ref context, contextCount);
+            }
+
+            // 4. Выход - Ok
+            return context;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Сравнение двух контекстов по количеству заказов
+    /// </summary>
+    /// <param name="context1">Контекст 1</param>
+    /// <param name="context2">Контекст 2</param>
+    /// <returns>- 1  - Контекст1 больше Контекст2; 0 - Контекст1 = Контекст2; 1 - Контекст1 меньше Контекст2</returns>
+    private static int CompareContextByOrderCount(ThreadContext context1, ThreadContext context2)
+    {
+        if (context1.OrderCount > context2.OrderCount)
+            return -1;
+        if (context1.OrderCount < context2.OrderCount)
+            return 1;
+        return 0;
+    }
 
 
 }
