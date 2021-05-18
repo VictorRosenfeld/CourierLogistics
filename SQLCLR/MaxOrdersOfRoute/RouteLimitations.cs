@@ -6,7 +6,7 @@ namespace SQLCLR.MaxOrdersOfRoute
     /// <summary>
     /// Ограничения на длину маршрута
     /// по числу заказов, из которых
-    /// создаются отгрузуи
+    /// создаются отгрузки
     /// </summary>
     public class RouteLimitations
     {
@@ -83,12 +83,18 @@ namespace SQLCLR.MaxOrdersOfRoute
 
             return 1;
         }
-        
+
+        /// <summary>
+        /// Сравнение ограничений по длине маршрута
+        /// </summary>
+        /// <param name="record1">Запись 1</param>
+        /// <param name="record2">Запись 2</param>
+        /// <returns>-1 - Запись1 больше Запись2; 0 - Запись1 = Запись2; 1 - Запись1 меньше Запись2</returns>
         private static int CompareByRouteLength(MaxOrdersOfRouteRecord record1, MaxOrdersOfRouteRecord record2)
         {
-            if (record1.RouteLength < record2.RouteLength)
-                return -1;
             if (record1.RouteLength > record2.RouteLength)
+                return -1;
+            if (record1.RouteLength < record2.RouteLength)
                 return 1;
             return 0;
         }
