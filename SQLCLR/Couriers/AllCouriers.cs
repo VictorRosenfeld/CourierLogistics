@@ -106,7 +106,7 @@ namespace SQLCLR.Couriers
         public int Count => (couriers == null ? 0 : couriers.Length);
 
         /// <summary>
-        /// Флаг: true - экземпляр не создан; false - экземпляр не создан
+        /// Флаг: true - экземпляр создан; false - экземпляр не создан
         /// </summary>
         public bool IsCreated { get; set; }
 
@@ -430,6 +430,45 @@ namespace SQLCLR.Couriers
                 }
 
                 // 4. Курьер заданного типа не найден
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Поиск первого попавшегося курьера
+        /// заданного типа в заданном магазине
+        /// </summary>
+        /// <param name="shopId">ID магазина</param>
+        /// <param name="vehicleId">ID способа доставки</param>
+        /// <returns>Курьер или null</returns>
+        public Courier FindFirstShopCourierByType(int shopId, int vehicleId)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (!IsCreated)
+                    return null;
+
+                // 3. Находим диапазон курьеров магазина
+                int index = Array.BinarySearch(shopKeys, shopId);
+                if (index < 0)
+                    return null;
+
+                // 4. Находим курьера заданного типа
+                int startIndex = courierRange[index].X;
+                int endIndex = courierRange[index].Y;
+
+                for (int i = startIndex; i <= endIndex; i++)
+                {
+                    if (shopCouriers[i].VehicleID == vehicleId)
+                        return shopCouriers[i];
+                }
+
+                // 5. Курьер заданного типа не найден
                 return null;
             }
             catch

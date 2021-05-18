@@ -12,6 +12,7 @@ using SQLCLR.Couriers;
 using SQLCLR.Deliveries;
 using SQLCLR.Orders;
 using SQLCLR.Shops;
+using SQLCLR.MaxOrdersOfRoute;
 
 public partial class StoredProcedures
 {
@@ -61,6 +62,16 @@ public partial class StoredProcedures
 
     private const string SELECT_AVERAGE_COST_THRESHOLDS = "SELECT * FROM lsvAverageDeliveryCost";
 
+    /// <summary>
+    /// Выбор максимального числа заказов
+    /// для разных длин маршрутов
+    /// </summary>
+    private const string SELECT_MAX_ORDERS_OF_ROUTE = "" +
+        "SELECT lsvSalesmanProblemLevels.splLevel AS Length, lsvSalesmanProblemLevels.splMaxOrders AS MaxOrders " +
+        "FROM   lsvFunctionalParameters INNER JOIN " +
+        "          lsvSalesmanProblemLevels ON lsvFunctionalParameters.fnpID = lsvSalesmanProblemLevels.splFnpID " +
+        "WHERE  lsvFunctionalParameters.fnpCfgServiceID = {0};";
+
     #endregion SQL instructions
 
     /// <summary>
@@ -68,9 +79,10 @@ public partial class StoredProcedures
     /// отмеченных магазинов
     /// </summary>
     /// <param name="service_id">ID LogisticsService</param>
+    /// <param name="calc_time">Момент времени, на который проводятся расчеты</param>
     /// <returns>0 - отгрузки построены; иначе отгрузки не построены</returns>
     [SqlProcedure]
-    public static SqlInt32 CreateDeliveries(SqlInt32 service_id)
+    public static SqlInt32 CreateDeliveries(SqlInt32 service_id, SqlDateTime calc_time)
     {
         // 1. Инициализация
         int rc = 1;
@@ -92,6 +104,7 @@ public partial class StoredProcedures
             CourierTypeRecord[] courierTypeRecords = null;
             CourierRecord[] courierRecords = null;
             AverageDeliveryCostRecord[] thresholdRecords;
+            MaxOrdersOfRouteRecord[] routeLimitationRecords;
 
             using (SqlConnection connection = new SqlConnection("context connection=true"))
             {
@@ -145,6 +158,14 @@ public partial class StoredProcedures
                     return rc = 1000 * rc + rc1;
                 if (thresholdRecords == null || thresholdRecords.Length <= 0)
                     return rc;
+
+                // 3.8 Загружаем ограничения на длину маршрутов по числу заказов
+                rc = 38;
+                rc1 = SelectMaxOrdersOfRoute(service_id.Value, connection, out routeLimitationRecords);
+                if (rc1 != 0)
+                    return rc = 1000 * rc + rc1;
+                if (routeLimitationRecords == null || routeLimitationRecords.Length <= 0)
+                    return rc;
             }
 
             // 4. Создаём объект c курьерами
@@ -168,8 +189,15 @@ public partial class StoredProcedures
             if (rc1 != 0)
                 return rc = 1000 * rc + rc1;
 
-            // 7. Определяем число потоков для расчетов
+            // 7. Создаём объект c ограничениями на длину маршрута по числу заказов
             rc = 7;
+            RouteLimitations limitations = new RouteLimitations();
+            rc1 = limitations.Create(routeLimitationRecords);
+            if (rc1 != 0)
+                return rc = 1000 * rc + rc1;
+
+            // 8. Определяем число потоков для расчетов
+            rc = 8;
             int threadCount = 2 * Environment.ProcessorCount;
             if (threadCount < 8)
             {
@@ -183,7 +211,7 @@ public partial class StoredProcedures
             // 8. Строим порции расчетов (ThreadContext), выполняемые в одном потоке
             //    (порция - это все заказы для одного способа доставки (курьера) в одном магазине)
             rc = 8;
-            ThreadContext[] context = GetThreadContext(shops, allOrders, allCouriers);
+            ThreadContext[] context = GetThreadContext(calc_time.Value, shops, allOrders, allCouriers, limitations);
             if (context == null || context.Length <= 0)
                 return rc;
             if (context.Length < threadCount)
@@ -200,6 +228,9 @@ public partial class StoredProcedures
 
             // 11. Запускаем первые threadCount- потоков
             rc = 11;
+            int errorCount = 0;
+            CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[100000];
+            int deliveryCount = 0;
 
             for (int i = 0; i < threadCount; i++)
             {
@@ -211,7 +242,10 @@ public partial class StoredProcedures
                 ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
             }
 
-            for (int i = threadCount + 1; i < context.Length; i++)
+            // 12. Запускаем последующие потоки
+            //     после завершения очередного
+            rc = 12;
+            for (int i = threadCount; i < context.Length; i++)
             {
                 int threadIndex = WaitHandle.WaitAny(syncEvents);
                 ThreadContext executedThreadContext = context[contextIndex[threadIndex]];
@@ -224,32 +258,122 @@ public partial class StoredProcedures
                 ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
 
                 // Обработка завершившегося потока
+                if (executedThreadContext.ExitCode != 0)
+                {
+                    errorCount++;
+                }
+                else
+                {
+                    int contextDeliveryCount = executedThreadContext.DeliveryCount;
+                    if (contextDeliveryCount > 0)
+                    {
+                        if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
+                        {
+                            int size = allDeliveries.Length / 2;
+                            if (size < contextDeliveryCount)
+                                size = contextDeliveryCount;
+                            Array.Resize(ref allDeliveries, allDeliveries.Length + size);
+                        }
+
+                        executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
+                        deliveryCount += contextDeliveryCount;
+                    }
+                }
             }
 
             WaitHandle.WaitAll(syncEvents);
             for (int i = 0; i < threadCount; i++)
             {
                 syncEvents[i].Dispose();
+
                 // Обработка последних завершившихся потоков
                 ThreadContext executedThreadContext = context[contextIndex[i]];
+                int contextDeliveryCount = executedThreadContext.DeliveryCount;
+                if (contextDeliveryCount > 0)
+                {
+                    if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
+                    {
+                        int size = allDeliveries.Length / 2;
+                        if (size < contextDeliveryCount)
+                            size = contextDeliveryCount;
+                        Array.Resize(ref allDeliveries, allDeliveries.Length + size);
+                    }
+
+                    executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
+                    deliveryCount += contextDeliveryCount;
+                }
             }
 
-            // 12. Подводим итоги
-            rc = 12;
+            if (deliveryCount <= 0)
+                return rc;
+ 
+            // 13. Сохраняем построенные отгрузки
+            rc = 13;
+            using (SqlConnection connection = new SqlConnection("context connection=true"))
+            {
+                // 13.1 Открываем соединение
+                rc = 131;
+                connection.Open();
 
+                // 13.2 Очищаем таблицу lsvDeliveries и все связааные с ней таблицы
+                rc = 132;
+                //ClearDeliveries(connection);
 
+                // 13.3 Сохраняем построенные отгрузки
+                rc = 133;
+                //rc1 = SaveDeliveries(allDeliveries, connection);
+                if (rc1 != 0)
+                    return rc = 1000 * rc + rc1;
+            }
+
+            // 14. Выход - Ok
+            rc = 0;
             return rc;
         }
         catch
         {
             return rc;
         }
-
     }
 
+    /// <summary>
+    /// Контекст-построитель отгрузок
+    /// в отдельном потоке
+    /// </summary>
+    /// <param name="status">Контекст потока</param>
     private static void CalcThread(object status)
     {
+        // 1. Инициализация
+        int rc = 1;
+        ThreadContext context = status as ThreadContext;
 
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (context == null ||
+                context.OrderCount <= 0 ||
+                context.ShopCourier == null ||
+                context.ShopFrom == null ||
+                context.Orders == null || context.Orders.Length <= 0 ||
+                context.MaxRouteLength <= 0 || context.MaxRouteLength > 8)
+                return;
+
+            // 3. Построение отгрузок 
+            rc = 3;
+
+        }
+        catch
+        {   }
+        finally
+        {
+            if (context != null)
+            {
+                context.ExitCode = rc;
+                if (context.SyncEvent != null)
+                    context.SyncEvent.Set();
+            }
+        }
     }
 
     /// <summary>
@@ -743,13 +867,81 @@ public partial class StoredProcedures
     }
 
     /// <summary>
+    /// Загрузка ограничений на длину маршрута по числу заказов,
+    /// из которых создаются отгрузки
+    /// </summary>
+    /// <param name="service_id">ID LogisticsService</param>
+    /// <param name="connection">Открытое соединение</param>
+    /// <param name="records">Записи таблицы lsvAverageDeliveryCost</param>
+    /// <returns>0 - пороги выбраны; иначе - попроги не выбраны</returns>
+    private static int SelectMaxOrdersOfRoute(int service_id, SqlConnection connection, out MaxOrdersOfRouteRecord[] records)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        records = null;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Выбираем заказы
+            rc = 3;
+            MaxOrdersOfRouteRecord[] allRecords = new MaxOrdersOfRouteRecord[16];
+            int count = 0;
+
+            using (SqlCommand cmd = new SqlCommand(string.Format(SELECT_MAX_ORDERS_OF_ROUTE, service_id), connection))
+            {
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    int iLength = reader.GetOrdinal("Length");
+                    int iMaxOrders = reader.GetOrdinal("MaxOrders");
+
+                    while (reader.Read())
+                    {
+                        MaxOrdersOfRouteRecord record = new MaxOrdersOfRouteRecord(
+                            reader.GetInt32(iLength),
+                            reader.GetInt32(iMaxOrders));
+
+                        if (count >= allRecords.Length)
+                        {
+                            Array.Resize(ref allRecords, (int)(1.25 * allRecords.Length));
+                        }
+
+                        allRecords[count++] = record;
+                    }
+                }
+            }
+
+            if (count < allRecords.Length)
+            {
+                Array.Resize(ref allRecords, count);
+            }
+
+            records = allRecords;
+
+            // 5. Выход - Ok
+            rc = 0;
+            return rc;
+        }
+        catch
+        {
+            return rc;
+        }
+    }
+
+    /// <summary>
     /// Построение всех расчетных контекстов
     /// </summary>
+    /// <param name="calcTime">Момент времени, на который делаются расчеты</param>
     /// <param name="shops">Магазины</param>
     /// <param name="allOrders">Заказы</param>
     /// <param name="allCouriers">Курьеры</param>
+    /// <param name="limitations">Ограничения на длину маршрута по числу заказов</param>
     /// <returns>Контексты или null</returns>
-    private static ThreadContext[] GetThreadContext(Shop[] shops, AllOrders allOrders, AllCouriers allCouriers)
+    private static ThreadContext[] GetThreadContext(DateTime calcTime, Shop[] shops, AllOrders allOrders, AllCouriers allCouriers, RouteLimitations limitations)
     {
         // 1. Инициализация
 
@@ -761,6 +953,8 @@ public partial class StoredProcedures
             if (allOrders == null || !allOrders.IsCreated)
                 return null;
             if (allCouriers == null || !allCouriers.IsCreated)
+                return null;
+            if (limitations == null || !limitations.IsCreated)
                 return null;
 
             // 3. Строим контексты всех потоков
@@ -838,9 +1032,12 @@ public partial class StoredProcedures
                             contextOrders[k] = vehicleTypeOrders[j, k];
                         }
 
-                        Courier courier = allCouriers.CreateReferenceCourier(orderVehicleTypes[j]);
+                        int maxRouteLength = limitations.GetRouteLength(count);
+
+                        //Courier courier = allCouriers.CreateReferenceCourier(orderVehicleTypes[j]);
+                        Courier courier = allCouriers.FindFirstShopCourierByType(shop.Id, orderVehicleTypes[j]);
                         if (courier != null)
-                            context[contextCount++] = new ThreadContext(shop, contextOrders, courier, null);
+                            context[contextCount++] = new ThreadContext(calcTime, maxRouteLength, shop, contextOrders, courier, null);
                     }
                 }
             }
@@ -873,6 +1070,4 @@ public partial class StoredProcedures
             return 1;
         return 0;
     }
-
-
 }

@@ -43,7 +43,7 @@ namespace SQLCLR.Deliveries
         /// <summary>
         /// Максимальная длина маршрута
         /// </summary>
-        public int MaxRootLength { get; set; }
+        public int MaxRouteLength { get; set; }
 
         /// <summary>
         /// Время, на которое создаются отгрузки
@@ -60,6 +60,11 @@ namespace SQLCLR.Deliveries
         public CourierDeliveryInfo[] Deliveries { get; set; }
 
         /// <summary>
+        /// Число построенных отгрузок
+        /// </summary>
+        public int DeliveryCount => (Deliveries == null ? 0 : Deliveries.Length);
+
+        /// <summary>
         /// Код возврата
         /// </summary>
         public int ExitCode { get; set; }
@@ -69,12 +74,16 @@ namespace SQLCLR.Deliveries
         /// <summary>
         /// Параметрический конструктор класса ThreadContext
         /// </summary>
+        /// <param name="calcTime">Время расчета</param>
+        /// <param name="maxRouteLength">Максимальная длина создаваемых маршрутов</param>
         /// <param name="shop">Магазин</param>
         /// <param name="orders">Заказы магазина</param>
         /// <param name="courier">Курьер</param>
         /// <param name="syncEvent">Объект синхронизации</param>
-        public ThreadContext(Shop shop, Order[] orders, Courier courier, ManualResetEvent syncEvent)
+        public ThreadContext(DateTime calcTime, int maxRouteLength, Shop shop, Order[] orders, Courier courier, ManualResetEvent syncEvent)
         {
+            CalcTime = calcTime;
+            MaxRouteLength = maxRouteLength;
             ShopFrom = shop;
             Orders = orders;
             ShopCourier = courier;

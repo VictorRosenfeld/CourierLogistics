@@ -1,5 +1,5 @@
 ﻿
-namespace SQLCLR
+namespace SQLCLR.Deliveries
 {
     using SQLCLR.Couriers;
     using SQLCLR.Deliveries;

@@ -63,6 +63,7 @@
     <Folder Include="Deliveries" />
     <Folder Include="Couriers" />
     <Folder Include="AverageDeliveryCost" />
+    <Folder Include="MaxOrdersOfRoute" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -92,5 +93,7 @@
     <Compile Include="Couriers\AllCouriers.cs" />
     <Compile Include="Deliveries\ThreadContext.cs" />
     <Compile Include="Deliveries\CourierDeliveryInfo.cs" />
+    <Compile Include="MaxOrdersOfRoute\MaxOrdersOfRouteRecord.cs" />
+    <Compile Include="MaxOrdersOfRoute\RouteLimitations.cs" />
   </ItemGroup>
 </Project>
