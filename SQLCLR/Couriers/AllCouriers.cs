@@ -477,6 +477,11 @@ namespace SQLCLR.Couriers
             }
         }
 
+        /// <summary>
+        /// Выборка различных сбособов доставки курьров
+        /// </summary>
+        /// <param name="couriers">Курьеры</param>
+        /// <returns>Различные способы доставки или null</returns>
         public static int[] GetCourierVehicleTypes(Courier[] couriers)
         {
             // 1. Инициализация

@@ -2,7 +2,6 @@
 namespace SQLCLR.Deliveries
 {
     using SQLCLR.Couriers;
-    using SQLCLR.Deliveries;
     using SQLCLR.Orders;
     using SQLCLR.Shops;
     using System;
@@ -25,17 +24,22 @@ namespace SQLCLR.Deliveries
         /// <summary>
         /// Заказы в порядке вручения
         /// </summary>
-        public Order[] Orders { get; set; }
+        private Order[] _orders;
+
+        /// <summary>
+        /// Заказы в порядке вручения
+        /// </summary>
+        public Order[] Orders { get => _orders; set => _orders = value; }
 
         /// <summary>
         /// Время проведения расчетов
         /// </summary>
-        public DateTime CalculationTime { get; private set; }
+        public DateTime CalculationTime { get; set; }
 
         /// <summary>
         /// Число заказов в отгрузке
         /// </summary>
-        public int OrderCount => (Orders == null ? 0 : Orders.Length);
+        public int OrderCount => (_orders == null ? 0 : _orders.Length);
 
         /// <summary>
         /// Средняя стоимость доставки одного заказа
@@ -97,104 +101,104 @@ namespace SQLCLR.Deliveries
         /// </summary>
         public double Cost { get; set; }
 
-        /// <summary>
-        /// Действительное время начала доставки
-        /// (StartDeliveryInterval ≤ StartDelivery ≤ EndDeliveryInterval)
-        /// </summary>
-        public DateTime StartDelivery { get; set; }
+        ///// <summary>
+        ///// Действительное время начала доставки
+        ///// (StartDeliveryInterval ≤ StartDelivery ≤ EndDeliveryInterval)
+        ///// </summary>
+        //public DateTime StartDelivery { get; set; }
 
         /// <summary>
         /// Расстояние и время движения между звеньями пути доставки
         /// </summary>
         public Point[] NodeInfo { get; set; }
 
-        /// <summary>
-        /// Флаг: 
-        /// true - все заказы в отгрузке помечены, как отгруженные
-        /// false - все заказы в отгрузке помечены, как  отгруженные
-        /// </summary>
-        public bool Completed { get; private set; }
+        ///// <summary>
+        ///// Флаг: 
+        ///// true - все заказы в отгрузке помечены, как отгруженные
+        ///// false - все заказы в отгрузке помечены, как  отгруженные
+        ///// </summary>
+        //public bool Completed { get; private set; }
 
-        /// <summary>
-        /// Пометить все заказы, как отгруженные
-        /// </summary>
-        public void SetCompleted()
-        {
-            if (Orders != null)
-            {
-                for (int i = 0; i < Orders.Length; i++)
-                {
-                    Orders[i].Status = OrderStatus.Completed;
-                }
-            }
+        ///// <summary>
+        ///// Пометить все заказы, как отгруженные
+        ///// </summary>
+        //public void SetCompleted()
+        //{
+        //    if (Orders != null)
+        //    {
+        //        for (int i = 0; i < Orders.Length; i++)
+        //        {
+        //            Orders[i].Status = OrderStatus.Completed;
+        //        }
+        //    }
 
-            Completed = true;
+        //    Completed = true;
 
-            if (DeliveryCourier != null)
-            {
-                if (!DeliveryCourier.IsTaxi)
-                    DeliveryCourier.Status = CourierStatus.DeliversOrder;
-            }
-        }
+        //    if (DeliveryCourier != null)
+        //    {
+        //        if (!DeliveryCourier.IsTaxi)
+        //            DeliveryCourier.Status = CourierStatus.DeliversOrder;
+        //    }
+        //}
 
-        /// <summary>
-        /// Все заказы в отгрузке уже доставлены ?
-        /// </summary>
-        /// <returns>true - все заказы доставлены; false - имеются не доставленные заказы или они осутствуют</returns>
-        public bool IsCompleted()
-        {
-            try
-            {
-                // 2. Проверяем исходные данные
-                if (Orders == null || Orders.Length <= 0)
-                    return false;
+        ///// <summary>
+        ///// Все заказы в отгрузке уже доставлены ?
+        ///// </summary>
+        ///// <returns>true - все заказы доставлены; false - имеются не доставленные заказы или они осутствуют</returns>
+        //public bool IsCompleted()
+        //{
+        //    try
+        //    {
+        //        // 2. Проверяем исходные данные
+        //        if (Orders == null || Orders.Length <= 0)
+        //            return false;
 
-                // 3. Проверяем доставку всех заказов в отгрузке
-                foreach (Order order in Orders)
-                {
-                    if (order.Status != OrderStatus.Completed )
-                        return false;
-                }
+        //        // 3. Проверяем доставку всех заказов в отгрузке
+        //        foreach (Order order in Orders)
+        //        {
+        //            if (order.Status != OrderStatus.Completed)
+        //                return false;
+        //        }
 
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        //        return true;
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
 
         /// <summary>
         /// Время доставки от начала отгрузки до прибытия в точку вручения, мин
         /// </summary>
         public double[] NodeDeliveryTime { get; set; }
 
-        /// <summary>
-        /// Проверка наличия заказа в отгрузке
-        /// </summary>
-        /// <returns>true - все заказы доставлены; false - имеются не доставленные заказы или они осутствуют</returns>
-        public bool ContainsOrder(int orderId)
-        {
-            try
-            {
-                // 2. Проверяем исходные данные
-                if (Orders == null || Orders.Length <= 0)
-                    return false;
+        ///// <summary>
+        ///// Проверка наличия заказа в отгрузке
+        ///// </summary>
+        ///// <returns>true - все заказы доставлены; false - имеются не доставленные заказы или они осутствуют</returns>
+        //public bool ContainsOrder(int orderId)
+        //{
+        //    try
+        //    {
+        //        // 2. Проверяем исходные данные
+        //        if (Orders == null || Orders.Length <= 0)
+        //            return false;
 
-                // 3. Проверяем наличие заказа среди отгружаемых
-                foreach (Order order in Orders)
-                {
-                    if (order.Id == orderId)
-                        return true;
-                }
+        //        // 3. Проверяем наличие заказа среди отгружаемых
+        //        foreach (Order order in Orders)
+        //        {
+        //            if (order.Id == orderId)
+        //                return true;
+        //        }
 
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        //        return false;
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
 
         /// <summary>
         /// Параметрический конструктор класса CourierDeliveryInfo
@@ -211,13 +215,60 @@ namespace SQLCLR.Deliveries
             Orders = orders;
             IsLoop = isLoop;
             CalculationTime = calculationTime;
-            StartDelivery = calculationTime;
+            //StartDelivery = calculationTime;
         }
+       
+        /// <summary>
+        /// Копирование отгрузки
+        /// </summary>
+        /// <param name="copy">Отгрузка, в которую копируется данная</param>
+        public void CopyTo(CourierDeliveryInfo copy)
+        {
+            copy.DeliveryCourier = DeliveryCourier;
+            copy.FromShop = FromShop;
+            copy.Orders = _orders;
+            copy.CalculationTime = CalculationTime;
+            copy.IsLoop = IsLoop;
+            copy.DeliveryTime = DeliveryTime;
+            copy.ExecutionTime = ExecutionTime;
+            copy.ReserveTime = ReserveTime;
+            copy.StartDeliveryInterval = StartDeliveryInterval;
+            copy.EndDeliveryInterval = EndDeliveryInterval;
+            copy.Cost = Cost;
+            copy.NodeInfo = NodeInfo;
+            copy.NodeDeliveryTime = NodeDeliveryTime;
+        }
+
+        ///// <summary>
+        ///// Построение ключа отгрузки
+        ///// с точностью до перестановки
+        ///// </summary>
+        ///// <returns></returns>
+        //public string GetOrderKey()
+        //{
+        //    if (_orders == null || _orders.Length <= 0)
+        //        return "?";
+
+        //    int[] orderId = new int[Orders.Length];
+        //    for (int i = 0; i < Orders.Length; i++)
+        //        orderId[i] = _orders[i].Id;
+
+        //    Array.Sort(orderId);
+
+        //    StringBuilder sb = new StringBuilder(10 * _orders.Length);
+        //    sb.Append(orderId[0]);
+        //    for (int i = 1; i < Orders.Length; i++)
+        //    {
+        //        sb.Append('.');
+        //        sb.Append(orderId[i]);
+        //    }
+
+        //    return sb.ToString();
+        //}
 
         /// <summary>
         /// Флаг: true - все заказы в отгрузке собраны; false - в отгрузке имеются не собранные заказы
         /// </summary>
         //public bool HasAssembledOnly => (Orders == null ? false : Orders.FirstOrDefault(p => p.Status == OrderStatus.Receipted) == null);
-
     }
 }

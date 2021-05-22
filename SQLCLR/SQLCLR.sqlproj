@@ -35,6 +35,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -71,7 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreateShopDeliveries.cs" />
     <Compile Include="Shops\Shop.cs" />
     <Compile Include="Orders\Order.cs" />
     <Compile Include="Orders\OrderStatus.cs" />
@@ -95,5 +95,9 @@
     <Compile Include="Deliveries\CourierDeliveryInfo.cs" />
     <Compile Include="MaxOrdersOfRoute\MaxOrdersOfRouteRecord.cs" />
     <Compile Include="MaxOrdersOfRoute\RouteLimitations.cs" />
+    <Compile Include="Deliveries\RouteBuilder.cs" />
+    <Compile Include="Deliveries\GeoData.cs" />
+    <Compile Include="Deliveries\DeliveryKeyComparer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,5 @@
 ﻿namespace SQLCLR.Couriers
 {
-    using SQLCLR.Deliveries;
-
     /// <summary>
     /// Интерфейс описывающий параметры
     /// расчета стоимости и времени доставки

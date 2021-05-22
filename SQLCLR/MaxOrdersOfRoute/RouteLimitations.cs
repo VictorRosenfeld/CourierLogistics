@@ -11,12 +11,12 @@ namespace SQLCLR.MaxOrdersOfRoute
     public class RouteLimitations
     {
         /// <summary>
-        /// Записи, отсортированные по RouteLength
+        /// Записи, отсортированные по убыванию RouteLength
         /// </summary>
         private MaxOrdersOfRouteRecord[] records;
 
         /// <summary>
-        /// Записи, отсортированные по RouteLength
+        /// Записи, отсортированные по убыванию RouteLength
         /// </summary>
         public MaxOrdersOfRouteRecord[] Records => records;
 

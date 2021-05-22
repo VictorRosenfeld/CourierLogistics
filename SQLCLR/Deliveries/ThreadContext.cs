@@ -21,6 +21,11 @@ namespace SQLCLR.Deliveries
         #region Аргументы расчета
 
         /// <summary>
+        /// ID LogisticsService
+        /// </summary>
+        public int ServiceId { get; private set; }
+
+        /// <summary>
         /// Магазин
         /// </summary>
         public Shop ShopFrom { get; private set; }
@@ -74,14 +79,16 @@ namespace SQLCLR.Deliveries
         /// <summary>
         /// Параметрический конструктор класса ThreadContext
         /// </summary>
+        /// <param name="serviceId">ID logisticsService</param>
         /// <param name="calcTime">Время расчета</param>
         /// <param name="maxRouteLength">Максимальная длина создаваемых маршрутов</param>
         /// <param name="shop">Магазин</param>
         /// <param name="orders">Заказы магазина</param>
         /// <param name="courier">Курьер</param>
         /// <param name="syncEvent">Объект синхронизации</param>
-        public ThreadContext(DateTime calcTime, int maxRouteLength, Shop shop, Order[] orders, Courier courier, ManualResetEvent syncEvent)
+        public ThreadContext(int serviceId, DateTime calcTime, int maxRouteLength, Shop shop, Order[] orders, Courier courier, ManualResetEvent syncEvent)
         {
+            ServiceId = serviceId;
             CalcTime = calcTime;
             MaxRouteLength = maxRouteLength;
             ShopFrom = shop;
