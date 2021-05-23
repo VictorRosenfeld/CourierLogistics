@@ -1,4 +1,4 @@
-
+п»ї
 namespace SQLCLR.Deliveries
 {
     using SQLCLR.Orders;
@@ -8,39 +8,39 @@ namespace SQLCLR.Deliveries
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Класс для работы с гео-данными Yandex
+    /// РљР»Р°СЃСЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РіРµРѕ-РґР°РЅРЅС‹РјРё Yandex
     /// </summary>
     public class GeoData
     {
         /// <summary>
-        /// Проверка наличия и подкачка
-        /// в GeoCache требуемых данных
+        /// РџСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ Рё РїРѕРґРєР°С‡РєР°
+        /// РІ GeoCache С‚СЂРµР±СѓРµРјС‹С… РґР°РЅРЅС‹С…
         /// </summary>
         /// <param name="serviceId">ID LogisticsService</param>
-        /// <param name="yandexTypeId">ID способа передвижения Yandex</param>
-        /// <param name="shop">Магазин</param>
-        /// <param name="orders">Заказы</param>
+        /// <param name="yandexTypeId">ID СЃРїРѕСЃРѕР±Р° РїРµСЂРµРґРІРёР¶РµРЅРёСЏ Yandex</param>
+        /// <param name="shop">РњР°РіР°Р·РёРЅ</param>
+        /// <param name="orders">Р—Р°РєР°Р·С‹</param>
         /// <returns></returns>
         public static int PutData(int serviceId, int yandexTypeId, Shop shop, Order[] orders)
         {
-            // 1. Инициализация
+            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
             int rc = 1;
 
             try
             {
-                // 2. Проверяем исходные данные
+                // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
                 rc = 2;
                 if (shop == null || shop.Latitude == 0 || shop.Longitude == 0)
                     return rc;
                 if (orders == null || orders.Length <= 0)
                     return rc;
 
-                // 3. Открываем соединение
+                // 3. РћС‚РєСЂС‹РІР°РµРј СЃРѕРµРґРёРЅРµРЅРёРµ
                 rc = 3;
                 using (SqlConnection connection = new SqlConnection("context connection=true"))
                 using (Task openTask = connection.OpenAsync())
                 {
-                    // 4. Создаём таблицу с исходными данными
+                    // 4. РЎРѕР·РґР°С‘Рј С‚Р°Р±Р»РёС†Сѓ СЃ РёСЃС…РѕРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
                     rc = 4;
                     DataTable table = new DataTable();
                     table.Columns.Add("latitude", typeof(double));
@@ -53,7 +53,7 @@ namespace SQLCLR.Deliveries
 
                     table.Rows.Add(shop.Latitude, shop.Longitude);
 
-                    // 5. Строим команду для вызова процедуры lsvH4geo_putEx
+                    // 5. РЎС‚СЂРѕРёРј РєРѕРјР°РЅРґСѓ РґР»СЏ РІС‹Р·РѕРІР° РїСЂРѕС†РµРґСѓСЂС‹ lsvH4geo_putEx
                     rc = 5;
                     using (SqlCommand cmd = new SqlCommand("dbo.lsvH4geo_putEx", connection))
                     {
@@ -79,7 +79,7 @@ namespace SQLCLR.Deliveries
                         var returnParameter = cmd.Parameters.Add("@ReturnCode", SqlDbType.Int);
                         returnParameter.Direction = ParameterDirection.ReturnValue;
 
-                        // 6. Исполняем команду
+                        // 6. РСЃРїРѕР»РЅСЏРµРј РєРѕРјР°РЅРґСѓ
                         rc = 6;
                         openTask.Wait();
                         cmd.ExecuteNonQuery();
@@ -92,7 +92,7 @@ namespace SQLCLR.Deliveries
                     }
                 }
 
-                // 7. Выход - Ok
+                // 7. Р’С‹С…РѕРґ - Ok
                 rc = 0;
                 return rc;
             }
@@ -103,37 +103,37 @@ namespace SQLCLR.Deliveries
         }
 
         /// <summary>
-        /// Выбор требуемых гео-данных
+        /// Р’С‹Р±РѕСЂ С‚СЂРµР±СѓРµРјС‹С… РіРµРѕ-РґР°РЅРЅС‹С…
         /// </summary>
         /// <param name="serviceId">ID LogisticsService</param>
-        /// <param name="yandexTypeId">ID способа передвижения Yandex</param>
-        /// <param name="shop">Магазин</param>
-        /// <param name="orders">Заказы</param>
-        /// <param name="geoData">Гео-данные
-        /// (Индексы точек: i - orders[i]; i = orders.Length - shop)
+        /// <param name="yandexTypeId">ID СЃРїРѕСЃРѕР±Р° РїРµСЂРµРґРІРёР¶РµРЅРёСЏ Yandex</param>
+        /// <param name="shop">РњР°РіР°Р·РёРЅ</param>
+        /// <param name="orders">Р—Р°РєР°Р·С‹</param>
+        /// <param name="geoData">Р“РµРѕ-РґР°РЅРЅС‹Рµ
+        /// (РРЅРґРµРєСЃС‹ С‚РѕС‡РµРє: i - orders[i]; i = orders.Length - shop)
         /// </param>
-        /// <returns>0 - гео-данные выбраны; гео-данные не выбраны</returns>
+        /// <returns>0 - РіРµРѕ-РґР°РЅРЅС‹Рµ РІС‹Р±СЂР°РЅС‹; РіРµРѕ-РґР°РЅРЅС‹Рµ РЅРµ РІС‹Р±СЂР°РЅС‹</returns>
         public static int Select(int serviceId, int yandexTypeId, Shop shop, Order[] orders, out Point[,] geoData)
         {
-            // 1. Инициализация
+            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
             int rc = 1;
             geoData = null;
 
             try
             {
-                // 2. Проверяем исходные данные
+                // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
                 rc = 2;
                 if (shop == null || shop.Latitude == 0 || shop.Longitude == 0)
                     return rc;
                 if (orders == null || orders.Length <= 0)
                     return rc;
 
-                // 3. Открываем соединение
+                // 3. РћС‚РєСЂС‹РІР°РµРј СЃРѕРµРґРёРЅРµРЅРёРµ
                 rc = 3;
                 using (SqlConnection connection = new SqlConnection("context connection=true"))
                 using (Task openTask = connection.OpenAsync())
                 {
-                    // 4. Создаём таблицу с исходными данными
+                    // 4. РЎРѕР·РґР°С‘Рј С‚Р°Р±Р»РёС†Сѓ СЃ РёСЃС…РѕРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
                     rc = 4;
                     DataTable table = new DataTable();
                     table.Columns.Add("latitude", typeof(double));
@@ -146,7 +146,7 @@ namespace SQLCLR.Deliveries
 
                     table.Rows.Add(shop.Latitude, shop.Longitude);
 
-                    // 5. Строим команду для вызова процедуры lsvH4geo_putEx
+                    // 5. РЎС‚СЂРѕРёРј РєРѕРјР°РЅРґСѓ РґР»СЏ РІС‹Р·РѕРІР° РїСЂРѕС†РµРґСѓСЂС‹ lsvH4geo_putEx
                     rc = 5;
                     using (SqlCommand cmd = new SqlCommand("dbo.lsvSelectGeoDataFromCache", connection))
                     {
@@ -172,7 +172,7 @@ namespace SQLCLR.Deliveries
                         var returnParameter = cmd.Parameters.Add("@ReturnCode", SqlDbType.Int);
                         returnParameter.Direction = ParameterDirection.ReturnValue;
 
-                        // 6. Исполняем команду
+                        // 6. РСЃРїРѕР»РЅСЏРµРј РєРѕРјР°РЅРґСѓ
                         rc = 6;
                         openTask.Wait();
 
@@ -203,7 +203,7 @@ namespace SQLCLR.Deliveries
                     }
                 }
 
-                // 7. Выход - Ok
+                // 7. Р’С‹С…РѕРґ - Ok
                 rc = 0;
                 return rc;
             }

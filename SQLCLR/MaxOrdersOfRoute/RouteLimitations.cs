@@ -49,7 +49,7 @@ namespace SQLCLR.MaxOrdersOfRoute
                 if (records == null || records.Length <= 0)
                     return rc;
 
-                // 3. Сортируем записи по возрастанию длины маршрута
+                // 3. Сортируем записи по убыванию длины маршрута
                 rc = 3;
                 this.records = records;
                 Array.Sort(this.records, CompareByRouteLength);

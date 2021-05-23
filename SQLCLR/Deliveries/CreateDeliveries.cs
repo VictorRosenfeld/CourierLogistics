@@ -347,10 +347,10 @@ public partial class StoredProcedures
         {
             return rc;
         }
-        finally
-        {
-            GC.Collect();
-        }
+        //finally
+        //{
+        //    GC.Collect();
+        //}
     }
 
     /// <summary>
@@ -368,6 +368,7 @@ public partial class StoredProcedures
         {
             // 2. Проверяем исходные данные
             rc = 2;
+            Thread.BeginThreadAffinity();
             if (context == null ||
                 context.OrderCount <= 0 ||
                 context.ShopCourier == null ||
@@ -388,7 +389,9 @@ public partial class StoredProcedures
 
             // 4. Строим отгрузки
             rc = 4;
+            //Thread.BeginThreadAffinity();
             rc1 = RouteBuilder.Build(context, geoData);
+            //Thread.EndThreadAffinity();
             if (rc1 != 0)
             {
                 rc = 100000 * rc + rc1;

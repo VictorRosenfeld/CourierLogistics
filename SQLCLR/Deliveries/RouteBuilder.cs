@@ -50,7 +50,7 @@ namespace SQLCLR.Deliveries
 
                 // 5. Готовим цикл обработки
                 rc = 5;
-                Dictionary<int[], CourierDeliveryInfo> dictDeliveries = new Dictionary<int[], CourierDeliveryInfo>(capacity, new DeliveryKeyComparer(orderCount));
+                Dictionary<int[], CourierDeliveryInfo> dictDeliveries = new Dictionary<int[], CourierDeliveryInfo>(capacity, new DeliveryKeyComparerEx(orderCount));
                 CourierDeliveryInfo dictDelivery;
                 CourierDeliveryInfo delivery;
 
