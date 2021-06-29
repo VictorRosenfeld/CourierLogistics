@@ -228,6 +228,54 @@ namespace SQLCLR.Orders
         }
 
         /// <summary>
+        /// Выбрать все заказы магазина требующие доставки
+        /// с учетом времени расчетов
+        /// </summary>
+        /// <param name="shopId">Id магазина</param>
+        /// <param name="calcTime">Время проведения расчетов</param>
+        /// <returns>Выбранные заказы или null</returns>
+        public Order[] GetShopOrders(int shopId, DateTime calcTime)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (!IsCreated)
+                    return null;
+
+                // 3. Выбираем заказы магазина требующие доставки
+                int index = Array.BinarySearch(shopKeys, shopId);
+                if (index < 0)
+                    return new Order[0];
+
+                Point pt = orderRange[index];
+                int startIndex = pt.X;
+                int endIndex = pt.Y;
+
+                Order[] result = new Order[endIndex - startIndex + 1];
+                int count = 0;
+
+                for (int i = startIndex; i <= endIndex; i++)
+                {
+                    Order order = shopOrders[i];
+                    if (order.DeliveryTimeTo > calcTime)
+                        result[count++] = order;
+                }
+
+                if (count < result.Length)
+                {
+                    Array.Resize(ref result, count);
+                }
+
+                // 4. Выход - Ok
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Выбор набора различных способов доставки
         /// для заданных заказов
         /// </summary>

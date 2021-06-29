@@ -51,7 +51,7 @@ namespace SQLCLR.AverageDeliveryCost
             {
                 // 2. Проверяем исходные данные
                 rc = 2;
-                if (records == null || records.Length <= 0)
+                if (records == null /*|| records.Length <= 0*/)
                     return rc;
 
                 // 3. Строим словарь порогов

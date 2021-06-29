@@ -31,7 +31,8 @@ public partial class StoredProcedures
         "FROM   lsvOrders INNER JOIN " +
         "          lsvShops ON lsvOrders.ordShopID = lsvShops.shpShopID " +
         " WHERE  (lsvShops.shpUpdated = 1) AND " +
-        "       (lsvOrders.ordStatusID = 1 OR lsvOrders.ordStatusID = 2);";
+        "        (lsvOrders.Completed = 0) AND " +
+        "        (lsvOrders.ordStatusID = 1 OR lsvOrders.ordStatusID = 2);";
 
     /// <summary>
     /// Выбор способов доставки заказов
@@ -42,7 +43,8 @@ public partial class StoredProcedures
         "          lsvOrderVehicleTypes ON lsvOrders.ordOrderID = lsvOrderVehicleTypes.ovtOrderID INNER JOIN " +
         "             lsvShops ON lsvOrders.ordShopID = lsvShops.shpShopID " +
         " WHERE  (lsvShops.shpUpdated = 1) AND " +
-        "       (lsvOrders.ordStatusID = 1 OR lsvOrders.ordStatusID = 2) " +
+        "        (lsvOrders.Completed = 0) AND " +
+        "        (lsvOrders.ordStatusID = 1 OR lsvOrders.ordStatusID = 2) " +
         "ORDER BY lsvOrders.ordOrderID;";
 
     /// <summary>
@@ -164,8 +166,8 @@ public partial class StoredProcedures
                 rc1 = SelectThresholds(connection, out thresholdRecords);
                 if (rc1 != 0)
                     return rc = 1000000 * rc + rc1;
-                if (thresholdRecords == null || thresholdRecords.Length <= 0)
-                    return rc;
+                //if (thresholdRecords == null || thresholdRecords.Length <= 0)
+                //    return rc;
 
                 // 3.8 Загружаем ограничения на длину маршрутов по числу заказов
                 rc = 38;
@@ -368,7 +370,7 @@ public partial class StoredProcedures
         {
             // 2. Проверяем исходные данные
             rc = 2;
-            Thread.BeginThreadAffinity();
+            //Thread.BeginThreadAffinity();
             if (context == null ||
                 context.OrderCount <= 0 ||
                 context.ShopCourier == null ||
@@ -676,7 +678,7 @@ public partial class StoredProcedures
             CourierTypeRecord[] records = new CourierTypeRecord[vehicleTypes.Length];
             int count = 0;
 
-            using (SqlCommand cmd = new SqlCommand(SELECT_ORDERS, connection))
+            using (SqlCommand cmd = new SqlCommand(sqlText, connection))
             {
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -1007,7 +1009,8 @@ public partial class StoredProcedures
                 Shop shop = shops[i];
 
                 // 3.2 Извлекаем заказы магазина
-                Order[] shopOrders = allOrders.GetShopOrders(shop.Id);
+                //Order[] shopOrders = allOrders.GetShopOrders(shop.Id);
+                Order[] shopOrders = allOrders.GetShopOrders(shop.Id, calcTime);
                 if (shopOrders == null || shopOrders.Length <= 0)
                     continue;
 
@@ -1038,6 +1041,7 @@ public partial class StoredProcedures
                     continue;
 
                 // 3.5 Раскладываем заказы по способам доставки
+                //     отбрасывая заказы, для которых нет доступного курьера
                 Array.Sort(orderVehicleTypes, 0, vehicleTypeCount);
                 Order[,] vehicleTypeOrders = new Order[vehicleTypeCount, shopOrders.Length];
                 int[] vehicleTypeOrderCount = new int[vehicleTypeCount];
@@ -1075,6 +1079,8 @@ public partial class StoredProcedures
 
                         //Courier courier = allCouriers.CreateReferenceCourier(orderVehicleTypes[j]);
                         Courier courier = allCouriers.FindFirstShopCourierByType(shop.Id, orderVehicleTypes[j]);
+                        if (courier.MaxOrderCount < maxRouteLength)
+                            maxRouteLength = courier.MaxOrderCount;
                         if (courier != null)
                             context[contextCount++] = new ThreadContext(serviceId, calcTime, maxRouteLength, shop, contextOrders, courier, null);
                     }
@@ -1256,6 +1262,7 @@ public partial class StoredProcedures
 
                 // 6. Заполняем таблицу lsvDeliveryOrders
                 rc = 6;
+
                 using (var copy = new SqlBulkCopy(connection))
                 {
                     copy.DestinationTableName = "dbo.lsvDeliveryOrders";
