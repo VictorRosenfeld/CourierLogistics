@@ -2,6 +2,7 @@
 using SQLCLR.AverageDeliveryCost;
 using SQLCLR.Couriers;
 using SQLCLR.Deliveries;
+using SQLCLR.Log;
 using SQLCLR.MaxOrdersOfRoute;
 using SQLCLR.Orders;
 using SQLCLR.Shops;
@@ -100,10 +101,19 @@ public partial class StoredProcedures
 
         try
         {
+            #if debug
+                Logger.WriteToLog(1, $"---> CreateDeliveries. service_id = {service_id.Value}, calc_time = {calc_time.Value: yyyy-MM-dd hh:MM:ss.fff}", 0);
+            #endif
+
             // 2. Проверяем исходные данные
             rc = 2;
             if (!SqlContext.IsAvailable)
+            {
+                #if debug
+                    Logger.WriteToLog(4, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. SQLContext is not available", 1);
+                #endif
                 return rc;
+            }
 
             // 3. Открываем соединение в контексте текущей сессии
             //    и загружаем все необходимые данные
@@ -126,46 +136,108 @@ public partial class StoredProcedures
                 rc = 32;
                 rc1 = SelectShops(connection, out shops);
                 if (rc1 != 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(4, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not selected", 1);
+                    #endif
                     return rc = 1000000 * rc + rc1;
+                }
                 if (shops == null || shops.Length <= 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(5, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not found", 0);
+                    #endif
                     return rc = 0;
+                }
+
+                #if debug
+                    Logger.WriteToLog(6, $"CreateDeliveries. service_id = {service_id.Value}. Selected shops: {shops.Length}", 0);
+                #endif
 
                 // 3.3 Выбираем заказы, для которых нужно построить отгрузки
                 rc = 33;
                 rc1 = SelectOrders(connection, out orders);
                 if (rc1 != 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(7, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not selected", 1);
+                    #endif
                     return rc = 1000000 * rc + rc1;
+                }
                 if (orders == null || orders.Length <= 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(8, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not found", 0);
+                    #endif
                     return rc = 0;
+                }
+
+                #if debug
+                    Logger.WriteToLog(9, $"CreateDeliveries. service_id = {service_id.Value}. Selected orders: {orders.Length}", 0);
+                #endif
 
                 // 3.4 Выбираем способы доставки заказов,
                 //     которые могут быть использованы
                 rc = 34;
                 requiredVehicleTypes = AllOrders.GetOrderVehicleTypes(orders);
                 if (requiredVehicleTypes == null || requiredVehicleTypes.Length <= 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(10, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Orders vehicle types are not found", 1);
+                    #endif
                     return rc;
+                }
+
+                #if debug
+                    Logger.WriteToLog(11, $"CreateDeliveries. service_id = {service_id.Value}. Order vehicle  types: {requiredVehicleTypes.Length}", 0);
+                #endif
 
                 // 3.5 Загружаем параметры способов отгрузки
                 rc = 35;
                 rc1 = SelectCourierTypes(requiredVehicleTypes, connection, out courierTypeRecords);
                 if (rc1 != 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(12, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Courier types are not selected", 1);
+                    #endif
                     return rc = 1000000 * rc + rc1;
+                }
                 if (courierTypeRecords == null || courierTypeRecords.Length <= 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(13, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Courier types are not found", 1);
+                    #endif
                     return rc;
+                }
 
                 // 3.6 Загружаем информацию о курьерах
                 rc = 36;
                 rc1 = SelectCouriers(connection, out courierRecords);
                 if (rc1 != 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(14, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Couriers are not selected", 1);
+                    #endif
                     return rc = 1000000 * rc + rc1;
+                }
                 if (courierRecords == null || courierRecords.Length <= 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(15, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Courier are not found", 1);
+                    #endif
                     return rc;
+                }
 
                 // 3.7 Загружаем пороги для среднего времени доставки заказов
                 rc = 37;
                 rc1 = SelectThresholds(connection, out thresholdRecords);
                 if (rc1 != 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(16, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Thresholds are not selected", 1);
+                    #endif
                     return rc = 1000000 * rc + rc1;
+                }
                 //if (thresholdRecords == null || thresholdRecords.Length <= 0)
                 //    return rc;
 
@@ -173,9 +245,19 @@ public partial class StoredProcedures
                 rc = 38;
                 rc1 = SelectMaxOrdersOfRoute(service_id.Value, connection, out routeLimitationRecords);
                 if (rc1 != 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(17, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Max route length are not selected", 1);
+                    #endif
                     return rc = 1000000 * rc + rc1;
+                }
                 if (routeLimitationRecords == null || routeLimitationRecords.Length <= 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(18, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Max route length records are not found", 1);
+                    #endif
                     return rc;
+                }
             }
 
             // 4. Создаём объект c курьерами
@@ -183,28 +265,48 @@ public partial class StoredProcedures
             AllCouriers allCouriers = new AllCouriers();
             rc1 = allCouriers.Create(courierTypeRecords, courierRecords);
             if (rc1 != 0)
+            {
+                #if debug
+                    Logger.WriteToLog(19, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allCouriers is not created", 1);
+                #endif
                 return rc = 1000000 * rc + rc1;
+            }
 
             // 5. Создаём объект c заказами
             rc = 5;
             AllOrders allOrders = new AllOrders();
             rc1 = allOrders.Create(orders);
             if (rc1 != 0)
+            {
+                #if debug
+                    Logger.WriteToLog(20, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allOrders is not created", 1);
+                #endif
                 return rc = 1000000 * rc + rc1;
+            }
 
             // 6. Создаём объект c порогами средней стоимости доставки
             rc = 6;
             AverageCostThresholds thresholds = new AverageCostThresholds();
             rc1 = thresholds.Create(thresholdRecords);
             if (rc1 != 0)
+            {
+                #if debug
+                    Logger.WriteToLog(21, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. thresholds is not created", 1);
+                #endif
                 return rc = 1000000 * rc + rc1;
+            }
 
             // 7. Создаём объект c ограничениями на длину маршрута по числу заказов
             rc = 7;
             RouteLimitations limitations = new RouteLimitations();
             rc1 = limitations.Create(routeLimitationRecords);
             if (rc1 != 0)
+            {
+                #if debug
+                    Logger.WriteToLog(22, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. limitations is not created", 1);
+                #endif
                 return rc = 1000000 * rc + rc1;
+            }
 
             // 8. Определяем число потоков для расчетов
             rc = 8;
@@ -227,6 +329,10 @@ public partial class StoredProcedures
             if (context.Length < threadCount)
                 threadCount = context.Length;
 
+            #if debug
+                Logger.WriteToLog(23, $"CreateDeliveries. service_id = {service_id.Value}. Thread context count: {context.Length}. Thread count: {threadCount}", 0);
+            #endif
+
             // 9. Сортируем контексты по убыванию числа заказов
             rc = 9;
             Array.Sort(context, CompareContextByOrderCount);
@@ -241,6 +347,10 @@ public partial class StoredProcedures
             int errorCount = 0;
             CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[100000];
             int deliveryCount = 0;
+
+            #if debug
+                Logger.WriteToLog(24, $"CreateDeliveries. service_id = {service_id.Value}. Thread context count: {context.Length}", 0);
+            #endif
 
             for (int i = 0; i < threadCount; i++)
             {
@@ -324,6 +434,11 @@ public partial class StoredProcedures
  
             // 13. Сохраняем построенные отгрузки
             rc = 13;
+
+            #if debug
+                Logger.WriteToLog(25, $"CreateDeliveries. service_id = {service_id.Value}. Saving deliveries...", 0);
+            #endif
+
             using (SqlConnection connection = new SqlConnection("context connection=true"))
             {
                 // 13.1 Открываем соединение
@@ -338,21 +453,35 @@ public partial class StoredProcedures
                 rc = 133;
                 rc1 = SaveDeliveries(allDeliveries, connection);
                 if (rc1 != 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(26, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
+                    #endif
                     return rc = 1000000 * rc + rc1;
+                }
             }
+
+            #if debug
+                Logger.WriteToLog(25, $"CreateDeliveries. service_id = {service_id.Value}. Deliveries saved", 0);
+            #endif
 
             // 14. Выход - Ok
             rc = 0;
             return rc;
         }
-        catch
+        catch (Exception ex)
         {
+            #if debug
+                Logger.WriteToLog(3, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Exception {ex.Message}", 2);
+            #endif
             return rc;
         }
-        //finally
-        //{
-        //    GC.Collect();
-        //}
+        finally
+        {
+            #if debug
+                Logger.WriteToLog(2, $"<--- CreateDeliveries. service_id = {service_id.Value}. calc_time = {calc_time.Value: yyyy-MM-dd hh:MM:ss.fff}. rc = {rc}", 0);
+            #endif
+        }
     }
 
     /// <summary>

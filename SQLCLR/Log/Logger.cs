@@ -1,45 +1,45 @@
-
+п»ї
 namespace SQLCLR.Log
 {
     using System;
-    //using System.IO;
+    using System.IO;
 
     /// <summary>
-    /// Простой ежедневный логгер
+    /// РџСЂРѕСЃС‚РѕР№ РµР¶РµРґРЅРµРІРЅС‹Р№ Р»РѕРіРіРµСЂ
     /// </summary>
-    public class Logger
+    public static class Logger
     {
         private const string LOG_FILE_PATTERN = @"C:\LogisticsService\Log\LS_CLR_{0}.log";
 
         /// <summary>
-        /// Шаблон сообщения
-        /// {0} - дата-время
-        /// {1} - номер сообщения
-        /// {2} - тип сообщения
-        /// {3} - текст сообщения
+        /// РЁР°Р±Р»РѕРЅ СЃРѕРѕР±С‰РµРЅРёСЏ
+        /// {0} - РґР°С‚Р°-РІСЂРµРјСЏ
+        /// {1} - РЅРѕРјРµСЂ СЃРѕРѕР±С‰РµРЅРёСЏ
+        /// {2} - С‚РёРї СЃРѕРѕР±С‰РµРЅРёСЏ
+        /// {3} - С‚РµРєСЃС‚ СЃРѕРѕР±С‰РµРЅРёСЏ
         /// </summary>
         private const string MESSAGE_PATTERN = @"@{0} {1} {2} > {3}";
 
         /// <summary>
-        /// Построить имя файла ежедневного лога
+        /// РџРѕСЃС‚СЂРѕРёС‚СЊ РёРјСЏ С„Р°Р№Р»Р° РµР¶РµРґРЅРµРІРЅРѕРіРѕ Р»РѕРіР°
         /// </summary>
-        /// <returns>Имя файла лога</returns>
+        /// <returns>РРјСЏ С„Р°Р№Р»Р° Р»РѕРіР°</returns>
         private static string GetLogFileName()
         {
             return string.Format(LOG_FILE_PATTERN, DateTime.Now.ToString("yyyy-MM-dd"));
         }
 
         /// <summary>
-        /// Запись в лог
+        /// Р—Р°РїРёСЃСЊ РІ Р»РѕРі
         /// </summary>
-        /// <param name="messageNo">Номер сообщения</param>
-        /// <param name="message">Текст сообщения</param>
-        /// <param name="severity">Тип сообщения (-1 - не печатать; 0 - info; 1 - warn; 2 - error</param>
+        /// <param name="messageNo">РќРѕРјРµСЂ СЃРѕРѕР±С‰РµРЅРёСЏ</param>
+        /// <param name="message">РўРµРєСЃС‚ СЃРѕРѕР±С‰РµРЅРёСЏ</param>
+        /// <param name="severity">РўРёРї СЃРѕРѕР±С‰РµРЅРёСЏ (-1 - РЅРµ РїРµС‡Р°С‚Р°С‚СЊ; 0 - info; 1 - warn; 2 - error</param>
         public static void WriteToLog(int messageNo, string message, int severity)
         {
             try
             {
-                // 1. Форматируем тип сообщения
+                // 1. Р¤РѕСЂРјР°С‚РёСЂСѓРµРј С‚РёРї СЃРѕРѕР±С‰РµРЅРёСЏ
                 string messageType = null;
                 switch (severity)
                 {
@@ -60,7 +60,7 @@ namespace SQLCLR.Log
                         break;
                 }
 
-                // 2. Выводим в лог
+                // 2. Р’С‹РІРѕРґРёРј РІ Р»РѕРі
                 using (StreamWriter sw = new StreamWriter(GetLogFileName(), true))
                 {
                     sw.WriteLine(string.Format(MESSAGE_PATTERN, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), messageNo, messageType, message));
