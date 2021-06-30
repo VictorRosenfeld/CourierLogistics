@@ -32,7 +32,7 @@ public partial class StoredProcedures
         "FROM   lsvOrders INNER JOIN " +
         "          lsvShops ON lsvOrders.ordShopID = lsvShops.shpShopID " +
         " WHERE  (lsvShops.shpUpdated = 1) AND " +
-        "        (lsvOrders.Completed = 0) AND " +
+        "        (lsvOrders.ordCompleted = 0) AND " +
         "        (lsvOrders.ordStatusID = 1 OR lsvOrders.ordStatusID = 2);";
 
     /// <summary>
@@ -44,7 +44,7 @@ public partial class StoredProcedures
         "          lsvOrderVehicleTypes ON lsvOrders.ordOrderID = lsvOrderVehicleTypes.ovtOrderID INNER JOIN " +
         "             lsvShops ON lsvOrders.ordShopID = lsvShops.shpShopID " +
         " WHERE  (lsvShops.shpUpdated = 1) AND " +
-        "        (lsvOrders.Completed = 0) AND " +
+        "        (lsvOrders.ordCompleted = 0) AND " +
         "        (lsvOrders.ordStatusID = 1 OR lsvOrders.ordStatusID = 2) " +
         "ORDER BY lsvOrders.ordOrderID;";
 
@@ -661,7 +661,7 @@ public partial class StoredProcedures
                     int iReceiptedDate = reader.GetOrdinal("ordReceiptedDate");
                     int iDeliveryTimeFrom = reader.GetOrdinal("ordDeliveryTimeFrom");
                     int iDeliveryTimeTo = reader.GetOrdinal("ordDeliveryTimeTo");
-                    int iCompleted = reader.GetOrdinal("ordCompleted");
+                    //int iCompleted = reader.GetOrdinal("ordCompleted");
                     int iTimeCheckDisabled = reader.GetOrdinal("ordTimeCheckDisabled");
 
                     while (reader.Read())
@@ -753,6 +753,8 @@ public partial class StoredProcedures
                     }
                 }
             }
+
+            orders = allOrders;
 
             // 6. Выход - Ok
             rc = 0;
@@ -993,7 +995,7 @@ public partial class StoredProcedures
             AverageDeliveryCostRecord[] allRecords = new AverageDeliveryCostRecord[30000];
             int count = 0;
 
-            using (SqlCommand cmd = new SqlCommand(SELECT_COURIERS, connection))
+            using (SqlCommand cmd = new SqlCommand(SELECT_AVERAGE_COST_THRESHOLDS, connection))
             {
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -1025,7 +1027,7 @@ public partial class StoredProcedures
 
             records = allRecords;
 
-            // 5. Выход - Ok
+            // 4. Выход - Ok
             rc = 0;
             return rc;
         }
