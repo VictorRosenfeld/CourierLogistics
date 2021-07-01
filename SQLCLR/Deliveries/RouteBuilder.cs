@@ -2,6 +2,7 @@
 namespace SQLCLR.Deliveries
 {
     using SQLCLR.Couriers;
+    using SQLCLR.Log;
     using SQLCLR.Orders;
     using SQLCLR.Shops;
     using System;
@@ -79,6 +80,7 @@ namespace SQLCLR.Deliveries
                     orderGeoIndex[1] = shopIndex;
                     orders[0] = contextOrders[i1];
                     rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 1, isLoop, geoData, out delivery);
+                    Logger.WriteToLog(501, $"RouteBuilder.Build. rcFind = {rcFind}, i1 = {i1}, order_id = {orders[0].Id}", 0);
                     if (rcFind != 0)
                         continue;
 

@@ -55,6 +55,17 @@ namespace SQLCLR.Deliveries
         /// </summary>
         public DateTime CalcTime { get; set; }
 
+        /// <summary>
+        /// Geo-данные между парами точек:
+        ///     GeoData[i,j].X  - distance
+        ///     GeoData[i,j].Y  - distance
+        /// где
+        ///     i, j меньше или равно OrderCount
+        ///     i соответствует Order[i];
+        ///     i = OrderCount соответствует ShopFrom
+        /// </summary>
+        public Point[,] GeoData { get; set; }
+
         #endregion Аргументы расчета
 
         #region Результат работы построителя отгрузок
@@ -85,8 +96,9 @@ namespace SQLCLR.Deliveries
         /// <param name="shop">Магазин</param>
         /// <param name="orders">Заказы магазина</param>
         /// <param name="courier">Курьер</param>
+        /// <param name="geoData">Гео-данные</param>
         /// <param name="syncEvent">Объект синхронизации</param>
-        public ThreadContext(int serviceId, DateTime calcTime, int maxRouteLength, Shop shop, Order[] orders, Courier courier, ManualResetEvent syncEvent)
+        public ThreadContext(int serviceId, DateTime calcTime, int maxRouteLength, Shop shop, Order[] orders, Courier courier, Point[,] geoData, ManualResetEvent syncEvent)
         {
             ServiceId = serviceId;
             CalcTime = calcTime;
@@ -94,6 +106,7 @@ namespace SQLCLR.Deliveries
             ShopFrom = shop;
             Orders = orders;
             ShopCourier = courier;
+            GeoData = geoData;
             SyncEvent = syncEvent;
             ExitCode = -1;
         }

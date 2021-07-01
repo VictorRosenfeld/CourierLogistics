@@ -2,6 +2,7 @@
 namespace SQLCLR.Couriers
 {
     using SQLCLR.Deliveries;
+    using SQLCLR.Log;
     using System;
     using System.Reflection;
 
@@ -45,6 +46,10 @@ namespace SQLCLR.Couriers
         {
             // 1. Инциализация
 
+            #if debug
+                Logger.WriteToLog(601, $"TimeAndCostCalculator.GetTimeAndCostDelegate enter. methodId = {methodId}", 0);
+            #endif
+
             try
             {
                 // 2. Проверяем исходные данные
@@ -60,11 +65,18 @@ namespace SQLCLR.Couriers
                     if (methodName.Equals(method.Name, StringComparison.CurrentCultureIgnoreCase) &&
                         method.GetParameters().Length == DELEGATE_PARAMETER_COUNT)
                     {
+                        #if debug
+                            Logger.WriteToLog(602, $"TimeAndCostCalculator.GetTimeAndCostDelegate exit. methodId = {methodId} found", 0);
+                        #endif
+
                         return (GetTimeAndCostDelegate)Delegate.CreateDelegate(typeof(GetTimeAndCostDelegate), null, method);
                     }
                 }
 
                 // 5. Выход - калькулятор не найден
+                #if debug
+                    Logger.WriteToLog(602, $"TimeAndCostCalculator.GetTimeAndCostDelegate exit. methodId = {methodId} not found", 1);
+                #endif
                 return null;
             }
             catch
