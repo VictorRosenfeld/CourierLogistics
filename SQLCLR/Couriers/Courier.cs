@@ -105,6 +105,7 @@ namespace SQLCLR.Couriers
         /// <param name="courierBase">Базовый класс курьера</param>
         public Courier(int id, CourierBase courierBase) : base(courierBase)
         {
+            Id = id;
             SetCalculator(courierBase.Calculator);
         }
 

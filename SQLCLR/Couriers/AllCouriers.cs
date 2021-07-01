@@ -2,6 +2,7 @@
 namespace SQLCLR.Couriers
 {
     using SQLCLR.Deliveries;
+    using SQLCLR.Log;
     using System;
 
     /// <summary>
@@ -140,6 +141,10 @@ namespace SQLCLR.Couriers
                 if (courierRecords == null || courierRecords.Length <= 0)
                     return rc;
 
+                #if debug
+                    Logger.WriteToLog(111, $"AllCouriers.Create. courierTypeRecords.Length = {courierTypeRecords.Length}, courierRecords.Length = {courierRecords.Length}", 0);
+                #endif
+
                 // 3. Выбираем всех делегатов расчета времени и стоимости отгрузки
                 rc = 3;
                 GetTimeAndCostDelegate[] calculators = TimeAndCostCalculator.SelectCalculators();
@@ -182,7 +187,7 @@ namespace SQLCLR.Couriers
                     int index = Array.BinarySearch(baseKeys, record.VehicleId);
                     if (index >= 0)
                     {
-                        Courier courier = new Courier(record.CourierId, baseTypes[i]);
+                        Courier courier = new Courier(record.CourierId, baseTypes[index]);
                         courier.Status = record.Status;
                         courier.AverageOrderCost = record.AverageOrderCost;
                         courier.LastDeliveryStart = record.LastDeliveryStart;
@@ -201,6 +206,10 @@ namespace SQLCLR.Couriers
                         couriers[count++] = courier;
                     }
                 }
+
+                #if debug
+                    Logger.WriteToLog(111, $"AllCouriers.Create. count = {count}", 0);
+                #endif
 
                 if (count <= 0)
                     return rc;
@@ -251,13 +260,29 @@ namespace SQLCLR.Couriers
                     Array.Resize(ref courierRange, count);
                 }
 
+                #if debug
+                    for (int i = 0; i < count; i++)
+                    {
+                        Logger.WriteToLog(113, $"AllCouriers.Create. shopKeys[{i}] = {shopKeys[i]}, courierRange[{i}] = ({courierRange[i].X}, {courierRange[i].Y})", 0);
+                    }
+
+                    for (int i = 0; i < shopCouriers.Length; i++)
+                    {
+                        Logger.WriteToLog(114, $"AllCouriers.Create. shopCouriers[{i}].Id = {shopCouriers[i].Id}, shopCouriers[{i}].VehicleId = {shopCouriers[i].VehicleID}", 0);
+                    }
+
+                #endif
+
                 // 7. Выход - Ok
                 rc = 0;
                 IsCreated = true;
                 return rc;
             }
-            catch
+            catch (Exception ex)
             {
+                #if debug
+                    Logger.WriteToLog(111, $"AllCouriers.Create. Exception = {ex.ToString()}", 2);
+                #endif
                 return rc;
             }
         }
@@ -453,12 +478,20 @@ namespace SQLCLR.Couriers
                 if (!IsCreated)
                     return null;
 
-                // 3. Находим диапазон курьеров магазина
-                int index = Array.BinarySearch(shopKeys, shopId);
+                // 3. Если такси, то меняем shopId
+                int index = Array.BinarySearch(baseKeys, vehicleId);
                 if (index < 0)
                     return null;
 
-                // 4. Находим курьера заданного типа
+                if (baseTypes[index].IsTaxi)
+                    shopId = TAXI_SHOP_ID;
+
+                // 4. Находим диапазон курьеров магазина
+                index = Array.BinarySearch(shopKeys, shopId);
+                if (index < 0)
+                    return null;
+
+                // 5. Находим курьера заданного типа
                 int startIndex = courierRange[index].X;
                 int endIndex = courierRange[index].Y;
 
@@ -468,7 +501,7 @@ namespace SQLCLR.Couriers
                         return shopCouriers[i];
                 }
 
-                // 5. Курьер заданного типа не найден
+                // 6. Курьер заданного типа не найден
                 return null;
             }
             catch
