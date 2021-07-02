@@ -18,9 +18,8 @@ namespace SQLCLR.Deliveries
         /// заданного контекста и гео-данных
         /// </summary>
         /// <param name="context">Контекст</param>
-        /// <param name="geoData">Гео-данные</param>
         /// <returns>0 - отгрузки построены; иначе - отгрузки не построены</returns>
-        public static int Build(ThreadContext context, Point[,] geoData)
+        public static int Build(ThreadContext context)
         {
             // 1. Инициализация
             int rc = 1;
@@ -32,7 +31,7 @@ namespace SQLCLR.Deliveries
                 if (context == null)
                     return rc;
                 context.Deliveries = null;
-
+                Point[,] geoData = context.GeoData;
                 if (geoData == null)
                     return rc;
 
@@ -80,7 +79,10 @@ namespace SQLCLR.Deliveries
                     orderGeoIndex[1] = shopIndex;
                     orders[0] = contextOrders[i1];
                     rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 1, isLoop, geoData, out delivery);
-                    Logger.WriteToLog(501, $"RouteBuilder.Build. rcFind = {rcFind}, i1 = {i1}, order_id = {orders[0].Id}", 0);
+
+                    //#if debug
+                    //    Logger.WriteToLog(501, $"RouteBuilder.Build. rcFind = {rcFind}, i1 = {i1}, order_id = {orders[0].Id}", 0);
+                    //#endif
                     if (rcFind != 0)
                         continue;
 

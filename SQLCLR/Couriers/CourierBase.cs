@@ -144,7 +144,7 @@ namespace SQLCLR.Couriers
             HandInTime = parameters.HandInTime;
             StartDelay = parameters.StartDelay;
             CourierData = parameters.CourierData;
-            SetCalculator(TimeAndCostCalculator.FindCalculator(CalcMethod));
+            //SetCalculator(TimeAndCostCalculator.FindCalculator(CalcMethod));
         }
 
         /// <summary>

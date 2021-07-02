@@ -95,7 +95,8 @@ namespace SQLCLR.Couriers
         public Courier(int id, ICourierType courierType) : base(courierType)
         {
             Id = id;
-            SetCalculator(TimeAndCostCalculator.FindCalculator(CalcMethod));
+            if (Calculator == null)
+                SetCalculator(TimeAndCostCalculator.FindCalculator(CalcMethod));
         }
 
         /// <summary>
@@ -106,7 +107,9 @@ namespace SQLCLR.Couriers
         public Courier(int id, CourierBase courierBase) : base(courierBase)
         {
             Id = id;
-            SetCalculator(courierBase.Calculator);
+            if (Calculator == null)
+                SetCalculator(TimeAndCostCalculator.FindCalculator(CalcMethod));
+            //SetCalculator(courierBase.Calculator);
         }
 
         /// <summary>

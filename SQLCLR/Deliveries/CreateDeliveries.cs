@@ -10,6 +10,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -131,6 +132,9 @@ public partial class StoredProcedures
                 // 3.1 Открываем соединение
                 rc = 31;
                 connection.Open();
+                //#if debug
+                //    Logger.WriteToLog(444, $"CreateDeliveries. service_id = {service_id.Value}. DataSource = {GetServerName(connection)}, Database = {connection.Database}" , 0);
+                //#endif
 
                 // 3.2 Выбираем магазины для пересчета отгрузок
                 rc = 32;
@@ -334,6 +338,7 @@ public partial class StoredProcedures
                 //    (порция - это все заказы для одного способа доставки (курьера) в одном магазине)
                 rc = 9;
                 ThreadContext[] context = GetThreadContextEx(connection, service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
+                //ThreadContext[] context = GetThreadContext(service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
                 if (context == null || context.Length <= 0)
                 {
                     #if debug
@@ -375,7 +380,6 @@ public partial class StoredProcedures
                     ThreadContext threadContext = context[m];
                     syncEvents[m] = new ManualResetEvent(false);
                     threadContext.SyncEvent = syncEvents[m];
-                    //threadContext.SyncEvent.Reset();
                     ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
                 }
 
@@ -468,8 +472,8 @@ public partial class StoredProcedures
                 //using (SqlConnection connection = new SqlConnection("context connection=true"))
                 //{
                 // 14.1 Открываем соединение
-                rc = 141;
-                connection.Open();
+                //rc = 141;
+                //connection.Open();
 
                 // 14.2 Очищаем таблицу lsvDeliveries и все связааные с ней таблицы
                 rc = 142;
@@ -477,7 +481,8 @@ public partial class StoredProcedures
 
                 // 14.3 Сохраняем построенные отгрузки
                 rc = 143;
-                rc1 = SaveDeliveries(allDeliveries, connection);
+                //rc1 = SaveDeliveries(allDeliveries, connection);
+                rc1 = SaveDeliveriesEx(allDeliveries, GetServerName(connection), connection.Database);
                 if (rc1 != 0)
                 {
                     #if debug
@@ -552,7 +557,7 @@ public partial class StoredProcedures
             // 4. Строим отгрузки
             rc = 4;
             //Thread.BeginThreadAffinity();
-            int rc1 = RouteBuilder.Build(context, context.GeoData);
+            int rc1 = RouteBuilder.Build(context);
             //Thread.EndThreadAffinity();
             if (rc1 != 0)
             {
@@ -875,6 +880,7 @@ public partial class StoredProcedures
                         using (XmlReader xmlReader = dataXml.CreateReader())
                         {
                             ctd = (CourierTypeData)serializer.Deserialize(xmlReader);
+                            ctd.Create();
                         }
 
                         // 5.3 Сохраняем тип
@@ -1558,25 +1564,25 @@ public partial class StoredProcedures
                     }
 
                     table.Rows.Add(
-                        i + 1,
-                        delivery.DeliveryCourier.Id,
-                        delivery.FromShop.Id,
-                        delivery.CalculationTime,
-                        delivery.OrderCount,
-                        delivery.OrderCost,
+                        i + 1,                       // dlvID
+                        delivery.DeliveryCourier.Id, // dlvCourierID
+                        delivery.FromShop.Id,        // dlvShopID
+                        delivery.CalculationTime,    // dlvCalculationTime
+                        delivery.OrderCount,         // dlvOrderCount
+                        delivery.OrderCost,          // dlvOrderCost
                         delivery.Weight,
                         delivery.DeliveryTime,
                         delivery.ExecutionTime,
                         delivery.IsLoop,
-                        delivery.ReserveTime,
+                        delivery.ReserveTime.TotalMinutes,
                         delivery.StartDeliveryInterval,
                         delivery.EndDeliveryInterval,
                         delivery.Cost,
                         delivery.StartDeliveryInterval,
-                        false,
-                        sb.ToString(),
+                        false,                       // dlvCompleted
+                        sb.ToString(),               // dlvPermutationKey
                         priority,
-                        isReceipted
+                        isReceipted                  // dlvReceipted
                         );
                 }
 
@@ -1746,8 +1752,11 @@ public partial class StoredProcedures
             rc = 0;
             return rc;
         }
-        catch
+        catch (Exception ex)
         {
+            #if debug
+                Logger.WriteToLog(700, $"SaveDeliveries rc = {rc} Exception = {ex.Message}", 2);
+            #endif
             return rc;
         }
     }
@@ -1798,5 +1807,301 @@ public partial class StoredProcedures
         if (order1.Id > order2.Id)
             return 1;
         return 0;
+    }
+
+    /// <summary>
+    /// Сохрание отгрузок в БД
+    /// (Предполагается, что таблица lsvDeliveries предварительно очищена)
+    /// </summary>
+    /// <param name="deliveries">Сохраняемые отгрузки</param>
+    /// <param name="serverName">Имя сервера</param>
+    /// <param name="dbName">Имя БД</param>
+    /// <returns>0 - отгрузки сохранены; иначе - отгрузки не сохранены</returns>
+    private static int SaveDeliveriesEx(CourierDeliveryInfo[] deliveries, string serverName, string dbName)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        WindowsImpersonationContext impersonatedIdentity = null;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (deliveries == null || deliveries.Length <= 0)
+                return rc;
+            //if (connection == null || connection.State != ConnectionState.Open)
+            //    return rc;
+
+            WindowsIdentity currentIdentity = SqlContext.WindowsIdentity;
+            impersonatedIdentity = currentIdentity.Impersonate();
+
+            using (SqlConnection connection = new SqlConnection($"Server={serverName};Database={dbName};Integrated Security=true"))
+            {
+                connection.Open();
+                // 3. Строим таблицу lsvDeliveries, передаваемую на сервер
+                rc = 3;
+                using (DataTable table = new DataTable("lsvDeliveries"))
+                {
+                    table.Columns.Add("dlvID", typeof(int));
+                    table.Columns.Add("dlvCourierID", typeof(int));
+                    table.Columns.Add("dlvShopID", typeof(int));
+                    table.Columns.Add("dlvCalculationTime", typeof(DateTime));
+                    table.Columns.Add("dlvOrderCount", typeof(int));
+                    table.Columns.Add("dlvOrderCost", typeof(double));
+                    table.Columns.Add("dlvWeight", typeof(double));
+                    table.Columns.Add("dlvDeliveryTime", typeof(double));
+                    table.Columns.Add("dlvExecutionTime", typeof(double));
+                    table.Columns.Add("dlvIsLoop", typeof(bool));
+                    table.Columns.Add("dlvReserveTime", typeof(double));
+                    table.Columns.Add("dlvStartDeliveryInterval", typeof(DateTime));
+                    table.Columns.Add("dlvEndDeliveryInterval", typeof(DateTime));
+                    table.Columns.Add("dlvCost", typeof(double));
+                    table.Columns.Add("dlvStartDelivery", typeof(DateTime));
+                    table.Columns.Add("dlvCompleted", typeof(bool));
+                    table.Columns.Add("dlvPermutationKey", typeof(string));
+                    table.Columns.Add("dlvPriority", typeof(int));
+                    table.Columns.Add("dlvIsReceipted", typeof(bool));
+                    StringBuilder sb = new StringBuilder(120);
+                    string[] deliveryPermutationKey = new string[deliveries.Length];
+
+                    for (int i = 0; i < deliveries.Length; i++)
+                    {
+                        CourierDeliveryInfo delivery = deliveries[i];
+                        Order[] orders = delivery.Orders;
+                        if (orders == null || orders.Length <= 0)
+                            continue;
+
+                        Array.Sort(orders, CompareByOrderId);
+
+                        sb.Length = 0;
+                        int priority = orders[0].Priority;
+                        sb.Append(delivery.DeliveryCourier.VehicleID);
+                        sb.Append('.');
+                        sb.Append(orders[0].Id);
+                        bool isReceipted = (orders[0].Status == OrderStatus.Receipted);
+
+                        for (int j = 1; j < orders.Length; j++)
+                        {
+                            Order order = orders[j];
+                            if (order.Priority > priority)
+                                priority = order.Priority;
+                            sb.Append('.');
+                            sb.Append(order.Id);
+                            if (order.Status == OrderStatus.Receipted)
+                                isReceipted = true;
+                        }
+
+                        table.Rows.Add(
+                            i + 1,                       // dlvID
+                            delivery.DeliveryCourier.Id, // dlvCourierID
+                            delivery.FromShop.Id,        // dlvShopID
+                            delivery.CalculationTime,    // dlvCalculationTime
+                            delivery.OrderCount,         // dlvOrderCount
+                            delivery.OrderCost,          // dlvOrderCost
+                            delivery.Weight,
+                            delivery.DeliveryTime,
+                            delivery.ExecutionTime,
+                            delivery.IsLoop,
+                            delivery.ReserveTime.TotalMinutes,
+                            delivery.StartDeliveryInterval,
+                            delivery.EndDeliveryInterval,
+                            delivery.Cost,
+                            delivery.StartDeliveryInterval,
+                            false,                       // dlvCompleted
+                            sb.ToString(),               // dlvPermutationKey
+                            priority,
+                            isReceipted                  // dlvReceipted
+                            );
+                    }
+
+                    // 4. Заполняем таблицу lsvDeliveries
+                    rc = 4;
+                    using (var copy = new SqlBulkCopy(connection, SqlBulkCopyOptions.KeepIdentity, null))
+                    {
+                        copy.DestinationTableName = "dbo.lsvDeliveries";
+                        copy.ColumnMappings.Add("dlvID", "dlvID");
+                        copy.ColumnMappings.Add("dlvCourierID", "dlvCourierID");
+                        copy.ColumnMappings.Add("dlvShopID", "dlvShopID");
+                        copy.ColumnMappings.Add("dlvCalculationTime", "dlvCalculationTime");
+                        copy.ColumnMappings.Add("dlvOrderCount", "dlvOrderCount");
+                        copy.ColumnMappings.Add("dlvOrderCost", "dlvOrderCost");
+                        copy.ColumnMappings.Add("dlvWeight", "dlvWeight");
+                        copy.ColumnMappings.Add("dlvDeliveryTime", "dlvDeliveryTime");
+                        copy.ColumnMappings.Add("dlvExecutionTime", "dlvExecutionTime");
+                        copy.ColumnMappings.Add("dlvIsLoop", "dlvIsLoop");
+                        copy.ColumnMappings.Add("dlvReserveTime", "dlvReserveTime");
+                        copy.ColumnMappings.Add("dlvStartDeliveryInterval", "dlvStartDeliveryInterval");
+                        copy.ColumnMappings.Add("dlvEndDeliveryInterval", "dlvEndDeliveryInterval");
+                        copy.ColumnMappings.Add("dlvCost", "dlvCost");
+                        copy.ColumnMappings.Add("dlvStartDelivery", "dlvStartDelivery");
+                        copy.ColumnMappings.Add("dlvCompleted", "dlvCompleted");
+                        copy.ColumnMappings.Add("dlvPermutationKey", "dlvPermutationKey");
+                        copy.ColumnMappings.Add("dlvPriority", "dlvPriority");
+                        copy.ColumnMappings.Add("dlvIsReceipted", "dlvIsReceipted");
+                        copy.WriteToServer(table);
+                    }
+                }
+
+                // 5. Строим таблицу lsvDeliveryOrders, передаваемую на сервер
+                rc = 5;
+                using (DataTable table = new DataTable("lsvDeliveryOrders"))
+                {
+                    table.Columns.Add("dorDlvID", typeof(int));
+                    table.Columns.Add("dorOrderID", typeof(int));
+
+                    for (int i = 0; i < deliveries.Length; i++)
+                    {
+                        CourierDeliveryInfo delivery = deliveries[i];
+                        Order[] orders = delivery.Orders;
+                        if (orders == null || orders.Length <= 0)
+                            continue;
+                        int dorDlvID = i + 1;
+
+                        for (int j = 0; j < orders.Length; j++)
+                        {
+                            table.Rows.Add(dorDlvID, orders[j].Id);
+                        }
+                    }
+
+                    // 6. Заполняем таблицу lsvDeliveryOrders
+                    rc = 6;
+
+                    using (var copy = new SqlBulkCopy(connection))
+                    {
+                        copy.DestinationTableName = "dbo.lsvDeliveryOrders";
+                        copy.ColumnMappings.Add("dorDlvID", "dorDlvID");
+                        copy.ColumnMappings.Add("dorOrderID", "dorOrderID");
+                        copy.WriteToServer(table);
+                    }
+                }
+
+                // 7. Строим таблицу lsvDeliveryOrders, передаваемую на сервер
+                rc = 7;
+                using (DataTable table = new DataTable("lsvDeliveryOrders"))
+                {
+                    table.Columns.Add("dorDlvID", typeof(int));
+                    table.Columns.Add("dorOrderID", typeof(int));
+
+                    for (int i = 0; i < deliveries.Length; i++)
+                    {
+                        CourierDeliveryInfo delivery = deliveries[i];
+                        Order[] orders = delivery.Orders;
+                        if (orders == null || orders.Length <= 0)
+                            return rc;
+                        int dorDlvID = i + 1;
+
+                        for (int j = 0; j < orders.Length; j++)
+                        {
+                            table.Rows.Add(dorDlvID, orders[j].Id);
+                        }
+                    }
+
+                    // 8. Заполняем таблицу lsvDeliveryOrders
+                    rc = 8;
+                    using (var copy = new SqlBulkCopy(connection))
+                    {
+                        copy.DestinationTableName = "dbo.lsvDeliveryOrders";
+                        copy.ColumnMappings.Add("dorDlvID", "dorDlvID");
+                        copy.ColumnMappings.Add("dorOrderID", "dorOrderID");
+                        copy.WriteToServer(table);
+                    }
+                }
+
+                // 9. Строим таблицу lsvNodeDeliveryTime, передаваемую на сервер
+                rc = 9;
+                using (DataTable table = new DataTable("lsvNodeDeliveryTime"))
+                {
+                    table.Columns.Add("ndtDlvID", typeof(int));
+                    table.Columns.Add("ndtTime", typeof(double));
+
+                    for (int i = 0; i < deliveries.Length; i++)
+                    {
+                        CourierDeliveryInfo delivery = deliveries[i];
+                        double[] nodeDeliveryTime = delivery.NodeDeliveryTime;
+                        if (nodeDeliveryTime == null || nodeDeliveryTime.Length <= 0)
+                            continue;
+                        int ndtDlvID = i + 1;
+
+                        for (int j = 0; j < nodeDeliveryTime.Length; j++)
+                        {
+                            table.Rows.Add(ndtDlvID, nodeDeliveryTime[j]);
+                        }
+                    }
+
+                    // 10. Заполняем таблицу lsvNodeDeliveryTime
+                    rc = 10;
+                    using (var copy = new SqlBulkCopy(connection))
+                    {
+                        copy.DestinationTableName = "dbo.lsvNodeDeliveryTime";
+                        copy.ColumnMappings.Add("ndtDlvID", "ndtDlvID");
+                        copy.ColumnMappings.Add("ndtTime", "ndtTime");
+                        copy.WriteToServer(table);
+                    }
+                }
+
+                // 11. Строим таблицу lsvDeliveryNodeInfo, передаваемую на сервер
+                rc = 11;
+                using (DataTable table = new DataTable("lsvDeliveryNodeInfo"))
+                {
+                    table.Columns.Add("dniDlvID", typeof(int));
+                    table.Columns.Add("dniDistance", typeof(int));
+                    table.Columns.Add("dniTime", typeof(int));
+
+                    for (int i = 0; i < deliveries.Length; i++)
+                    {
+                        CourierDeliveryInfo delivery = deliveries[i];
+                        Point[] nodeInfo = delivery.NodeInfo;
+                        if (nodeInfo == null || nodeInfo.Length <= 0)
+                            continue;
+
+                        int dniDlvID = i + 1;
+
+                        for (int j = 0; j < nodeInfo.Length; j++)
+                        {
+
+
+                            table.Rows.Add(dniDlvID, nodeInfo[j].X, nodeInfo[j].Y);
+                        }
+                    }
+
+                    // 12. Заполняем таблицу lsvDeliveryNodeInfo
+                    rc = 12;
+                    using (var copy = new SqlBulkCopy(connection))
+                    {
+                        copy.DestinationTableName = "dbo.lsvDeliveryNodeInfo";
+                        copy.ColumnMappings.Add("dniDlvID", "dniDlvID");
+                        copy.ColumnMappings.Add("dniDistance", "dniDistance");
+                        copy.ColumnMappings.Add("dniTime", "dniTime");
+                        copy.WriteToServer(table);
+                    }
+                }
+            }
+
+            // 13. Выход - OK
+            rc = 0;
+            return rc;
+        }
+        catch (Exception ex)
+        {
+            #if debug
+                Logger.WriteToLog(700, $"SaveDeliveries rc = {rc} Exception = {ex.Message}", 2);
+            #endif
+            return rc;
+        }
+        finally
+        {
+            if (impersonatedIdentity != null)
+            {
+                impersonatedIdentity.Undo();
+            }
+        }
+    }
+
+    private static string GetServerName(SqlConnection connection)
+    {
+        using (SqlCommand cmd = new SqlCommand("SELECT @@SERVERNAME", connection))
+        {
+            return cmd.ExecuteScalar() as string;
+        }
     }
 }
