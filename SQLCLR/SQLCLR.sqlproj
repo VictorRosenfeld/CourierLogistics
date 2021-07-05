@@ -37,8 +37,8 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DefineConstants>debug</DefineConstants>
+    <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>debug1</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -51,6 +51,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DefineConstants>debug</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
@@ -104,5 +105,6 @@
     <Compile Include="Deliveries\DeliveryKeyComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Log\Logger.cs" />
+    <Compile Include="Deliveries\GeoDataResponse.cs" />
   </ItemGroup>
 </Project>
