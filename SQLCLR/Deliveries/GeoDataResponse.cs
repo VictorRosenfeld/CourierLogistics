@@ -1,4 +1,4 @@
-п»ї
+
 namespace SQLCLR.Deliveries
 {
     using System;
@@ -6,7 +6,7 @@ namespace SQLCLR.Deliveries
     using System.Xml.Serialization;
 
     /// <summary>
-    /// РћС‚РєР»РёРє СЃ Geo-РґР°РЅРЅС‹РјРё
+    /// Отклик с Geo-данными
     /// </summary>
     [Serializable()]
     [DesignerCategory("code")]
@@ -15,32 +15,32 @@ namespace SQLCLR.Deliveries
     public class geo_data
     {
         /// <summary>
-        /// Geo-РґР°РЅРЅС‹Рµ РґР»СЏ РїР°СЂ С‚РѕС‡РµРє
+        /// Geo-данные для пар точек
         /// </summary>
         [XmlElement("p")]
         public GeoDataElement[] Elements { get; set; }
 
         /// <summary>
-        /// Р§РёСЃР»Рѕ Geo-СЌР»РµРјРµРЅС‚РѕРІ РґР°РЅРЅС‹С…
+        /// Число Geo-элементов данных
         /// </summary>
         public int Count => (Elements == null ? 0 : Elements.Length);
 
         /// <summary>
-        /// РџРѕР»СѓС‡РµРЅРёРµ РґР°РЅРЅС‹С… РІ РјР°СЃСЃРёРІРµ
+        /// Получение данных в массиве
         /// </summary>
-        /// <param name="pointCount">РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє</param>
-        /// <returns>Geo-РґР°РЅРЅС‹Рµ РёР»Рё null</returns>
+        /// <param name="pointCount">Количество точек</param>
+        /// <returns>Geo-данные или null</returns>
         public Point[,] GetGeoData(int pointCount)
         {
             try
             {
-                // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
+                // 2. Проверяем исходные данные
                 if (pointCount <= 0)
                     return null;
                 if (Elements == null || Elements.Length <= 0)
                     return null;
 
-                // 3. РЎС‚СЂРѕРёРј СЂРµР·СѓР»СЊС‚Р°С‚
+                // 3. Строим результат
                 Point[,] geoData = new Point[pointCount, pointCount];
 
                 foreach(GeoDataElement element in Elements)
@@ -58,7 +58,7 @@ namespace SQLCLR.Deliveries
                     }
                 }
 
-                // 4. Р’С‹С…РѕРґ
+                // 4. Выход
                 return geoData;
             }
             catch
@@ -69,9 +69,9 @@ namespace SQLCLR.Deliveries
     }
 
     /// <summary>
-    /// Р Р°СЃСЃС‚РѕРЅРёРµ РІ РјРµС‚СЂР°С… Рё 
-    /// РІСЂРµРјСЏ РґРІРёР¶РµРЅРёСЏ РІ СЃРµРєСѓРЅРґР°С…
-    /// РјРµР¶РґСѓ РїР°СЂРѕР№ С‚РѕС‡РµРє
+    /// Расстоние в метрах и 
+    /// время движения в секундах
+    /// между парой точек
     /// </summary>
     [Serializable()]
     [DesignerCategory("code")]
