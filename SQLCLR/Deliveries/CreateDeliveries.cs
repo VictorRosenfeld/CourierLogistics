@@ -387,7 +387,7 @@ public partial class StoredProcedures
                     Logger.WriteToLog(26, $"CreateDeliveries. service_id = {service_id.Value}. Thread context count: {context.Length}", 0);
                 #endif
 
-                Thread.BeginThreadAffinity();
+                //Thread.BeginThreadAffinity();
                 for (int i = 0; i < threadCount; i++)
                 {
                     int m = i;
@@ -405,6 +405,7 @@ public partial class StoredProcedures
                 for (int i = threadCount; i < context.Length; i++)
                 {
                     int threadIndex = WaitHandle.WaitAny(syncEvents);
+
                     ThreadContext executedThreadContext = context[contextIndex[threadIndex]];
 
                     contextIndex[threadIndex] = i;
@@ -438,8 +439,14 @@ public partial class StoredProcedures
                     }
                 }
 
-                WaitHandle.WaitAll(syncEvents);
-                Thread.EndThreadAffinity();
+                //WaitHandle.WaitAll(syncEvents);
+
+                for (int i = 0; i < syncEvents.Length; i++)
+                {
+                    syncEvents[i].WaitOne();
+                }
+
+                //Thread.EndThreadAffinity();
                 for (int i = 0; i < threadCount; i++)
                 {
                     syncEvents[i].Dispose();
