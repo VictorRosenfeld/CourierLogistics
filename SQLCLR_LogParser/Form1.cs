@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
+﻿
 namespace SQLCLR_LogParser
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Text;
+    using System.Windows.Forms;
+
     public partial class Form1 : Form
     {
         public Form1()
@@ -21,7 +16,16 @@ namespace SQLCLR_LogParser
 
         private void butFormatLog_Click(object sender, EventArgs e)
         {
-            FormatLogFile(@"C:\T1\SQL_CLR.log");
+            //FormatLogFile(@"C:\T1\SQL_CLR.log");
+            ofdSelectLogFile.Title = "Select log file";
+            ofdSelectLogFile.Filter = "Log Files(*.log;*.txt)|*.log;*.txt|All files (*.*)|*.*";
+            ofdSelectLogFile.Multiselect = false;
+            //ofdSelectLogFile.RestoreDirectory = true;
+            ofdSelectLogFile.SupportMultiDottedExtensions = false;
+            ofdSelectLogFile.FileName = "";
+            if (ofdSelectLogFile.ShowDialog(this) == DialogResult.Cancel)
+                return;
+            FormatLogFile(ofdSelectLogFile.FileName);
         }
 
         private int FormatLogFile(string filename)

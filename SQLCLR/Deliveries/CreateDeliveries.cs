@@ -92,6 +92,16 @@ public partial class StoredProcedures
     #endregion SQL instructions
 
     /// <summary>
+    /// Число возможных отгрузок на поток
+    /// </summary>
+    private const int DELIVERIES_PER_THREAD = 1000;
+
+    /// <summary>
+    /// Максимальное число потоков для построителя отгрузок из ThreadContext
+    /// </summary>
+    private const int MAX_DELIVERY_THREADS = 4;
+
+    /// <summary>
     /// Построение всех возможных отгрузок для всех
     /// отмеченных магазинов
     /// </summary>
@@ -475,7 +485,7 @@ public partial class StoredProcedures
                         Logger.WriteToLog(261, $"CreateDeliveries. service_id = {service_id.Value}. Exit rc = {rc}", 0);
                     #endif
 
-                    return rc;
+                    return rc = 0;
                 }
 
                 if (deliveryCount < allDeliveries.Length)
@@ -689,6 +699,180 @@ public partial class StoredProcedures
                     context.SyncEvent.Set();
 
 
+            }
+        }
+    }
+
+    /// <summary>
+    /// Контекст-построитель отгрузок
+    /// в отдельном потоке
+    /// </summary>
+    /// <param name="status">Контекст потока</param>
+    private static void CalcThreadEx(object status)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        ThreadContext context = status as ThreadContext;
+        ThreadContextEx[] allCountextEx = null;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (context == null ||
+                context.OrderCount <= 0 ||
+                context.ShopCourier == null ||
+                context.ShopFrom == null ||
+                context.Orders == null || context.Orders.Length <= 0 ||
+                context.MaxRouteLength <= 0 || context.MaxRouteLength > 8)
+                return;
+
+            #if debug
+                Logger.WriteToLog(301, $"CalcThreadEx enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+            #endif
+
+            // 3. Создаём ключи всех отгрузок
+            rc = 3;
+            long[] deliveryKeys = CreateDeliverySortedKeys(context.OrderCount, context.MaxRouteLength);
+            if (deliveryKeys == null || deliveryKeys.Length <= 0)
+                return;
+
+            // 4. Вычисляем число потоков для построения отгрузок из ThreadContext
+            rc = 4;
+            int threadCount = (deliveryKeys.Length + DELIVERIES_PER_THREAD - 1) / DELIVERIES_PER_THREAD;
+            if (threadCount > MAX_DELIVERY_THREADS)
+                threadCount = MAX_DELIVERY_THREADS;
+
+            // 5. Требуется всего один поток
+            rc = 5;
+            if (threadCount <= 1)
+            {
+                ThreadContextEx contextEx = new ThreadContextEx(context, null, deliveryKeys, 0, 1);
+                allCountextEx = new ThreadContextEx[] { contextEx};
+                RouteBuilder.BuildEx(contextEx);
+            }
+            else
+            {
+                // 6. Требуется несколько потоков
+                rc = 6;
+                allCountextEx = new ThreadContextEx[threadCount];
+                for (int i = 0; i < threadCount; i++)
+                {
+                    ManualResetEvent syncEvent = new ManualResetEvent(false);
+                    int k = i;
+                    ThreadContextEx contextEx = new ThreadContextEx(context, syncEvent, deliveryKeys, k, threadCount);
+                    allCountextEx[k] = contextEx;
+                    ThreadPool.QueueUserWorkItem(RouteBuilder.BuildEx, contextEx);
+                }
+
+                for (int i = 0; i < threadCount; i++)
+                {
+                    allCountextEx[i].SyncEvent.WaitOne();
+                    allCountextEx[i].SyncEvent.Dispose();
+                    allCountextEx[i].SyncEvent = null;
+                }
+            }
+
+            // 7. Строим общий результат
+            rc = 7;
+            CourierDeliveryInfo[] deliveries = null;
+            int rc1 = 0;
+            if (threadCount <= 1)
+            {
+                deliveries = allCountextEx[0].Deliveries;
+                rc1 = allCountextEx[0].ExitCode;
+            }
+            else
+            {
+                deliveries = new CourierDeliveryInfo[deliveryKeys.Length];
+                for (int i = 0; i < threadCount; i++)
+                {
+                    if (allCountextEx[i].ExitCode != 0)
+                    {
+                        rc1 = allCountextEx[i].ExitCode;
+                    }
+                    else if (allCountextEx[i].Deliveries != null)
+                    {
+                        CourierDeliveryInfo[] threadDeliveries = allCountextEx[i].Deliveries;
+                        for (int j = 0; j < threadDeliveries.Length; j++)
+                        {
+                            CourierDeliveryInfo threadDelivery = threadDeliveries[j];
+                            if (threadDelivery != null)
+                            {
+                                CourierDeliveryInfo delivery = deliveries[j];
+                                if (delivery == null)
+                                {
+                                    deliveries[j] = threadDelivery;
+                                }
+                                else if (threadDelivery.Cost < delivery.Cost)
+                                {
+                                    deliveries[j] = threadDelivery;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (deliveries != null && deliveries.Length > 0)
+            {
+                int count = 0;
+                for (int i = 0; i < deliveries.Length; i++)
+                {
+                    if (deliveries[i] != null)
+                        deliveries[count++] = deliveries[i];
+                }
+
+                if (count < deliveries.Length)
+                {
+                    Array.Resize(ref deliveries, count);
+                }
+            }
+
+            context.Deliveries = deliveries;
+            allCountextEx = null;
+
+            if (rc1 != 0)
+            {
+                rc = 100000 * rc + rc1;
+                return;
+            }
+
+            // 8. Выход - Ok
+            rc = 0;
+        }
+        catch (Exception ex)
+        {
+            #if debug
+                Logger.WriteToLog(303, $"CalcThreadEx. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 0);
+            #endif
+        }
+        finally
+        {
+            if (context != null)
+            {
+                #if debug
+                    Logger.WriteToLog(302, $"CalcThreadEx exit rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+                #endif
+                context.ExitCode = rc;
+                
+                if (allCountextEx != null && allCountextEx.Length > 0)
+                {
+                    for (int i = 0; i < allCountextEx.Length; i++)
+                    {
+                        ThreadContextEx contextEx = allCountextEx[i];
+                        ManualResetEvent syncEvent = contextEx.SyncEvent;
+                        if (syncEvent != null)
+                        {
+
+                            syncEvent.Dispose();
+                            contextEx.SyncEvent = null;
+                        }
+                    }
+                }
+
+                if (context.SyncEvent != null)
+                    context.SyncEvent.Set();
             }
         }
     }
@@ -2481,6 +2665,135 @@ public partial class StoredProcedures
         using (SqlCommand cmd = new SqlCommand(SELECT_SERVERNAME, connection))
         {
             return cmd.ExecuteScalar() as string;
+        }
+    }
+
+    /// <summary>
+    /// Создание отсортированных ключей всех отгрузок
+    /// с числом заказов до 256 и глубиной до 8
+    /// </summary>
+    /// <param name="n">Чило заказов (1 ≤ n ≤ 256)</param>
+    /// <param name="level">Максимальное число заказов в отгрузке (1 ≤ level ≤ 8)</param>
+    /// <returns>Отсортированные ключи отгрузок или null</returns>
+    private static long[] CreateDeliverySortedKeys(int n, int level)
+    {
+        // 1. Инициализация
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            if (n <= 0 || n > 256)
+                return null;
+            if (level <= 0 || level > 8)
+                return null;
+            if (level > n)
+                level = n;
+
+            // 3. Подсчет общего числа ключей
+            long mf = 1;
+            long nmf = 1;
+            long size = 0;
+
+            for (int m = 1; m <= level; m++)
+            {
+                mf *= m;  // mf = m!
+                nmf *= (n - m + 1);  // (n - m + 1) ... n
+                size += (nmf / mf);
+            }
+
+            // 4. Цикл построения ключей
+            long[] keys = new long[size];
+            int count = 0;
+
+            byte[] vec = new byte[8];
+            byte[] vec0 = new byte[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+            for (int i1 = 0; i1 < n; i1++)
+            {
+                Buffer.BlockCopy(vec0, 0, vec, 1, 7);
+                vec[0] = (byte)i1;
+                keys[count++] = BitConverter.ToInt64(vec, 0);
+
+                if (level >= 2)
+                {
+                    for (int i2 = i1 + 1; i2 < n; i2++)
+                    {
+                        Buffer.BlockCopy(vec0, 0, vec, 2, 6);
+                        vec[1] = (byte)i2;
+                        keys[count++] = BitConverter.ToInt64(vec, 0);
+
+                        if (level >= 3)
+                        {
+                            for (int i3 = i2 + 1; i3 < n; i3++)
+                            {
+                                Buffer.BlockCopy(vec0, 0, vec, 3, 5);
+                                vec[2] = (byte)i3;
+                                keys[count++] = BitConverter.ToInt64(vec, 0);
+
+                                if (level >= 4)
+                                {
+                                    for (int i4 = i3 + 1; i4 < n; i4++)
+                                    {
+                                        Buffer.BlockCopy(vec0, 0, vec, 4, 4);
+                                        vec[3] = (byte)i4;
+                                        keys[count++] = BitConverter.ToInt64(vec, 0);
+
+                                        if (level >= 5)
+                                        {
+                                            for (int i5 = i4 + 1; i5 < n; i5++)
+                                            {
+                                                Buffer.BlockCopy(vec0, 0, vec, 5, 3);
+                                                vec[4] = (byte)i5;
+                                                keys[count++] = BitConverter.ToInt64(vec, 0);
+
+                                                if (level >= 6)
+                                                {
+                                                    for (int i6 = i5 + 1; i6 < n; i6++)
+                                                    {
+                                                        Buffer.BlockCopy(vec0, 0, vec, 6, 2);
+                                                        vec[5] = (byte)i6;
+                                                        keys[count++] = BitConverter.ToInt64(vec, 0);
+
+                                                        if (level >= 7)
+                                                        {
+                                                            for (int i7 = i6 + 1; i7 < n; i7++)
+                                                            {
+                                                                vec[7] = 0;
+                                                                vec[6] = (byte)i7;
+                                                                keys[count++] = BitConverter.ToInt64(vec, 0);
+
+
+                                                                if (level >= 8)
+                                                                {
+                                                                    for (int i8 = i7 + 1; i8 < n; i8++)
+                                                                    {
+                                                                        vec[7] = (byte)i8;
+                                                                        keys[count++] = BitConverter.ToInt64(vec, 0);
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 5. Сортировка ключей
+            Array.Sort(keys);
+
+            // 6. Выход - Ok
+            return keys;
+        }
+        catch
+        {
+            return null;
         }
     }
 }
