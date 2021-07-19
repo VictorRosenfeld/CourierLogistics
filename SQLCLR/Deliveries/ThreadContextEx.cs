@@ -1,4 +1,4 @@
-
+п»ї
 namespace SQLCLR.Deliveries
 {
     using SQLCLR.Couriers;
@@ -8,40 +8,40 @@ namespace SQLCLR.Deliveries
     using System.Threading;
 
     /// <summary>
-    /// Контекст построителя отгрузок
-    /// в отдельном потоке
+    /// РљРѕРЅС‚РµРєСЃС‚ РїРѕСЃС‚СЂРѕРёС‚РµР»СЏ РѕС‚РіСЂСѓР·РѕРє
+    /// РІ РѕС‚РґРµР»СЊРЅРѕРј РїРѕС‚РѕРєРµ
     /// </summary>
     public class ThreadContextEx : ThreadContext
     {
         /// <summary>
-        /// Отсортированные ключи всех возможных отгрузок
+        /// РћС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Рµ РєР»СЋС‡Рё РІСЃРµС… РІРѕР·РјРѕР¶РЅС‹С… РѕС‚РіСЂСѓР·РѕРє
         /// </summary>
         public long[] DeliveryKeys { get; private set; }
 
         /// <summary>
-        /// Индекс первого обрабатываемого заказа
+        /// РРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјРѕРіРѕ Р·Р°РєР°Р·Р°
         /// </summary>
         public int StartOrderIndex  { get; private set; }
 
         /// <summary>
-        /// Шаг изменения индекса обрабатываемых заказов
+        /// РЁР°Рі РёР·РјРµРЅРµРЅРёСЏ РёРЅРґРµРєСЃР° РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјС‹С… Р·Р°РєР°Р·РѕРІ
         /// </summary>
         public int OrderIndexStep  { get; private set; }
 
         /// <summary>
-        /// Параметрический конструктор класса ThreadContextEx
+        /// РџР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРёР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° ThreadContextEx
         /// </summary>
         /// <param name="serviceId">ID logisticsService</param>
-        /// <param name="calcTime">Время расчета</param>
-        /// <param name="maxRouteLength">Максимальная длина создаваемых маршрутов</param>
-        /// <param name="shop">Магазин</param>
-        /// <param name="orders">Заказы магазина</param>
-        /// <param name="courier">Курьер</param>
-        /// <param name="geoData">Гео-данные</param>
-        /// <param name="syncEvent">Объект синхронизации</param>
-        /// <param name="deliveryKeys">Отсортированные ключи всех возможных отгрузок</param>
-        /// <param name="startOrderIndex">Индекс первого обрабатываемого заказа в массиве orders</param>
-        /// <param name="orderIndexStep">Шаг изменения индекса обрабатываемых заказов в массиве orders</param>
+        /// <param name="calcTime">Р’СЂРµРјСЏ СЂР°СЃС‡РµС‚Р°</param>
+        /// <param name="maxRouteLength">РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅР° СЃРѕР·РґР°РІР°РµРјС‹С… РјР°СЂС€СЂСѓС‚РѕРІ</param>
+        /// <param name="shop">РњР°РіР°Р·РёРЅ</param>
+        /// <param name="orders">Р—Р°РєР°Р·С‹ РјР°РіР°Р·РёРЅР°</param>
+        /// <param name="courier">РљСѓСЂСЊРµСЂ</param>
+        /// <param name="geoData">Р“РµРѕ-РґР°РЅРЅС‹Рµ</param>
+        /// <param name="syncEvent">РћР±СЉРµРєС‚ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё</param>
+        /// <param name="deliveryKeys">РћС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Рµ РєР»СЋС‡Рё РІСЃРµС… РІРѕР·РјРѕР¶РЅС‹С… РѕС‚РіСЂСѓР·РѕРє</param>
+        /// <param name="startOrderIndex">РРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјРѕРіРѕ Р·Р°РєР°Р·Р° РІ РјР°СЃСЃРёРІРµ orders</param>
+        /// <param name="orderIndexStep">РЁР°Рі РёР·РјРµРЅРµРЅРёСЏ РёРЅРґРµРєСЃР° РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјС‹С… Р·Р°РєР°Р·РѕРІ РІ РјР°СЃСЃРёРІРµ orders</param>
         public ThreadContextEx(int serviceId, 
                                DateTime calcTime, 
                                int maxRouteLength, 
@@ -59,13 +59,13 @@ namespace SQLCLR.Deliveries
         }
 
         /// <summary>
-        /// Параметрический конструктор класса ThreadContextEx
+        /// РџР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРёР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР° ThreadContextEx
         /// </summary>
-        /// <param name="context">Контекст построителя отгрузок</param>
-        /// <param name="syncEvent">Объект синхронизации</param>
-        /// <param name="deliveryKeys">Отсортированные ключи всех возможных отгрузок</param>
-        /// <param name="startOrderIndex">Индекс первого обрабатываемого заказа в массиве orders</param>
-        /// <param name="orderIndexStep">Шаг изменения индекса обрабатываемых заказов в массиве orders</param>
+        /// <param name="context">РљРѕРЅС‚РµРєСЃС‚ РїРѕСЃС‚СЂРѕРёС‚РµР»СЏ РѕС‚РіСЂСѓР·РѕРє</param>
+        /// <param name="syncEvent">РћР±СЉРµРєС‚ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё</param>
+        /// <param name="deliveryKeys">РћС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Рµ РєР»СЋС‡Рё РІСЃРµС… РІРѕР·РјРѕР¶РЅС‹С… РѕС‚РіСЂСѓР·РѕРє</param>
+        /// <param name="startOrderIndex">РРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјРѕРіРѕ Р·Р°РєР°Р·Р° РІ РјР°СЃСЃРёРІРµ orders</param>
+        /// <param name="orderIndexStep">РЁР°Рі РёР·РјРµРЅРµРЅРёСЏ РёРЅРґРµРєСЃР° РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјС‹С… Р·Р°РєР°Р·РѕРІ РІ РјР°СЃСЃРёРІРµ orders</param>
         public ThreadContextEx(ThreadContext context,
                                ManualResetEvent syncEvent,
                                long[] deliveryKeys,
