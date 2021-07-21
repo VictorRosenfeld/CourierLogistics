@@ -2,6 +2,7 @@
 namespace SQLCLR.Couriers
 {
     using SQLCLR.Deliveries;
+    using SQLCLR.Log;
     using SQLCLR.Orders;
     using SQLCLR.Shops;
     using System;
@@ -112,6 +113,165 @@ namespace SQLCLR.Couriers
             //SetCalculator(courierBase.Calculator);
         }
 
+//        /// <summary>
+//        /// Проверка возможности доставки нескольких заказов
+//        /// и подсчет резерва времени доставки и её стоимости
+//        /// </summary>
+//        /// <param name="calcTime">Время, в которое происходит расчет (время модели).
+//        /// </param>
+//        /// <param name="fromShop">Магазин, из которого осуществляется отгрузка</param>
+//        /// <param name="orders">Отгружаемые заказы</param>
+//        /// <param name="orderGeoIndex">Гео-индексы заказов и магазина (сначала заказы в порядке следования; последний - магазин)</param>
+//        /// <param name="isLoop">Флаг возарата в магазин после завершения доставки</param>
+//        /// <param name="geoData">Расстояние и время движения между точками</param>
+//        /// <param name="deliveryInfo">Информация об отгрузке</param>
+//        /// <returns>0 - отгрузка может быть осуществлена; иначе - отгрузка в срок невозможна</returns>
+//        public int DeliveryCheck_old(DateTime calcTime, Shop fromShop, Order[] orders, int[] orderGeoIndex, int orderCount, bool isLoop, Point[,] geoData, out CourierDeliveryInfo deliveryInfo)
+//        {
+//            // 1. Инициализация 
+//            int rc = 1;
+//            deliveryInfo = null;
+
+//            try
+//            {
+//                // 2. Проверяем исходные данные
+//                rc = 2;
+//                if (fromShop == null)
+//                    return rc;
+//                if (orderCount <= 0)
+//                    return rc;
+//                if (orders == null || orders.Length <= 0 || orderCount > orders.Length)
+//                    return rc;
+//                if (orderGeoIndex == null ||
+//                    orderGeoIndex.Length != orders.Length + 1)
+//                    return rc;
+//                if (geoData == null || geoData.Length <= 0)
+//                    return rc;
+//                //int locCount = geoData.GetLength(0);
+//                if (geoData.GetLength(1) != geoData.GetLength(0))
+//                    return rc;
+
+//            #if debug
+//                PrintOrders(orders, orderCount);
+//            #endif
+
+//                // 3. Извлекаем расстояния, время между узлами пути и подсчитываем общий вес
+//                rc = 3;
+//                double weight = 0;
+//                //int orderCount = orderGeoIndex.Length - 1;
+//                Point[] nodeInfo = new Point[orderCount + 2];
+//                int shopLocIndex = orderGeoIndex[orderCount];
+//                int prevLocIndex = shopLocIndex;
+
+//                for (int i = 0; i < orderCount; i++)
+//                {
+//                    Order order = orders[i];
+//                    if (order.Weight > MaxOrderWeight)
+//                        return rc;
+
+//                    weight += order.Weight;
+
+//                    int orderLocIndex = orderGeoIndex[i];
+//                    nodeInfo[i + 1] = geoData[prevLocIndex, orderLocIndex];
+//                    prevLocIndex = orderLocIndex;
+//                }
+
+//                if (weight > MaxWeight)
+//                    return rc;
+
+//                nodeInfo[nodeInfo.Length - 1] = geoData[prevLocIndex, shopLocIndex];
+
+//            #if debug
+//                PrintNodeInfo(nodeInfo);
+//            #endif
+
+//                // 4. Подсчитываем время и стоимость доставки
+//                rc = 4;
+//                double[] nodeDeliveryTime;
+//                double deliveryTime;
+//                double executionTime;
+//                double cost;
+//                int rc1 = GetTimeAndCost(nodeInfo, weight, isLoop, out nodeDeliveryTime, out deliveryTime, out executionTime, out cost);
+
+//            #if debug
+//                PrintGetTimeAndCost(rc1, nodeDeliveryTime, deliveryTime, executionTime, cost);
+//            #endif
+
+
+//                if (rc1 != 0)
+//                    return rc = 100 * rc + rc1;
+
+//                // 5. Проверяем доставку вовремя и стороим интервал начала доставки
+//                rc = 5;
+//                DateTime intervalStart = calcTime;
+//                DateTime intervalEnd = DateTime.MaxValue;
+
+//                for (int i = 0; i < orderCount; i++)
+//                {
+//                    Order order = orders[i];
+//                    if (order.TimeCheckDisabled)
+//                        continue;
+//                    double dt = nodeDeliveryTime[i + 1];
+//                    DateTime minTime = order.DeliveryTimeFrom.AddMinutes(-dt);
+//                    DateTime maxTime = order.DeliveryTimeTo.AddMinutes(-dt);
+//                    if (calcTime <= minTime)
+//                    { }
+//                    else if (calcTime < maxTime)
+//                    {
+//                        minTime = calcTime;
+//                    }
+//                    else
+//                    {
+//                        return rc;
+//                    }
+
+//                    //if (currentModelTime < minTime || currentModelTime > maxTime)
+//                    //    return rc;
+
+//                    if (minTime > maxTime)
+//                        return rc;
+//                    if (minTime > intervalStart)
+//                        intervalStart = minTime;
+//                    if (maxTime < intervalEnd)
+//                        intervalEnd = maxTime;
+//                }
+
+//                if (intervalEnd == DateTime.MaxValue)
+//                    intervalEnd = intervalStart.AddHours(2);
+
+//            #if debug
+//                Logger.WriteToLog(1004, $"intervalStart = {intervalStart}. intervalEnd = {intervalEnd}.", 0);
+//            #endif
+
+
+//                // 6. Создаём результат
+//                rc = 6;
+//                Order[] deliveryOrders = new Order[orderCount];
+//                Array.Copy(orders, deliveryOrders, orderCount);
+//                deliveryInfo = new CourierDeliveryInfo(this, fromShop, deliveryOrders, calcTime, isLoop);
+//                deliveryInfo.FromShop = fromShop;
+//                deliveryInfo.NodeInfo = nodeInfo;
+//                deliveryInfo.Cost = cost;
+//                deliveryInfo.DeliveryTime = deliveryTime;
+//                deliveryInfo.ExecutionTime = executionTime;
+//                deliveryInfo.ReserveTime = intervalEnd - calcTime;
+//                deliveryInfo.StartDeliveryInterval = intervalStart;
+//                deliveryInfo.EndDeliveryInterval = intervalEnd;
+//                deliveryInfo.NodeDeliveryTime = nodeDeliveryTime;
+
+//                // 7. Выход - Ok
+//                rc = 0;
+//                return rc;
+//            }
+//            catch (Exception ex)
+//            {
+//#if debug
+//                Logger.WriteToLog(1005, $"DeliveryCheck. Exception = {ex.Message}", 2);
+//#endif
+//                return rc;
+//            }
+//        }
+
         /// <summary>
         /// Проверка возможности доставки нескольких заказов
         /// и подсчет резерва времени доставки и её стоимости
@@ -199,27 +359,17 @@ namespace SQLCLR.Couriers
                     double dt = nodeDeliveryTime[i + 1];
                     DateTime minTime = order.DeliveryTimeFrom.AddMinutes(-dt);
                     DateTime maxTime = order.DeliveryTimeTo.AddMinutes(-dt);
-                    if (calcTime <= minTime)
-                    { }
-                    else if (calcTime < maxTime)
-                    {
-                        minTime = calcTime;
-                    }
-                    else
-                    {
-                        return rc;
-                    }
-
-                    //if (currentModelTime < minTime || currentModelTime > maxTime)
-                    //    return rc;
 
                     if (minTime > intervalStart)
                         intervalStart = minTime;
                     if (maxTime < intervalEnd)
                         intervalEnd = maxTime;
-                    if (minTime > maxTime)
+                    if (intervalStart > intervalEnd)
                         return rc;
                 }
+
+                if (calcTime > intervalEnd)
+                    return rc;
 
                 if (intervalEnd == DateTime.MaxValue)
                     intervalEnd = intervalStart.AddHours(2);
@@ -248,5 +398,46 @@ namespace SQLCLR.Couriers
                 return rc;
             }
         }
+
+        //private static void PrintOrders(Order[] orders, int count)
+        //{
+        //    if (orders == null || count <= 0)
+        //        return;
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        Order order = orders[i];
+        //        Logger.WriteToLog(1000, $"Order({i}). ID = {order.Id}. Status = {order.Status}. LatLon = ({order.Latitude}, {order.Longitude}). TimeInterval = ({order.DeliveryTimeFrom}, {order.DeliveryTimeTo}). TimeCheckDisabled = {order.TimeCheckDisabled}. Weight = {order.Weight}. shop_id = {order.ShopId}", 0);
+        //    }
+        //}
+
+        //private static void PrintNodeInfo(Point[] nodeInfo)
+        //{
+        //    if (nodeInfo == null || nodeInfo.Length <= 0)
+        //        return;
+
+        //    for (int i = 0; i < nodeInfo.Length; i++)
+        //    {
+        //        Logger.WriteToLog(1001, $"NodeInfo({i}). dist(X) = {nodeInfo[i].X}. duration(Y) = {nodeInfo[i].Y}.", 0);
+        //    }
+        //}
+
+        //private static void PrintGetTimeAndCost(int rc, double[] nodeDeliveryTime, double deliveryTime, double executionTime, double cost)
+        //{
+        //    if (rc == 0)
+        //    {
+        //        Logger.WriteToLog(1002, $"GetTimeAndCost. rc = {rc}. deliveryTime = {deliveryTime}. executionTime = {executionTime}. cost = {cost}", 0);
+        //        if (nodeDeliveryTime != null && nodeDeliveryTime.Length > 0)
+        //        {
+        //            for (int i = 0; i < nodeDeliveryTime.Length; i++)
+        //            {
+        //                Logger.WriteToLog(1003, $"nodeDeliveryTime({i}) = {nodeDeliveryTime[i]}.", 0);
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Logger.WriteToLog(1002, $"GetTimeAndCost. rc = {rc}", 1);
+        //    }
+        //}
     }
 }

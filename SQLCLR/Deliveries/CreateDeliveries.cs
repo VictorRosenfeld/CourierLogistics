@@ -99,7 +99,7 @@ public partial class StoredProcedures
     /// <summary>
     /// Максимальное число потоков для построителя отгрузок из ThreadContext
     /// </summary>
-    private const int MAX_DELIVERY_THREADS = 4;
+    private const int MAX_DELIVERY_THREADS = 8;
 
     /// <summary>
     /// Построение всех возможных отгрузок для всех
@@ -405,7 +405,8 @@ public partial class StoredProcedures
                     ThreadContext threadContext = context[m];
                     syncEvents[m] = new ManualResetEvent(false);
                     threadContext.SyncEvent = syncEvents[m];
-                    ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+                    ThreadPool.QueueUserWorkItem(CalcThreadEx, threadContext);
                 }
 
                 // 13. Запускаем последующие потоки
@@ -423,7 +424,8 @@ public partial class StoredProcedures
                     ThreadContext threadContext = context[m];
                     threadContext.SyncEvent = syncEvents[threadIndex];
                     threadContext.SyncEvent.Reset();
-                    ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+                    ThreadPool.QueueUserWorkItem(CalcThreadEx, threadContext);
 
                     // Обработка завершившегося потока
                     if (executedThreadContext.ExitCode != 0)
@@ -743,6 +745,10 @@ public partial class StoredProcedures
             if (threadCount > MAX_DELIVERY_THREADS)
                 threadCount = MAX_DELIVERY_THREADS;
 
+            #if debug
+                Logger.WriteToLog(304, $"CalcThreadEx enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}, thread_count = {threadCount}", 0);
+            #endif
+
             // 5. Требуется всего один поток
             rc = 5;
             if (threadCount <= 1)
@@ -776,6 +782,7 @@ public partial class StoredProcedures
             // 7. Строим общий результат
             rc = 7;
             CourierDeliveryInfo[] deliveries = null;
+            int[] id = new int[5];
             int rc1 = 0;
             if (threadCount <= 1)
             {
@@ -797,6 +804,32 @@ public partial class StoredProcedures
                         for (int j = 0; j < threadDeliveries.Length; j++)
                         {
                             CourierDeliveryInfo threadDelivery = threadDeliveries[j];
+#if debug
+                            //6.31238809.31239251.31239320.31241604.31260002
+                            //6.31238809.31239251.31239320.31241604.31260002
+                            //6.31238809.31239251.31239320.31241604.31260002
+                            if (threadDelivery != null && threadDelivery.DeliveryCourier.VehicleID == 6 && threadDelivery.OrderCount == 5)
+                            {
+                                for (int mm = 0; mm < threadDelivery.OrderCount; mm++)
+                                {
+                                    id[mm] = threadDelivery.Orders[mm].Id;
+                                }
+
+                                Array.Sort(id);
+                                if (id[0] == 31238809 &&
+                                    id[1] == 31239251 &&
+                                    id[2] == 31239320 &&
+                                    id[3] == 31241604 &&
+                                    id[4] == 31260002)
+                                {
+
+                                    Logger.WriteToLog(308, $"CalcThreadEx. thread = {i}. L = {threadDeliveries.Length}. pkey = 6.31238809.31239251.31239320.31241604.31260002. index = {j}. key = {deliveryKeys[j].ToString("X")}", 2);
+                                }
+                            }
+                        #endif
+
+
+
                             if (threadDelivery != null)
                             {
                                 CourierDeliveryInfo delivery = deliveries[j];
@@ -820,7 +853,27 @@ public partial class StoredProcedures
                 for (int i = 0; i < deliveries.Length; i++)
                 {
                     if (deliveries[i] != null)
+                    {
+//#if debug
+//                        if (count == 122644 || count == 123323)
+//                        {
+//                            StringBuilder sb = new StringBuilder(300);
+//                            sb.Append(deliveries[i].Orders[0].Id);
+
+//                                for (int mm = 0; mm < deliveries[i].OrderCount; mm++)
+//                                {
+//                                    sb.Append('.');
+//                                    sb.Append(deliveries[i].Orders[mm].Id);
+//                                }
+
+
+
+//                            Logger.WriteToLog(388, $"CalcThreadEx. count = {count}. i = {i}. key = 6.31238809.31239251.31239320.31241604.31260002. index = {j}", 2);
+//                        }
+
+//#endif 
                         deliveries[count++] = deliveries[i];
+                    }
                 }
 
                 if (count < deliveries.Length)
@@ -844,7 +897,7 @@ public partial class StoredProcedures
         catch (Exception ex)
         {
             #if debug
-                Logger.WriteToLog(303, $"CalcThreadEx. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 0);
+                Logger.WriteToLog(303, $"CalcThreadEx. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
             #endif
         }
         finally
@@ -2448,33 +2501,47 @@ public partial class StoredProcedures
                     table.Columns.Add("dlvIsReceipted", typeof(bool));
                     StringBuilder sb = new StringBuilder(120);
                     string[] deliveryPermutationKey = new string[deliveries.Length];
+                    int[] sortedOrders = new int[32];
 
                     for (int i = 0; i < deliveries.Length; i++)
                     {
                         CourierDeliveryInfo delivery = deliveries[i];
-                        Order[] orders = delivery.Orders;
-                        if (orders == null || orders.Length <= 0)
+                        if (delivery.Orders == null || delivery.Orders.Length <= 0)
                             continue;
 
-                        Array.Sort(orders, CompareByOrderId);
+                        Order[] orders = delivery.Orders;
+                        int orderCount = orders.Length;
+                        for (int j = 0; j < orderCount; j++)
+                        {
+                            sortedOrders[j] = orders[j].Id;
+                        }
+
+                        Array.Sort(sortedOrders, 0, orderCount);
 
                         sb.Length = 0;
                         int priority = orders[0].Priority;
                         sb.Append(delivery.DeliveryCourier.VehicleID);
                         sb.Append('.');
-                        sb.Append(orders[0].Id);
+                        sb.Append(sortedOrders[0]);
                         bool isReceipted = (orders[0].Status == OrderStatus.Receipted);
 
-                        for (int j = 1; j < orders.Length; j++)
+                        for (int j = 1; j < orderCount; j++)
                         {
                             Order order = orders[j];
                             if (order.Priority > priority)
                                 priority = order.Priority;
                             sb.Append('.');
-                            sb.Append(order.Id);
+                            sb.Append(sortedOrders[j]);
                             if (order.Status == OrderStatus.Receipted)
                                 isReceipted = true;
                         }
+
+                        #if debug
+                        if (sb.ToString() == "6.31238809.31239251.31239320.31241604.31260002")
+                        {
+                            Logger.WriteToLog(388, $"CalcThreadEx. thread = {i}. key = 6.31238809.31239251.31239320.31241604.31260002. index = {i}", 0);
+                        }
+                        #endif
 
                         table.Rows.Add(
                             i + 1,                       // dlvID

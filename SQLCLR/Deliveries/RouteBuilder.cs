@@ -395,7 +395,9 @@ namespace SQLCLR.Deliveries
                 Point[,] geoData = context.GeoData;
                 if (geoData == null)
                     return;
-
+//#if (debug)
+//                Logger.WriteToLog(309, $"BuildEx. vehicleID = {context.ShopCourier.VehicleID}. startIndex = {context.StartOrderIndex}. step = {context.OrderIndexStep}", 0);
+//#endif
                 // 3. Извлекаем и проверяем данные из контекста
                 rc = 3;
                 int level = context.MaxRouteLength;
@@ -426,7 +428,7 @@ namespace SQLCLR.Deliveries
                 CourierDeliveryInfo dictDelivery;
                 CourierDeliveryInfo delivery;
 
-                byte[] key1 = new byte[8];
+                //byte[] key1 = new byte[8];
                 byte[] key2 = new byte[8];
                 byte[] key3 = new byte[8];
                 byte[] key4 = new byte[8];
@@ -463,7 +465,7 @@ namespace SQLCLR.Deliveries
 
                     deliveries[i1] = delivery;
                     b1 = (byte)i1;
-                    key1[0] = b1;
+                    //key1[0] = b1;
                     selectedOrders[i1] = true;
 
                     // level 2
@@ -530,7 +532,7 @@ namespace SQLCLR.Deliveries
                                         key3[0] = b3;
                                         Buffer.BlockCopy(key2, 0, key3, 1, 2);
                                     }
-                                    else if (i3 < key2[1])
+                                    else if (b3 < key2[1])
                                     {
                                         key3[0] = key2[0];
                                         key3[1] = b3;
@@ -575,6 +577,7 @@ namespace SQLCLR.Deliveries
                                             selectedOrders[i4] = true;
 
                                             // строим ключ
+                                            // b0 b1 b2
                                             if (b4 < key3[1])
                                             {
                                                 if (b4 <= key3[0])
@@ -591,10 +594,8 @@ namespace SQLCLR.Deliveries
                                             }
                                             else
                                             {
-                                                if (i4 < key3[2])
+                                                if (b4 < key3[2])
                                                 {
-                                                    key4[0] = key3[0];
-                                                    key4[1] = key3[1];
                                                     Buffer.BlockCopy(key3, 0, key4, 0, 2);
                                                     key4[2] = b4;
                                                     key4[3] = key3[2];
@@ -643,35 +644,100 @@ namespace SQLCLR.Deliveries
                                                     // b0 b1 b2 b3
                                                     if (b5 < key4[2])
                                                     {
-                                                        if (b5 <= key4[0])
+                                                        if (b5 <= key4[0])      // b5 b0 b1 b2 b3
                                                         {
                                                             key5[0] = b5;
                                                             Buffer.BlockCopy(key4, 0, key5, 1, 4);
                                                         }
-                                                        else if (b5 <= key4[1])
+                                                        else if (b5 <= key4[1]) // b0 b5 b1 b2 b3
                                                         {
                                                             key5[0] = key4[0];
                                                             key5[1] = b5;
                                                             Buffer.BlockCopy(key4, 1, key5, 2, 3);
                                                         }
+                                                        else                    // b0 b1 b5 b2 b3
+                                                        {
+                                                            Buffer.BlockCopy(key4, 0, key5, 0, 2);
+                                                            key5[2] = b5;
+                                                            Buffer.BlockCopy(key4, 2, key5, 3, 2);
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        if (b5 < key4[3])
+                                                        if (b5 < key4[3])      // b0 b1 b2 b5 b3
                                                         {
                                                             Buffer.BlockCopy(key4, 0, key5, 0, 3);
                                                             key5[3] = b5;
                                                             key5[4] = key4[3];
                                                         }
-                                                        else
+                                                        else                   // b0 b1 b2 b3 b5
                                                         {
                                                             Buffer.BlockCopy(key4, 0, key5, 0, 4);
                                                             key5[4] = b5;
                                                         }
                                                     }
 
+                                                    //if (!(key5[0] < key5[1] &&
+                                                    //     key5[1] < key5[2] &&
+                                                    //     key5[2] < key5[3] &&
+                                                    //     key5[3] < key5[4] &&
+                                                    //     key5[5] == 0 &&
+                                                    //     key5[6] == 0 &&
+                                                    //     key5[7] == 0
+                                                    //    ))
+                                                    //{
+                                                    //    #if (debug)
+                                                    //        Logger.WriteToLog(306, $"BuildEx. startIndex = {context.StartOrderIndex}. key2 = ({key2[0]}, {key2[1]}, {key2[2]}, {key2[3]}, {key2[4]}, {key2[5]}, {key2[6]}, {key2[7]})", 2);
+                                                    //        Logger.WriteToLog(306, $"BuildEx. startIndex = {context.StartOrderIndex}. key3 = ({key3[0]}, {key3[1]}, {key3[2]}, {key3[3]}, {key3[4]}, {key3[5]}, {key3[6]}, {key3[7]})", 2);
+                                                    //        Logger.WriteToLog(306, $"BuildEx. startIndex = {context.StartOrderIndex}. key4 = ({key4[0]}, {key4[1]}, {key4[2]}, {key4[3]}, {key4[4]}, {key4[5]}, {key4[6]}, {key4[7]})", 2);
+                                                    //        Logger.WriteToLog(306, $"BuildEx. startIndex = {context.StartOrderIndex}. key5 = ({key5[0]}, {key5[1]}, {key5[2]}, {key5[3]}, {key5[4]}, {key5[5]}, {key5[6]}, {key5[7]})", 2);
+                                                    //    #endif
+                                                    //    rc = 666;
+                                                    //    return;
+                                                    //}
+
                                                     fixed (byte* pbyte = &key5[0])
                                                     { key = *((long*)pbyte); }
+
+//#if (debug)
+//                                                    //key = 1917131202. orders = (31241604, 31260002, 31242223, 31238809, 31239320)
+//                                                    //key = 1917131202. orders = (31241604, 31260002, 31238809, 31239320, 31242872)
+
+//                                                    if (startIndex == 3 && key == 0x1917131202)
+//                                                    {
+//                                                        if (delivery.Orders[0].Id == 31241604 && 
+//                                                            delivery.Orders[1].Id == 31260002 && 
+//                                                            delivery.Orders[2].Id == 31242223 && 
+//                                                            delivery.Orders[3].Id == 31238809 && 
+//                                                            delivery.Orders[4].Id == 31239320)
+//                                                        {
+
+//                                                             Logger.WriteToLog(356, $"BuildEx. startIndex = {startIndex}. key = {key.ToString("X")}. orders = (31241604, 31260002, 31242223, 31238809, 31239320). i = ({i1}, {i2}, {i3}, {i4}, {i5})", 0);
+//                                                             Logger.WriteToLog(357, $"BuildEx. startIndex = {startIndex}. key = {key.ToString("X")}. orders = (31241604, 31260002, 31242223, 31238809, 31239320). b = ({b1}, {b2}, {b3}, {b4}, {b5})", 0);
+//                                                             Logger.WriteToLog(358, $"BuildEx. startIndex = {startIndex}. key = {key.ToString("X")}. key4 = ({key4[0]}, {key4[1]}, {key4[2]}, {key4[3]})", 0);
+//                                                        }
+//                                                        else if (delivery.Orders[0].Id == 31241604 && 
+//                                                            delivery.Orders[1].Id == 31260002 && 
+//                                                            delivery.Orders[2].Id == 31238809 && 
+//                                                            delivery.Orders[3].Id == 31239320 && 
+//                                                            delivery.Orders[4].Id == 31242872)
+//                                                        {
+
+//                                                             Logger.WriteToLog(356, $"BuildEx. startIndex = {startIndex}. key = {key.ToString("X")}. orders = (31241604, 31260002, 31238809, 31239320, 31242872). i = ({i1}, {i2}, {i3}, {i4}, {i5})", 0);
+//                                                             Logger.WriteToLog(357, $"BuildEx. startIndex = {startIndex}. key = {key.ToString("X")}. orders = (31241604, 31260002, 31238809, 31239320, 31242872). b = ({b1}, {b2}, {b3}, {b4}, {b5})", 0);
+//                                                             Logger.WriteToLog(358, $"BuildEx. startIndex = {startIndex}. key = {key.ToString("X")}. key4 = ({key4[0]}, {key4[1]}, {key4[2]}, {key4[3]})", 0);
+//                                                        }
+//                                                    }
+
+
+
+
+//                                                    //if ((key == 0x1917131202 || key == 0x1917161302) && startIndex == 3)
+//                                                    //{
+//                                                    //    Logger.WriteToLog(346, $"BuildEx. startIndex = {startIndex}. key = {key.ToString("X")}. orders = ({delivery.Orders[0].Id}, {delivery.Orders[1].Id}, {delivery.Orders[2].Id}, {delivery.Orders[3].Id}, {delivery.Orders[4].Id})", 0);
+
+//                                                    //}
+//                                                    #endif
 
                                                     // обновляем отгрузку
                                                     index = Array.BinarySearch(deliveryKeys, key);
@@ -997,8 +1063,11 @@ namespace SQLCLR.Deliveries
                 rc = 0;
                 return;
             }
-            catch
+            catch (Exception ex)
             {
+            #if debug
+                Logger.WriteToLog(373, $"RouteBuilder. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
+            #endif
                 return;
             }
             finally
