@@ -748,7 +748,7 @@ namespace SQLCLR.Couriers
                 totalDeliveryTime = nodeDeliveryTime[nodeCount - 2];
                 if (isLoop)
                 {
-                    totalExecutionTime = totalDeliveryTime;
+                    totalExecutionTime = nodeDeliveryTime[nodeCount - 1];
                 }
                 else
                 {
