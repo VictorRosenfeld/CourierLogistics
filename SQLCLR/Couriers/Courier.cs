@@ -399,6 +399,88 @@ namespace SQLCLR.Couriers
             }
         }
 
+
+        /// <summary>
+        /// Проверка возможности доставки нескольких заказов
+        /// и подсчет резерва времени доставки и её стоимости
+        /// </summary>
+        /// <param name="calcTime">Время, в которое происходит расчет (время модели).
+        /// </param>
+        /// <param name="fromShop">Магазин, из которого осуществляется отгрузка</param>
+        /// <param name="orders">Отгружаемые заказы</param>
+        /// <param name="orderGeoIndex">Гео-индексы заказов и магазина (сначала заказы в порядке следования; последний - магазин)</param>
+        /// <param name="isLoop">Флаг возарата в магазин после завершения доставки</param>
+        /// <param name="geoData">Расстояние и время движения между точками</param>
+        /// <param name="deliveryInfo">Информация об отгрузке</param>
+        /// <returns>0 - отгрузка может быть осуществлена; иначе - отгрузка в срок невозможна</returns>
+        public int DeliveryCheckEx(CourierDeliveryInfo rootDelivery, Order order, Point geoData1, Point geoData2, DateTime startInterval, DateTime endInterval, out CourierDeliveryInfo deliveryInfo)
+        {
+            // 1. Инициализация 
+            int rc = 1;
+            deliveryInfo = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (rootDelivery == null)
+                    return rc;
+                if (order == null)
+                    return rc;
+                if (order.Weight > MaxOrderWeight)
+                    return rc;
+
+                // 3. Извлекаем данные
+                rc = 3;
+                int orderCount = rootDelivery.OrderCount + 1;
+                Point[] nodeInfo = new Point[orderCount + 2];
+                Array.Copy(rootDelivery.NodeInfo, nodeInfo, orderCount);
+                nodeInfo[orderCount] = geoData1;
+                nodeInfo[orderCount + 1] = geoData2;
+
+                // 4. Подсчитываем общее расстояние и вес
+                rc = 4;
+                double weight = rootDelivery.Weight + order.Weight;
+                if (weight > MaxWeight)
+                    return rc;
+
+                // 4. Подсчитываем время и стоимость доставки
+                rc = 4;
+                double[] nodeDeliveryTime;
+                double deliveryTime;
+                double executionTime;
+                double cost;
+                int rc1 = GetTimeAndCost(nodeInfo, weight, rootDelivery.IsLoop, out nodeDeliveryTime, out deliveryTime, out executionTime, out cost);
+                if (rc1 != 0)
+                    return rc = 100 * rc + rc1;
+
+                // 6. Создаём результат
+                rc = 6;
+                Order[] deliveryOrders = new Order[orderCount];
+                Array.Copy(rootDelivery.Orders, deliveryOrders, orderCount - 1);
+                deliveryOrders[orderCount - 1] = order;
+
+                deliveryInfo = new CourierDeliveryInfo(this, rootDelivery.FromShop, deliveryOrders, rootDelivery.CalculationTime, rootDelivery.IsLoop);
+                deliveryInfo.NodeInfo = nodeInfo;
+                deliveryInfo.Cost = cost;
+                deliveryInfo.DeliveryTime = deliveryTime;
+                deliveryInfo.ExecutionTime = executionTime;
+                deliveryInfo.ReserveTime = endInterval - rootDelivery.CalculationTime;
+                deliveryInfo.StartDeliveryInterval = startInterval;
+                deliveryInfo.EndDeliveryInterval = endInterval;
+                deliveryInfo.NodeDeliveryTime = nodeDeliveryTime;
+
+                // 7. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+
         //private static void PrintOrders(Order[] orders, int count)
         //{
         //    if (orders == null || count <= 0)

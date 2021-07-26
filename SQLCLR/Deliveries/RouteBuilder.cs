@@ -379,7 +379,7 @@ namespace SQLCLR.Deliveries
         /// </summary>
         /// <param name="status">Расширенный контекст</param>
         /// <returns>0 - отгрузки построены; иначе - отгрузки не построены</returns>
-        public unsafe static void BuildEx(object status)
+        public unsafe static void BuildEx_old(object status)
         {
             // 1. Инициализация
             int rc = 1;
@@ -563,6 +563,9 @@ namespace SQLCLR.Deliveries
                                     rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery3);
                                     if (rcFind != 0)
                                         continue;
+                                    //rcFind = contextCourier.DeliveryCheckEx(delivery2, order, geoData[i2, i3], geoData[i3, shopIndex], t1, t2, out delivery3);
+                                    //if (rcFind != 0)
+                                    //    continue;
 
                                     b3 = (byte)i3;
                                     selectedOrders[i3] = true;
@@ -627,6 +630,9 @@ namespace SQLCLR.Deliveries
                                             rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 4, isLoop, geoData, out delivery4);
                                             if (rcFind != 0)
                                                 continue;
+                                            //rcFind = contextCourier.DeliveryCheckEx(delivery3, order, geoData[i3, i4], geoData[i4, shopIndex], t1, t2, out delivery4);
+                                            //if (rcFind != 0)
+                                            //    continue;
 
                                             b4 = (byte)i4;
                                             selectedOrders[i4] = true;
@@ -704,6 +710,9 @@ namespace SQLCLR.Deliveries
                                                     rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 5, isLoop, geoData, out delivery5);
                                                     if (rcFind != 0)
                                                         continue;
+                                                    //rcFind = contextCourier.DeliveryCheckEx(delivery4, order, geoData[i4, i5], geoData[i5, shopIndex], t1, t2, out delivery5);
+                                                    //if (rcFind != 0)
+                                                    //    continue;
 
                                                     b5 = (byte) i5;
                                                     selectedOrders[i5] = true;
@@ -1133,9 +1142,793 @@ namespace SQLCLR.Deliveries
             }
         }
 
+        /// <summary>
+        /// Построение всех возможных отгрузок для
+        /// заданного контекста и гео-данных
+        /// </summary>
+        /// <param name="status">Расширенный контекст</param>
+        /// <returns>0 - отгрузки построены; иначе - отгрузки не построены</returns>
+        public unsafe static void BuildEx(object status)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            ThreadContextEx context = status as ThreadContextEx;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (context == null)
+                    return;
+                context.Deliveries = null;
+                Point[,] geoData = context.GeoData;
+                if (geoData == null)
+                    return;
+//#if (debug)
+//                Logger.WriteToLog(309, $"BuildEx. vehicleID = {context.ShopCourier.VehicleID}. startIndex = {context.StartOrderIndex}. step = {context.OrderIndexStep}", 0);
+//#endif
+                // 3. Извлекаем и проверяем данные из контекста
+                rc = 3;
+                int level = context.MaxRouteLength;
+                DateTime calcTime = context.CalcTime;
+                Order[] contextOrders = context.Orders;
+                if (contextOrders == null || contextOrders.Length <= 0)
+                    return;
+                int orderCount = contextOrders.Length;
+                Shop contextShop = context.ShopFrom;
+                if (contextShop == null)
+                    return;
+                Courier contextCourier = context.ShopCourier;
+                if (contextCourier == null)
+                    return;
+                long[] deliveryKeys = context.DeliveryKeys;
+                if (deliveryKeys == null || deliveryKeys.Length <= 0)
+                    return;
+                int startIndex = context.StartOrderIndex;
+                if (startIndex < 0 || startIndex >= orderCount)
+                    return;
+                int step = context.OrderIndexStep;
+                if (step <= 0)
+                    return;
+                CourierDeliveryInfo[] deliveries = new CourierDeliveryInfo[deliveryKeys.Length];
+
+                // 4. Цикл обработки
+                rc = 4;
+                CourierDeliveryInfo dictDelivery;
+                //CourierDeliveryInfo delivery;
+                CourierDeliveryInfo delivery1;
+                CourierDeliveryInfo delivery2;
+                CourierDeliveryInfo delivery3;
+                CourierDeliveryInfo delivery4;
+                CourierDeliveryInfo delivery5;
+                CourierDeliveryInfo delivery6;
+                CourierDeliveryInfo delivery7;
+                CourierDeliveryInfo delivery8;
+
+                //byte[] key1 = new byte[8];
+                byte[] key2 = new byte[8];
+                byte[] key3 = new byte[8];
+                byte[] key4 = new byte[8];
+                byte[] key5 = new byte[8];
+                byte[] key6 = new byte[8];
+                byte[] key7 = new byte[8];
+                byte[] key8 = new byte[8];
+                long key;
+                //
+                byte b1, b2, b3, b4, b5, b6, b7, b8;
+                bool[] selectedOrders = new bool[orderCount];
+
+                int index;
+
+                int rcFind = 1;
+                int shopIndex = orderCount;
+                Order[] orders = new Order[8];
+                int[] orderGeoIndex = new int[9];
+                bool isLoop = !contextCourier.IsTaxi;
+                double handInTime = contextCourier.HandInTime;
+                DateTime t1;
+                DateTime t2;
+                double dtx;
+                Order order;
+
+                // level 1
+                for (int i1 = startIndex; i1 < orderCount; i1+=step)
+                {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+                    orders[0] = contextOrders[i1];
+                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 1, isLoop, geoData, out delivery1);
+
+                    //#if debug
+                    //    Logger.WriteToLog(501, $"RouteBuilder.Build. rcFind = {rcFind}, i1 = {i1}, order_id = {orders[0].Id}", 0);
+                    //#endif
+                    if (rcFind != 0)
+                        continue;
+
+                    deliveries[i1] = delivery1;
+                    b1 = (byte)i1;
+                    //key1[0] = b1;
+                    selectedOrders[i1] = true;
+
+                    // level 2
+                    if (level >= 2)
+                    {
+                        for (int i2 = 0; i2 < orderCount; i2++)
+                        {
+                            if (i2 == i1)
+                                continue;
+
+                            order = contextOrders[i2];
+
+                            dtx = delivery1.NodeDeliveryTime[1] + geoData[i1, i2].Y / 60.0 + handInTime;
+                            t1 = order.DeliveryTimeFrom.AddMinutes(-dtx);
+                            t2 = order.DeliveryTimeTo.AddMinutes(-dtx);
+                            if (delivery1.StartDeliveryInterval > t1)
+                                t1 = delivery1.StartDeliveryInterval;
+                            if (delivery1.EndDeliveryInterval < t2)
+                                t2 = delivery1.EndDeliveryInterval;
+                            if (t1 > t2)
+                                continue;
+
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = shopIndex;
+                            //orders[1] = contextOrders[i2];
+                            orders[1] = order;
+                            //rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 2, isLoop, geoData, out delivery2);
+                            //if (rcFind != 0)
+                            //    continue;
+
+                            rcFind = contextCourier.DeliveryCheckEx(delivery1, order, geoData[i1, i2], geoData[i2, shopIndex], t1, t2, out delivery2);
+                            if (rcFind != 0)
+                                continue;
+
+                            b2 = (byte)i2;
+                            selectedOrders[i2] = true;
+
+                            if (i1 < i2)
+                            {
+                                key2[0] = b1;
+                                key2[1] = b2;
+                            }
+                            else
+                            {
+                                key2[0] = b2;
+                                key2[1] = b1;
+                            }
+
+                            fixed (byte* pbyte = &key2[0])
+                            { key = *((long*)pbyte); }
+                            index = Array.BinarySearch(deliveryKeys, key);
+                            dictDelivery = deliveries[index];
+                            if (dictDelivery == null)
+                            {
+                                deliveries[index] = delivery2;
+                            }
+                            else if (delivery2.Cost < dictDelivery.Cost)
+                            {
+                                deliveries[index] = delivery2;
+                            }
+
+                            // level 3
+                            if (level >= 3)
+                            {
+                                for (int i3 = 0; i3 < orderCount; i3++)
+                                {
+                                    if (selectedOrders[i3])
+                                        continue;
+
+                                    order = contextOrders[i3];
+
+                                    dtx = delivery2.NodeDeliveryTime[2] + geoData[i2, i3].Y / 60.0 + handInTime;
+                                    t1 = order.DeliveryTimeFrom.AddMinutes(-dtx);
+                                    t2 = order.DeliveryTimeTo.AddMinutes(-dtx);
+                                    if (delivery2.StartDeliveryInterval > t1)
+                                        t1 = delivery2.StartDeliveryInterval;
+                                    if (delivery2.EndDeliveryInterval < t2)
+                                        t2 = delivery2.EndDeliveryInterval;
+                                    if (t1 > t2)
+                                        continue;
+
+                                    orderGeoIndex[2] = i3;
+                                    orderGeoIndex[3] = shopIndex;
+                                    //orders[2] = contextOrders[i3];
+                                    orders[2] = order;
+                                    //rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery3);
+                                    //if (rcFind != 0)
+                                    //    continue;
+                                    rcFind = contextCourier.DeliveryCheckEx(delivery2, order, geoData[i2, i3], geoData[i3, shopIndex], t1, t2, out delivery3);
+                                    if (rcFind != 0)
+                                        continue;
+
+                                    b3 = (byte)i3;
+                                    selectedOrders[i3] = true;
+
+                                    // строим ключ
+                                    if (b3 < key2[0])
+                                    {
+                                        key3[0] = b3;
+                                        Buffer.BlockCopy(key2, 0, key3, 1, 2);
+                                    }
+                                    else if (b3 < key2[1])
+                                    {
+                                        key3[0] = key2[0];
+                                        key3[1] = b3;
+                                        key3[2] = key2[1];
+                                    }
+                                    else
+                                    {
+                                        Buffer.BlockCopy(key2, 0, key3, 0, 2);
+                                        key3[2] = b3;
+                                    }
+
+                                    fixed (byte* pbyte = &key3[0])
+                                    { key = *((long*)pbyte); }
+
+                                    // обновляем отгрузку
+                                    index = Array.BinarySearch(deliveryKeys, key);
+                                    dictDelivery = deliveries[index];
+                                    if (dictDelivery == null)
+                                    {
+                                        deliveries[index] = delivery3;
+                                    }
+                                    else if (delivery3.Cost < dictDelivery.Cost)
+                                    {
+                                        deliveries[index] = delivery3;
+                                    }
+
+                                    // level 4
+                                    if (level >= 4)
+                                    {
+                                        for (int i4 = 0; i4 < orderCount; i4++)
+                                        {
+                                            if (selectedOrders[i4])
+                                                continue;
+
+                                            order = contextOrders[i4];
+
+                                            dtx = delivery3.NodeDeliveryTime[3] + geoData[i3, i4].Y / 60.0 + handInTime;
+                                            t1 = order.DeliveryTimeFrom.AddMinutes(-dtx);
+                                            t2 = order.DeliveryTimeTo.AddMinutes(-dtx);
+                                            if (delivery3.StartDeliveryInterval > t1)
+                                                t1 = delivery3.StartDeliveryInterval;
+                                            if (delivery3.EndDeliveryInterval < t2)
+                                                t2 = delivery3.EndDeliveryInterval;
+                                            if (t1 > t2)
+                                                continue;
+
+                                            orderGeoIndex[3] = i4;
+                                            orderGeoIndex[4] = shopIndex;
+                                            //orders[3] = contextOrders[i4];
+                                            orders[3] = order;
+                                            //rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 4, isLoop, geoData, out delivery4);
+                                            //if (rcFind != 0)
+                                            //    continue;
+                                            rcFind = contextCourier.DeliveryCheckEx(delivery3, order, geoData[i3, i4], geoData[i4, shopIndex], t1, t2, out delivery4);
+                                            if (rcFind != 0)
+                                                continue;
+
+                                            b4 = (byte)i4;
+                                            selectedOrders[i4] = true;
+
+                                            // строим ключ
+                                            // b0 b1 b2
+                                            if (b4 < key3[1])
+                                            {
+                                                if (b4 <= key3[0])
+                                                {
+                                                    key4[0] = b4;
+                                                    Buffer.BlockCopy(key3, 0, key4, 1, 3);
+                                                }
+                                                else
+                                                {
+                                                    key4[0] = key3[0];
+                                                    key4[1] = b4;
+                                                    Buffer.BlockCopy(key3, 1, key4, 2, 2);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (b4 < key3[2])
+                                                {
+                                                    Buffer.BlockCopy(key3, 0, key4, 0, 2);
+                                                    key4[2] = b4;
+                                                    key4[3] = key3[2];
+                                                }
+                                                else
+                                                {
+                                                    Buffer.BlockCopy(key3, 0, key4, 0, 3);
+                                                    key4[3] = b4;
+                                                }
+                                            }
+
+                                            fixed (byte* pbyte = &key4[0])
+                                            { key = *((long*)pbyte); }
+
+                                            // обновляем отгрузку
+                                            index = Array.BinarySearch(deliveryKeys, key);
+                                            dictDelivery = deliveries[index];
+                                            if (dictDelivery == null)
+                                            {
+                                                deliveries[index] = delivery4;
+                                            }
+                                            else if (delivery4.Cost < dictDelivery.Cost)
+                                            {
+                                                deliveries[index] = delivery4;
+                                            }
+
+                                            // level 5
+                                            if (level >= 5)
+                                            {
+                                                for (int i5 = 0; i5 < orderCount; i5++)
+                                                {
+                                                    if (selectedOrders[i5])
+                                                        continue;
+
+                                                    order =  contextOrders[i5];
+
+                                                    dtx = delivery4.NodeDeliveryTime[4] + geoData[i4, i5].Y / 60.0 + handInTime;
+                                                    t1 = order.DeliveryTimeFrom.AddMinutes(-dtx);
+                                                    t2 = order.DeliveryTimeTo.AddMinutes(-dtx);
+                                                    if (delivery4.StartDeliveryInterval > t1)
+                                                        t1 = delivery4.StartDeliveryInterval;
+                                                    if (delivery4.EndDeliveryInterval < t2)
+                                                        t2 = delivery4.EndDeliveryInterval;
+                                                    if (t1 > t2)
+                                                        continue;
+
+                                                    orderGeoIndex[4] = i5;
+                                                    orderGeoIndex[5] = shopIndex;
+                                                    //orders[4] = contextOrders[i5];
+                                                    orders[4] = order;
+                                                    //rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 5, isLoop, geoData, out delivery5);
+                                                    //if (rcFind != 0)
+                                                    //    continue;
+                                                    rcFind = contextCourier.DeliveryCheckEx(delivery4, order, geoData[i4, i5], geoData[i5, shopIndex], t1, t2, out delivery5);
+                                                    if (rcFind != 0)
+                                                        continue;
+
+                                                    b5 = (byte) i5;
+                                                    selectedOrders[i5] = true;
+
+                                                    // строим ключ
+                                                    // b0 b1 b2 b3
+                                                    if (b5 < key4[2])
+                                                    {
+                                                        if (b5 <= key4[0])      // b5 b0 b1 b2 b3
+                                                        {
+                                                            key5[0] = b5;
+                                                            Buffer.BlockCopy(key4, 0, key5, 1, 4);
+                                                        }
+                                                        else if (b5 <= key4[1]) // b0 b5 b1 b2 b3
+                                                        {
+                                                            key5[0] = key4[0];
+                                                            key5[1] = b5;
+                                                            Buffer.BlockCopy(key4, 1, key5, 2, 3);
+                                                        }
+                                                        else                    // b0 b1 b5 b2 b3
+                                                        {
+                                                            Buffer.BlockCopy(key4, 0, key5, 0, 2);
+                                                            key5[2] = b5;
+                                                            Buffer.BlockCopy(key4, 2, key5, 3, 2);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (b5 < key4[3])      // b0 b1 b2 b5 b3
+                                                        {
+                                                            Buffer.BlockCopy(key4, 0, key5, 0, 3);
+                                                            key5[3] = b5;
+                                                            key5[4] = key4[3];
+                                                        }
+                                                        else                   // b0 b1 b2 b3 b5
+                                                        {
+                                                            Buffer.BlockCopy(key4, 0, key5, 0, 4);
+                                                            key5[4] = b5;
+                                                        }
+                                                    }
+
+                                                    fixed (byte* pbyte = &key5[0])
+                                                    { key = *((long*)pbyte); }
+
+                                                    // обновляем отгрузку
+                                                    index = Array.BinarySearch(deliveryKeys, key);
+                                                    dictDelivery = deliveries[index];
+                                                    if (dictDelivery == null)
+                                                    {
+                                                        deliveries[index] = delivery5;
+                                                    }
+                                                    else if (delivery5.Cost < dictDelivery.Cost)
+                                                    {
+                                                        deliveries[index] = delivery5;
+                                                    }
+
+                                                    // level 6
+                                                    if (level >= 6)
+                                                    {
+                                                        for (int i6 = 0; i6 < orderCount; i6++)
+                                                        {
+                                                            if (selectedOrders[i6])
+                                                                continue;
+
+                                                            order =  contextOrders[i6];
+
+                                                            dtx = delivery4.NodeDeliveryTime[5] + geoData[i5, i6].Y / 60.0 + handInTime;
+                                                            t1 = order.DeliveryTimeFrom.AddMinutes(-dtx);
+                                                            t2 = order.DeliveryTimeTo.AddMinutes(-dtx);
+                                                            if (delivery5.StartDeliveryInterval > t1)
+                                                                t1 = delivery5.StartDeliveryInterval;
+                                                            if (delivery5.EndDeliveryInterval < t2)
+                                                                t2 = delivery5.EndDeliveryInterval;
+                                                            if (t1 > t2)
+                                                                continue;
+
+
+                                                            orderGeoIndex[5] = i6;
+                                                            orderGeoIndex[6] = shopIndex;
+                                                            //orders[5] = contextOrders[i6];
+                                                            orders[5] = order;
+                                                            //rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 6, isLoop, geoData, out delivery6);
+                                                            //if (rcFind != 0)
+                                                            //    continue;
+
+                                                            rcFind = contextCourier.DeliveryCheckEx(delivery5, order, geoData[i5, i6], geoData[i6, shopIndex], t1, t2, out delivery6);
+                                                            if (rcFind != 0)
+                                                                continue;
+
+                                                            b6 = (byte) i6;
+                                                            selectedOrders[i6] = true;
+
+                                                            // строим ключ
+                                                            // b0 b1 b2 b3 b4
+                                                            if (b6 < key5[2])
+                                                            {
+                                                                if (b6 <= key5[0])      // b6 b0 b1 b2 b3 b4
+                                                                {
+                                                                    key6[0] = b6;
+                                                                    Buffer.BlockCopy(key5, 0, key6, 1, 5);
+                                                                }
+                                                                else if (b6 < key5[1])  // b0 b6 b1 b2 b3 b4
+                                                                {
+                                                                    key6[0] = key5[0];
+                                                                    key6[1] = b6;
+                                                                    Buffer.BlockCopy(key5, 1, key6, 2, 4);
+                                                                }
+                                                                else                    // b0 b1 b6 b2 b3 b4
+                                                                {
+                                                                    Buffer.BlockCopy(key5, 0, key6, 0, 2);
+                                                                    key6[2] = b6;
+                                                                    Buffer.BlockCopy(key5, 2, key6, 3, 3);
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                if (b6 <= key5[3])      // b0 b1 b2 b6 b3 b4
+                                                                {
+                                                                    Buffer.BlockCopy(key5, 0, key6, 0, 3);
+                                                                    key6[3] = b6;
+                                                                    Buffer.BlockCopy(key5, 3, key6, 4, 2);
+                                                                }
+                                                                else if (b6 < key5[4])  // b0 b1 b2 b3 b6 b4
+                                                                {
+                                                                    Buffer.BlockCopy(key5, 0, key6, 0, 4);
+                                                                    key6[4] = b6;
+                                                                    key6[5] = key5[4];
+                                                                }
+                                                                else                    // b0 b1 b2 b3 b4 b6
+                                                                {
+                                                                    Buffer.BlockCopy(key5, 0, key6, 0, 5);
+                                                                    key6[5] = b6;
+                                                                }
+                                                            }
+
+                                                            fixed (byte* pbyte = &key6[0])
+                                                            { key = *((long*)pbyte); }
+
+                                                            // обновляем отгрузку
+                                                            index = Array.BinarySearch(deliveryKeys, key);
+                                                            dictDelivery = deliveries[index];
+                                                            if (dictDelivery == null)
+                                                            {
+                                                                deliveries[index] = delivery6;
+                                                            }
+                                                            else if (delivery6.Cost < dictDelivery.Cost)
+                                                            {
+                                                                deliveries[index] = delivery6;
+                                                            }
+
+                                                            // level 7
+                                                            if (level >= 7)
+                                                            {
+                                                                for (int i7 = 0; i7 < orderCount; i7++)
+                                                                {
+                                                                    if (selectedOrders[i7])
+                                                                        continue;
+
+                                                                    order = contextOrders[i7];
+
+                                                                    dtx = delivery6.NodeDeliveryTime[6] + geoData[i6, i7].Y / 60.0 + handInTime;
+                                                                    t1 = order.DeliveryTimeFrom.AddMinutes(-dtx);
+                                                                    t2 = order.DeliveryTimeTo.AddMinutes(-dtx);
+                                                                    if (delivery6.StartDeliveryInterval > t1)
+                                                                        t1 = delivery6.StartDeliveryInterval;
+                                                                    if (delivery6.EndDeliveryInterval < t2)
+                                                                        t2 = delivery6.EndDeliveryInterval;
+                                                                    if (t1 > t2)
+                                                                        continue;
+
+                                                                    orderGeoIndex[6] = i7;
+                                                                    orderGeoIndex[7] = shopIndex;
+                                                                    //orders[6] = contextOrders[i7];
+                                                                    orders[6] = order;
+                                                                    //rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 7, isLoop, geoData, out delivery7);
+                                                                    //if (rcFind != 0)
+                                                                    //    continue;
+                                                                    rcFind = contextCourier.DeliveryCheckEx(delivery6, order, geoData[i6, i7], geoData[i7, shopIndex], t1, t2, out delivery7);
+                                                                    if (rcFind != 0)
+                                                                        continue;
+
+                                                                    b7 = (byte) i7;
+                                                                    selectedOrders[i7] = true;
+
+                                                                    // строим ключ
+                                                                    // b0 b1 b2 b3 b4 b5
+
+                                                                    if (b7 < key6[2])
+                                                                    {
+                                                                        if (b7 <= key6[0])      // b7 b0 b1 b2 b3 b4 b5
+                                                                        {
+                                                                            key7[0] = b7;
+                                                                            Buffer.BlockCopy(key6, 0, key7, 1, 6);
+                                                                        }
+                                                                        else if (b7 < key6[1])  // b0 b7 b1 b2 b3 b4 b5
+                                                                        {
+                                                                            key7[0] = key6[0];
+                                                                            key7[1] = b7;
+                                                                            Buffer.BlockCopy(key6, 1, key7, 2, 5);
+                                                                        }
+                                                                        else                    // b0 b1 b7 b2 b3 b4 b5
+                                                                        {
+                                                                            Buffer.BlockCopy(key6, 0, key7, 0, 2);
+                                                                            key7[2] = b7;
+                                                                            Buffer.BlockCopy(key6, 2, key7, 3, 4);
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (b7 < key6[4])
+                                                                        {
+                                                                            if (b7 <= key6[3])  // b0 b1 b2 b7 b3 b4 b5
+                                                                            {
+                                                                                Buffer.BlockCopy(key6, 0, key7, 0, 3);
+                                                                                key7[3] = b7;
+                                                                                Buffer.BlockCopy(key6, 3, key7, 4, 3);
+                                                                            }
+                                                                            else                // b0 b1 b2 b3 b7 b4 b5
+                                                                            {
+                                                                                Buffer.BlockCopy(key6, 0, key7, 0, 4);
+                                                                                key7[4] = b7;
+                                                                                Buffer.BlockCopy(key6, 4, key7, 5, 2);
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (b7 < key6[5])   // b0 b1 b2 b3 b4 b7 b5
+                                                                            {
+                                                                                Buffer.BlockCopy(key6, 0, key7, 0, 5);
+                                                                                key7[5] = b7;
+                                                                                key7[6] = key6[5];
+                                                                            }
+                                                                            else                // b0 b1 b2 b3 b4 b5 b7
+                                                                            {
+                                                                                Buffer.BlockCopy(key6, 0, key7, 0, 6);
+                                                                                key7[6] = b7;
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    fixed (byte* pbyte = &key7[0])
+                                                                    { key = *((long*)pbyte); }
+
+                                                                    // обновляем отгрузку
+                                                                    index = Array.BinarySearch(deliveryKeys, key);
+                                                                    dictDelivery = deliveries[index];
+                                                                    if (dictDelivery == null)
+                                                                    {
+                                                                        deliveries[index] = delivery7;
+                                                                    }
+                                                                    else if (delivery7.Cost < dictDelivery.Cost)
+                                                                    {
+                                                                        deliveries[index] = delivery7;
+                                                                    }
+
+                                                                    // level 8
+                                                                    if (level >= 8)
+                                                                    {
+                                                                        for (int i8 = 0; i8 < orderCount; i8++)
+                                                                        {
+                                                                            if (selectedOrders[i8])
+                                                                                continue;
+
+                                                                            order = contextOrders[i8];
+
+                                                                            dtx = delivery7.NodeDeliveryTime[7] + geoData[i7, i8].Y / 60.0 + handInTime;
+                                                                            t1 = order.DeliveryTimeFrom.AddMinutes(-dtx);
+                                                                            t2 = order.DeliveryTimeTo.AddMinutes(-dtx);
+                                                                            if (delivery7.StartDeliveryInterval > t1)
+                                                                                t1 = delivery7.StartDeliveryInterval;
+                                                                            if (delivery7.EndDeliveryInterval < t2)
+                                                                                t2 = delivery7.EndDeliveryInterval;
+                                                                            if (t1 > t2)
+                                                                                continue;
+
+                                                                            orderGeoIndex[7] = i8;
+                                                                            orderGeoIndex[8] = shopIndex;
+                                                                            //orders[7] = contextOrders[i8];
+                                                                            orders[7] = order;
+                                                                            //rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 8, isLoop, geoData, out delivery8);
+                                                                            //if (rcFind != 0)
+                                                                            //    continue;
+                                                                            rcFind = contextCourier.DeliveryCheckEx(delivery7, order, geoData[i7, i8], geoData[i8, shopIndex], t1, t2, out delivery8);
+                                                                            if (rcFind != 0)
+                                                                                continue;
+
+                                                                            b8 = (byte) i8;
+                                                                            selectedOrders[i8] = true;
+
+                                                                            // строим ключ
+                                                                            // b0 b1 b2 b3 b4 b5 b6
+                                                                            if (b8 < key7[3])
+                                                                            {
+                                                                                if (b8 < key7[1])
+                                                                                {
+                                                                                    if (b8 <= key7[0])  // b8 b0 b1 b2 b3 b4 b5 b6
+                                                                                    {
+                                                                                        key8[0] = b8;
+                                                                                        Buffer.BlockCopy(key7, 0, key8, 1, 7);
+                                                                                    }
+                                                                                    else                // b0 b8 b1 b2 b3 b4 b5 b6
+                                                                                    {
+                                                                                        key8[0] = key7[0];
+                                                                                        key8[1] = b8;
+                                                                                        Buffer.BlockCopy(key7, 1, key8, 2, 6);
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    if (b8 <= key7[2])  // b0 b1 b8 b2 b3 b4 b5 b6
+                                                                                    {
+                                                                                        Buffer.BlockCopy(key7, 0, key8, 0, 2);
+                                                                                        key8[2] = b8;
+                                                                                        Buffer.BlockCopy(key7, 2, key8, 3, 5);
+                                                                                    }
+                                                                                    else                // b0 b1 b2 b8 b3 b4 b5 b6
+                                                                                    {
+                                                                                        Buffer.BlockCopy(key7, 0, key8, 0, 3);
+                                                                                        key8[3] = b8;
+                                                                                        Buffer.BlockCopy(key7, 3, key8, 4, 4);
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if (b8 < key7[5])
+                                                                                {
+                                                                                    if (b8 <= key7[4])  // b0 b1 b2 b3 b8 b4 b5 b6
+                                                                                    {
+                                                                                        Buffer.BlockCopy(key7, 0, key8, 0, 4);
+                                                                                        key8[4] = b8;
+                                                                                        Buffer.BlockCopy(key7, 4, key8, 5, 3);
+                                                                                    }
+                                                                                    else                // b0 b1 b2 b3 b4 b8 b5 b6
+                                                                                    {
+                                                                                        Buffer.BlockCopy(key7, 0, key8, 0, 5);
+                                                                                        key8[5] = b8;
+                                                                                        Buffer.BlockCopy(key7, 5, key8, 6, 2);
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    if (b8 < key7[6])   // b0 b1 b2 b3 b4 b5 b8 b6
+                                                                                    {
+                                                                                        Buffer.BlockCopy(key7, 0, key8, 0, 6);
+                                                                                        key8[6] = b8;
+                                                                                        key8[7] = key7[6];
+                                                                                    }
+                                                                                    else                // b0 b1 b2 b3 b4 b5 b6 b
+                                                                                    {
+                                                                                        Buffer.BlockCopy(key7, 0, key8, 0, 7);
+                                                                                        key8[7] = b8;
+                                                                                    }
+                                                                                }
+                                                                            }
+
+
+                                                                            fixed (byte* pbyte = &key8[0])
+                                                                            { key = *((long*)pbyte); }
+
+                                                                            // обновляем отгрузку
+                                                                            index = Array.BinarySearch(deliveryKeys, key);
+                                                                            dictDelivery = deliveries[index];
+                                                                            if (dictDelivery == null)
+                                                                            {
+                                                                                deliveries[index] = delivery8;
+                                                                            }
+                                                                            else if (delivery8.Cost < dictDelivery.Cost)
+                                                                            {
+                                                                                deliveries[index] = delivery8;
+                                                                            }
+                                                                            selectedOrders[i8] = false;
+                                                                        }
+                                                                    }
+                                                                    selectedOrders[i7] = false;
+                                                                }
+                                                            }
+                                                            selectedOrders[i6] = false;
+                                                        }
+                                                    }
+                                                    selectedOrders[i5] = false;
+                                                }
+                                            }
+                                            selectedOrders[i4] = false;
+                                        }
+                                    }
+                                    selectedOrders[i3] = false;
+                                }
+                            }
+                            selectedOrders[i2] = false;
+                        }
+                    }
+                    selectedOrders[i1] = false;
+                }
+
+                // 5. Формируем результат
+                rc = 5;
+                //index = 0;
+                //for (int i = 0; i < deliveries.Length; i++)
+                //{
+                //    if (deliveries[i] != null)
+                //    {
+                //        deliveries[index++] = deliveries[i];
+                //    }
+                //}
+
+                //if (index < 0)
+                //{
+                //    Array.Resize(ref deliveries, index);
+                //}
+
+                context.Deliveries = deliveries;
+
+                //deliveryKeys = null;
+
+                // 6. Выход - Ok
+                rc = 0;
+                return;
+            }
+            catch (Exception ex)
+            {
+            #if debug
+                Logger.WriteToLog(373, $"RouteBuilder. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
+            #endif
+                return;
+            }
+            finally
+            {
+                if (context != null) 
+                {
+                    context.ExitCode = rc;
+                    ManualResetEvent syncEvent = context.SyncEvent;
+                    if (syncEvent != null)
+                    {
+                        syncEvent.Set();
+                    }
+                }
+            }
+        }
+
         // Предельные значения числа заказов для разных длин маршрутов
         //    level orders   capacity
-        //      8    30       8656936 23
+        //      8    30       8656936 20
         //      7    35       8731847 25
         //      6    44       8295045 30
         //      5    64       8303632 35
