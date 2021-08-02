@@ -39,7 +39,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x64</PlatformTarget>
-    <DefineConstants>debug1</DefineConstants>
+    <DefineConstants>debug</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -73,6 +73,7 @@
     <Folder Include="AverageDeliveryCost" />
     <Folder Include="MaxOrdersOfRoute" />
     <Folder Include="Log" />
+    <Folder Include="ExtraOrders" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -110,5 +111,8 @@
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Deliveries\GeoDataResponse.cs" />
     <Compile Include="Deliveries\ThreadContextEx.cs" />
+    <Compile Include="ExtraOrders\OrdersCloud.cs" />
+    <Compile Include="ExtraOrders\GeoDistance.cs" />
+    <Compile Include="Deliveries\CalcThreadContext.cs" />
   </ItemGroup>
 </Project>

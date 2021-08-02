@@ -2,6 +2,7 @@
 namespace SQLCLR.Deliveries
 {
     using SQLCLR.Couriers;
+    using SQLCLR.MaxOrdersOfRoute;
     using SQLCLR.Orders;
     using SQLCLR.Shops;
     using System;
@@ -33,6 +34,7 @@ namespace SQLCLR.Deliveries
         /// </summary>
         /// <param name="serviceId">ID logisticsService</param>
         /// <param name="calcTime">Время расчета</param>
+        /// <param name="limitations">Длины маршрутов в зависимости от числа заказов при полном переборе</param>
         /// <param name="maxRouteLength">Максимальная длина создаваемых маршрутов</param>
         /// <param name="shop">Магазин</param>
         /// <param name="orders">Заказы магазина</param>
@@ -44,6 +46,7 @@ namespace SQLCLR.Deliveries
         /// <param name="orderIndexStep">Шаг изменения индекса обрабатываемых заказов в массиве orders</param>
         public ThreadContextEx(int serviceId, 
                                DateTime calcTime, 
+                               RouteLimitations limitations, 
                                int maxRouteLength, 
                                Shop shop, Order[] orders, 
                                Courier courier, 

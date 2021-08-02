@@ -379,9 +379,9 @@ namespace SQLCLR.Couriers
                 Order[] deliveryOrders = new Order[orderCount];
                 Array.Copy(orders, deliveryOrders, orderCount);
                 deliveryInfo = new CourierDeliveryInfo(this, fromShop, deliveryOrders, calcTime, isLoop);
-                deliveryInfo.FromShop = fromShop;
                 deliveryInfo.NodeInfo = nodeInfo;
                 deliveryInfo.Cost = cost;
+                deliveryInfo.Weight = weight;
                 deliveryInfo.DeliveryTime = deliveryTime;
                 deliveryInfo.ExecutionTime = executionTime;
                 deliveryInfo.ReserveTime = intervalEnd - calcTime;
@@ -463,6 +463,7 @@ namespace SQLCLR.Couriers
                 deliveryInfo = new CourierDeliveryInfo(this, rootDelivery.FromShop, deliveryOrders, rootDelivery.CalculationTime, rootDelivery.IsLoop);
                 deliveryInfo.NodeInfo = nodeInfo;
                 deliveryInfo.Cost = cost;
+                deliveryInfo.Weight = weight;
                 deliveryInfo.DeliveryTime = deliveryTime;
                 deliveryInfo.ExecutionTime = executionTime;
                 deliveryInfo.ReserveTime = endInterval - rootDelivery.CalculationTime;

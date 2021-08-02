@@ -2,6 +2,7 @@
 namespace SQLCLR.Deliveries
 {
     using SQLCLR.Couriers;
+    using SQLCLR.MaxOrdersOfRoute;
     using SQLCLR.Orders;
     using SQLCLR.Shops;
     using System;
@@ -46,9 +47,15 @@ namespace SQLCLR.Deliveries
         public Courier ShopCourier { get; private set; }
 
         /// <summary>
-        /// Максимальная длина маршрута
+        /// Максимальная длина маршрута для полного перебора
         /// </summary>
         public int MaxRouteLength { get; set; }
+
+        ///// <summary>
+        ///// Ограничения на длину маршрута от числа заказов
+        ///// (при построении полным перебором)
+        ///// </summary>
+        //public RouteLimitations Limitations { get; set; }
 
         /// <summary>
         /// Время, на которое создаются отгрузки
@@ -92,6 +99,7 @@ namespace SQLCLR.Deliveries
         /// </summary>
         /// <param name="serviceId">ID logisticsService</param>
         /// <param name="calcTime">Время расчета</param>
+        /// <param name="limitations">Длины маршрутов в зависимости от числа заказов при полном переборе</param>
         /// <param name="maxRouteLength">Максимальная длина создаваемых маршрутов</param>
         /// <param name="shop">Магазин</param>
         /// <param name="orders">Заказы магазина</param>

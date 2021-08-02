@@ -85,6 +85,44 @@ namespace SQLCLR.MaxOrdersOfRoute
         }
 
         /// <summary>
+        /// Выбор максимального количества заказов
+        /// для заданной длины маршрута
+        /// </summary>
+        /// <param name="length">Длина маршрута</param>
+        /// <returns>Максимальное количество заказов или -1</returns>
+        public int GetRouteMaxOrders(int length)
+        {
+            if (!IsCreated)
+                return -1;
+            for (int i = 0; i < records.Length; i++)
+            {
+                if (records[i].RouteLength == length)
+                    return records[i].MaxOrders;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Выбрать подходящую запись
+        /// для зданного числа заказов
+        /// </summary>
+        /// <param name="orderCount"></param>
+        /// <returns>Подходящая запись или null</returns>
+        public MaxOrdersOfRouteRecord GetFittingRecord(int orderCount)
+        {
+            if (!IsCreated)
+                return null;
+            for (int i = 0; i < records.Length; i++)
+            {
+                if (records[i].MaxOrders >= orderCount)
+                    return records[i];
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Сравнение ограничений по длине маршрута
         /// </summary>
         /// <param name="record1">Запись 1</param>

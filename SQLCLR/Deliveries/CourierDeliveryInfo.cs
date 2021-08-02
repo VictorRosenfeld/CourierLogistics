@@ -49,18 +49,20 @@ namespace SQLCLR.Deliveries
         /// <summary>
         /// Общий вес, кг
         /// </summary>
-        public double Weight
-        {
-            get
-            {
-                if (Orders == null || Orders.Length <= 0)
-                    return 0;
-                double sum = 0;
-                for (int i = 0; i < Orders.Length; i++)
-                    sum += Orders[i].Weight;
-                return sum;
-            }
-        }
+        public double Weight { get; set; }
+
+        //public double Weight
+        //{
+        //    get
+        //    {
+        //        if (Orders == null || Orders.Length <= 0)
+        //            return 0;
+        //        double sum = 0;
+        //        for (int i = 0; i < Orders.Length; i++)
+        //            sum += Orders[i].Weight;
+        //        return sum;
+        //    }
+        //}
 
         /// <summary>
         /// Время от момента назначения курьера до вручения последнего товара в отгрузке, мин
@@ -235,6 +237,7 @@ namespace SQLCLR.Deliveries
             copy.StartDeliveryInterval = StartDeliveryInterval;
             copy.EndDeliveryInterval = EndDeliveryInterval;
             copy.Cost = Cost;
+            copy.Weight = Weight;
             copy.NodeInfo = NodeInfo;
             copy.NodeDeliveryTime = NodeDeliveryTime;
         }
