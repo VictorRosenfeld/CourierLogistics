@@ -114,5 +114,6 @@
     <Compile Include="ExtraOrders\OrdersCloud.cs" />
     <Compile Include="ExtraOrders\GeoDistance.cs" />
     <Compile Include="Deliveries\CalcThreadContext.cs" />
+    <Compile Include="Deliveries\DilateRoutesContext.cs" />
   </ItemGroup>
 </Project>

@@ -1940,7 +1940,6 @@ public partial class StoredProcedures
                             t2 = endDeliveryInterval;
                         if (t1 <= t2)
                         {
-
                             // 5.5.3.2 Проверяем длину всего маршрута
                             rc = 5532;
                             double routeDistance = (isLoop ? deliveryDistance - toShopDistance + geoData1.X + geoData2.X : deliveryDistance + geoData1.X);
@@ -2068,6 +2067,330 @@ public partial class StoredProcedures
         #endif
 
             return rc;
+        }
+    }
+
+    /// <summary>
+    /// Расширение исходных отгрузок до заданной длины
+    /// с сохранением исходного порядка доставки заказов
+    /// </summary>
+    /// <param name="deliveries">Исходные отгрузки</param>
+    /// <param name="fromLevel">Длина расширяемых отгрузок</param>
+    /// <param name="toLevel">Длина, до которой расширяются отгрузки</param>
+    /// <param name="orders">Отсортированные по Id заказы</param>
+    /// <param name="geoData">Гео-данные заказов</param>
+    /// <returns>0 - исходные отгрузки расширены; исходные отгрузки не расширены</returns>
+    private static int DilateRoutesThread(object status)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        int rc1 = 1;
+        DilateRoutesContext context = status as DilateRoutesContext;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (context == null)
+                return rc;
+
+            CourierDeliveryInfo[] deliveries = context.SourceDeliveries;
+            int fromLevel = context.FromLevel;
+            int toLevel = context.ToLevel;
+            Order[] orders = context.Orders;
+            Point[,] geoData = context.GeoData;
+            int startIndex = context.StartIndex;
+            int step = context.Step;
+
+            if (deliveries == null || deliveries.Length <= 0)
+                return rc;
+            if (fromLevel <= 0 || fromLevel > toLevel)
+                return rc;
+            if (fromLevel == toLevel)
+                return rc = 0;
+            if (orders == null || orders.Length <= 0)
+                return rc;
+            int orderCount = orders.Length;
+            if (geoData == null || geoData.GetLength(0) != orderCount + 1 || geoData.GetLength(1) != orderCount + 1)
+                return rc;
+            if (startIndex < 0 || startIndex >= deliveries.Length)
+                return rc;
+            if (step <= 0)
+                return rc;
+
+        #if debug
+            Logger.WriteToLog(704, $"DilateRoutes enter. = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}", 0);
+        #endif
+
+            // 3. Цикл расширения маршрутов
+            rc = 3;
+            int shopIndex = orderCount;
+            bool[] flags = new bool[orderCount];
+            int[] orderId = new int[orderCount];
+            Courier courier = deliveries[0].DeliveryCourier;
+            double handInTime = courier.HandInTime;
+            double maxOrderWeight = courier.MaxOrderWeight;
+            double maxWeight = courier.MaxWeight;
+            int maxDistance = (int) (1000.0 * courier.MaxDistance + 0.5);
+            CourierDeliveryInfo[] iterDelivery = new CourierDeliveryInfo[(deliveries.Length - startIndex - 1) / step + 1];
+            int count = 0;
+
+            for (int i = 0; i < orderCount; i++)
+                orderId[i] = orders[i].Id;
+
+            for (int i = startIndex; i < deliveries.Length; i += step)
+            {
+                iterDelivery[count++] = deliveries[i];
+            }
+
+            // 3.1 Цикл по длине маршрута
+            rc = 31;
+            CourierDeliveryInfo[] extendedDeliveries = new CourierDeliveryInfo[(toLevel - fromLevel) * iterDelivery.Length + 1];
+            int extendedCount = 0;
+            Order[] extendedOrders = new Order[toLevel];
+            int[] orderGeoIndex = new int[toLevel + 1];
+            int n = 0;
+
+            for (int i = fromLevel; i < toLevel; i++)
+            {
+                n = count;
+                count = 0;
+                int[] orderIndex = new int[i];
+                double[] nodeReserve = new double[i];
+
+                // 3.2 Цикл по расширяемой отгрузке
+                rc = 32;
+
+                for (int j = 0; j < n; j++)
+                {
+                    // 3.3 Извлекаем отгрузку
+                    rc = 33;
+                    CourierDeliveryInfo delivery = iterDelivery[j];
+                    double[] nodeDeliveryTime = delivery.NodeDeliveryTime;
+                    Point[] nodeInfo = delivery.NodeInfo;
+                    Order[] deliveryOrders = delivery.Orders;
+                    int deliveryOrderCount = delivery.Orders.Length;
+                    DateTime startDeliveryInterval = delivery.StartDeliveryInterval;
+                    DateTime endDeliveryInterval = delivery.EndDeliveryInterval;
+                    DateTime calcTime = delivery.CalculationTime;
+                    Shop fromShop = delivery.FromShop;
+                    bool isLoop = delivery.IsLoop;
+                    int toShopDistance = nodeInfo[deliveryOrderCount + 1].X;
+                    double lastDeliveryTime = nodeDeliveryTime[deliveryOrderCount];
+
+                    // 3.4 Находим индексы заказов в отгрузке, устанавливаем флаги заказов из отгрузки
+                    //     подсчитываем длину маршрута
+                    //     и вчисляем резервы веремени от каждой отгрузки до последней
+                    rc = 34;
+                    Array.Clear(flags, 0, flags.Length);
+                    double prevMinReserve = double.MaxValue;
+                    int deliveryDistance = 0;
+
+                    for (int k = 0; k < deliveryOrderCount; k++)
+                    {
+                        // 3.4.1 Находим индекс и метим заказы из отгрузки
+                        rc = 341;
+                        int index = Array.BinarySearch(orderId, deliveryOrders[k].Id);
+                        orderIndex[k] = index;
+                        flags[index] = true;
+                        deliveryDistance += nodeInfo[k + 1].X;
+
+                        // 3.4.2 Подсчитываем резерв времени для сегментов пути
+                        rc = 342;
+                        Order order = deliveryOrders[deliveryOrderCount - k - 1];
+                        double ndt = nodeDeliveryTime[deliveryOrderCount];
+                        DateTime nodeMinTime = startDeliveryInterval.AddMinutes(ndt);
+                        DateTime nodeMaxTime = endDeliveryInterval.AddMinutes(ndt);
+                        if (order.DeliveryTimeFrom > nodeMinTime)
+                            nodeMinTime = order.DeliveryTimeFrom;
+                        if (order.DeliveryTimeTo < nodeMaxTime)
+                            nodeMaxTime = order.DeliveryTimeTo;
+                        if (nodeMaxTime < nodeMinTime)
+                        {
+                            nodeReserve[deliveryOrderCount - k - 1] = 0;
+                        }
+                        else
+                        {
+                            double reserve = (nodeMaxTime - nodeMinTime).TotalMinutes;
+                            if (reserve < prevMinReserve)
+                                prevMinReserve = reserve;
+                            nodeReserve[deliveryOrderCount - k - 1] = prevMinReserve;
+                        }
+                    }
+
+                    if (isLoop)
+                        deliveryDistance += toShopDistance;
+
+                    CourierDeliveryInfo minCostDelivery = null;
+
+                    // 3.5 Цикл по добавляемому к отгрузке заказу
+                    rc = 35;
+                    for (int k = 0; k < orderCount; k++)
+                    {
+                        // 3.5.1 Заказ входит в отгрузку ?
+                        rc = 351;
+                        if (flags[k])
+                            continue;
+
+                        // 3.5.2 Проверяем ограничения на вес
+                        rc = 352;
+                        Order order = orders[k];
+                        if (order.Weight > maxOrderWeight)
+                            continue;
+                        if (order.Weight + delivery.Weight > maxWeight)
+                            continue;
+
+                        // 3.5.3 Добавляемая позиция - последний
+                        rc = 353;
+                        Point geoData1 = geoData[orderIndex[deliveryOrderCount - 1], k];
+                        Point geoData2 = geoData[k, shopIndex];
+
+                        // 3.5.3.1 Проверяем возможность доставки вовремя
+                        rc = 3531;
+                        double dt = lastDeliveryTime + geoData1.Y / 60 + handInTime;
+                        DateTime t1 = order.DeliveryTimeFrom.AddMinutes(-dt);
+                        DateTime t2 = order.DeliveryTimeTo.AddMinutes(-dt);
+                        if (startDeliveryInterval > t1)
+                            t1 = startDeliveryInterval;
+                        if (endDeliveryInterval < t2)
+                            t2 = endDeliveryInterval;
+                        if (t1 <= t2)
+                        {
+                            // 3.5.3.2 Проверяем длину всего маршрута
+                            rc = 3532;
+                            double routeDistance = (isLoop ? deliveryDistance - toShopDistance + geoData1.X + geoData2.X : deliveryDistance + geoData1.X);
+                            if (routeDistance <= maxDistance)
+                            {
+                                // 3.5.3.3 Подсчитываем стоимость маршрута
+                                rc = 3533;
+                                CourierDeliveryInfo di;
+                                rc1 = courier.DeliveryCheckEx(delivery, order, geoData1, geoData2, t1, t2, out di);
+                                if (rc1 == 0 && di != null)
+                                {
+                                    if (minCostDelivery == null)
+                                    {
+                                        minCostDelivery = di;
+                                    }
+                                    else if (di.Cost < minCostDelivery.Cost)
+                                    {
+                                        minCostDelivery = di;
+                                    }
+                                }
+                            }
+                        }
+
+                        // 3.5.4 Проверка добавления перед первым заказом, перед вторым, ... , перед последним
+                        rc = 354;
+                        int beforeOrderIndex = shopIndex;
+
+                        for (int m = 0; m < deliveryOrderCount; m++)
+                        {
+                            // 3.5.4.1 Извлекаем гео-данные
+                            rc = 3541;
+                            int afterOrderIndex = orderIndex[m];
+                            geoData1 =  geoData[beforeOrderIndex, k];
+                            geoData1 =  geoData[k, afterOrderIndex];
+
+                            // 3.5.4.2 Проверяем доставку в срок
+                            rc = 3542;
+                            dt = (geoData1.Y + geoData2.Y) / 60.0 + handInTime;
+                            if (nodeReserve[m] < dt)
+                                continue;
+
+                            // 3.5.4.3 Проверяем ограничение на длину маршрута
+                            rc = 3543;
+                            double routeDistance = deliveryDistance + 0.001 * (geoData1.X + geoData2.X - nodeInfo[m].X);
+                            if (routeDistance > maxDistance)
+                                continue;
+
+                            // 3.5.4.4 Подсчитываем стоимость отгрузки
+                            rc = 3544;
+                            CourierDeliveryInfo di;
+                            if (m == 0)
+                            {
+                                extendedOrders[0] = order;
+                                deliveryOrders.CopyTo(extendedOrders, 1);
+
+                                orderGeoIndex[0] = k;
+                                orderIndex.CopyTo(orderGeoIndex, 1);
+                            }
+                            else
+                            {
+                                Array.Copy(deliveryOrders, extendedOrders, m);
+                                extendedOrders[m] = order;
+                                Array.Copy(deliveryOrders, m, extendedOrders, m + 1, deliveryOrderCount - m);
+
+                                Array.Copy(orderIndex, orderGeoIndex, m);
+                                orderGeoIndex[m] = k;
+                                Array.Copy(orderIndex, m, orderGeoIndex, m + 1, deliveryOrderCount - m);
+                            }
+
+                            orderGeoIndex[deliveryOrderCount + 1] = shopIndex;
+
+                            rc1 = courier.DeliveryCheck(calcTime, fromShop, extendedOrders, orderGeoIndex, deliveryOrderCount + 1, isLoop, geoData, out di);
+                            if (rc1 == 0 && di != null)
+                            {
+                                if (minCostDelivery == null)
+                                {
+                                    minCostDelivery = di;
+                                }
+                                else if (di.Cost < minCostDelivery.Cost)
+                                {
+                                    minCostDelivery = di;
+                                }
+                            }
+
+                            // 3.5.4.5 Продвигаем before-индекс
+                            beforeOrderIndex = afterOrderIndex;
+                        }
+                    }
+
+                    if (minCostDelivery != null)
+                        iterDelivery[count++] = minCostDelivery;
+                }
+
+                // 3.6 Если расширять больше нечего
+                rc = 36;
+                if (count <= 0)
+                    break;
+
+                // 3.7 Пополняем исходное множество отгрузок
+                rc = 37;
+                Array.Copy(iterDelivery, 0, extendedDeliveries, extendedCount, count);
+                extendedCount += count;
+            }
+
+            if (extendedCount <= 0)
+            {
+                context.ExtendedDeliveries = new CourierDeliveryInfo[0];
+            }
+            else
+            {
+                context.ExtendedDeliveries = extendedDeliveries;
+            }
+
+            iterDelivery = null;
+            extendedDeliveries = null;
+
+            // 4. Выход - Ok
+            rc = 0;
+            return rc;
+        }
+        catch
+        {
+            return rc;
+        }
+        finally
+        {
+            if (context != null)
+            {
+                context.ExitCode = rc;
+
+                if (context.SyncEvent != null)
+                {
+                    context.SyncEvent.Set();
+                }
+            }
         }
     }
 
