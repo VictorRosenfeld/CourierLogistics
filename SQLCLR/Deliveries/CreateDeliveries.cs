@@ -8,6 +8,7 @@ using SQLCLR.MaxOrdersOfRoute;
 using SQLCLR.Orders;
 using SQLCLR.Shops;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
@@ -1501,6 +1502,13 @@ public partial class StoredProcedures
                         rc = 100 * rc + rc1;
                         return;
                     }
+
+                    if (threadContextOrders != null && threadContextOrders.Length > 0)
+                    {
+                        level = limitations.GetRouteLength(threadContextOrders.Length);
+                        if (level > courierMaxOrderCount)
+                            level = courierMaxOrderCount;
+                    }
                 }
                 else if (iterationOrderCount == startOrderCount)
                 {
@@ -1627,6 +1635,8 @@ public partial class StoredProcedures
                 Array.Resize(ref allDeliveries, deliveryCount);
             }
 
+            RemoveDuplicateDeliveries(ref allDeliveries, courierMaxOrderCount);
+
             calcContext.Deliveries = allDeliveries;
 
             // 8. Выход - Ok
@@ -1650,6 +1660,87 @@ public partial class StoredProcedures
                 if (calcContext.SyncEvent != null)
                     calcContext.SyncEvent.Set();
             }
+        }
+    }
+
+    /// <summary>
+    /// Убираем дубли отгрузок
+    /// </summary>
+    /// <param name="deliveries">Отгрузки</param>
+    /// <param name="maxOrderCount">Максимальное число заказов в отгрузке</param>
+    /// <returns>0 - дубли удалены; иначе - дубли не удалены</returns>
+    private static int RemoveDuplicateDeliveries(ref CourierDeliveryInfo[] deliveries, int maxOrderCount)
+    {
+        // 1. Инициализация
+        int rc = 1;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (deliveries == null || deliveries.Length <= 0)
+                return rc;
+            if (maxOrderCount <= 0)
+                return rc;
+
+            // 3. Отбираем отгрузки с точностью до перестановки
+            rc = 3;
+            int[] deliveryOrderId = new int[maxOrderCount];
+            StringBuilder keyBuffer = new StringBuilder(16 * maxOrderCount);
+
+            Dictionary<string, CourierDeliveryInfo> uniqueDeliveries = new Dictionary<string, CourierDeliveryInfo>(deliveries.Length);
+            CourierDeliveryInfo tryGetDelivery;
+
+            for (int i = 0; i < deliveries.Length; i++)
+            {
+                CourierDeliveryInfo delivery = deliveries[i];
+                int vehicleId = delivery.DeliveryCourier.VehicleID;
+                Order[] deliveryOrders = delivery.Orders;
+                int deliveryOrderCount = deliveryOrders.Length;
+
+                for (int j = 0; j < deliveryOrderCount; j++)
+                {
+                    deliveryOrderId[j] = deliveryOrders[j].Id;
+                }
+
+                Array.Sort(deliveryOrderId, 0, deliveryOrderCount);
+
+                keyBuffer.Length = 0;
+                keyBuffer.Append(vehicleId);
+                keyBuffer.Append('.');
+                keyBuffer.Append(deliveryOrderId[0]);
+
+                for (int j = 1; j < deliveryOrderCount; j++)
+                {
+                    keyBuffer.Append('.');
+                    keyBuffer.Append(deliveryOrderId[j]);
+                }
+
+                string key = keyBuffer.ToString();
+                if (uniqueDeliveries.TryGetValue(key, out tryGetDelivery))
+                {
+                    if (delivery.Cost < tryGetDelivery.Cost)
+                        uniqueDeliveries[key] = delivery;
+                }
+                else
+                {
+                    uniqueDeliveries.Add(key, delivery);
+                }
+            }
+
+            if (uniqueDeliveries.Count < deliveries.Length)
+            {
+                uniqueDeliveries.Values.CopyTo(deliveries, 0);
+                Array.Resize(ref deliveries, uniqueDeliveries.Count);
+            }
+
+            // 4. Выход - Ok
+            rc = 0;
+            return rc;
+        }
+        catch
+        {
+            return rc;
         }
     }
 
@@ -1685,6 +1776,9 @@ public partial class StoredProcedures
             int orderCount = orders.Length;
             if (geoData == null || geoData.GetLength(0) != orderCount + 1 || geoData.GetLength(1) != orderCount + 1)
                 return rc;
+        #if debug
+            Logger.WriteToLog(704, $"DilateRoutes enter. = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}", 0);
+        #endif
 
             // 3. Отбираем маршруты с исходным уровнем
             rc = 3;
@@ -1919,13 +2013,16 @@ public partial class StoredProcedures
                             orderGeoIndex[deliveryOrderCount + 1] = shopIndex;
 
                             rc1 = courier.DeliveryCheck(calcTime, fromShop, extendedOrders, orderGeoIndex, deliveryOrderCount + 1, isLoop, geoData, out di);
-                            if (minCostDelivery == null)
+                            if (rc1 == 0 && di != null)
                             {
-                                minCostDelivery = di;
-                            }
-                            else if (di.Cost < minCostDelivery.Cost)
-                            {
-                                minCostDelivery = di;
+                                if (minCostDelivery == null)
+                                {
+                                    minCostDelivery = di;
+                                }
+                                else if (di.Cost < minCostDelivery.Cost)
+                                {
+                                    minCostDelivery = di;
+                                }
                             }
 
                             // 5.5.4.5 Продвигаем before-индекс
@@ -1964,8 +2061,12 @@ public partial class StoredProcedures
             rc = 0;
             return rc;
         }
-        catch
+        catch (Exception ex)
         {
+        #if debug
+            Logger.WriteToLog(706, $"DilateRoutes.rc = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}, Exception = {ex.ToString()}", 2);
+        #endif
+
             return rc;
         }
     }
