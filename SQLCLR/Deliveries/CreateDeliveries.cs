@@ -84,7 +84,8 @@ public partial class StoredProcedures
     /// <summary>
     /// Очистка таблиц с отгрузками
     /// </summary>
-    private const string CLEAR_DELIVERIES = "DELETE dbo.lsvDeliveryOrders; DELETE dbo.lsvDeliveryNodeInfo; DELETE dbo.lsvNodeDeliveryTime; DELETE dbo.lsvDeliveries";
+    //private const string CLEAR_DELIVERIES = "DELETE dbo.lsvDeliveryOrders; DELETE dbo.lsvDeliveryNodeInfo; DELETE dbo.lsvNodeDeliveryTime; DELETE dbo.lsvDeliveries";
+    private const string CLEAR_DELIVERIES = "dbo.lsvClearDeliveries";
 
     /// <summary>
     /// Имя сервера
@@ -964,15 +965,22 @@ public partial class StoredProcedures
                 //rc = 141;
                 //connection.Open();
 
-                // 14.2 Очищаем таблицу lsvDeliveries и все связааные с ней таблицы
+                // 14.2 Очищаем отгрузки: таблицы lsvNodeDeliveryTime, lsvDeliveryNodeInfo, lsvDeliveryOrders, lsvDeliveries
                 rc = 142;
-                ClearDeliveries(connection);
+                rc1 = ClearDeliveries(connection);
+                if (rc1 != 0)
+                {
+                    #if debug
+                        Logger.WriteToLog(28, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries clear failed", 1);
+                    #endif
+                    return rc = 1000000 * rc + rc1;
+                }
 
                 // 14.3 Сохраняем построенные отгрузки
                 rc = 143;
                 //rc1 = SaveDeliveries(allDeliveries, connection);
                 #if debug
-                    Logger.WriteToLog(290, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saving...", 0);
+                    Logger.WriteToLog(290, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saving({allDeliveries.Length})...", 0);
                 #endif
 
                 rc1 = SaveDeliveriesEx(allDeliveries, GetServerName(connection), connection.Database);
@@ -1573,7 +1581,8 @@ public partial class StoredProcedures
             #if debug
                 Logger.WriteToLog(306, $"CalcThreadEz while 5.5 before. iterDeliveries = {iterDeliveries.Length}, level = {level}, courierMaxOrderCount = {courierMaxOrderCount}" , 0);
             #endif
-                    rc1 = DilateRoutes(ref iterDeliveries, level, courierMaxOrderCount, threadContextOrders, geoData);
+                    //rc1 = DilateRoutes(ref iterDeliveries, level, courierMaxOrderCount, threadContextOrders, geoData);
+                    rc1 = DilateRoutesMultuthread(ref iterDeliveries, level, courierMaxOrderCount, threadContextOrders, geoData);
             #if debug
                 Logger.WriteToLog(306, $"CalcThreadEz while 5.5 after. iterDeliveries = {iterDeliveries.Length}, rc1 = {rc1}" , 0);
             #endif
@@ -1597,6 +1606,7 @@ public partial class StoredProcedures
                 for (int i = 0; i < iterDeliveries.Length; i++)
                 {
                     Order[] deiveryOrders = iterDeliveries[i].Orders;
+
                     for (int j = 0; j < deiveryOrders.Length; j++)
                     {
                         int index = Array.BinarySearch(iterationOrderId, deiveryOrders[j].Id);
@@ -2080,28 +2090,17 @@ public partial class StoredProcedures
     /// <param name="orders">Отсортированные по Id заказы</param>
     /// <param name="geoData">Гео-данные заказов</param>
     /// <returns>0 - исходные отгрузки расширены; исходные отгрузки не расширены</returns>
-    private static int DilateRoutesThread(object status)
+    private static int DilateRoutesMultuthread(ref CourierDeliveryInfo[] deliveries, int fromLevel, int toLevel, Order[] orders, Point[,] geoData)
     {
         // 1. Инициализация
         int rc = 1;
         int rc1 = 1;
-        DilateRoutesContext context = status as DilateRoutesContext;
+        ManualResetEvent[] syncEvents = null;
 
         try
         {
             // 2. Проверяем исходные данные
             rc = 2;
-            if (context == null)
-                return rc;
-
-            CourierDeliveryInfo[] deliveries = context.SourceDeliveries;
-            int fromLevel = context.FromLevel;
-            int toLevel = context.ToLevel;
-            Order[] orders = context.Orders;
-            Point[,] geoData = context.GeoData;
-            int startIndex = context.StartIndex;
-            int step = context.Step;
-
             if (deliveries == null || deliveries.Length <= 0)
                 return rc;
             if (fromLevel <= 0 || fromLevel > toLevel)
@@ -2113,13 +2112,212 @@ public partial class StoredProcedures
             int orderCount = orders.Length;
             if (geoData == null || geoData.GetLength(0) != orderCount + 1 || geoData.GetLength(1) != orderCount + 1)
                 return rc;
+        #if debug
+            Logger.WriteToLog(804, $"DilateRoutesMultuthread enter. = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}", 0);
+        #endif
+
+            // 3. Отбираем маршруты с исходным уровнем
+            rc = 3;
+            CourierDeliveryInfo[] iterDelivery = new CourierDeliveryInfo[deliveries.Length];
+            int count = 0;
+
+            for (int i = 0; i < deliveries.Length; i++)
+            {
+                if (deliveries[i].OrderCount == fromLevel)
+                {
+                    iterDelivery[count++] = deliveries[i];
+                }
+            }
+
+            if (count <= 0)
+                return rc = 0;
+
+            if (count < iterDelivery.Length)
+            {
+                Array.Resize(ref iterDelivery, count);
+            }
+
+            // 4. Опренделяем число потоков для расширения маршрутов
+            rc = 4;
+            count = count * (fromLevel + 1) * (orderCount - fromLevel);
+            int threadCount = (count + 99999) / 100000;
+            if (threadCount > 8)
+                threadCount = 8;
+
+            // 5. Строим расширения маршрутов
+            rc = 5;
+            rc1 = 0;
+
+            if (threadCount <= 1)
+            {
+                DilateRoutesContext context = new DilateRoutesContext
+                    (
+                        iterDelivery,
+                        0,
+                        1,
+                        fromLevel,
+                        toLevel,
+                        orders,
+                        geoData,
+                        null
+                    );
+                DilateRoutesThread(context);
+                rc1 = context.ExitCode;
+                if (rc1 == 0)
+                {
+                    count = context.ExtendedCount;
+                    if (count > 0)
+                    {
+                        int index = deliveries.Length;
+                        Array.Resize(ref deliveries, index + count);
+                        context.ExtendedDeliveries.CopyTo(deliveries, index);
+                    }
+                }
+            }
+            else
+            {
+                syncEvents = new ManualResetEvent[threadCount];
+                DilateRoutesContext[] threadContext = new DilateRoutesContext[threadCount];
+
+                for (int i = 0; i < threadCount; i++)
+                {
+                    int m = i;
+                    ManualResetEvent sevent = new ManualResetEvent(false);
+                    syncEvents[m] = sevent;
+                    DilateRoutesContext context = new DilateRoutesContext
+                        (
+                            iterDelivery,
+                            m,
+                            threadCount,
+                            fromLevel,
+                            toLevel,
+                            orders,
+                            geoData,
+                            syncEvents[m]
+                        );
+                    threadContext[m] = context;
+                    ThreadPool.QueueUserWorkItem(DilateRoutesThread, threadContext[m]);
+                }
+
+                count = 0;
+                for (int i = 0; i < threadCount; i++)
+                {
+                    syncEvents[i].WaitOne();
+                    syncEvents[i].Dispose();
+                    syncEvents[i] = null;
+                    if (threadContext[i].ExitCode == 0)
+                    {
+                        count += threadContext[i].ExtendedCount;
+                    }
+                    else
+                    {
+                        rc1 = threadContext[i].ExitCode;
+                    }
+                }
+
+                syncEvents = null;
+
+                if (count > 0)
+                {
+                    int index = deliveries.Length;
+                    Array.Resize(ref deliveries, index + count);
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        if (threadContext[i].ExitCode == 0 && threadContext[i].ExtendedCount > 0)
+                        {
+                            threadContext[i].ExtendedDeliveries.CopyTo(deliveries, index);
+                            index += threadContext[i].ExtendedCount;
+                        }
+                    }
+                }
+
+                threadContext = null;
+            }
+
+            iterDelivery = null;
+            rc = (rc1 == 0 ? 0 : 10000 * rc + rc1);
+
+            // 6. Выход...
+            return rc;
+        }
+        catch (Exception ex)
+        {
+        #if debug
+            Logger.WriteToLog(806, $"DilateRoutesMultuthread.rc = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}, Exception = {ex.ToString()}", 2);
+        #endif
+
+            return rc;
+        }
+        finally
+        {
+            if (syncEvents != null && syncEvents.Length > 0)
+            {
+                for (int i = 0; i < syncEvents.Length; i++)
+                {
+                    if (syncEvents[i] != null)
+                    {
+                        syncEvents[i].Dispose();
+                        syncEvents[i] = null;
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Расширение исходных отгрузок до заданной длины
+    /// с сохранением исходного порядка доставки заказов
+    /// </summary>
+    /// <param name="deliveries">Исходные отгрузки</param>
+    /// <param name="fromLevel">Длина расширяемых отгрузок</param>
+    /// <param name="toLevel">Длина, до которой расширяются отгрузки</param>
+    /// <param name="orders">Отсортированные по Id заказы</param>
+    /// <param name="geoData">Гео-данные заказов</param>
+    /// <returns>0 - исходные отгрузки расширены; исходные отгрузки не расширены</returns>
+    private static void DilateRoutesThread(object status)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        int rc1 = 1;
+        DilateRoutesContext context = status as DilateRoutesContext;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (context == null)
+                return;
+
+            CourierDeliveryInfo[] deliveries = context.SourceDeliveries;
+            int fromLevel = context.FromLevel;
+            int toLevel = context.ToLevel;
+            Order[] orders = context.Orders;
+            Point[,] geoData = context.GeoData;
+            int startIndex = context.StartIndex;
+            int step = context.Step;
+
+            if (deliveries == null || deliveries.Length <= 0)
+                return;
+            if (fromLevel <= 0 || fromLevel > toLevel)
+                return;
+            if (fromLevel == toLevel)
+            {
+                rc = 0;
+                return;
+            }
+            if (orders == null || orders.Length <= 0)
+                return;
+            int orderCount = orders.Length;
+            if (geoData == null || geoData.GetLength(0) != orderCount + 1 || geoData.GetLength(1) != orderCount + 1)
+                return;
             if (startIndex < 0 || startIndex >= deliveries.Length)
-                return rc;
+                return;
             if (step <= 0)
-                return rc;
+                return;
 
         #if debug
-            Logger.WriteToLog(704, $"DilateRoutes enter. = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}", 0);
+            Logger.WriteToLog(704, $"DilateRoutesThread enter. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}, startIndex = {startIndex}, step = {step}", 0);
         #endif
 
             // 3. Цикл расширения маршрутов
@@ -2143,9 +2341,14 @@ public partial class StoredProcedures
                 iterDelivery[count++] = deliveries[i];
             }
 
+            //if (count < iterDelivery.Length)
+            //{
+            //    Array.Resize(ref iterDelivery, count);
+            //}
+
             // 3.1 Цикл по длине маршрута
             rc = 31;
-            CourierDeliveryInfo[] extendedDeliveries = new CourierDeliveryInfo[(toLevel - fromLevel) * iterDelivery.Length + 1];
+            CourierDeliveryInfo[] extendedDeliveries = new CourierDeliveryInfo[(toLevel - fromLevel) * iterDelivery.Length];
             int extendedCount = 0;
             Order[] extendedOrders = new Order[toLevel];
             int[] orderGeoIndex = new int[toLevel + 1];
@@ -2366,19 +2569,40 @@ public partial class StoredProcedures
             }
             else
             {
+                if (extendedCount <extendedDeliveries.Length )
+                {
+                    Array.Resize(ref extendedDeliveries, extendedCount);
+                }
                 context.ExtendedDeliveries = extendedDeliveries;
             }
 
             iterDelivery = null;
             extendedDeliveries = null;
+        #if debug
+            Logger.WriteToLog(705, $"DilateRoutesThread exit. = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}, startIndex = {startIndex}, step = {step}", 0);
+        #endif
+
+            //count = 0;
+            //for (int k = 0; k <  context.ExtendedCount; k++)
+            //{
+            //    if (context.ExtendedDeliveries[k] == null)
+            //        count++;
+            //}
+
+            //if (count > 0)
+            //{
+            //    #if debug
+            //        Logger.WriteToLog(706, $"DilateRoutesThread exit. rc = {rc}. null_count = {count}, fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}, startIndex = {startIndex}, step = {step}", 0);
+            //    #endif
+
+            //}
 
             // 4. Выход - Ok
             rc = 0;
-            return rc;
         }
         catch
         {
-            return rc;
+            
         }
         finally
         {
@@ -4012,6 +4236,7 @@ public partial class StoredProcedures
             rc = 3;
             using (SqlCommand cmd = new SqlCommand(CLEAR_DELIVERIES, connection))
             {
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.ExecuteNonQuery();
             }
 
