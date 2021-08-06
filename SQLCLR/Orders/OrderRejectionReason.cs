@@ -24,7 +24,7 @@ namespace SQLCLR.Orders
         /// <summary>
         /// Слишком тяжелый заказ
         /// </summary>
-        OverWeight = 3,
+        WeightOver = 3,
 
         /// <summary>
         /// Запоздалый старт отгрузки
@@ -32,9 +32,9 @@ namespace SQLCLR.Orders
         LateStart = 4,
 
         /// <summary>
-        /// Слишком большая удаленность
+        /// Слишком длинный маршрут
         /// </summary>
-        OverDistance = 5,
+        DistanceOver = 5,
 
         /// <summary>
         /// Слишком маленький интервал вручения
@@ -42,12 +42,12 @@ namespace SQLCLR.Orders
         ToTimeIsSmall = 6,
 
         /// <summary>
-        /// Не удалось получить гео-данные
+        /// Гео-данные недоступны
         /// </summary>
-        GeoError = 7,
+        GeoDataNA = 7,
 
         /// <summary>
-        /// Неверные аргументы для проверки маршрута
+        /// Неверные или неполные данные
         /// </summary>
         InvalidArgs = 8,
 
@@ -64,7 +64,7 @@ namespace SQLCLR.Orders
         /// <summary>
         /// Превышено число заказов
         /// </summary>
-        OverOrderCount = 11,
+        OrderOver = 11,
 
         /// <summary>
         /// Ошибка при вычислении времени и стоимости отгрузки
@@ -72,9 +72,9 @@ namespace SQLCLR.Orders
         CalcError = 12,
 
         /// <summary>
-        /// Ошибка при вычислении времени и стоимости отгрузки
+        /// Заказ не может быть доставлен в срок
         /// </summary>
-        CantDeliveredOnTime = 13,
+        TimeOver = 13,
 
         /// <summary>
         /// Программная ошибка

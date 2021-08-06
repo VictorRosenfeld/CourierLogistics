@@ -4,8 +4,12 @@ namespace SQLCLR.DeliveryCover
     using SQLCLR.Couriers;
     using SQLCLR.Deliveries;
     using SQLCLR.Orders;
+    using SQLCLR.Shops;
     using System;
     using System.Collections;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
 
     public class CreateCover
     {
@@ -347,6 +351,186 @@ namespace SQLCLR.DeliveryCover
             if (d1.OrderCount > d2.OrderCount)
                 return 1;
             return 0;
+        }
+
+        private static int OrderRejectionDetector(SqlConnection connection, DateTime calcTime, Shop shop,
+            Order[] orders, CourierRepository repository, out OrderRejectionCause[] causeList)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            int rc1 = 1;
+            causeList = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (connection == null || connection.State != ConnectionState.Open)
+                    return rc;
+                if (orders == null || orders.Length <= 0)
+                    return rc;
+                if (repository == null || !repository.IsCreated)
+                    return rc;
+
+                // 3. Цикл выяснения причин отказа
+                rc = 3;
+                DateTime DateTimeNullValue = new DateTime(1900, 1, 1, 0, 0, 0);
+                OrderRejectionCause[] orderCause = new OrderRejectionCause[8 * orders.Length];
+                int causeCount = 0;
+                double shopLat = shop.Latitude;
+                double shopLon = shop.Longitude;
+                Point[,] geoData = new Point[2, 2];
+
+                for (int i = 0; i < orders.Length; i++)
+                {
+                    // 3.1 Извлекаем заказ
+                    rc = 31;
+                    Order order = orders[i];
+
+                    // 3.2 Проверяем параметры заказа
+                    rc = 32;
+                    if (order.DeliveryTimeFrom == DateTimeNullValue ||
+                        order.DeliveryTimeTo == DateTimeNullValue || 
+                        order.ShopId == 0 ||
+                        order.Latitude == 0 ||
+                        order.Longitude == 0)
+                    {
+                        if (causeCount >= orderCause.Length)
+                            Array.Resize(ref orderCause, causeCount);
+                        orderCause[causeCount++] = new OrderRejectionCause(order.Id, -1, OrderRejectionReason.InvalidArgs);
+                        continue;
+                    }
+
+                    if (order.DeliveryTimeTo <= calcTime)
+                    {
+                        if (causeCount >= orderCause.Length)
+                            Array.Resize(ref orderCause, causeCount);
+                        orderCause[causeCount++] = new OrderRejectionCause(order.Id, -1, OrderRejectionReason.TimeOver);
+                        continue;
+                    }
+
+                    // 3.3 Выясняем причину для каждого способа доставки 
+                    rc = 33;
+                    int[] orderVehicleId = order.VehicleTypes;
+                    double orderLat = order.Latitude;
+                    double orderLon = order.Longitude;
+
+                    for (int j = 0; j < orderVehicleId.Length; j++)
+                    {
+                        int vehicleId = orderVehicleId[j];
+
+                        // 3.3.1 Наличие курьера для доставки
+                        rc = 331;
+                        Courier courier = repository.GetFirstCourier(vehicleId);
+                        if (courier == null)
+                        {
+                            if (causeCount >= orderCause.Length)
+                                Array.Resize(ref orderCause, causeCount);
+                            orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.CourierNA);
+                            continue;
+                        }
+
+                        // 3.3.2 Вес заказа
+                        rc = 332;
+                        if (order.Weight > courier.MaxOrderWeight)
+                        {
+                            if (causeCount >= orderCause.Length)
+                                Array.Resize(ref orderCause, causeCount);
+                            orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.WeightOver);
+                            continue;
+                        }
+
+                        // 3.3.3 Извлекаем гео-данные
+                        rc = 333;
+                        int distance1;
+                        int duration1;
+                        int distance2;
+                        int duration2;
+
+                        rc1 = GeoData.Select(connection, courier.YandexType, shopLat, shopLon, orderLat, orderLon, out distance1, out duration1, out distance2, out duration2);
+                        if (rc1 != 0)
+                        {
+                            if (causeCount >= orderCause.Length)
+                                Array.Resize(ref orderCause, causeCount);
+                            orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.GeoDataNA);
+                            continue;
+                        }
+
+                        // 3.3.4 Длина маршрута
+                        rc = 334;
+                        if (0.001 * (distance1 + distance2) >  courier.MaxDistance)
+                        {
+                            if (causeCount >= orderCause.Length)
+                                Array.Resize(ref orderCause, causeCount);
+                            orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.DistanceOver);
+                            continue;
+                        }
+
+                        // 3.3.5 Доставка вовремя
+                        rc = 335;
+                        double deliveryTime = courier.StartDelay + courier.GetOrderTime + duration1 / 60.0 + courier.HandInTime;
+                        DateTime t = calcTime.AddMinutes(deliveryTime);
+                        if (t > order.DeliveryTimeTo)
+                        {
+                            if (causeCount >= orderCause.Length)
+                                Array.Resize(ref orderCause, causeCount);
+                            orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.TimeOver);
+                            continue;
+                        }
+
+                        // 3.3.6 Курьер недоступен
+                        rc = 336;
+                        if (order.Status == OrderStatus.Assembled && !courier.IsTaxi)
+                        {
+                            if (!repository.IstCourierEnabled(vehicleId))
+                            {
+                                if (causeCount >= orderCause.Length)
+                                    Array.Resize(ref orderCause, causeCount);
+                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.CourierNA);
+                                continue;
+                            }
+                        }
+
+                        // 3.3.7 Запускаем окончательную проверку
+                        rc = 337;
+                        geoData[1, 0] = new Point(distance1, duration1);
+                        geoData[0, 1] = new Point(distance2, duration2);
+                        CourierDeliveryInfo delivery;
+                        rc1 = courier.DeliveryCheck(calcTime, shop, new Order[] { order }, new int[] { 0, 1 }, 1, !courier.IsTaxi, geoData, out delivery);
+
+                        switch (rc1)
+                        {
+                            case 0:  // Ok
+                                break;
+                            case 2:  // неверные аргументы
+                                break;
+                            case 3:  // общий вес
+                                break;
+                            case 5:  // доставка вовремя
+                                break;
+                            case 399:  // неизвестный calcMethod
+                                break;
+                            default:  // время и стоимость отгрузки
+                                //if (rc1 > 400 && rc1 < 500)
+                                //{
+
+                                //}
+                                break;
+
+                        }
+
+                    }
+
+
+                }
+
+
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
         }
     }
 }

@@ -997,5 +997,135 @@ namespace SQLCLR.Deliveries
                 return rc;
             }
         }
+
+        /// <summary>
+        /// Выбор требуемых гео-данных
+        /// </summary>
+        /// <param name="connection">Открытое соединение</param>
+        /// <param name="yandexTypeId">ID способа передвижения Yandex</param>
+        /// <param name="lat1">Широта 1</param>
+        /// <param name="lon1">Долгота 1</param>
+        /// <param name="lat2">Широта 2</param>
+        /// <param name="lon2">Долгота 2</param>
+        /// <param name="distance1">Расстояние 1 - 2</param>
+        /// <param name="duration1">Время 1 - 2</param>
+        /// <param name="distance2">Расстояние 2 - 1</param>
+        /// <param name="duration2">Время 2 - 1</param>
+        /// (Индексы точек: i - orders[i]; i = orders.Length - shop)
+        /// </param>
+        /// <returns>0 - гео-данные выбраны; гео-данные не выбраны</returns>
+        public static int Select(SqlConnection connection, 
+                                    int yandexTypeId, 
+                                    double lat1, double lon1,
+                                    double lat2, double lon2,
+                                    out int distance1, out int duration1,
+                                    out int distance2, out int duration2
+                                    )
+        {
+            // 1. Инициализация
+            int rc = 1;
+            distance1 = 0;
+            duration1 = 0;
+            distance2 = 0;
+            duration2 = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (connection == null || connection.State != ConnectionState.Open)
+                    return rc;
+
+            #if debug
+                Logger.WriteToLog(401, $"GeoData.Select enter. yandex_type_id ={yandexTypeId}, Point1 = ({lat1}, {lon1}), Point2 = ({lat2}, {lon2})", 0);
+            #endif
+
+                // 3. Строим команду для вызова процедуры lsvH4geo_putEx
+                rc = 3;
+                //using (SqlCommand cmd = new SqlCommand("dbo.lsvSelectGeoDataFromCache @service_id, @yandex_type_id, @points", connection))
+                using (SqlCommand cmd = new SqlCommand("dbo.lsvH4geo_get2", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // @yandexType
+                    var parameter = cmd.Parameters.Add("@yandexType", SqlDbType.Int);
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = yandexTypeId;
+
+                    // @latitude1
+                    parameter = cmd.Parameters.Add("@latitude1", SqlDbType.Float);
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = lat1;
+
+                    // @longitude1
+                    parameter = cmd.Parameters.Add("@longitude1", SqlDbType.Float);
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = lon1;
+
+                    // @latitude2
+                    parameter = cmd.Parameters.Add("@latitude2", SqlDbType.Float);
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = lat2;
+
+                    // @longitude2
+                    parameter = cmd.Parameters.Add("@longitude2", SqlDbType.Float);
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = lon2;
+
+                    // @distance1
+                    var dist1 = cmd.Parameters.Add("@distance1", SqlDbType.Int);
+                    dist1.Direction = ParameterDirection.Output;
+
+                    // @duration1
+                    var dur1 = cmd.Parameters.Add("@duration1", SqlDbType.Int);
+                    dur1.Direction = ParameterDirection.Output;
+
+                    // @distance2
+                    var dist2 = cmd.Parameters.Add("@distance2", SqlDbType.Int);
+                    dist2.Direction = ParameterDirection.Output;
+
+                    // @duration2
+                    var dur2 = cmd.Parameters.Add("@duration2", SqlDbType.Int);
+                    dur2.Direction = ParameterDirection.Output;
+
+                    // return code
+                    var returnParameter = cmd.Parameters.Add("@ReturnCode", SqlDbType.Int);
+                    returnParameter.Direction = ParameterDirection.ReturnValue;
+                    returnParameter.Value = -1;
+
+                    // 4. Исполняем команду
+                    rc = 4;
+                    cmd.ExecuteNonQuery();
+                #if debug
+                    Logger.WriteToLog(405, $"GeoData.Select cmd.ExecuteNonQuery(). rc = {returnParameter.Value}, 1 -> 2 = ({dist1.Value}, {dur1.Value}),  2 -> 1 = ({dist2.Value}, {dur2.Value})", 0);
+                #endif
+                    if ((int)returnParameter.Value != 0)
+                        return rc;
+
+                    // 5. Извлекаем результат
+                    rc = 5;
+                    distance1 = (int) dist1.Value;
+                    duration1 = (int) dur1.Value;
+                    distance2 = (int) dist2.Value;
+                    duration2 = (int) dur2.Value;
+                }
+                // 8. Выход - Ok
+                rc = 0;
+
+            #if debug
+                Logger.WriteToLog(402, $"GeoData.Select exit rc = {rc}. yandex_type_id = {yandexTypeId}, Point1 = ({lat1}, {lon1}), Point2 = ({lat2}, {lon2})", 0);
+            #endif
+
+                return rc;
+            }
+            catch (Exception ex)
+            {
+            #if debug
+                Logger.WriteToLog(403, $"GeoData.Select exit rc = {rc}. yandex_type_id = {yandexTypeId}, Point1 = ({lat1}, {lon1}), Point2 = ({lat2}, {lon2}). Exception = {ex.Message}", 2);
+            #endif
+
+                return rc;
+            }
+        }
     }
 }

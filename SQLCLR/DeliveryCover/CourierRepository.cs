@@ -171,6 +171,37 @@ namespace SQLCLR.DeliveryCover
         }
 
         /// <summary>
+        /// Проверка наличия курьера
+        /// </summary>
+        /// <param name="vehicleId">Требуемый способ доставки</param>
+        /// <returns>true - курьер доступен; false - курьер не доступен</returns>
+        public bool IstCourierEnabled(int vehicleId)
+        {
+            // 1. Инициализация
+            
+            try
+            {
+                // 2. Находим диапазон для заданного способа доставки
+                if (!IsCreated)
+                    return false;
+                int index = Array.BinarySearch(_vehicleId, vehicleId);
+                if (index < 0)
+                    return false;
+
+                // 3. Проверяем наличие курьера
+                Point pt = _vehicleRange[index];
+                if (pt.Y == -1)
+                    return true;
+
+                return pt.X <= pt.Y;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Сравнение двух курьеров по VehicleId, OrderCount
         /// </summary>
         /// <param name="courier1">Курьер 1</param>
@@ -187,6 +218,39 @@ namespace SQLCLR.DeliveryCover
             if (courier1.OrderCount > courier2.OrderCount)
                 return 1;
             return 0;
+        }
+
+        /// <summary>
+        /// Извлечение первого подходящего курьера заданного типа
+        /// </summary>
+        /// <param name="vehicleId">Заданный способ доставки</param>
+        /// <returns>Курьер или null</returns>
+        public Courier GetFirstCourier(int vehicleId)
+        {
+            // 1. Инициализация
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (!IsCreated)
+                    return null;
+
+                // 3. Извлекаем курьера заданного типа
+                int index = Array.BinarySearch(_vehicleId, vehicleId);
+                if (index < 0)
+                    return null;
+
+                // 4. Извлекаем курьера 
+                Point pt = _vehicleRange[index];
+                if (pt.Y == -1)
+                    return _couriers[pt.X];
+                else
+                    return _couriers[pt.Y]; 
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

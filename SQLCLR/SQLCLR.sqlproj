@@ -118,5 +118,6 @@
     <Compile Include="Deliveries\DilateRoutesContext.cs" />
     <Compile Include="DeliveryCover\CreateCover.cs" />
     <Compile Include="DeliveryCover\CourierRepository.cs" />
+    <Compile Include="DeliveryCover\OrderRejectionCause.cs" />
   </ItemGroup>
 </Project>
