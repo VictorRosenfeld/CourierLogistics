@@ -1,4 +1,4 @@
-
+п»ї
 namespace SQLCLR.DeliveryCover
 {
     using SQLCLR.Couriers;
@@ -11,13 +11,13 @@ namespace SQLCLR.DeliveryCover
     {
         public static int Create(CourierDeliveryInfo[] deliveries, AllOrders allOrders, AllCouriers allCouriers)
         {
-            // 1. Инициализация
+            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
             int rc = 1;
             int rc1 = 1;
 
             try
             {
-                // 2. Проверяем исходные данные
+                // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
                 rc = 2;
                 if (deliveries == null || deliveries.Length <= 0)
                     return rc;
@@ -26,11 +26,11 @@ namespace SQLCLR.DeliveryCover
                 if (allOrders == null || !allOrders.IsCreated)
                     return rc;
 
-                // 3. Сортируем отгрузки по магазину
+                // 3. РЎРѕСЂС‚РёСЂСѓРµРј РѕС‚РіСЂСѓР·РєРё РїРѕ РјР°РіР°Р·РёРЅСѓ
                 rc = 3;
                 Array.Sort(deliveries, CompareDeliveriesByShopId);
 
-                // 4. Обрабатываем каждый магазин в отдельности
+                // 4. РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РєР°Р¶РґС‹Р№ РјР°РіР°Р·РёРЅ РІ РѕС‚РґРµР»СЊРЅРѕСЃС‚Рё
                 rc = 4;
                 int startIndex = 0;
                 int endIndex = 0;
@@ -58,7 +58,7 @@ namespace SQLCLR.DeliveryCover
 
 
 
-                // 3. Сортируем все отгрузки по магазину, убыванию приоритета и возрастанию цены
+                // 3. РЎРѕСЂС‚РёСЂСѓРµРј РІСЃРµ РѕС‚РіСЂСѓР·РєРё РїРѕ РјР°РіР°Р·РёРЅСѓ, СѓР±С‹РІР°РЅРёСЋ РїСЂРёРѕСЂРёС‚РµС‚Р° Рё РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ С†РµРЅС‹
                 rc = 3;
 
 
@@ -74,19 +74,19 @@ namespace SQLCLR.DeliveryCover
         }
 
         /// <summary>
-        /// Построение покрытия для магазина
+        /// РџРѕСЃС‚СЂРѕРµРЅРёРµ РїРѕРєСЂС‹С‚РёСЏ РґР»СЏ РјР°РіР°Р·РёРЅР°
         /// </summary>
-        /// <param name="shopDeliveries">Допустимые отгрузки магазина, из которых строится покрытие</param>
-        /// <param name="shopOrders">Все активные заказы магазина</param>
-        /// <param name="shopCouriers">Все доступные курьеры и такси</param>
-        /// <param name="recomendations">Отгрузки-рекомендации</param>
-        /// <param name="cover">Отгрузки из собранных заказов, образующих покрытие</param>
-        /// <param name="rejectedOrders">Заказы, которые не могут быть отгружены</param>
-        /// <returns>0 - покрытие построено; иначе - покрытие не построено</returns>
+        /// <param name="shopDeliveries">Р”РѕРїСѓСЃС‚РёРјС‹Рµ РѕС‚РіСЂСѓР·РєРё РјР°РіР°Р·РёРЅР°, РёР· РєРѕС‚РѕСЂС‹С… СЃС‚СЂРѕРёС‚СЃСЏ РїРѕРєСЂС‹С‚РёРµ</param>
+        /// <param name="shopOrders">Р’СЃРµ Р°РєС‚РёРІРЅС‹Рµ Р·Р°РєР°Р·С‹ РјР°РіР°Р·РёРЅР°</param>
+        /// <param name="shopCouriers">Р’СЃРµ РґРѕСЃС‚СѓРїРЅС‹Рµ РєСѓСЂСЊРµСЂС‹ Рё С‚Р°РєСЃРё</param>
+        /// <param name="recomendations">РћС‚РіСЂСѓР·РєРё-СЂРµРєРѕРјРµРЅРґР°С†РёРё</param>
+        /// <param name="cover">РћС‚РіСЂСѓР·РєРё РёР· СЃРѕР±СЂР°РЅРЅС‹С… Р·Р°РєР°Р·РѕРІ, РѕР±СЂР°Р·СѓСЋС‰РёС… РїРѕРєСЂС‹С‚РёРµ</param>
+        /// <param name="rejectedOrders">Р—Р°РєР°Р·С‹, РєРѕС‚РѕСЂС‹Рµ РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РѕС‚РіСЂСѓР¶РµРЅС‹</param>
+        /// <returns>0 - РїРѕРєСЂС‹С‚РёРµ РїРѕСЃС‚СЂРѕРµРЅРѕ; РёРЅР°С‡Рµ - РїРѕРєСЂС‹С‚РёРµ РЅРµ РїРѕСЃС‚СЂРѕРµРЅРѕ</returns>
         public static int CreateShopCover(CourierDeliveryInfo[] shopDeliveries, Order[] shopOrders, Courier[] shopCouriers,
                             out CourierDeliveryInfo[] recomendations, out CourierDeliveryInfo[] cover, out Order[] rejectedOrders)
         {
-            // 1. Инициализация
+            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
             int rc = 1;
             int rc1 = 1;
             recomendations = null;
@@ -95,7 +95,7 @@ namespace SQLCLR.DeliveryCover
 
             try
             {
-                // 2. Проверяем исходные данные
+                // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
                 rc = 2;
                 if (shopDeliveries == null || shopDeliveries.Length <= 0)
                 {
@@ -107,7 +107,7 @@ namespace SQLCLR.DeliveryCover
                 if (shopCouriers == null || shopCouriers.Length <= 0)
                     return rc;
 
-                // 4. Строим индекс для всех заказов магазина
+                // 4. РЎС‚СЂРѕРёРј РёРЅРґРµРєСЃ РґР»СЏ РІСЃРµС… Р·Р°РєР°Р·РѕРІ РјР°РіР°Р·РёРЅР°
                 rc = 4;
                 int[] shopOrderId = new int[shopOrders.Length];
 
@@ -116,7 +116,7 @@ namespace SQLCLR.DeliveryCover
 
                 Array.Sort(shopOrderId, shopOrders);
 
-                // 5. Установка приритета и флага наличия не собранных заказов для каждой отгрузки
+                // 5. РЈСЃС‚Р°РЅРѕРІРєР° РїСЂРёСЂРёС‚РµС‚Р° Рё С„Р»Р°РіР° РЅР°Р»РёС‡РёСЏ РЅРµ СЃРѕР±СЂР°РЅРЅС‹С… Р·Р°РєР°Р·РѕРІ РґР»СЏ РєР°Р¶РґРѕР№ РѕС‚РіСЂСѓР·РєРё
                 rc = 5;
                 bool isReceipted = false;
                 bool[] flags1 = new bool[shopOrders.Length];
@@ -169,11 +169,11 @@ namespace SQLCLR.DeliveryCover
                         isReceipted = true;
                 }
 
-                // 5. Сортировка всех отгрузок магазина в порядке убывания приоритета и возрастания стоимости
+                // 5. РЎРѕСЂС‚РёСЂРѕРІРєР° РІСЃРµС… РѕС‚РіСЂСѓР·РѕРє РјР°РіР°Р·РёРЅР° РІ РїРѕСЂСЏРґРєРµ СѓР±С‹РІР°РЅРёСЏ РїСЂРёРѕСЂРёС‚РµС‚Р° Рё РІРѕР·СЂР°СЃС‚Р°РЅРёСЏ СЃС‚РѕРёРјРѕСЃС‚Рё
                 rc = 5;
                 Array.Sort(shopDeliveries, CompareDeliveriesByPriorityAndOrderCost);
 
-                // 6. Создаём рекомендации (покрытие 1)
+                // 6. РЎРѕР·РґР°С‘Рј СЂРµРєРѕРјРµРЅРґР°С†РёРё (РїРѕРєСЂС‹С‚РёРµ 1)
                 rc = 6;
                 if (isReceipted)
                 {
@@ -218,19 +218,19 @@ namespace SQLCLR.DeliveryCover
                     }
                 }
 
-                // 7. Строим покрытие только из собранных заказов (покрытие 2)
+                // 7. РЎС‚СЂРѕРёРј РїРѕРєСЂС‹С‚РёРµ С‚РѕР»СЊРєРѕ РёР· СЃРѕР±СЂР°РЅРЅС‹С… Р·Р°РєР°Р·РѕРІ (РїРѕРєСЂС‹С‚РёРµ 2)
                 rc = 7;
 
                 if (allAssembledOrderCount > 0)
                 {
-                    // 7.1 Создаём репозиторий доступных курьеров и такси
+                    // 7.1 РЎРѕР·РґР°С‘Рј СЂРµРїРѕР·РёС‚РѕСЂРёР№ РґРѕСЃС‚СѓРїРЅС‹С… РєСѓСЂСЊРµСЂРѕРІ Рё С‚Р°РєСЃРё
                     rc = 71;
                     CourierRepository courierRepository = new CourierRepository();
                     rc1 = courierRepository.Create(shopCouriers);
                     if (rc1 != 0)
                         return rc = 1000 * rc + rc1;
 
-                    // 7.2 Цикл построения покрытия
+                    // 7.2 Р¦РёРєР» РїРѕСЃС‚СЂРѕРµРЅРёСЏ РїРѕРєСЂС‹С‚РёСЏ
                     rc = 72;
                     cover = new CourierDeliveryInfo[shopOrders.Length];
                     int coverCount = 0;
@@ -280,7 +280,7 @@ namespace SQLCLR.DeliveryCover
                     }
                 }
 
-                // 8. Заказы, которые не могут быть доставлены
+                // 8. Р—Р°РєР°Р·С‹, РєРѕС‚РѕСЂС‹Рµ РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РґРѕСЃС‚Р°РІР»РµРЅС‹
                 rc = 8;
                 int rejectedOrderCount = 0;
                 rejectedOrders = new Order[shopOrders.Length];
@@ -305,7 +305,7 @@ namespace SQLCLR.DeliveryCover
                     Array.Resize(ref rejectedOrders, rejectedOrderCount);
                 }
 
-                // 9. Выход - Ok
+                // 9. Р’С‹С…РѕРґ - Ok
                 rc = 0;
                 return rc;
             }
@@ -316,11 +316,11 @@ namespace SQLCLR.DeliveryCover
         }
 
         /// <summary>
-        /// Сравнение отгрузок по ShopId
+        /// РЎСЂР°РІРЅРµРЅРёРµ РѕС‚РіСЂСѓР·РѕРє РїРѕ ShopId
         /// </summary>
-        /// <param name="d1">Отгрузка 1</param>
-        /// <param name="d2">Отгрузка 2</param>
-        /// <returns>-1 - d1 меньше 2; 0 - d1 равно d2; 1 - d1 больше d2</returns>
+        /// <param name="d1">РћС‚РіСЂСѓР·РєР° 1</param>
+        /// <param name="d2">РћС‚РіСЂСѓР·РєР° 2</param>
+        /// <returns>-1 - d1 РјРµРЅСЊС€Рµ 2; 0 - d1 СЂР°РІРЅРѕ d2; 1 - d1 Р±РѕР»СЊС€Рµ d2</returns>
         private static int CompareDeliveriesByShopId(CourierDeliveryInfo d1, CourierDeliveryInfo d2)
         {
             if (d1.FromShop.Id > d2.FromShop.Id)
@@ -331,10 +331,10 @@ namespace SQLCLR.DeliveryCover
         }
 
         /// <summary>
-        /// Сравнение отгрузок по убыванию приритета и возрастанию средней стоимости одного заказа
+        /// РЎСЂР°РІРЅРµРЅРёРµ РѕС‚РіСЂСѓР·РѕРє РїРѕ СѓР±С‹РІР°РЅРёСЋ РїСЂРёСЂРёС‚РµС‚Р° Рё РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ СЃСЂРµРґРЅРµР№ СЃС‚РѕРёРјРѕСЃС‚Рё РѕРґРЅРѕРіРѕ Р·Р°РєР°Р·Р°
         /// </summary>
-        /// <param name="d1">Отгрузка 1</param>
-        /// <param name="d2">Отгрузка 2</param>
+        /// <param name="d1">РћС‚РіСЂСѓР·РєР° 1</param>
+        /// <param name="d2">РћС‚РіСЂСѓР·РєР° 2</param>
         /// <returns></returns>
         private static int CompareDeliveriesByPriorityAndOrderCost(CourierDeliveryInfo d1, CourierDeliveryInfo d2)
         {

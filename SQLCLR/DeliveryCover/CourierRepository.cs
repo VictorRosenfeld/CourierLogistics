@@ -1,4 +1,4 @@
-
+п»ї
 namespace SQLCLR.DeliveryCover
 {
     using SQLCLR.Couriers;
@@ -6,47 +6,47 @@ namespace SQLCLR.DeliveryCover
     using System;
 
     /// <summary>
-    /// Репозиторий доступных курьеров и такси,
-    /// позволяющий извлекать следующего доступного
-    /// курьера заданного типа
+    /// Р РµРїРѕР·РёС‚РѕСЂРёР№ РґРѕСЃС‚СѓРїРЅС‹С… РєСѓСЂСЊРµСЂРѕРІ Рё С‚Р°РєСЃРё,
+    /// РїРѕР·РІРѕР»СЏСЋС‰РёР№ РёР·РІР»РµРєР°С‚СЊ СЃР»РµРґСѓСЋС‰РµРіРѕ РґРѕСЃС‚СѓРїРЅРѕРіРѕ
+    /// РєСѓСЂСЊРµСЂР° Р·Р°РґР°РЅРЅРѕРіРѕ С‚РёРїР°
     /// </summary>
     public class CourierRepository
     {
         /// <summary>
-        /// Курьеры, отсортированные по VehicleId
+        /// РљСѓСЂСЊРµСЂС‹, РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Рµ РїРѕ VehicleId
         /// </summary>
         private Courier[] _couriers;
 
         /// <summary>
-        /// Отсортированные спопсобы доставки
+        /// РћС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Рµ СЃРїРѕРїСЃРѕР±С‹ РґРѕСЃС‚Р°РІРєРё
         /// </summary>
         private int[] _vehicleId;
 
         /// <summary>
-        /// Диапазоны курьеров одного типа
-        /// (Point.X - начальный индекс в _couriers
-        ///  Point>Y - конечный  индекс в _couriers 
+        /// Р”РёР°РїР°Р·РѕРЅС‹ РєСѓСЂСЊРµСЂРѕРІ РѕРґРЅРѕРіРѕ С‚РёРїР°
+        /// (Point.X - РЅР°С‡Р°Р»СЊРЅС‹Р№ РёРЅРґРµРєСЃ РІ _couriers
+        ///  Point>Y - РєРѕРЅРµС‡РЅС‹Р№  РёРЅРґРµРєСЃ РІ _couriers 
         /// </summary>
         private Point[] _vehicleRange;
 
         /// <summary>
-        /// Курьеры
+        /// РљСѓСЂСЊРµСЂС‹
         /// </summary>
         public Courier[] Couriers => _couriers;
 
         /// <summary>
-        /// Флаг: true - репозиторий создан; false - репозиторий не создан
+        /// Р¤Р»Р°Рі: true - СЂРµРїРѕР·РёС‚РѕСЂРёР№ СЃРѕР·РґР°РЅ; false - СЂРµРїРѕР·РёС‚РѕСЂРёР№ РЅРµ СЃРѕР·РґР°РЅ
         /// </summary>
         public bool IsCreated { get; private set; }
 
         /// <summary>
-        /// Создание репозитория
+        /// РЎРѕР·РґР°РЅРёРµ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ
         /// </summary>
-        /// <param name="couriers">Доступные курьеры</param>
-        /// <returns>0 - репозиторий создан; иначе - репозиторий не создан</returns>
+        /// <param name="couriers">Р”РѕСЃС‚СѓРїРЅС‹Рµ РєСѓСЂСЊРµСЂС‹</param>
+        /// <returns>0 - СЂРµРїРѕР·РёС‚РѕСЂРёР№ СЃРѕР·РґР°РЅ; РёРЅР°С‡Рµ - СЂРµРїРѕР·РёС‚РѕСЂРёР№ РЅРµ СЃРѕР·РґР°РЅ</returns>
         public int Create(Courier[] couriers)
         {
-            // 1. Инициализация
+            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
             int rc = 1;
             IsCreated = false;
             _couriers = null;
@@ -55,17 +55,17 @@ namespace SQLCLR.DeliveryCover
 
             try
             {
-                // 2. Проверяем исходные данные
+                // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
                 rc = 2;
                 if (couriers == null || couriers.Length <= 0)
                     return rc;
 
-                // 3.Сортируем курьеров по VehicleId и OrderCount
+                // 3.РЎРѕСЂС‚РёСЂСѓРµРј РєСѓСЂСЊРµСЂРѕРІ РїРѕ VehicleId Рё OrderCount
                 rc = 3;
                 _couriers = (Courier[])couriers.Clone();
                 Array.Sort(_couriers, CompareCourierByVehicleIdAndOrderCount);
 
-                // 4.Строим индек курьеров
+                // 4.РЎС‚СЂРѕРёРј РёРЅРґРµРє РєСѓСЂСЊРµСЂРѕРІ
                 rc = 4;
                 _vehicleId = new int[_couriers.Length];
                 _vehicleRange = new Point[_couriers.Length];
@@ -121,7 +121,7 @@ namespace SQLCLR.DeliveryCover
                     Array.Resize(ref _vehicleRange, count);
                 }
 
-                // 5. Выход - Ok
+                // 5. Р’С‹С…РѕРґ - Ok
                 rc = 0;
                 IsCreated = true;
                 return rc;
@@ -133,24 +133,24 @@ namespace SQLCLR.DeliveryCover
         }
 
         /// <summary>
-        /// Извлечение следующего доступного курьера из репозитория
+        /// РР·РІР»РµС‡РµРЅРёРµ СЃР»РµРґСѓСЋС‰РµРіРѕ РґРѕСЃС‚СѓРїРЅРѕРіРѕ РєСѓСЂСЊРµСЂР° РёР· СЂРµРїРѕР·РёС‚РѕСЂРёСЏ
         /// </summary>
-        /// <param name="vehicleId">Требуемый способ доставки</param>
-        /// <returns>Курьер или null</returns>
+        /// <param name="vehicleId">РўСЂРµР±СѓРµРјС‹Р№ СЃРїРѕСЃРѕР± РґРѕСЃС‚Р°РІРєРё</param>
+        /// <returns>РљСѓСЂСЊРµСЂ РёР»Рё null</returns>
         public Courier GetNextCourier(int vehicleId)
         {
-            // 1. Инициализация
+            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
             
             try
             {
-                // 2. Находим диапазон для заданного способа доставки
+                // 2. РќР°С…РѕРґРёРј РґРёР°РїР°Р·РѕРЅ РґР»СЏ Р·Р°РґР°РЅРЅРѕРіРѕ СЃРїРѕСЃРѕР±Р° РґРѕСЃС‚Р°РІРєРё
                 if (!IsCreated)
                     return null;
                 int index = Array.BinarySearch(_vehicleId, vehicleId);
                 if (index < 0)
                     return null;
 
-                // 3. Выбираем следующего доступного курьера
+                // 3. Р’С‹Р±РёСЂР°РµРј СЃР»РµРґСѓСЋС‰РµРіРѕ РґРѕСЃС‚СѓРїРЅРѕРіРѕ РєСѓСЂСЊРµСЂР°
                 Point pt = _vehicleRange[index];
                 if (pt.Y == -1)
                     return _couriers[pt.X];
@@ -171,11 +171,11 @@ namespace SQLCLR.DeliveryCover
         }
 
         /// <summary>
-        /// Сравнение двух курьеров по VehicleId, OrderCount
+        /// РЎСЂР°РІРЅРµРЅРёРµ РґРІСѓС… РєСѓСЂСЊРµСЂРѕРІ РїРѕ VehicleId, OrderCount
         /// </summary>
-        /// <param name="courier1">Курьер 1</param>
-        /// <param name="courier2">Курьер 2</param>
-        /// <returns>-1 - Курьер 1 меньше Курьер2; 0 - Курьер 1 равен Курьер2; 1 - Курьер 1 больше Курьер2</returns>
+        /// <param name="courier1">РљСѓСЂСЊРµСЂ 1</param>
+        /// <param name="courier2">РљСѓСЂСЊРµСЂ 2</param>
+        /// <returns>-1 - РљСѓСЂСЊРµСЂ 1 РјРµРЅСЊС€Рµ РљСѓСЂСЊРµСЂ2; 0 - РљСѓСЂСЊРµСЂ 1 СЂР°РІРµРЅ РљСѓСЂСЊРµСЂ2; 1 - РљСѓСЂСЊРµСЂ 1 Р±РѕР»СЊС€Рµ РљСѓСЂСЊРµСЂ2</returns>
         private static int CompareCourierByVehicleIdAndOrderCount(Courier courier1, Courier courier2)
         {
             if (courier1.VehicleID < courier2.VehicleID)
