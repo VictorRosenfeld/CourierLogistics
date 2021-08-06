@@ -114,6 +114,16 @@ namespace SQLCLR.Deliveries
         /// </summary>
         public Point[] NodeInfo { get; set; }
 
+        /// <summary>
+        /// Флаг: true - отгрузка содержит не собранные заказы; false - все заказы в отгрузке собраны
+        /// </summary>
+        public bool IsReceipted { get; set; }
+
+        /// <summary>
+        /// Приритет отгрузки = максимальному приоритету из входящих в отгрузку заказов
+        /// </summary>
+        public int Priority { get; set;  }
+
         ///// <summary>
         ///// Флаг: 
         ///// true - все заказы в отгрузке помечены, как отгруженные

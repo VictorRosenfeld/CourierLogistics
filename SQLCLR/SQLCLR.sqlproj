@@ -74,6 +74,7 @@
     <Folder Include="MaxOrdersOfRoute" />
     <Folder Include="Log" />
     <Folder Include="ExtraOrders" />
+    <Folder Include="DeliveryCover" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -115,5 +116,7 @@
     <Compile Include="ExtraOrders\GeoDistance.cs" />
     <Compile Include="Deliveries\CalcThreadContext.cs" />
     <Compile Include="Deliveries\DilateRoutesContext.cs" />
+    <Compile Include="DeliveryCover\CreateCover.cs" />
+    <Compile Include="DeliveryCover\CourierRepository.cs" />
   </ItemGroup>
 </Project>
