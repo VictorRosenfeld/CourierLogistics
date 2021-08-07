@@ -12,6 +12,11 @@ namespace SQLCLR.Deliveries
     public class CourierDeliveryInfo
     {
         /// <summary>
+        /// dlvID 
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// Курьер, осуществляющий отгрузку
         /// </summary>
         public Courier DeliveryCourier { get; set; }
@@ -250,6 +255,7 @@ namespace SQLCLR.Deliveries
             copy.Weight = Weight;
             copy.NodeInfo = NodeInfo;
             copy.NodeDeliveryTime = NodeDeliveryTime;
+            copy.Priority = Priority;
         }
 
         ///// <summary>

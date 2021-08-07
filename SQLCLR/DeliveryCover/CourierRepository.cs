@@ -58,10 +58,17 @@ namespace SQLCLR.DeliveryCover
                 // 2. Проверяем исходные данные
                 rc = 2;
                 if (couriers == null || couriers.Length <= 0)
-                    return rc;
+                {
+                    _couriers = new Courier[0];
+                    _vehicleId = new int[0];
+                    _vehicleRange = new Point[0];
+                    IsCreated = true;
+                    return rc = 0;
+                }
 
                 // 3.Сортируем курьеров по VehicleId и OrderCount
                 rc = 3;
+
                 _couriers = (Courier[])couriers.Clone();
                 Array.Sort(_couriers, CompareCourierByVehicleIdAndOrderCount);
 

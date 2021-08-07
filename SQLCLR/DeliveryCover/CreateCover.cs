@@ -6,18 +6,36 @@ namespace SQLCLR.DeliveryCover
     using SQLCLR.Orders;
     using SQLCLR.Shops;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
 
+    /// <summary>
+    /// Построение покрытия
+    /// </summary>
     public class CreateCover
     {
-        public static int Create(CourierDeliveryInfo[] deliveries, AllOrders allOrders, AllCouriers allCouriers)
+        /// <summary>
+        /// Построение покрытия для каждого магазина из
+        /// ранее построенных допустимых отгрузок
+        /// </summary>
+        /// <param name="deliveries">Отгрузки, из которых строятся покрытия</param>
+        /// <param name="allOrders">Активные заказы</param>
+        /// <param name="allCouriers">Доступные курьеры и такси</param>
+        /// <param name="connection">Открытое соединение с БД для полцчения гео-данных</param>
+        /// <param name="recomendations">Построенные рекомендации</param>
+        /// <param name="covers">Построенные покрытия</param>
+        /// <param name="rejectedOrders">Причины отказов в доставке заказов</param>
+        /// <returns>0 - покрытия построены; иначе - покрытия не построены</returns>
+        public static int Create(CourierDeliveryInfo[] deliveries, AllOrders allOrders, AllCouriers allCouriers, SqlConnection connection,
+                        out CourierDeliveryInfo[] recomendations, out CourierDeliveryInfo[] covers, out OrderRejectionCause[] rejectedOrders)
         {
             // 1. Инициализация
             int rc = 1;
             int rc1 = 1;
+            recomendations = null;
+            covers = null;
+            rejectedOrders = null;
 
             try
             {
@@ -29,6 +47,8 @@ namespace SQLCLR.DeliveryCover
                     return rc;
                 if (allOrders == null || !allOrders.IsCreated)
                     return rc;
+                if (connection == null || connection.State != ConnectionState.Open)
+                    return rc;
 
                 // 3. Сортируем отгрузки по магазину
                 rc = 3;
@@ -39,9 +59,18 @@ namespace SQLCLR.DeliveryCover
                 int startIndex = 0;
                 int endIndex = 0;
                 int currentShopId = deliveries[0].FromShop.Id;
-                CourierDeliveryInfo[] recomendations;
-                CourierDeliveryInfo[] cover;
-                Order[] rejectedOrders;
+                CourierDeliveryInfo[] shopRecomendations;
+                CourierDeliveryInfo[] shopCover;
+                Order[] rejectedShopOrders;
+                DateTime calcTime = deliveries[0].CalculationTime;
+
+                covers = new CourierDeliveryInfo[allOrders.Count];
+                recomendations = new CourierDeliveryInfo[allOrders.Count];
+                rejectedOrders = new OrderRejectionCause[allOrders.Count * allCouriers.BaseKeys.Length];
+
+                int coverCount = 0;
+                int recomendationCount = 0;
+                int rejectedCount = 0;
 
                 for (int i = 1; i < deliveries.Length; i++)
                 {
@@ -51,25 +80,144 @@ namespace SQLCLR.DeliveryCover
                     }
                     else
                     {
-                        rc1 = CreateShopCover(deliveries, allOrders.GetShopOrders(currentShopId), allCouriers.GetShopCouriers(currentShopId),
-                            out recomendations, out cover, out rejectedOrders);
+                        // 4.1 Создаём репозиторий курьеров магазина
+                        rc = 41;
+                        Courier[] shopCouriers = allCouriers.GetShopCouriers(currentShopId);
+                        CourierRepository courierRepository = new CourierRepository();
+                        rc1 = courierRepository.Create(shopCouriers);
+                        //if (rc1 != 0)
+                        //    return rc = 1000 * rc + rc1;
+
+                        // 4.2 Извлекаем отгрузки магазина
+                        rc = 42;
+                        CourierDeliveryInfo[] shopDeliveries = new CourierDeliveryInfo[endIndex - startIndex + 1];
+                        Array.Copy(deliveries, startIndex, shopDeliveries, 0, shopDeliveries.Length);
+
+                        // 4.3 Извлекаем заказы магазина
+                        rc = 43;
+                        Order[] shopOrders = allOrders.GetShopOrders(currentShopId);
+
+                        // 4.4 Строим покрытие
+                        rc = 44;
+                        rc1 = CreateShopCover(shopDeliveries, shopOrders, courierRepository, out shopRecomendations, out shopCover, out rejectedShopOrders);
+                        if (rc1 == 0)
+                        {
+                            // 4.5 Пополняем список рекомендаций
+                            rc = 45;
+                            if (shopRecomendations != null && shopRecomendations.Length > 0)
+                            {
+                                shopRecomendations.CopyTo(recomendations, recomendationCount);
+                                recomendationCount += shopRecomendations.Length;
+                            }
+
+                            // 4.6 Пополняем покрытия
+                            rc = 46;
+                            if (shopCover != null && shopCover.Length > 0)
+                            {
+                                shopCover.CopyTo(covers, coverCount);
+                                coverCount += shopCover.Length;
+                            }
+
+                            // 4.7 Пополняем заказы, которые не могут быть доставлены
+                            rc = 47;
+                            if (rejectedShopOrders != null && rejectedShopOrders.Length > 0)
+                            {
+                                OrderRejectionCause[] shopRejectionOrders;
+                                rc1 = ShopOrderRejectionAnalyzer(calcTime, shopDeliveries[0].FromShop, shopOrders, courierRepository, connection, out shopRejectionOrders);
+                                if (rc1 == 0)
+                                {
+                                    if (shopRejectionOrders != null && shopRejectionOrders.Length > 0)
+                                    {
+                                        shopRejectionOrders.CopyTo(rejectedOrders, rejectedCount);
+                                        rejectedCount += shopRejectionOrders.Length;
+                                    }
+                                }
+                            }
+                        }
+
+                        // 4.8 Переходим к следующему магазину
+                        startIndex = i;
+                        endIndex = i;
+                        currentShopId = deliveries[i].FromShop.Id;
                     }
                 }
 
+                // Обрабатываем последний магазин
 
+                // 4.9 Создаём репозиторий курьеров магазина
+                rc = 49;
+                Courier[] lastShopCouriers = allCouriers.GetShopCouriers(currentShopId);
+                CourierRepository lastCourierRepository = new CourierRepository();
+                rc1 = lastCourierRepository.Create(lastShopCouriers);
 
+                // 4.10 Извлекаем отгрузки магазина
+                rc = 410;
+                CourierDeliveryInfo[] lastShopDeliveries = new CourierDeliveryInfo[endIndex - startIndex + 1];
+                Array.Copy(deliveries, startIndex, lastShopDeliveries, 0, lastShopDeliveries.Length);
 
+                // 4.11 Извлекаем заказы магазина
+                rc = 411;
+                Order[] lastShopOrders = allOrders.GetShopOrders(currentShopId);
 
+                // 4.12 Строим покрытие
+                rc = 412;
+                rc1 = CreateShopCover(lastShopDeliveries, lastShopOrders, lastCourierRepository, out shopRecomendations, out shopCover, out rejectedShopOrders);
+                if (rc1 == 0)
+                {
+                    // 4.12 Пополняем список рекомендаций
+                    rc = 412;
+                    if (shopRecomendations != null && shopRecomendations.Length > 0)
+                    {
+                        shopRecomendations.CopyTo(recomendations, recomendationCount);
+                        recomendationCount += shopRecomendations.Length;
+                    }
 
+                    // 4.13 Пополняем покрытия
+                    rc = 413;
+                    if (shopCover != null && shopCover.Length > 0)
+                    {
+                        shopCover.CopyTo(covers, coverCount);
+                        coverCount += shopCover.Length;
+                    }
 
-                // 3. Сортируем все отгрузки по магазину, убыванию приоритета и возрастанию цены
-                rc = 3;
+                    // 4.14 Пополняем заказы, которые не могут быть доставлены
+                    rc = 414;
+                    if (rejectedShopOrders != null && rejectedShopOrders.Length > 0)
+                    {
+                        OrderRejectionCause[] shopRejectionOrders;
+                        rc1 = ShopOrderRejectionAnalyzer(calcTime, lastShopDeliveries[0].FromShop, lastShopOrders, lastCourierRepository, connection, out shopRejectionOrders);
+                        if (rc1 == 0)
+                        {
+                            if (shopRejectionOrders != null && shopRejectionOrders.Length > 0)
+                            {
+                                shopRejectionOrders.CopyTo(rejectedOrders, rejectedCount);
+                                rejectedCount += shopRejectionOrders.Length;
+                            }
+                        }
+                    }
+                }
 
+                // 4.15 Усекаем неиспользованные части массивов
+                rc = 15;
 
+                if (recomendationCount < recomendations.Length)
+                {
+                    Array.Resize(ref recomendations, recomendationCount);
+                }
 
+                if (coverCount < covers.Length)
+                {
+                    Array.Resize(ref covers, coverCount);
+                }
 
+                if (rejectedCount < rejectedOrders.Length)
+                {
+                    Array.Resize(ref rejectedOrders, rejectedCount);
+                }
+
+                // 5. Выход - Ok
+                rc = 0;
                 return rc;
-
             }
             catch
             {
@@ -87,7 +235,7 @@ namespace SQLCLR.DeliveryCover
         /// <param name="cover">Отгрузки из собранных заказов, образующих покрытие</param>
         /// <param name="rejectedOrders">Заказы, которые не могут быть отгружены</param>
         /// <returns>0 - покрытие построено; иначе - покрытие не построено</returns>
-        public static int CreateShopCover(CourierDeliveryInfo[] shopDeliveries, Order[] shopOrders, Courier[] shopCouriers,
+        public static int CreateShopCover(CourierDeliveryInfo[] shopDeliveries, Order[] shopOrders, CourierRepository courierRepository,
                             out CourierDeliveryInfo[] recomendations, out CourierDeliveryInfo[] cover, out Order[] rejectedOrders)
         {
             // 1. Инициализация
@@ -108,7 +256,7 @@ namespace SQLCLR.DeliveryCover
                 }
                 if (shopOrders == null || shopOrders.Length <= 0)
                     return rc;
-                if (shopCouriers == null || shopCouriers.Length <= 0)
+                if (courierRepository == null || !courierRepository.IsCreated)
                     return rc;
 
                 // 4. Строим индекс для всех заказов магазина
@@ -227,15 +375,15 @@ namespace SQLCLR.DeliveryCover
 
                 if (allAssembledOrderCount > 0)
                 {
-                    // 7.1 Создаём репозиторий доступных курьеров и такси
-                    rc = 71;
-                    CourierRepository courierRepository = new CourierRepository();
-                    rc1 = courierRepository.Create(shopCouriers);
-                    if (rc1 != 0)
-                        return rc = 1000 * rc + rc1;
+                    //// 7.1 Создаём репозиторий доступных курьеров и такси
+                    //rc = 71;
+                    //CourierRepository courierRepository = new CourierRepository();
+                    //rc1 = courierRepository.Create(shopCouriers);
+                    //if (rc1 != 0)
+                    //    return rc = 1000 * rc + rc1;
 
-                    // 7.2 Цикл построения покрытия
-                    rc = 72;
+                    // 7.1 Цикл построения покрытия
+                    rc = 71;
                     cover = new CourierDeliveryInfo[shopOrders.Length];
                     int coverCount = 0;
                     int coverOrderCount = 0;
@@ -353,8 +501,18 @@ namespace SQLCLR.DeliveryCover
             return 0;
         }
 
-        private static int OrderRejectionDetector(SqlConnection connection, DateTime calcTime, Shop shop,
-            Order[] orders, CourierRepository repository, out OrderRejectionCause[] causeList)
+        /// <summary>
+        /// Выяснение причин отказов
+        /// </summary>
+        /// <param name="calcTime">Время расчета</param>
+        /// <param name="shop">Магазин</param>
+        /// <param name="orders">Заказы не вошедшие в отгрузки</param>
+        /// <param name="courierRepository">Доступные курьеры</param>
+        /// <param name="connection">Открытое соединение для получения гео-данных</param>
+        /// <param name="causeList">Установленные причины отказов</param>
+        /// <returns>0 - причины отказов установлены; иначе - причины отказов не установлены</returns>
+        private static int ShopOrderRejectionAnalyzer(DateTime calcTime, Shop shop, Order[] orders, 
+            CourierRepository courierRepository, SqlConnection connection, out OrderRejectionCause[] causeList)
         {
             // 1. Инициализация
             int rc = 1;
@@ -365,11 +523,13 @@ namespace SQLCLR.DeliveryCover
             {
                 // 2. Проверяем исходные данные
                 rc = 2;
-                if (connection == null || connection.State != ConnectionState.Open)
+                if (shop == null)
                     return rc;
                 if (orders == null || orders.Length <= 0)
                     return rc;
-                if (repository == null || !repository.IsCreated)
+                if (courierRepository == null || !courierRepository.IsCreated)
+                    return rc;
+                if (connection == null || connection.State != ConnectionState.Open)
                     return rc;
 
                 // 3. Цикл выяснения причин отказа
@@ -379,7 +539,7 @@ namespace SQLCLR.DeliveryCover
                 int causeCount = 0;
                 double shopLat = shop.Latitude;
                 double shopLon = shop.Longitude;
-                Point[,] geoData = new Point[2, 2];
+                Dictionary<int, Point[,]> orderGeoData = new Dictionary<int, Point[,]>(32);
 
                 for (int i = 0; i < orders.Length; i++)
                 {
@@ -396,7 +556,7 @@ namespace SQLCLR.DeliveryCover
                         order.Longitude == 0)
                     {
                         if (causeCount >= orderCause.Length)
-                            Array.Resize(ref orderCause, causeCount);
+                            Array.Resize(ref orderCause, orderCause.Length + 4);
                         orderCause[causeCount++] = new OrderRejectionCause(order.Id, -1, OrderRejectionReason.InvalidArgs);
                         continue;
                     }
@@ -404,7 +564,7 @@ namespace SQLCLR.DeliveryCover
                     if (order.DeliveryTimeTo <= calcTime)
                     {
                         if (causeCount >= orderCause.Length)
-                            Array.Resize(ref orderCause, causeCount);
+                            Array.Resize(ref orderCause, orderCause.Length + 4);
                         orderCause[causeCount++] = new OrderRejectionCause(order.Id, -1, OrderRejectionReason.TimeOver);
                         continue;
                     }
@@ -415,17 +575,20 @@ namespace SQLCLR.DeliveryCover
                     double orderLat = order.Latitude;
                     double orderLon = order.Longitude;
 
+                    if (causeCount + orderVehicleId.Length > orderCause.Length)
+                            Array.Resize(ref orderCause, orderCause.Length + orderVehicleId.Length);
+
+                    orderGeoData.Clear();
+
                     for (int j = 0; j < orderVehicleId.Length; j++)
                     {
                         int vehicleId = orderVehicleId[j];
 
                         // 3.3.1 Наличие курьера для доставки
                         rc = 331;
-                        Courier courier = repository.GetFirstCourier(vehicleId);
+                        Courier courier = courierRepository.GetFirstCourier(vehicleId);
                         if (courier == null)
                         {
-                            if (causeCount >= orderCause.Length)
-                                Array.Resize(ref orderCause, causeCount);
                             orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.CourierNA);
                             continue;
                         }
@@ -434,8 +597,6 @@ namespace SQLCLR.DeliveryCover
                         rc = 332;
                         if (order.Weight > courier.MaxOrderWeight)
                         {
-                            if (causeCount >= orderCause.Length)
-                                Array.Resize(ref orderCause, causeCount);
                             orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.WeightOver);
                             continue;
                         }
@@ -446,22 +607,38 @@ namespace SQLCLR.DeliveryCover
                         int duration1;
                         int distance2;
                         int duration2;
+                        Point[,] geoData;
 
-                        rc1 = GeoData.Select(connection, courier.YandexType, shopLat, shopLon, orderLat, orderLon, out distance1, out duration1, out distance2, out duration2);
-                        if (rc1 != 0)
+                        if (orderGeoData.TryGetValue(courier.YandexType, out geoData))
                         {
-                            if (causeCount >= orderCause.Length)
-                                Array.Resize(ref orderCause, causeCount);
-                            orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.GeoDataNA);
-                            continue;
+                            distance1 = geoData[1, 0].X;
+                            duration1 = geoData[1, 0].Y;
+                            distance2 = geoData[0, 1].X;
+                            duration2 = geoData[0, 1].Y;
+                        }
+                        else
+                        {
+                            rc1 = GeoData.Select(connection, courier.YandexType, shopLat, shopLon, orderLat, orderLon, out distance1, out duration1, out distance2, out duration2);
+                            if (rc1 != 0)
+                            {
+                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.GeoDataNA);
+                                continue;
+                            }
+
+                            geoData = new Point[2, 2];
+                            geoData[1, 0].X = distance1;
+                            geoData[1, 0].Y = duration1;
+                            geoData[0, 1].X = distance2;
+                            geoData[0, 1].Y = duration2;
+
+                            orderGeoData.Add(courier.YandexType, geoData);
                         }
 
                         // 3.3.4 Длина маршрута
                         rc = 334;
-                        if (0.001 * (distance1 + distance2) >  courier.MaxDistance)
+                        double d = (courier.IsTaxi ? 0.001 * distance1 : 0.001 * (distance1 + distance2));
+                        if (d >  courier.MaxDistance)
                         {
-                            if (causeCount >= orderCause.Length)
-                                Array.Resize(ref orderCause, causeCount);
                             orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.DistanceOver);
                             continue;
                         }
@@ -472,8 +649,6 @@ namespace SQLCLR.DeliveryCover
                         DateTime t = calcTime.AddMinutes(deliveryTime);
                         if (t > order.DeliveryTimeTo)
                         {
-                            if (causeCount >= orderCause.Length)
-                                Array.Resize(ref orderCause, causeCount);
                             orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.TimeOver);
                             continue;
                         }
@@ -482,10 +657,8 @@ namespace SQLCLR.DeliveryCover
                         rc = 336;
                         if (order.Status == OrderStatus.Assembled && !courier.IsTaxi)
                         {
-                            if (!repository.IstCourierEnabled(vehicleId))
+                            if (!courierRepository.IstCourierEnabled(vehicleId))
                             {
-                                if (causeCount >= orderCause.Length)
-                                    Array.Resize(ref orderCause, causeCount);
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.CourierNA);
                                 continue;
                             }
@@ -493,38 +666,42 @@ namespace SQLCLR.DeliveryCover
 
                         // 3.3.7 Запускаем окончательную проверку
                         rc = 337;
-                        geoData[1, 0] = new Point(distance1, duration1);
-                        geoData[0, 1] = new Point(distance2, duration2);
                         CourierDeliveryInfo delivery;
                         rc1 = courier.DeliveryCheck(calcTime, shop, new Order[] { order }, new int[] { 0, 1 }, 1, !courier.IsTaxi, geoData, out delivery);
 
                         switch (rc1)
                         {
                             case 0:  // Ok
+                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.None, rc1);
                                 break;
                             case 2:  // неверные аргументы
+                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.InvalidArgs, rc1);
                                 break;
                             case 3:  // общий вес
+                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.WeightOver, rc1);
                                 break;
                             case 5:  // доставка вовремя
+                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.TimeOver, rc1);
                                 break;
                             case 399:  // неизвестный calcMethod
+                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.UnknownCalcMethod, rc1);
                                 break;
                             default:  // время и стоимость отгрузки
-                                //if (rc1 > 400 && rc1 < 500)
-                                //{
-
-                                //}
+                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.Unrecognized, rc1);
                                 break;
-
                         }
-
                     }
-
-
                 }
 
+                if (causeCount < orderCause.Length)
+                {
+                    Array.Resize(ref orderCause, causeCount);
+                }
 
+                causeList = orderCause;
+
+                // 4. Выход - Ok
+                rc = 0;
                 return rc;
             }
             catch

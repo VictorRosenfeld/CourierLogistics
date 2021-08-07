@@ -80,5 +80,10 @@ namespace SQLCLR.Orders
         /// Программная ошибка
         /// </summary>
         ProgramError = 14,
+
+        /// <summary>
+        /// Нераспознанная причина
+        /// </summary>
+        Unrecognized = 15,
     }
 }

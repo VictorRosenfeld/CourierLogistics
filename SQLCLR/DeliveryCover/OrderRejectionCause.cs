@@ -24,6 +24,11 @@ namespace SQLCLR.DeliveryCover
         public OrderRejectionReason Reason { get; set; }
 
         /// <summary>
+        /// Код возврата DeliveryCheck
+        /// </summary>
+        public int ErrorCode { get; set; }
+
+        /// <summary>
         /// Параметрический конструктор класса OrderRejectionCause
         /// </summary>
         /// <param name="orderId">ID заказа</param>
@@ -34,6 +39,22 @@ namespace SQLCLR.DeliveryCover
             OrderId = orderId;
             VehicleId = vehicleId;
             Reason = reason;
+            ErrorCode = -2;
+        }
+
+        /// <summary>
+        /// Параметрический конструктор класса OrderRejectionCause
+        /// </summary>
+        /// <param name="orderId">ID заказа</param>
+        /// <param name="vehicleId">ID способа доставки</param>
+        /// <param name="reason">Причина отказа</param>
+        /// <param name="errorCode">Код возврата DeliveryCheck</param>
+        public OrderRejectionCause(int orderId, int vehicleId, OrderRejectionReason reason, int errorCode)
+        {
+            OrderId = orderId;
+            VehicleId = vehicleId;
+            Reason = reason;
+            ErrorCode = errorCode;
         }
     }
 }
