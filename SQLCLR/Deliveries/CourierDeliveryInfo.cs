@@ -104,6 +104,11 @@ namespace SQLCLR.Deliveries
         public DateTime EndDeliveryInterval { get; set; }
 
         /// <summary>
+        /// Время события в очереди отгрузки
+        /// </summary>
+        public DateTime EventTime { get; set; }
+
+        /// <summary>
         /// Стоимость доставки
         /// </summary>
         public double Cost { get; set; }
@@ -128,6 +133,11 @@ namespace SQLCLR.Deliveries
         /// Приритет отгрузки = максимальному приоритету из входящих в отгрузку заказов
         /// </summary>
         public int Priority { get; set;  }
+
+        /// <summary>
+        /// Условие отгрузки
+        /// </summary>
+        public int Cause { get; set;  }
 
         ///// <summary>
         ///// Флаг: 
@@ -256,6 +266,7 @@ namespace SQLCLR.Deliveries
             copy.NodeInfo = NodeInfo;
             copy.NodeDeliveryTime = NodeDeliveryTime;
             copy.Priority = Priority;
+            copy.Cause = Cause;
         }
 
         ///// <summary>

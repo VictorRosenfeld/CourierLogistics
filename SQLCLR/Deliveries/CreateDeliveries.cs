@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Globalization;
 using System.IO;
 using System.Security.Principal;
 using System.Text;
@@ -1030,7 +1031,7 @@ public partial class StoredProcedures
     /// <param name="calc_time">Момент времени, на который проводятся расчеты</param>
     /// <returns>0 - отгрузки построены; иначе отгрузки не построены</returns>
     [SqlProcedure]
-    public static SqlInt32 CreateDeliveriesEx(SqlInt32 service_id, SqlDateTime calc_time)
+    public static SqlInt32 CreateCovers(SqlInt32 service_id, SqlDateTime calc_time)
     {
         // 1. Инициализация
         int rc = 1;
@@ -1469,57 +1470,32 @@ public partial class StoredProcedures
                     #if debug
                             Logger.WriteToLog(28, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
                     #endif
-                            return rc = 1000000 * rc + rc1;
+                            //return rc = 1000000 * rc + rc1;
+                        }
+                        else
+                        {
+                            #if debug
+                                Logger.WriteToLog(291, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saved", 0);
+                            #endif
                         }
                     }
-
-                    #if debug
-                        Logger.WriteToLog(291, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saved", 0);
-                    #endif
 
                     // 14.4 Отправляем рекомендации
                     rc = 144;
                     if (recomendations != null && recomendations.Length > 0)
                     {
-                        SendRecomendations(recomendations, service_id.Value, connection);
+                        SendDeliveries(recomendations, 0, service_id.Value, allCouriers, connection);
+                        //SendRecomendations(recomendations, service_id.Value, connection);
                     }
 
-                    // 14.5 Создаём очередь отгрузок
+                    // 14.5 Делим команды на отгрузку на две группы:
+                    //          команды, отправляемые немедленно
+                    //          команды, помещаемые в очередь
                     rc = 145;
 
 
                 }
 
-
-
-                // 14. Сохраняем построенные отгрузки
-                rc = 14;
-
-                //#if debug
-                //    Logger.WriteToLog(27, $"CreateDeliveriesEx. service_id = {service_id.Value}. Saving deliveries...", 0);
-                //#endif
-
-                //using (SqlConnection connection = new SqlConnection("context connection=true"))
-                //{
-                // 14.1 Открываем соединение
-                //rc = 141;
-                //connection.Open();
-
-                // 14.2 Очищаем отгрузки: таблицы lsvNodeDeliveryTime, lsvDeliveryNodeInfo, lsvDeliveryOrders, lsvDeliveries
-                rc = 142;
-
-                // 14.3 Сохраняем построенные отгрузки
-                rc = 143;
-                //rc1 = SaveDeliveries(allDeliveries, connection);
-
-                rc1 = SaveDeliveriesEx(allDeliveries, GetServerName(connection), connection.Database);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(28, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
 
                 connection.Close();
                 //connection.Close();
@@ -1543,6 +1519,589 @@ public partial class StoredProcedures
             #if debug
                 Logger.WriteToLog(2, $"<--- CreateDeliveriesEx. service_id = {service_id.Value}. calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}. rc = {rc}", 0);
             #endif
+        }
+    }
+
+    private static int CreateQueue(int serviceId, CourierDeliveryInfo[] deliveries, AllCouriers allCouriers, AverageCostThresholds courierCostThresholds, SqlConnection connection)
+    {
+        // 1. Инициализация
+        int rc = 1;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (deliveries == null || deliveries.Length <= 0)
+                return rc;
+            if (allCouriers == null || !allCouriers.IsCreated)
+                return rc;
+            if (courierCostThresholds == null || !courierCostThresholds.IsCreated)
+                return rc;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Извлекаем параметры построения очереди
+            rc = 3;
+            bool shipmentTrigger = false;
+            double taxiMargin = 0;
+            double courierMargin = 0;
+
+            using (SqlCommand query = new SqlCommand("dbo.[lsvGetShipmentTrigger]", connection))
+            {
+                // @service_id
+                var parameter = query.Parameters.Add("@service_id", SqlDbType.Int);
+                parameter.Direction = ParameterDirection.Input;
+                parameter.Value = serviceId;
+
+                try { shipmentTrigger = (bool)query.ExecuteScalar(); } catch { }
+            }
+
+            using (SqlCommand query = new SqlCommand("dbo.[lsvGetTaxiAlertInterval]", connection))
+            {
+                // @service_id
+                var parameter = query.Parameters.Add("@service_id", SqlDbType.Int);
+                parameter.Direction = ParameterDirection.Input;
+                parameter.Value = serviceId;
+
+                try { taxiMargin = (double) query.ExecuteScalar(); } catch { }
+            }
+
+            using (SqlCommand query = new SqlCommand("dbo.[lsvGetCourierAlertInterval]", connection))
+            {
+                // @service_id
+                var parameter = query.Parameters.Add("@service_id", SqlDbType.Int);
+                parameter.Direction = ParameterDirection.Input;
+                parameter.Value = serviceId;
+
+                try { courierMargin = (double) query.ExecuteScalar(); } catch { }
+            }
+
+            // 5. Сортируем отгрузки по Shop.Id
+            rc = 5;
+            Array.Sort(deliveries, CompareDeliveryByShopId);
+
+            // 6. Делим отгрузки на две групыы:
+            //   1) со стартом прямо сейчас
+            //   2) для размещения в очереди
+            rc = 6;
+            DateTime thresholdTime = DateTime.Now.AddSeconds(30);
+            CourierDeliveryInfo[] startNowDelivery = new CourierDeliveryInfo[deliveries.Length];
+            CourierDeliveryInfo[] queueDelivery = new CourierDeliveryInfo[deliveries.Length];
+            
+            int startNowCount = 0;
+            int queueCount = 0;
+
+            for (int i = 0; i < deliveries.Length; i++)
+            {
+                // 6.1 Выбираем отгрузку
+                rc = 61;
+                CourierDeliveryInfo delivery = deliveries[i];
+                Courier courier = delivery.DeliveryCourier;
+
+                // 6.2 Извлекаем порог
+                rc = 62;
+                double costThreshold = courierCostThresholds.GetThreshold(courier.VehicleID, delivery.FromShop.Id);
+
+                // 6.3 Определяем время отгрузки
+                rc = 63;
+                DateTime eventTime = delivery.EndDeliveryInterval;
+                int cause = 0;
+
+                if (shipmentTrigger && delivery.OrderCount >= courier.MaxOrderCount)
+                {
+                    eventTime = delivery.StartDeliveryInterval;
+                    cause = 1;
+                }
+                else if (!courier.IsTaxi && delivery.OrderCost <= costThreshold)
+                {
+                    eventTime = delivery.StartDeliveryInterval;
+                    cause = 2;
+                }
+                else if (courier.IsTaxi) 
+                {
+                    eventTime = delivery.EndDeliveryInterval.AddMinutes(-taxiMargin);
+                    if (eventTime < delivery.StartDeliveryInterval)
+                        eventTime = delivery.StartDeliveryInterval;
+                    cause = 4;
+                }
+                else // (!courier.IsTaxi) 
+                {
+                    eventTime = delivery.EndDeliveryInterval.AddMinutes(-courierMargin);
+                    if (eventTime < delivery.StartDeliveryInterval)
+                        eventTime = delivery.StartDeliveryInterval;
+                    cause = 5;
+                }
+
+                if (eventTime <= thresholdTime)
+                {
+                    delivery.Cause = cause;
+                    startNowDelivery[startNowCount++] = delivery;
+                }
+                else
+                {
+                    delivery.EventTime = eventTime;
+                    queueDelivery[queueCount++] = delivery;
+                }
+            }
+
+            // 7. Отправляем отгрузки со стартом прямо сейчас
+            rc = 7;
+            if (startNowCount > 0)
+            {
+                if (startNowCount < startNowDelivery.Length)
+                {
+                    Array.Resize(ref startNowDelivery, startNowCount);
+                }
+
+                int rc1 = SendDeliveries(startNowDelivery, 1, serviceId, allCouriers, connection);
+                if (rc1 == 0)
+                {
+                    SetOrderCompleted(startNowDelivery, connection);
+                }
+            }
+
+            // 8. Создаём очередь
+            rc = 7;
+
+
+            return rc;
+        }
+        catch
+        {
+            return rc;
+        }
+    }
+    private static int AddToDeliveryQueue(CourierDeliveryInfo[] deliveries, SqlConnection connection)
+    {
+        // 1. Инициализация
+        int rc = 1;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (deliveries == null || deliveries.Length <= 0)
+                return rc;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Сортируем заказы по ShopID
+            rc = 3;
+            Array.Sort(deliveries, CompareDeliveryByShopId);
+
+            // 4. Цикл добавления новых записей об отгрузках, которые замещают старые
+            rc = 4;
+            int currentShopId = -1;
+            string sqlText =
+"INSERT dbo.lsvDeliveryQueue(dlqEventTime, dlqEventType, dlqCourierID, dlqShopID, dlqCalculationTime, dlqOrderCount, dlqOrderCost, dlqWeight, dlqDeliveryTime, dlqExecutionTime, dlqIsLoop, dlqReserveTime, dlqStartDeliveryInterval, dlqEndDeliveryInterval, dlqCost, dlqStartDelivery, dlqCompleted, dlqPermutationKey) " +
+                     "VALUES(@dlqEventTime, @dlqEventType, @dlqCourierID, @dlqShopID, @dlqCalculationTime, @dlqOrderCount, @dlqOrderCost, @dlqWeight, @dlqDeliveryTime, @dlqExecutionTime, @dlqIsLoop, @dlqReserveTime, @dlqStartDeliveryInterval, @dlqEndDeliveryInterval, @dlqCost, @dlqStartDelivery, @dlqCompleted, @dlqPermutationKey)";
+
+            using (SqlCommand cmd = new SqlCommand())
+            {
+                // @dlqEventTime
+                var parameter = cmd.Parameters.Add("@dlqEventTime", SqlDbType.DateTime);
+                parameter.Direction = ParameterDirection.Input;
+
+                // @dlqEventType
+                parameter = cmd.Parameters.Add("@dlqEventType", SqlDbType.Int);
+                parameter.Direction = ParameterDirection.Input;
+
+                // @dlqCourierID
+                parameter = cmd.Parameters.Add("@dlqCourierID", SqlDbType.Int);
+                parameter.Direction = ParameterDirection.Input;
+
+                // @dlqShopID
+                parameter = cmd.Parameters.Add("dlqShopID", SqlDbType.Int);
+                parameter.Direction = ParameterDirection.Input;
+
+                // @dlqCalculationTime
+                parameter = cmd.Parameters.Add("@dlqCalculationTime", SqlDbType.DateTime);
+                parameter.Direction = ParameterDirection.Input;
+
+                // @dlqOrderCount
+                parameter = cmd.Parameters.Add("dlqOrderCount", SqlDbType.Int);
+                parameter.Direction = ParameterDirection.Input;
+
+                for (int i = 0; i < deliveries.Length; i++)
+                {
+                    // 4.1. Извлекаем очередную отгрузку
+                    rc = 41;
+                    CourierDeliveryInfo delivery = deliveries[i];
+
+                    // 4.2 Смена магазина
+                    rc = 42;
+                    if (delivery.FromShop.Id != currentShopId)
+                    {
+                        currentShopId = delivery.FromShop.Id;
+                        sqlText = $"DELETE dbo.lsvDeliveryQueue WHERE dlqShopID = {currentShopId}";
+
+                        using (SqlCommand query = new SqlCommand(sqlText, connection))
+                        { query.ExecuteNonQuery(); }
+                    }
+
+
+
+                }
+
+            }
+
+
+
+        }
+        catch
+        {
+            return rc;
+        }
+
+    }
+
+    /// <summary>
+    /// Установка ordCompleted = 1 в таблице lsvOrders для заданных заказов
+    /// </summary>
+    /// <param name="deliveries">Отгрузки, для заказов которых устанавливается ordCompleted</param>
+    /// <param name="connection">Открытое соединение</param>
+    /// <returns>0 - установка выполнена; иначе - установка не выполнена</returns>
+    private static int SetOrderCompleted(CourierDeliveryInfo[] deliveries, SqlConnection connection)
+    {
+        // 1. Инициализация
+        int rc = 1;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (deliveries == null || deliveries.Length <= 0)
+                return rc;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Строим UPDATE-команду
+            rc = 3;
+            StringBuilder sb = new StringBuilder(100 * deliveries.Length);
+            int orderCount = 0;
+            sb.Append("UPDATE dbo.lsvOrders SET ordCompleted = 1 WHERE ordOrderID IN (");
+
+            for (int i = 0; i < deliveries.Length; i++)
+            {
+                Order[] deliveryOrders = deliveries[i].Orders;
+
+                for (int j = 0; j < deliveryOrders.Length; j++)
+                {
+                    if (orderCount++ > 0)
+                        sb.Append(',');
+                    sb.Append(deliveryOrders[j].Id);
+                }
+            }
+
+            sb.Append(");");
+
+            // 4. Исполняем UPDATE-команду
+            rc = 4;
+            using (SqlCommand cmd = new SqlCommand(sb.ToString(), connection))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+            // 5. Выход - Ok
+            rc = 0;
+            return rc;
+        }
+        catch
+        {
+            return rc;
+        }
+    }
+
+//-- <deliveries>
+//--	<delivery guid = "..." status="." shop_id="." delivery_service_id="." courier_id="." date_target="." date_target_end=".">
+//--	   <orders>
+//--		  <order status = "..." order_id="..."/>
+//--		  <order status = "..." order_id="..."/>
+//--	   </orders>
+//--	   <alternative_delivery_service>
+//--		  <service id="..." />
+//--          <service id="..."/>
+//--	   </alternative_delivery_service>  
+//--	   <node_info calc_time="..." cost="..." weight="..." is_loop="..." start_delivery_interval="..." end_delivery_interval="..." reserve_time="..." delivery_time="..."  execution_time="...">
+//--		  <node distance = "..." duration="..."/>
+//--		  <node distance = "..." duration="..."/>
+//--		                 . . .
+//--		  <node distance = "..." duration="..."/>
+//--	   </node_info>
+//--	   <node_delivery_time>
+//--		  <node delivery_time="..."/>
+//--		  <node delivery_time="..."/>
+//--                   . . .
+//--		  <node delivery_time="..."/>
+//--       </node_delivery_time >
+//--    </delivery>
+//--       . . .
+//--    <delivery>
+//--       . . .
+//--    </delivery>
+//-- </deliveries>
+//--
+//-- response:
+//--
+//--   <result code="..."/>
+
+    /// <summary>
+    /// Отправка рекомендаций или команд на отгрузку
+    /// </summary>
+    /// <param name="deliveries">Отгрузки</param>
+    /// <param name="cmdType">Тип команды: 0 - рекомендации; 1 - команды на отгрузку</param>
+    /// <param name="serviceId">ID сервиса логистики</param>
+    /// <param name="allCouriers">Данные о курьерах</param>
+    /// <param name="connection">Открытое соединение</param>
+    /// <returns>0 - команды успешно переданы; иначе - команды не переданы</returns>
+    private static int SendDeliveries(CourierDeliveryInfo[] deliveries, int cmdType, int serviceId, AllCouriers allCouriers, SqlConnection connection)
+    {
+        // 1. Инициализация
+        int rc = 1;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (deliveries == null || deliveries.Length <= 0)
+                return rc;
+            if (!(cmdType == 0 || cmdType == 1))
+                return rc;
+            if (allCouriers == null || !allCouriers.IsCreated)
+                return rc;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Извлекаем Message Type команды
+            rc = 3;
+            string sqlText = (cmdType == 0 ? "dbo.[lsvGetCmdMessageTypeName1]" : "dbo.[lsvGetCmdMessageTypeName2]");
+            string messageTypeName = null;
+
+            using (SqlCommand query = new SqlCommand(sqlText, connection))
+            {
+                // @service_id
+                var parameter = query.Parameters.Add("@service_id", SqlDbType.Int);
+                parameter.Direction = ParameterDirection.Input;
+                parameter.Value = serviceId;
+
+                messageTypeName = query.ExecuteScalar() as string;
+            }
+
+            if (string.IsNullOrEmpty(messageTypeName))
+                return rc;
+
+            // 4. Строим текст команды
+            rc = 4;
+            StringBuilder cmd = new StringBuilder(1200 * deliveries.Length);
+            CourierBase[] baseTypes = allCouriers.BaseTypes;
+            int[] baseKeys = allCouriers.BaseKeys;
+            int[] baseTypeCount = new int[baseKeys.Length];
+            int[] deliveryDserviceId = new int[baseKeys.Length];
+
+            cmd.Append("<deliveries>");
+
+            for (int i = 0; i < deliveries.Length; i++)
+            {
+                // 4.0 Извлекаем отгрузку
+                rc = 40;
+                CourierDeliveryInfo delivery = deliveries[i];
+                if (delivery.OrderCount <= 0)
+                    continue;
+                Order[] deliveryOrders = delivery.Orders;
+
+                // 4.1 <delivery ... >
+                rc = 41;
+
+                cmd.Append($@"<delivery guid=""{Guid.NewGuid()}"" status=""{cmdType}"" shop_id=""{delivery.FromShop.Id}"" cause=""{delivery.Cause}"" delivery_service_id=""{delivery.DeliveryCourier.DServiceType}"" courier_id=""{delivery.DeliveryCourier.Id}"" date_target=""{delivery.StartDeliveryInterval:yyyy-MM-ddTHH:mm:ss.fff}"" date_target_end=""{delivery.EndDeliveryInterval:yyyy-MM-ddTHH:mm:ss.fff}"" priority=""{delivery.Priority}"">");
+
+                // 4.2 <orders>...</orders>
+                rc = 42;
+                cmd.Append("<orders>");
+                int courierVehicleId = delivery.DeliveryCourier.VehicleID;
+                Array.Clear(baseTypeCount, 0, baseTypeCount.Length);
+                baseTypeCount[Array.BinarySearch(baseKeys, courierVehicleId)] = int.MinValue;
+                int orderCount = delivery.OrderCount;
+
+                for (int j = 0; j < orderCount; j++)
+                {
+                    Order order = deliveryOrders[j];
+                    cmd.Append($@"<order status=""{(int)order.Status}"" order_id={order.Id}/>");
+                    int[] orderVehicleId = order.VehicleTypes;
+
+                    if (orderVehicleId != null && orderVehicleId.Length > 0)
+                    {
+                        for (int k = 0; k < orderVehicleId.Length; k++)
+                        {
+                            int index = Array.BinarySearch(baseKeys, orderVehicleId[k]);
+                            if (index >= 0)
+                                baseTypeCount[index]++;
+                        }
+                    }
+                }
+
+                cmd.Append("</orders>");
+
+                // 4.3 <alternative_delivery_service>...</alternative_delivery_service>
+                rc = 43;
+                int count = 0;
+
+                for (int j = 0; j < baseTypeCount.Length; j++)
+                {
+                    if (baseTypeCount[j] >= orderCount)
+                        deliveryDserviceId[count++] = baseTypes[j].DServiceType;
+                }
+
+                if (count <= 0)
+                {
+                    cmd.Append("<alternative_delivery_service/>");
+                }
+                else
+                {
+                    cmd.Append("<alternative_delivery_service>");
+
+                    for (int j = 0; j < count; j++)
+                    {
+                        cmd.Append($@"<service id=""{deliveryDserviceId[j]}""/>");
+                    }
+
+                    cmd.Append("</alternative_delivery_service>");
+                }
+
+                // 4.4 <node_info ... >
+                rc = 44;
+                string cost = string.Format(CultureInfo.InvariantCulture, "{0:0.0#########}", delivery.Cost);
+                string weight = string.Format(CultureInfo.InvariantCulture, "{0:0.0#########}", delivery.Weight);
+                string reserveTime = string.Format(CultureInfo.InvariantCulture, "{0:0.0#}", delivery.ReserveTime.TotalMinutes);
+                string deliveryTime = string.Format(CultureInfo.InvariantCulture, "{0:0.0#}", delivery.DeliveryTime);
+                string executionTime = string.Format(CultureInfo.InvariantCulture, "{0:0.0#}", delivery.ExecutionTime);
+
+                cmd.Append($@"<node_info calc_time=""{delivery.CalculationTime:yyyy-MM-ddTHH:mm:ss.fff}"" cost=""{cost}"" weight=""{weight}"" is_loop=""{delivery.IsLoop}"" start_delivery_interval=""{delivery.StartDeliveryInterval:yyyy-MM-ddTHH:mm:ss.fff}"" end_delivery_interval=""{delivery.EndDeliveryInterval:yyyy-MM-ddTHH:mm:ss.fff}"" reserve_time=""{reserveTime}"" delivery_time=""{deliveryTime}"" execution_time=""{executionTime}"">");
+
+                // 4.5 <node ... />
+                rc = 45;
+                Point[] nodeInfo = delivery.NodeInfo;
+                
+                for (int j = 0; j < nodeInfo.Length; j++)
+                {
+                    cmd.Append($@"<node distance=""{nodeInfo[j].X}"" duration=""{nodeInfo[j].Y}""/>");
+                }
+
+                // 4.6 </node_info>
+                rc = 46;
+                cmd.Append("</node_info>");
+
+                // 4.7 <node_delivery_time>
+                rc = 47;
+                cmd.Append("<node_delivery_time>");
+
+                // 4.8 <node ... />
+                rc = 48;
+
+                double[] nodeDeliveryTime = delivery.NodeDeliveryTime;
+                
+                for (int j = 0; j < nodeDeliveryTime.Length; j++)
+                {
+                    deliveryTime = string.Format(CultureInfo.InvariantCulture, "{0:0.0#}", nodeDeliveryTime[j]);
+                    cmd.Append($@"<node delivery_time=""{deliveryTime}""/>");
+                }
+
+                // 4.9 </node_delivery_time>
+                rc = 47;
+                cmd.Append("</node_delivery_time>");
+
+                // 4.10 </delivery>
+                rc = 410;
+                cmd.Append("</delivery>");
+            }
+
+            // 4.11
+            rc = 411;
+            cmd.Append("</deliveries>");
+
+            // 5. Вызываем lsvH4cmd_sendEx
+            rc = 5;
+            using (MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(cmd.ToString())))
+            {
+                using (SqlCommand query = new SqlCommand("dbo.lsvH4cmd_sendEx", connection))
+                {
+                    query.CommandType = CommandType.StoredProcedure;
+
+                    // @service_id
+                    var parameter = query.Parameters.Add("@service_id", SqlDbType.Int);
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = serviceId;
+
+                    // @cmd_message_type
+                    parameter = query.Parameters.Add("@cmd_message_type", SqlDbType.NVarChar, 128);
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = messageTypeName;
+
+                    // @cmd
+                    parameter = query.Parameters.Add("@cmd", SqlDbType.Xml);
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = new SqlXml(ms);
+
+                    // @response
+                    var responseParameter = query.Parameters.Add("@response", SqlDbType.Xml);
+                    responseParameter.Direction = ParameterDirection.Output;
+
+                    // return code
+                    var returnParameter = query.Parameters.Add("@ReturnCode", SqlDbType.Int);
+                    returnParameter.Direction = ParameterDirection.ReturnValue;
+                    returnParameter.Value = -1;
+
+                    // 5. Исполняем команду
+                    rc = 5;
+                    query.ExecuteNonQuery();
+                #if debug
+                    Logger.WriteToLog(605, $"SendDeliveries cmd.ExecuteNonQuery(). lsvH4cmd_sendEx.rc = {returnParameter.Value}", 0);
+                #endif
+                    if ((int)returnParameter.Value != 0)
+                        return rc;
+
+                    if (responseParameter.Value == DBNull.Value)
+                        return rc;
+
+                    var response = responseParameter.Value as SqlXml;
+                    if (response == null)
+                        return rc;
+
+                    using (var reader = response.CreateReader())
+                    {
+                        if (!reader.Read())
+                            return rc;
+                        if (reader.NodeType != XmlNodeType.Element)
+                            return rc;
+                        if (!string.Equals(reader.Name, "result", StringComparison.CurrentCultureIgnoreCase))
+                            return rc;
+                        string code = reader.GetAttribute("code");
+                        if (string.IsNullOrEmpty(code))
+                            return rc;
+                        int resultCode = -1;
+                        if (!int.TryParse(code, NumberStyles.Integer, CultureInfo.InvariantCulture, out resultCode))
+                            return rc;
+                        if (resultCode != 0)
+                            return rc = 1000 * rc + resultCode;
+                    }
+                }
+            }
+
+            // 6. Выход - Ok
+            rc = 0;
+            return rc;
+        }
+        catch (Exception ex)
+        {
+        #if debug
+            Logger.WriteToLog(603, $"SendDeliveries. service_id = {serviceId}. rc = {rc}. Exception {ex.Message}", 2);
+        #endif
+            return rc;
+        }
+        finally
+        {
+        #if debug
+            Logger.WriteToLog(603, $"SendDeliveries exit. service_id = {serviceId}. rc = {rc}", 0);
+        #endif
         }
     }
 
@@ -1649,96 +2208,96 @@ public partial class StoredProcedures
         }
     }
 
-    /// <summary>
-    /// Создание очереди из покрытий
-    /// </summary>
-    /// <param name="covers">Отгрузки, образующие покрытия</param>
-    /// <param name="serviceId">ID сервиса логистики</param>
-    /// <param name="connection">Открытое соединение</param>
-    /// <returns>0 - очередь создана; иначе - очередь не создана</returns>
-    private static int CreateQueue(CourierDeliveryInfo[] covers, int serviceId, SqlConnection connection)
-    {
-        // 1. Инициализация
-        int rc = 1;
+    ///// <summary>
+    ///// Создание очереди из покрытий
+    ///// </summary>
+    ///// <param name="covers">Отгрузки, образующие покрытия</param>
+    ///// <param name="serviceId">ID сервиса логистики</param>
+    ///// <param name="connection">Открытое соединение</param>
+    ///// <returns>0 - очередь создана; иначе - очередь не создана</returns>
+    //private static int CreateQueue(CourierDeliveryInfo[] covers, int serviceId, SqlConnection connection)
+    //{
+    //    // 1. Инициализация
+    //    int rc = 1;
 
-        try
-        {
-            // 2. Проверяем исходные данные
-            rc = 2;
-            if (covers == null || covers.Length <= 0)
-                return rc;
-            if (connection == null || connection.State != ConnectionState.Open)
-                return rc;
+    //    try
+    //    {
+    //        // 2. Проверяем исходные данные
+    //        rc = 2;
+    //        if (covers == null || covers.Length <= 0)
+    //            return rc;
+    //        if (connection == null || connection.State != ConnectionState.Open)
+    //            return rc;
 
-            // 3. Создаём xml-аргумент для процедуры lsvSendRejectedOrders
-            rc = 3;
-            StringBuilder sb = new StringBuilder(75 * (covers.Length + 2));
-            sb.AppendLine($@"<deliveries service_id=""{serviceId}"">");
+    //        // 3. Создаём xml-аргумент для процедуры lsvSendRejectedOrders
+    //        rc = 3;
+    //        StringBuilder sb = new StringBuilder(75 * (covers.Length + 2));
+    //        sb.AppendLine($@"<deliveries service_id=""{serviceId}"">");
 
-            for (int i = 0; i < covers.Length; i++)
-            {
-                CourierDeliveryInfo delivery = covers[i];
-                sb.AppendLine($@"<delivery id=""{delivery.Id}"" courier=""{delivery.DeliveryCourier.Id}""/>");
-            }
+    //        for (int i = 0; i < covers.Length; i++)
+    //        {
+    //            CourierDeliveryInfo delivery = covers[i];
+    //            sb.AppendLine($@"<delivery id=""{delivery.Id}"" courier=""{delivery.DeliveryCourier.Id}""/>");
+    //        }
 
 
-            sb.AppendLine("</deliveries>");
+    //        sb.AppendLine("</deliveries>");
 
-            // 4. Вызываем процедуру построения очереди
-            rc = 4;
-            using (MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(sb.ToString())))
-            {
-                using (SqlCommand cmd = new SqlCommand("dbo.lsvCreateQueue_shopEx", connection))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+    //        // 4. Вызываем процедуру построения очереди
+    //        rc = 4;
+    //        using (MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(sb.ToString())))
+    //        {
+    //            using (SqlCommand cmd = new SqlCommand("dbo.lsvCreateQueue_shopEx", connection))
+    //            {
+    //                cmd.CommandType = CommandType.StoredProcedure;
 
-                    // @service_id
-                    var parameter = cmd.Parameters.Add("@service_id", SqlDbType.Int);
-                    parameter.Direction = ParameterDirection.Input;
-                    parameter.Value = serviceId;
+    //                // @service_id
+    //                var parameter = cmd.Parameters.Add("@service_id", SqlDbType.Int);
+    //                parameter.Direction = ParameterDirection.Input;
+    //                parameter.Value = serviceId;
 
-                    // @rejected_orders
-                    parameter = cmd.Parameters.Add("@rejected_orders", SqlDbType.Xml);
-                    parameter.Direction = ParameterDirection.Input;
-                    parameter.Value = new SqlXml(ms);
+    //                // @rejected_orders
+    //                parameter = cmd.Parameters.Add("@rejected_orders", SqlDbType.Xml);
+    //                parameter.Direction = ParameterDirection.Input;
+    //                parameter.Value = new SqlXml(ms);
 
-                    // return code
-                    var returnParameter = cmd.Parameters.Add("@ReturnCode", SqlDbType.Int);
-                    returnParameter.Direction = ParameterDirection.ReturnValue;
-                    returnParameter.Value = -1;
+    //                // return code
+    //                var returnParameter = cmd.Parameters.Add("@ReturnCode", SqlDbType.Int);
+    //                returnParameter.Direction = ParameterDirection.ReturnValue;
+    //                returnParameter.Value = -1;
 
-                    // 5. Исполняем команду
-                    rc = 5;
-                    cmd.ExecuteNonQuery();
-                #if debug
-                    Logger.WriteToLog(505, $"RejectOrders cmd.ExecuteNonQuery(). rc = {returnParameter.Value}", 0);
-                #endif
-                    if ((int)returnParameter.Value != 0)
-                        return rc;
-                }
-            }
+    //                // 5. Исполняем команду
+    //                rc = 5;
+    //                cmd.ExecuteNonQuery();
+    //            #if debug
+    //                Logger.WriteToLog(505, $"RejectOrders cmd.ExecuteNonQuery(). rc = {returnParameter.Value}", 0);
+    //            #endif
+    //                if ((int)returnParameter.Value != 0)
+    //                    return rc;
+    //            }
+    //        }
 
-            // 5. У отмененных заказов устанавливаем completed = 1 и код причины отказа
-            rc = 5;
-            using (SqlCommand cmd = new SqlCommand(sbUpdate.ToString(), connection))
-            {
-                // 6. Исполняем команду
-                rc = 6;
-                count = cmd.ExecuteNonQuery();
-            #if debug
-                Logger.WriteToLog(506, $"UpdateOrders cmd.ExecuteNonQuery(). Records affected = {count}", 0);
-            #endif
-            }
+    //        // 5. У отмененных заказов устанавливаем completed = 1 и код причины отказа
+    //        rc = 5;
+    //        using (SqlCommand cmd = new SqlCommand(sbUpdate.ToString(), connection))
+    //        {
+    //            // 6. Исполняем команду
+    //            rc = 6;
+    //            count = cmd.ExecuteNonQuery();
+    //        #if debug
+    //            Logger.WriteToLog(506, $"UpdateOrders cmd.ExecuteNonQuery(). Records affected = {count}", 0);
+    //        #endif
+    //        }
 
-            // 6. Выход - Ok
-            rc = 0;
-            return rc;
-        }
-        catch
-        {
-            return rc;
-        }
-    }
+    //        // 6. Выход - Ok
+    //        rc = 0;
+    //        return rc;
+    //    }
+    //    catch
+    //    {
+    //        return rc;
+    //    }
+    //}
 
     /// <summary>
     /// Отправка рекомендаций
@@ -3425,13 +3984,15 @@ public partial class StoredProcedures
         return 0;
     }
 
-    /// <summary>
-    /// Выбор попарных расстояний для заданных заказов
-    /// </summary>
-    /// <param name="dist">Поппарные расстояния между всеми заказами</param>
-    /// <param name="orders">Заданные заказы</param>
-    /// <param name="orderId">ID заказов по возрастанию</param>
-    /// <returns>Выбранные попарные расстояния или null</returns>
+    private static int CompareDeliveryByShopId(CourierDeliveryInfo d1, CourierDeliveryInfo d2)
+    {
+        if (d1.FromShop.Id < d2.FromShop.Id)
+            return -1;
+        if (d1.FromShop.Id > d2.FromShop.Id)
+            return 1;
+        return 0;
+    }
+
     private static double[,] SelectDist(double[,] dist, Order[] orders, int[] orderId)
     {
         // 1. Инициализация
