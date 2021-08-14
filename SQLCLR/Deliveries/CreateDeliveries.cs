@@ -78,7 +78,7 @@ public partial class StoredProcedures
     /// Выбор максимального числа заказов
     /// для разных длин маршрутов
     /// </summary>
-    private const string SELECT_MAX_ORDERS_OF_ROUTE = 
+    private const string SELECT_MAX_ORDERS_OF_ROUTE =
         "SELECT lsvSalesmanProblemLevels.splLevel AS Length, lsvSalesmanProblemLevels.splMaxOrders AS MaxOrders " +
         "FROM   lsvFunctionalParameters INNER JOIN " +
         "          lsvSalesmanProblemLevels ON lsvFunctionalParameters.fnpID = lsvSalesmanProblemLevels.splFnpID " +
@@ -107,460 +107,923 @@ public partial class StoredProcedures
     /// </summary>
     private const int MAX_DELIVERY_THREADS = 8;
 
-//    /// <summary>
-//    /// Построение всех возможных отгрузок для всех
-//    /// отмеченных магазинов
-//    /// </summary>
-//    /// <param name="service_id">ID LogisticsService</param>
-//    /// <param name="calc_time">Момент времени, на который проводятся расчеты</param>
-//    /// <returns>0 - отгрузки построены; иначе отгрузки не построены</returns>
-//    [SqlProcedure]
-//    public static SqlInt32 CreateDeliveries(SqlInt32 service_id, SqlDateTime calc_time)
-//    {
-//        // 1. Инициализация
-//        int rc = 1;
-//        int rc1 = 1;
+    //    /// <summary>
+    //    /// Построение всех возможных отгрузок для всех
+    //    /// отмеченных магазинов
+    //    /// </summary>
+    //    /// <param name="service_id">ID LogisticsService</param>
+    //    /// <param name="calc_time">Момент времени, на который проводятся расчеты</param>
+    //    /// <returns>0 - отгрузки построены; иначе отгрузки не построены</returns>
+    //    [SqlProcedure]
+    //    public static SqlInt32 CreateDeliveries(SqlInt32 service_id, SqlDateTime calc_time)
+    //    {
+    //        // 1. Инициализация
+    //        int rc = 1;
+    //        int rc1 = 1;
 
-//        try
-//        {
-//            #if debug
-//                Logger.WriteToLog(1, $"---> CreateDeliveries. service_id = {service_id.Value}, calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}", 0);
-//            #endif
+    //        try
+    //        {
+    //            #if debug
+    //                Logger.WriteToLog(1, $"---> CreateDeliveries. service_id = {service_id.Value}, calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}", 0);
+    //            #endif
 
-//            // 2. Проверяем исходные данные
-//            rc = 2;
-//            if (!SqlContext.IsAvailable)
-//            {
-//                #if debug
-//                    Logger.WriteToLog(4, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. SQLContext is not available", 1);
-//                #endif
-//                return rc;
-//            }
+    //            // 2. Проверяем исходные данные
+    //            rc = 2;
+    //            if (!SqlContext.IsAvailable)
+    //            {
+    //                #if debug
+    //                    Logger.WriteToLog(4, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. SQLContext is not available", 1);
+    //                #endif
+    //                return rc;
+    //            }
 
-//            // 3. Открываем соединение в контексте текущей сессии
-//            //    и загружаем все необходимые данные
-//            rc = 3;
-//            Shop[] shops = null;
-//            Order[] orders = null;
-//            int[] requiredVehicleTypes = null;
-//            CourierTypeRecord[] courierTypeRecords = null;
-//            CourierRecord[] courierRecords = null;
-//            AverageDeliveryCostRecord[] thresholdRecords;
-//            MaxOrdersOfRouteRecord[] routeLimitationRecords;
+    //            // 3. Открываем соединение в контексте текущей сессии
+    //            //    и загружаем все необходимые данные
+    //            rc = 3;
+    //            Shop[] shops = null;
+    //            Order[] orders = null;
+    //            int[] requiredVehicleTypes = null;
+    //            CourierTypeRecord[] courierTypeRecords = null;
+    //            CourierRecord[] courierRecords = null;
+    //            AverageDeliveryCostRecord[] thresholdRecords;
+    //            MaxOrdersOfRouteRecord[] routeLimitationRecords;
 
-//            using (SqlConnection connection = new SqlConnection("context connection=true"))
-//            {
-//                // 3.1 Открываем соединение
-//                rc = 31;
-//                connection.Open();
-//                //#if debug
-//                //    Logger.WriteToLog(444, $"CreateDeliveries. service_id = {service_id.Value}. DataSource = {GetServerName(connection)}, Database = {connection.Database}" , 0);
-//                //#endif
+    //            using (SqlConnection connection = new SqlConnection("context connection=true"))
+    //            {
+    //                // 3.1 Открываем соединение
+    //                rc = 31;
+    //                connection.Open();
+    //                //#if debug
+    //                //    Logger.WriteToLog(444, $"CreateDeliveries. service_id = {service_id.Value}. DataSource = {GetServerName(connection)}, Database = {connection.Database}" , 0);
+    //                //#endif
 
-//                // 3.2 Выбираем магазины для пересчета отгрузок
-//                rc = 32;
-//                rc1 = SelectShops(connection, out shops);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(4, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not selected", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
-//                if (shops == null || shops.Length <= 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(5, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not found", 0);
-//                    #endif
-//                    return rc = 0;
-//                }
+    //                // 3.2 Выбираем магазины для пересчета отгрузок
+    //                rc = 32;
+    //                rc1 = SelectShops(connection, out shops);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(4, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not selected", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                if (shops == null || shops.Length <= 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(5, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not found", 0);
+    //                    #endif
+    //                    return rc = 0;
+    //                }
 
-//                #if debug
-//                    Logger.WriteToLog(6, $"CreateDeliveries. service_id = {service_id.Value}. Selected shops: {shops.Length}", 0);
-//                #endif
+    //                #if debug
+    //                    Logger.WriteToLog(6, $"CreateDeliveries. service_id = {service_id.Value}. Selected shops: {shops.Length}", 0);
+    //                #endif
 
-//                // 3.3 Выбираем заказы, для которых нужно построить отгрузки
-//                rc = 33;
-//                rc1 = SelectOrders(connection, out orders);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(7, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not selected", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
+    //                // 3.3 Выбираем заказы, для которых нужно построить отгрузки
+    //                rc = 33;
+    //                rc1 = SelectOrders(connection, out orders);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(7, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not selected", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
 
-//                orders = FilterOrdersOnCalcTime(calc_time.Value, orders);
+    //                orders = FilterOrdersOnCalcTime(calc_time.Value, orders);
 
-//                if (orders == null || orders.Length <= 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(8, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not found", 0);
-//                    #endif
-//                    return rc = 0;
-//                }
+    //                if (orders == null || orders.Length <= 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(8, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not found", 0);
+    //                    #endif
+    //                    return rc = 0;
+    //                }
 
-//                #if debug
-//                    Logger.WriteToLog(9, $"CreateDeliveries. service_id = {service_id.Value}. Selected orders: {orders.Length}", 0);
-//                #endif
+    //                #if debug
+    //                    Logger.WriteToLog(9, $"CreateDeliveries. service_id = {service_id.Value}. Selected orders: {orders.Length}", 0);
+    //                #endif
 
 
-//                // 3.4 Выбираем способы доставки заказов,
-//                //     которые могут быть использованы
-//                rc = 34;
-//                requiredVehicleTypes = AllOrders.GetOrderVehicleTypes(orders);
-//                if (requiredVehicleTypes == null || requiredVehicleTypes.Length <= 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(10, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Orders vehicle types are not found", 1);
-//                    #endif
-//                    return rc;
-//                }
+    //                // 3.4 Выбираем способы доставки заказов,
+    //                //     которые могут быть использованы
+    //                rc = 34;
+    //                requiredVehicleTypes = AllOrders.GetOrderVehicleTypes(orders);
+    //                if (requiredVehicleTypes == null || requiredVehicleTypes.Length <= 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(10, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Orders vehicle types are not found", 1);
+    //                    #endif
+    //                    return rc;
+    //                }
 
-//                #if debug
-//                    Logger.WriteToLog(11, $"CreateDeliveries. service_id = {service_id.Value}. Order vehicle  types: {requiredVehicleTypes.Length}", 0);
-//                #endif
+    //                #if debug
+    //                    Logger.WriteToLog(11, $"CreateDeliveries. service_id = {service_id.Value}. Order vehicle  types: {requiredVehicleTypes.Length}", 0);
+    //                #endif
 
-//                // 3.5 Загружаем параметры способов отгрузки
-//                rc = 35;
-//                rc1 = SelectCourierTypes(requiredVehicleTypes, connection, out courierTypeRecords);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(12, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Courier types are not selected", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
-//                if (courierTypeRecords == null || courierTypeRecords.Length <= 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(13, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Courier types are not found", 1);
-//                    #endif
-//                    return rc;
-//                }
+    //                // 3.5 Загружаем параметры способов отгрузки
+    //                rc = 35;
+    //                rc1 = SelectCourierTypes(requiredVehicleTypes, connection, out courierTypeRecords);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(12, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Courier types are not selected", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                if (courierTypeRecords == null || courierTypeRecords.Length <= 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(13, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Courier types are not found", 1);
+    //                    #endif
+    //                    return rc;
+    //                }
 
-//                // 3.6 Загружаем информацию о курьерах
-//                rc = 36;
-//                rc1 = SelectCouriers(connection, out courierRecords);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(14, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Couriers are not selected", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
-//                if (courierRecords == null || courierRecords.Length <= 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(15, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Courier are not found", 1);
-//                    #endif
-//                    return rc;
-//                }
+    //                // 3.6 Загружаем информацию о курьерах
+    //                rc = 36;
+    //                rc1 = SelectCouriers(connection, out courierRecords);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(14, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Couriers are not selected", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                if (courierRecords == null || courierRecords.Length <= 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(15, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Courier are not found", 1);
+    //                    #endif
+    //                    return rc;
+    //                }
 
-//                #if debug
-//                    Logger.WriteToLog(16, $"CreateDeliveries. service_id = {service_id.Value}. Courier records: {courierRecords.Length}", 0);
+    //                #if debug
+    //                    Logger.WriteToLog(16, $"CreateDeliveries. service_id = {service_id.Value}. Courier records: {courierRecords.Length}", 0);
 
-//                    for (int i = 0; i < courierRecords.Length; i++)
-//                    {
-//                        Logger.WriteToLog(161, $"CreateDeliveries. service_id = {service_id.Value}. courierRecords[{i}].Id = {courierRecords[i].CourierId}, courierRecords[{i}].VehicleID = {courierRecords[i].VehicleId}", 0);
+    //                    for (int i = 0; i < courierRecords.Length; i++)
+    //                    {
+    //                        Logger.WriteToLog(161, $"CreateDeliveries. service_id = {service_id.Value}. courierRecords[{i}].Id = {courierRecords[i].CourierId}, courierRecords[{i}].VehicleID = {courierRecords[i].VehicleId}", 0);
 
-//                    }
-//                #endif
+    //                    }
+    //                #endif
 
-//                // 3.7 Загружаем пороги для среднего времени доставки заказов
-//                rc = 37;
-//                rc1 = SelectThresholds(connection, out thresholdRecords);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(17, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Thresholds are not selected", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
-//                //if (thresholdRecords == null || thresholdRecords.Length <= 0)
-//                //    return rc;
+    //                // 3.7 Загружаем пороги для среднего времени доставки заказов
+    //                rc = 37;
+    //                rc1 = SelectThresholds(connection, out thresholdRecords);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(17, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Thresholds are not selected", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                //if (thresholdRecords == null || thresholdRecords.Length <= 0)
+    //                //    return rc;
 
-//                // 3.8 Загружаем ограничения на длину маршрутов от числа заказов
-//                rc = 38;
-//                rc1 = SelectMaxOrdersOfRoute(service_id.Value, connection, out routeLimitationRecords);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(18, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Max route length are not selected", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
-//                if (routeLimitationRecords == null || routeLimitationRecords.Length <= 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(19, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Max route length records are not found", 1);
-//                    #endif
-//                    return rc;
-//                }
-//                //}
+    //                // 3.8 Загружаем ограничения на длину маршрутов от числа заказов
+    //                rc = 38;
+    //                rc1 = SelectMaxOrdersOfRoute(service_id.Value, connection, out routeLimitationRecords);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(18, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Max route length are not selected", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                if (routeLimitationRecords == null || routeLimitationRecords.Length <= 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(19, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Max route length records are not found", 1);
+    //                    #endif
+    //                    return rc;
+    //                }
+    //                //}
 
-//                // 4. Создаём объект c курьерами
-//                rc = 4;
-//                AllCouriers allCouriers = new AllCouriers();
-//                rc1 = allCouriers.Create(courierTypeRecords, courierRecords);
-//                if (rc1 != 0)
-//                {
-//                #if debug
-//                    Logger.WriteToLog(20, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allCouriers is not created", 1);
-//                #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
+    //                // 4. Создаём объект c курьерами
+    //                rc = 4;
+    //                AllCouriers allCouriers = new AllCouriers();
+    //                rc1 = allCouriers.Create(courierTypeRecords, courierRecords);
+    //                if (rc1 != 0)
+    //                {
+    //                #if debug
+    //                    Logger.WriteToLog(20, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allCouriers is not created", 1);
+    //                #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
 
-//                // 5. Создаём объект c заказами
-//                rc = 5;
-//                AllOrders allOrders = new AllOrders();
-//                rc1 = allOrders.Create(orders);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(21, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allOrders is not created", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
+    //                // 5. Создаём объект c заказами
+    //                rc = 5;
+    //                AllOrders allOrders = new AllOrders();
+    //                rc1 = allOrders.Create(orders);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(21, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allOrders is not created", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
 
-//                // 6. Создаём объект c порогами средней стоимости доставки
-//                rc = 6;
-//                AverageCostThresholds thresholds = new AverageCostThresholds();
-//                rc1 = thresholds.Create(thresholdRecords);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(22, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. thresholds is not created", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
+    //                // 6. Создаём объект c порогами средней стоимости доставки
+    //                rc = 6;
+    //                AverageCostThresholds thresholds = new AverageCostThresholds();
+    //                rc1 = thresholds.Create(thresholdRecords);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(22, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. thresholds is not created", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
 
-//                // 7. Создаём объект c ограничениями на длину маршрута по числу заказов
-//                rc = 7;
-//                RouteLimitations limitations = new RouteLimitations();
-//                rc1 = limitations.Create(routeLimitationRecords);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(23, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. limitations is not created", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
+    //                // 7. Создаём объект c ограничениями на длину маршрута по числу заказов
+    //                rc = 7;
+    //                RouteLimitations limitations = new RouteLimitations();
+    //                rc1 = limitations.Create(routeLimitationRecords);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(23, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. limitations is not created", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
 
-//                // 8. Определяем число потоков для расчетов
-//                rc = 8;
-//                int threadCount = 2 * Environment.ProcessorCount;
-//                if (threadCount < 8)
-//                {
-//                    threadCount = 8;
-//                }
-//                else if (threadCount > 16)
-//                {
-//                    threadCount = 16;
-//                }
+    //                // 8. Определяем число потоков для расчетов
+    //                rc = 8;
+    //                int threadCount = 2 * Environment.ProcessorCount;
+    //                if (threadCount < 8)
+    //                {
+    //                    threadCount = 8;
+    //                }
+    //                else if (threadCount > 16)
+    //                {
+    //                    threadCount = 16;
+    //                }
 
-//                // 9. Строим порции расчетов (ThreadContext), выполняемые в одном потоке
-//                //    (порция - это все заказы для одного способа доставки (курьера) в одном магазине)
-//                rc = 9;
-//                ThreadContext[] context = GetThreadContext(connection, service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
-//                //ThreadContext[] context = GetThreadContext(service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
-//                if (context == null || context.Length <= 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(24, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Thread context is not created", 1);
-//                    #endif
-//                }
+    //                // 9. Строим порции расчетов (ThreadContext), выполняемые в одном потоке
+    //                //    (порция - это все заказы для одного способа доставки (курьера) в одном магазине)
+    //                rc = 9;
+    //                ThreadContext[] context = GetThreadContext(connection, service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
+    //                //ThreadContext[] context = GetThreadContext(service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
+    //                if (context == null || context.Length <= 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(24, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Thread context is not created", 1);
+    //                    #endif
+    //                }
 
-//              //CalcThread(context[0]);
-//                if (context.Length < threadCount)
-//                    threadCount = context.Length;
+    //              //CalcThread(context[0]);
+    //                if (context.Length < threadCount)
+    //                    threadCount = context.Length;
 
-//                #if debug
-//                    Logger.WriteToLog(25, $"CreateDeliveries. service_id = {service_id.Value}. Thread context count: {context.Length}. Thread count: {threadCount}", 0);
-//                #endif
+    //                #if debug
+    //                    Logger.WriteToLog(25, $"CreateDeliveries. service_id = {service_id.Value}. Thread context count: {context.Length}. Thread count: {threadCount}", 0);
+    //                #endif
 
-//                // 10. Сортируем контексты по убыванию числа заказов
-//                rc = 10;
-//                Array.Sort(context, CompareContextByOrderCount);
+    //                // 10. Сортируем контексты по убыванию числа заказов
+    //                rc = 10;
+    //                Array.Sort(context, CompareContextByOrderCount);
 
-//                // 11. Создаём объекты синхронизации
-//                rc = 11;
-//                ManualResetEvent[] syncEvents = new ManualResetEvent[threadCount];
-//                int[] contextIndex = new int[threadCount];
+    //                // 11. Создаём объекты синхронизации
+    //                rc = 11;
+    //                ManualResetEvent[] syncEvents = new ManualResetEvent[threadCount];
+    //                int[] contextIndex = new int[threadCount];
 
-//                // 12. Запускаем первые threadCount- потоков
-//                rc = 12;
-//                int errorCount = 0;
-//                CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[500000];
-//                int deliveryCount = 0;
+    //                // 12. Запускаем первые threadCount- потоков
+    //                rc = 12;
+    //                int errorCount = 0;
+    //                CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[500000];
+    //                int deliveryCount = 0;
 
-//                //CalcThread(context[0]);
-//                //allDeliveries = context[0].Deliveries;
-//                //deliveryCount = context[0].DeliveryCount;
-//                //goto ff;
+    //                //CalcThread(context[0]);
+    //                //allDeliveries = context[0].Deliveries;
+    //                //deliveryCount = context[0].DeliveryCount;
+    //                //goto ff;
 
-//                #if debug
-//                    Logger.WriteToLog(26, $"CreateDeliveries. service_id = {service_id.Value}. Thread context count: {context.Length}", 0);
-//                #endif
+    //                #if debug
+    //                    Logger.WriteToLog(26, $"CreateDeliveries. service_id = {service_id.Value}. Thread context count: {context.Length}", 0);
+    //                #endif
 
-//                //Thread.BeginThreadAffinity();
-//                for (int i = 0; i < threadCount; i++)
-//                {
-//                    int m = i;
-//                    contextIndex[m] = i;
-//                    ThreadContext threadContext = context[m];
-//                    syncEvents[m] = new ManualResetEvent(false);
-//                    threadContext.SyncEvent = syncEvents[m];
-//                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
-//                    ThreadPool.QueueUserWorkItem(CalcThreadEx, threadContext);
-//                }
+    //                //Thread.BeginThreadAffinity();
+    //                for (int i = 0; i < threadCount; i++)
+    //                {
+    //                    int m = i;
+    //                    contextIndex[m] = i;
+    //                    ThreadContext threadContext = context[m];
+    //                    syncEvents[m] = new ManualResetEvent(false);
+    //                    threadContext.SyncEvent = syncEvents[m];
+    //                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+    //                    ThreadPool.QueueUserWorkItem(CalcThreadEx, threadContext);
+    //                }
 
-//                // 13. Запускаем последующие потоки
-//                //     после завершения очередного
-//                rc = 13;
+    //                // 13. Запускаем последующие потоки
+    //                //     после завершения очередного
+    //                rc = 13;
 
-//                for (int i = threadCount; i < context.Length; i++)
-//                {
-//                    int threadIndex = WaitHandle.WaitAny(syncEvents);
+    //                for (int i = threadCount; i < context.Length; i++)
+    //                {
+    //                    int threadIndex = WaitHandle.WaitAny(syncEvents);
 
-//                    ThreadContext executedThreadContext = context[contextIndex[threadIndex]];
+    //                    ThreadContext executedThreadContext = context[contextIndex[threadIndex]];
 
-//                    contextIndex[threadIndex] = i;
-//                    int m = i;
-//                    ThreadContext threadContext = context[m];
-//                    threadContext.SyncEvent = syncEvents[threadIndex];
-//                    threadContext.SyncEvent.Reset();
-//                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
-//                    ThreadPool.QueueUserWorkItem(CalcThreadEx, threadContext);
+    //                    contextIndex[threadIndex] = i;
+    //                    int m = i;
+    //                    ThreadContext threadContext = context[m];
+    //                    threadContext.SyncEvent = syncEvents[threadIndex];
+    //                    threadContext.SyncEvent.Reset();
+    //                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+    //                    ThreadPool.QueueUserWorkItem(CalcThreadEx, threadContext);
 
-//                    // Обработка завершившегося потока
-//                    if (executedThreadContext.ExitCode != 0)
-//                    {
-//                        errorCount++;
-//                    }
-//                    else
-//                    {
-//                        int contextDeliveryCount = executedThreadContext.DeliveryCount;
-//                        if (contextDeliveryCount > 0)
-//                        {
-//                            if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
-//                            {
-//                                int size = allDeliveries.Length / 2;
-//                                if (size < contextDeliveryCount)
-//                                    size = contextDeliveryCount;
-//                                Array.Resize(ref allDeliveries, allDeliveries.Length + size);
-//                            }
+    //                    // Обработка завершившегося потока
+    //                    if (executedThreadContext.ExitCode != 0)
+    //                    {
+    //                        errorCount++;
+    //                    }
+    //                    else
+    //                    {
+    //                        int contextDeliveryCount = executedThreadContext.DeliveryCount;
+    //                        if (contextDeliveryCount > 0)
+    //                        {
+    //                            if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
+    //                            {
+    //                                int size = allDeliveries.Length / 2;
+    //                                if (size < contextDeliveryCount)
+    //                                    size = contextDeliveryCount;
+    //                                Array.Resize(ref allDeliveries, allDeliveries.Length + size);
+    //                            }
 
-//                            executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
-//                            deliveryCount += contextDeliveryCount;
-//                        }
-//                    }
-//                }
+    //                            executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
+    //                            deliveryCount += contextDeliveryCount;
+    //                        }
+    //                    }
+    //                }
 
-//                //WaitHandle.WaitAll(syncEvents);
+    //                //WaitHandle.WaitAll(syncEvents);
 
-//                for (int i = 0; i < syncEvents.Length; i++)
-//                {
-//                    syncEvents[i].WaitOne();
-//                }
+    //                for (int i = 0; i < syncEvents.Length; i++)
+    //                {
+    //                    syncEvents[i].WaitOne();
+    //                }
 
-//                //Thread.EndThreadAffinity();
-//                for (int i = 0; i < threadCount; i++)
-//                {
-//                    syncEvents[i].Dispose();
+    //                //Thread.EndThreadAffinity();
+    //                for (int i = 0; i < threadCount; i++)
+    //                {
+    //                    syncEvents[i].Dispose();
 
-//                    // Обработка последних завершившихся потоков
-//                    ThreadContext executedThreadContext = context[contextIndex[i]];
-//                    int contextDeliveryCount = executedThreadContext.DeliveryCount;
-//                    if (contextDeliveryCount > 0)
-//                    {
-//                        if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
-//                        {
-//                            int size = allDeliveries.Length / 2;
-//                            if (size < contextDeliveryCount)
-//                                size = contextDeliveryCount;
-//                            Array.Resize(ref allDeliveries, allDeliveries.Length + size);
-//                        }
+    //                    // Обработка последних завершившихся потоков
+    //                    ThreadContext executedThreadContext = context[contextIndex[i]];
+    //                    int contextDeliveryCount = executedThreadContext.DeliveryCount;
+    //                    if (contextDeliveryCount > 0)
+    //                    {
+    //                        if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
+    //                        {
+    //                            int size = allDeliveries.Length / 2;
+    //                            if (size < contextDeliveryCount)
+    //                                size = contextDeliveryCount;
+    //                            Array.Resize(ref allDeliveries, allDeliveries.Length + size);
+    //                        }
 
-//                        executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
-//                        deliveryCount += contextDeliveryCount;
-//                    }
-//                }
-////ff:
-//                if (deliveryCount <= 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(261, $"CreateDeliveries. service_id = {service_id.Value}. Exit rc = {rc}", 0);
-//                    #endif
+    //                        executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
+    //                        deliveryCount += contextDeliveryCount;
+    //                    }
+    //                }
+    ////ff:
+    //                if (deliveryCount <= 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(261, $"CreateDeliveries. service_id = {service_id.Value}. Exit rc = {rc}", 0);
+    //                    #endif
 
-//                    return rc = 0;
-//                }
+    //                    return rc = 0;
+    //                }
 
-//                if (deliveryCount < allDeliveries.Length)
-//                {
-//                    Array.Resize(ref allDeliveries, deliveryCount);
-//                }
+    //                if (deliveryCount < allDeliveries.Length)
+    //                {
+    //                    Array.Resize(ref allDeliveries, deliveryCount);
+    //                }
 
-//                // 14. Сохраняем построенные отгрузки
-//                rc = 14;
+    //                // 14. Сохраняем построенные отгрузки
+    //                rc = 14;
 
-//                //#if debug
-//                //    Logger.WriteToLog(27, $"CreateDeliveries. service_id = {service_id.Value}. Saving deliveries...", 0);
-//                //#endif
+    //                //#if debug
+    //                //    Logger.WriteToLog(27, $"CreateDeliveries. service_id = {service_id.Value}. Saving deliveries...", 0);
+    //                //#endif
 
-//                //using (SqlConnection connection = new SqlConnection("context connection=true"))
-//                //{
-//                // 14.1 Открываем соединение
-//                //rc = 141;
-//                //connection.Open();
+    //                //using (SqlConnection connection = new SqlConnection("context connection=true"))
+    //                //{
+    //                // 14.1 Открываем соединение
+    //                //rc = 141;
+    //                //connection.Open();
 
-//                // 14.2 Очищаем таблицу lsvDeliveries и все связааные с ней таблицы
-//                rc = 142;
-//                ClearDeliveries(connection);
+    //                // 14.2 Очищаем таблицу lsvDeliveries и все связааные с ней таблицы
+    //                rc = 142;
+    //                ClearDeliveries(connection);
 
-//                // 14.3 Сохраняем построенные отгрузки
-//                rc = 143;
-//                //rc1 = SaveDeliveries(allDeliveries, connection);
-//                #if debug
-//                    Logger.WriteToLog(290, $"CreateDeliveries. service_id = {service_id.Value}. Deliveries saving...", 0);
-//                #endif
+    //                // 14.3 Сохраняем построенные отгрузки
+    //                rc = 143;
+    //                //rc1 = SaveDeliveries(allDeliveries, connection);
+    //                #if debug
+    //                    Logger.WriteToLog(290, $"CreateDeliveries. service_id = {service_id.Value}. Deliveries saving...", 0);
+    //                #endif
 
-//                rc1 = SaveDeliveriesEx(allDeliveries, GetServerName(connection), connection.Database);
-//                if (rc1 != 0)
-//                {
-//                    #if debug
-//                        Logger.WriteToLog(28, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
-//                    #endif
-//                    return rc = 1000000 * rc + rc1;
-//                }
+    //                rc1 = SaveDeliveriesEx(allDeliveries, GetServerName(connection), connection.Database);
+    //                if (rc1 != 0)
+    //                {
+    //                    #if debug
+    //                        Logger.WriteToLog(28, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
+    //                    #endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
 
-//                connection.Close();
-//                //connection.Close();
-//                //return rc = 777;
-//            }
+    //                connection.Close();
+    //                //connection.Close();
+    //                //return rc = 777;
+    //            }
 
-//            #if debug
-//                Logger.WriteToLog(291, $"CreateDeliveries. service_id = {service_id.Value}. Deliveries saved", 0);
-//            #endif
+    //            #if debug
+    //                Logger.WriteToLog(291, $"CreateDeliveries. service_id = {service_id.Value}. Deliveries saved", 0);
+    //            #endif
 
-//            // 15. Выход - Ok
-//            rc = 0;
-//            return rc;
-//        }
-//        catch (Exception ex)
-//        {
-//            #if debug
-//                Logger.WriteToLog(3, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Exception {ex.Message}", 2);
-//            #endif
-//            return rc;
-//        }
-//        finally
-//        {
-//            #if debug
-//                Logger.WriteToLog(2, $"<--- CreateDeliveries. service_id = {service_id.Value}. calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}. rc = {rc}", 0);
-//            #endif
-//        }
-//    }
+    //            // 15. Выход - Ok
+    //            rc = 0;
+    //            return rc;
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            #if debug
+    //                Logger.WriteToLog(3, $"CreateDeliveries. service_id = {service_id.Value}. rc = {rc}. Exception {ex.Message}", 2);
+    //            #endif
+    //            return rc;
+    //        }
+    //        finally
+    //        {
+    //            #if debug
+    //                Logger.WriteToLog(2, $"<--- CreateDeliveries. service_id = {service_id.Value}. calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}. rc = {rc}", 0);
+    //            #endif
+    //        }
+    //    }
+
+    #region CreateDeliveries
+    //    /// <summary>
+    //    /// Построение всех возможных отгрузок для всех
+    //    /// отмеченных магазинов
+    //    /// </summary>
+    //    /// <param name="service_id">ID LogisticsService</param>
+    //    /// <param name="calc_time">Момент времени, на который проводятся расчеты</param>
+    //    /// <returns>0 - отгрузки построены; иначе отгрузки не построены</returns>
+    //    [SqlProcedure]
+    //    public static SqlInt32 CreateDeliveries(SqlInt32 service_id, SqlDateTime calc_time)
+    //    {
+    //        // 1. Инициализация
+    //        int rc = 1;
+    //        int rc1 = 1;
+
+    //        try
+    //        {
+    //#if debug
+    //            Logger.WriteToLog(1, $"---> CreateDeliveriesEx. service_id = {service_id.Value}, calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}", 0);
+    //#endif
+
+    //            // 2. Проверяем исходные данные
+    //            rc = 2;
+    //            if (!SqlContext.IsAvailable)
+    //            {
+    //#if debug
+    //                Logger.WriteToLog(4, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. SQLContext is not available", 1);
+    //#endif
+    //                return rc;
+    //            }
+
+    //            // 3. Открываем соединение в контексте текущей сессии
+    //            //    и загружаем все необходимые данные
+    //            rc = 3;
+    //            Shop[] shops = null;
+    //            Order[] orders = null;
+    //            int[] requiredVehicleTypes = null;
+    //            CourierTypeRecord[] courierTypeRecords = null;
+    //            CourierRecord[] courierRecords = null;
+    //            AverageDeliveryCostRecord[] thresholdRecords;
+    //            MaxOrdersOfRouteRecord[] routeLimitationRecords;
+
+    //            using (SqlConnection connection = new SqlConnection("context connection=true"))
+    //            {
+    //                // 3.1 Открываем соединение
+    //                rc = 31;
+    //                connection.Open();
+    //                //#if debug
+    //                //    Logger.WriteToLog(444, $"CreateDeliveriesEx. service_id = {service_id.Value}. DataSource = {GetServerName(connection)}, Database = {connection.Database}" , 0);
+    //                //#endif
+
+    //                // 3.2 Выбираем магазины для пересчета отгрузок
+    //                rc = 32;
+    //                rc1 = SelectShops(connection, out shops);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(4, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not selected", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                if (shops == null || shops.Length <= 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(5, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not found", 0);
+    //#endif
+    //                    return rc = 0;
+    //                }
+
+    //#if debug
+    //                Logger.WriteToLog(6, $"CreateDeliveriesEx. service_id = {service_id.Value}. Selected shops: {shops.Length}", 0);
+    //#endif
+
+    //                // 3.3 Выбираем заказы, для которых нужно построить отгрузки
+    //                rc = 33;
+    //                rc1 = SelectOrders(connection, out orders);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(7, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not selected", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+
+    //                orders = FilterOrdersOnCalcTime(calc_time.Value, orders);
+
+    //                if (orders == null || orders.Length <= 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(8, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not found", 0);
+    //#endif
+    //                    return rc = 0;
+    //                }
+
+    //#if debug
+    //                Logger.WriteToLog(9, $"CreateDeliveriesEx. service_id = {service_id.Value}. Selected orders: {orders.Length}", 0);
+    //#endif
+
+
+    //                // 3.4 Выбираем способы доставки заказов,
+    //                //     которые могут быть использованы
+    //                rc = 34;
+    //                requiredVehicleTypes = AllOrders.GetOrderVehicleTypes(orders);
+    //                if (requiredVehicleTypes == null || requiredVehicleTypes.Length <= 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(10, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Orders vehicle types are not found", 1);
+    //#endif
+    //                    return rc;
+    //                }
+
+    //#if debug
+    //                Logger.WriteToLog(11, $"CreateDeliveriesEx. service_id = {service_id.Value}. Order vehicle  types: {requiredVehicleTypes.Length}", 0);
+    //#endif
+
+    //                // 3.5 Загружаем параметры способов отгрузки
+    //                rc = 35;
+    //                rc1 = SelectCourierTypes(requiredVehicleTypes, connection, out courierTypeRecords);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(12, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Courier types are not selected", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                if (courierTypeRecords == null || courierTypeRecords.Length <= 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(13, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Courier types are not found", 1);
+    //#endif
+    //                    return rc;
+    //                }
+
+    //                // 3.6 Загружаем информацию о курьерах
+    //                rc = 36;
+    //                rc1 = SelectCouriers(connection, out courierRecords);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(14, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Couriers are not selected", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                if (courierRecords == null || courierRecords.Length <= 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(15, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Courier are not found", 1);
+    //#endif
+    //                    return rc;
+    //                }
+
+    //#if debug
+    //                Logger.WriteToLog(16, $"CreateDeliveriesEx. service_id = {service_id.Value}. Courier records: {courierRecords.Length}", 0);
+
+    //                for (int i = 0; i < courierRecords.Length; i++)
+    //                {
+    //                    Logger.WriteToLog(161, $"CreateDeliveriesEx. service_id = {service_id.Value}. courierRecords[{i}].Id = {courierRecords[i].CourierId}, courierRecords[{i}].VehicleID = {courierRecords[i].VehicleId}", 0);
+
+    //                }
+    //#endif
+
+    //                // 3.7 Загружаем пороги для среднего времени доставки заказов
+    //                rc = 37;
+    //                rc1 = SelectThresholds(connection, out thresholdRecords);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(17, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Thresholds are not selected", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                //if (thresholdRecords == null || thresholdRecords.Length <= 0)
+    //                //    return rc;
+
+    //                // 3.8 Загружаем ограничения на длину маршрутов от числа заказов
+    //                rc = 38;
+    //                rc1 = SelectMaxOrdersOfRoute(service_id.Value, connection, out routeLimitationRecords);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(18, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Max route length are not selected", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+    //                if (routeLimitationRecords == null || routeLimitationRecords.Length <= 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(19, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Max route length records are not found", 1);
+    //#endif
+    //                    return rc;
+    //                }
+
+    //                // 4. Создаём объект для работы c курьерами
+    //                rc = 4;
+    //                AllCouriers allCouriers = new AllCouriers();
+    //                rc1 = allCouriers.Create(courierTypeRecords, courierRecords);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(20, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allCouriers is not created", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+
+    //                // 5. Создаём объект для работы c заказами
+    //                rc = 5;
+    //                AllOrders allOrders = new AllOrders();
+    //                rc1 = allOrders.Create(orders);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(21, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allOrders is not created", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+
+    //                // 6. Создаём объект для работы c порогами средней стоимости доставки
+    //                rc = 6;
+    //                AverageCostThresholds thresholds = new AverageCostThresholds();
+    //                rc1 = thresholds.Create(thresholdRecords);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(22, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. thresholds is not created", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+
+    //                // 7. Создаём объект для работы c ограничениями на длину маршрута от числа заказов (при полном переборе)
+    //                rc = 7;
+    //                RouteLimitations limitations = new RouteLimitations();
+    //                rc1 = limitations.Create(routeLimitationRecords);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(23, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. limitations is not created", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+
+    //                // 8. Определяем число потоков для расчетов
+    //                rc = 8;
+    //                int threadCount = 2 * Environment.ProcessorCount;
+    //                if (threadCount < 8)
+    //                {
+    //                    threadCount = 8;
+    //                }
+    //                else if (threadCount > 16)
+    //                {
+    //                    threadCount = 16;
+    //                }
+
+    //                // 9. Строим порции расчетов (ThreadContext), выполняемые в одном потоке
+    //                //    (порция - это все заказы для одного способа доставки (курьера) в одном магазине)
+    //                rc = 9;
+    //                CalcThreadContext[] context = GetCalcThreadContext(connection, service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
+    //                //ThreadContext[] context = GetThreadContext(service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
+    //                if (context == null || context.Length <= 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(24, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Thread context is not created", 1);
+    //#endif
+    //                }
+
+    //                //CalcThread(context[0]);
+    //                if (context.Length < threadCount)
+    //                    threadCount = context.Length;
+
+    //#if debug
+    //                Logger.WriteToLog(25, $"CreateDeliveriesEx. service_id = {service_id.Value}. Thread context count: {context.Length}. Thread count: {threadCount}", 0);
+    //#endif
+
+    //                // 10. Сортируем контексты по убыванию числа заказов
+    //                rc = 10;
+    //                Array.Sort(context, CompareCalcContextByOrderCount);
+
+    //                // 11. Создаём объекты синхронизации
+    //                rc = 11;
+    //                ManualResetEvent[] syncEvents = new ManualResetEvent[threadCount];
+    //                int[] contextIndex = new int[threadCount];
+
+    //                // 12. Запускаем первые threadCount- потоков
+    //                rc = 12;
+    //                int errorCount = 0;
+    //                CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[500000];
+    //                int deliveryCount = 0;
+
+    //                //CalcThread(context[0]);
+    //                //allDeliveries = context[0].Deliveries;
+    //                //deliveryCount = context[0].DeliveryCount;
+    //                //goto ff;
+
+    //#if debug
+    //                Logger.WriteToLog(26, $"CreateDeliveriesEx. service_id = {service_id.Value}. Thread context count: {context.Length}", 0);
+    //#endif
+
+    //                //Thread.BeginThreadAffinity();
+    //                for (int i = 0; i < threadCount; i++)
+    //                {
+    //                    int m = i;
+    //                    contextIndex[m] = i;
+    //                    CalcThreadContext threadContext = context[m];
+    //                    syncEvents[m] = new ManualResetEvent(false);
+    //                    threadContext.SyncEvent = syncEvents[m];
+    //                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+    //                    ThreadPool.QueueUserWorkItem(CalcThreadEz, threadContext);
+    //                }
+
+    //                // 13. Запускаем последующие потоки
+    //                //     после завершения очередного
+    //                rc = 13;
+
+    //                for (int i = threadCount; i < context.Length; i++)
+    //                {
+    //                    int threadIndex = WaitHandle.WaitAny(syncEvents);
+
+    //                    CalcThreadContext executedThreadContext = context[contextIndex[threadIndex]];
+
+    //                    contextIndex[threadIndex] = i;
+    //                    int m = i;
+    //                    CalcThreadContext threadContext = context[m];
+    //                    threadContext.SyncEvent = syncEvents[threadIndex];
+    //                    threadContext.SyncEvent.Reset();
+    //                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
+    //                    ThreadPool.QueueUserWorkItem(CalcThreadEz, threadContext);
+
+    //                    // Обработка завершившегося потока
+    //                    if (executedThreadContext.ExitCode != 0)
+    //                    {
+    //                        errorCount++;
+    //                    }
+    //                    else
+    //                    {
+    //                        int contextDeliveryCount = executedThreadContext.DeliveryCount;
+    //                        if (contextDeliveryCount > 0)
+    //                        {
+    //                            if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
+    //                            {
+    //                                int size = allDeliveries.Length / 2;
+    //                                if (size < contextDeliveryCount)
+    //                                    size = contextDeliveryCount;
+    //                                Array.Resize(ref allDeliveries, allDeliveries.Length + size);
+    //                            }
+
+    //                            executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
+    //                            deliveryCount += contextDeliveryCount;
+    //                        }
+    //                    }
+    //                }
+
+    //                //WaitHandle.WaitAll(syncEvents);
+
+    //                for (int i = 0; i < syncEvents.Length; i++)
+    //                {
+    //                    syncEvents[i].WaitOne();
+    //                }
+
+    //                //Thread.EndThreadAffinity();
+    //                for (int i = 0; i < threadCount; i++)
+    //                {
+    //                    syncEvents[i].Dispose();
+
+    //                    // Обработка последних завершившихся потоков
+    //                    CalcThreadContext executedThreadContext = context[contextIndex[i]];
+    //                    int contextDeliveryCount = executedThreadContext.DeliveryCount;
+    //                    if (contextDeliveryCount > 0)
+    //                    {
+    //                        if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
+    //                        {
+    //                            int size = allDeliveries.Length / 2;
+    //                            if (size < contextDeliveryCount)
+    //                                size = contextDeliveryCount;
+    //                            Array.Resize(ref allDeliveries, allDeliveries.Length + size);
+    //                        }
+
+    //                        executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
+    //                        deliveryCount += contextDeliveryCount;
+    //                    }
+    //                }
+    //                //ff:
+    //                if (deliveryCount <= 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(261, $"CreateDeliveriesEx. service_id = {service_id.Value}. Exit rc = {rc}", 0);
+    //#endif
+
+    //                    return rc = 0;
+    //                }
+
+    //                if (deliveryCount < allDeliveries.Length)
+    //                {
+    //                    Array.Resize(ref allDeliveries, deliveryCount);
+    //                }
+
+    //                // 14. Сохраняем построенные отгрузки
+    //                rc = 14;
+
+    //                //#if debug
+    //                //    Logger.WriteToLog(27, $"CreateDeliveriesEx. service_id = {service_id.Value}. Saving deliveries...", 0);
+    //                //#endif
+
+    //                //using (SqlConnection connection = new SqlConnection("context connection=true"))
+    //                //{
+    //                // 14.1 Открываем соединение
+    //                //rc = 141;
+    //                //connection.Open();
+
+    //                // 14.2 Очищаем отгрузки: таблицы lsvNodeDeliveryTime, lsvDeliveryNodeInfo, lsvDeliveryOrders, lsvDeliveries
+    //                rc = 142;
+    //                rc1 = ClearDeliveries(connection);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(28, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Clear deliveries failed", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+
+    //                // 14.3 Сохраняем построенные отгрузки
+    //                rc = 143;
+    //                //rc1 = SaveDeliveries(allDeliveries, connection);
+    //#if debug
+    //                Logger.WriteToLog(290, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saving({allDeliveries.Length})...", 0);
+    //#endif
+
+    //                rc1 = SaveDeliveriesEx(allDeliveries, GetServerName(connection), connection.Database);
+    //                if (rc1 != 0)
+    //                {
+    //#if debug
+    //                    Logger.WriteToLog(28, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
+    //#endif
+    //                    return rc = 1000000 * rc + rc1;
+    //                }
+
+    //                connection.Close();
+    //                //connection.Close();
+    //                //return rc = 777;
+    //            }
+
+    //#if debug
+    //            Logger.WriteToLog(291, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saved", 0);
+    //#endif
+
+    //            // 15. Выход - Ok
+    //            rc = 0;
+    //            return rc;
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //#if debug
+    //            Logger.WriteToLog(3, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Exception {ex.Message}", 2);
+    //#endif
+    //            return rc;
+    //        }
+    //        finally
+    //        {
+    //#if debug
+    //            Logger.WriteToLog(2, $"<--- CreateDeliveriesEx. service_id = {service_id.Value}. calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}. rc = {rc}", 0);
+    //#endif
+    //        }
+    //    }
+    #endregion CreateDeliveries
 
     /// <summary>
     /// Построение всех возможных отгрузок для всех
@@ -578,17 +1041,17 @@ public partial class StoredProcedures
 
         try
         {
-            #if debug
-                Logger.WriteToLog(1, $"---> CreateDeliveriesEx. service_id = {service_id.Value}, calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}", 0);
-            #endif
+        #if debug
+            Logger.WriteToLog(1, $"---> CreateCovers. service_id = {service_id.Value}, calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}", 0);
+        #endif
 
             // 2. Проверяем исходные данные
             rc = 2;
             if (!SqlContext.IsAvailable)
             {
-                #if debug
-                    Logger.WriteToLog(4, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. SQLContext is not available", 1);
-                #endif
+            #if debug
+                Logger.WriteToLog(4, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. SQLContext is not available", 1);
+            #endif
                 return rc;
             }
 
@@ -611,498 +1074,37 @@ public partial class StoredProcedures
                 //#if debug
                 //    Logger.WriteToLog(444, $"CreateDeliveriesEx. service_id = {service_id.Value}. DataSource = {GetServerName(connection)}, Database = {connection.Database}" , 0);
                 //#endif
-                
+
                 // 3.2 Выбираем магазины для пересчета отгрузок
                 rc = 32;
                 rc1 = SelectShops(connection, out shops);
                 if (rc1 != 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(4, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not selected", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(4, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not selected", 1);
+                #endif
                     return rc = 1000000 * rc + rc1;
                 }
                 if (shops == null || shops.Length <= 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(5, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not found", 0);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(5, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not found", 0);
+                #endif
                     return rc = 0;
                 }
 
-                #if debug
-                    Logger.WriteToLog(6, $"CreateDeliveriesEx. service_id = {service_id.Value}. Selected shops: {shops.Length}", 0);
-                #endif
+            #if debug
+                Logger.WriteToLog(6, $"CreateCovers. service_id = {service_id.Value}. Selected shops: {shops.Length}", 0);
+            #endif
 
                 // 3.3 Выбираем заказы, для которых нужно построить отгрузки
                 rc = 33;
                 rc1 = SelectOrders(connection, out orders);
                 if (rc1 != 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(7, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not selected", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-
-                orders = FilterOrdersOnCalcTime(calc_time.Value, orders);
-
-                if (orders == null || orders.Length <= 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(8, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not found", 0);
-                    #endif
-                    return rc = 0;
-                }
-
                 #if debug
-                    Logger.WriteToLog(9, $"CreateDeliveriesEx. service_id = {service_id.Value}. Selected orders: {orders.Length}", 0);
+                    Logger.WriteToLog(7, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not selected", 1);
                 #endif
-
-
-                // 3.4 Выбираем способы доставки заказов,
-                //     которые могут быть использованы
-                rc = 34;
-                requiredVehicleTypes = AllOrders.GetOrderVehicleTypes(orders);
-                if (requiredVehicleTypes == null || requiredVehicleTypes.Length <= 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(10, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Orders vehicle types are not found", 1);
-                    #endif
-                    return rc;
-                }
-
-                #if debug
-                    Logger.WriteToLog(11, $"CreateDeliveriesEx. service_id = {service_id.Value}. Order vehicle  types: {requiredVehicleTypes.Length}", 0);
-                #endif
-
-                // 3.5 Загружаем параметры способов отгрузки
-                rc = 35;
-                rc1 = SelectCourierTypes(requiredVehicleTypes, connection, out courierTypeRecords);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(12, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Courier types are not selected", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-                if (courierTypeRecords == null || courierTypeRecords.Length <= 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(13, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Courier types are not found", 1);
-                    #endif
-                    return rc;
-                }
-
-                // 3.6 Загружаем информацию о курьерах
-                rc = 36;
-                rc1 = SelectCouriers(connection, out courierRecords);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(14, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Couriers are not selected", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-                if (courierRecords == null || courierRecords.Length <= 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(15, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Courier are not found", 1);
-                    #endif
-                    return rc;
-                }
-
-                #if debug
-                    Logger.WriteToLog(16, $"CreateDeliveriesEx. service_id = {service_id.Value}. Courier records: {courierRecords.Length}", 0);
-
-                    for (int i = 0; i < courierRecords.Length; i++)
-                    {
-                        Logger.WriteToLog(161, $"CreateDeliveriesEx. service_id = {service_id.Value}. courierRecords[{i}].Id = {courierRecords[i].CourierId}, courierRecords[{i}].VehicleID = {courierRecords[i].VehicleId}", 0);
-
-                    }
-                #endif
-
-                // 3.7 Загружаем пороги для среднего времени доставки заказов
-                rc = 37;
-                rc1 = SelectThresholds(connection, out thresholdRecords);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(17, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Thresholds are not selected", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-                //if (thresholdRecords == null || thresholdRecords.Length <= 0)
-                //    return rc;
-
-                // 3.8 Загружаем ограничения на длину маршрутов от числа заказов
-                rc = 38;
-                rc1 = SelectMaxOrdersOfRoute(service_id.Value, connection, out routeLimitationRecords);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(18, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Max route length are not selected", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-                if (routeLimitationRecords == null || routeLimitationRecords.Length <= 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(19, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Max route length records are not found", 1);
-                    #endif
-                    return rc;
-                }
-
-                // 4. Создаём объект для работы c курьерами
-                rc = 4;
-                AllCouriers allCouriers = new AllCouriers();
-                rc1 = allCouriers.Create(courierTypeRecords, courierRecords);
-                if (rc1 != 0)
-                {
-                #if debug
-                    Logger.WriteToLog(20, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allCouriers is not created", 1);
-                #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-
-                // 5. Создаём объект для работы c заказами
-                rc = 5;
-                AllOrders allOrders = new AllOrders();
-                rc1 = allOrders.Create(orders);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(21, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allOrders is not created", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-
-                // 6. Создаём объект для работы c порогами средней стоимости доставки
-                rc = 6;
-                AverageCostThresholds thresholds = new AverageCostThresholds();
-                rc1 = thresholds.Create(thresholdRecords);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(22, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. thresholds is not created", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-
-                // 7. Создаём объект для работы c ограничениями на длину маршрута от числа заказов (при полном переборе)
-                rc = 7;
-                RouteLimitations limitations = new RouteLimitations();
-                rc1 = limitations.Create(routeLimitationRecords);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(23, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. limitations is not created", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-
-                // 8. Определяем число потоков для расчетов
-                rc = 8;
-                int threadCount = 2 * Environment.ProcessorCount;
-                if (threadCount < 8)
-                {
-                    threadCount = 8;
-                }
-                else if (threadCount > 16)
-                {
-                    threadCount = 16;
-                }
-
-                // 9. Строим порции расчетов (ThreadContext), выполняемые в одном потоке
-                //    (порция - это все заказы для одного способа доставки (курьера) в одном магазине)
-                rc = 9;
-                CalcThreadContext[] context = GetCalcThreadContext(connection, service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
-                //ThreadContext[] context = GetThreadContext(service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
-                if (context == null || context.Length <= 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(24, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Thread context is not created", 1);
-                    #endif
-                }
-
-              //CalcThread(context[0]);
-                if (context.Length < threadCount)
-                    threadCount = context.Length;
-
-                #if debug
-                    Logger.WriteToLog(25, $"CreateDeliveriesEx. service_id = {service_id.Value}. Thread context count: {context.Length}. Thread count: {threadCount}", 0);
-                #endif
-
-                // 10. Сортируем контексты по убыванию числа заказов
-                rc = 10;
-                Array.Sort(context, CompareCalcContextByOrderCount);
-
-                // 11. Создаём объекты синхронизации
-                rc = 11;
-                ManualResetEvent[] syncEvents = new ManualResetEvent[threadCount];
-                int[] contextIndex = new int[threadCount];
-
-                // 12. Запускаем первые threadCount- потоков
-                rc = 12;
-                int errorCount = 0;
-                CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[500000];
-                int deliveryCount = 0;
-
-                //CalcThread(context[0]);
-                //allDeliveries = context[0].Deliveries;
-                //deliveryCount = context[0].DeliveryCount;
-                //goto ff;
-
-                #if debug
-                    Logger.WriteToLog(26, $"CreateDeliveriesEx. service_id = {service_id.Value}. Thread context count: {context.Length}", 0);
-                #endif
-
-                //Thread.BeginThreadAffinity();
-                for (int i = 0; i < threadCount; i++)
-                {
-                    int m = i;
-                    contextIndex[m] = i;
-                    CalcThreadContext threadContext = context[m];
-                    syncEvents[m] = new ManualResetEvent(false);
-                    threadContext.SyncEvent = syncEvents[m];
-                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
-                    ThreadPool.QueueUserWorkItem(CalcThreadEz, threadContext);
-                }
-
-                // 13. Запускаем последующие потоки
-                //     после завершения очередного
-                rc = 13;
-
-                for (int i = threadCount; i < context.Length; i++)
-                {
-                    int threadIndex = WaitHandle.WaitAny(syncEvents);
-
-                    CalcThreadContext executedThreadContext = context[contextIndex[threadIndex]];
-
-                    contextIndex[threadIndex] = i;
-                    int m = i;
-                    CalcThreadContext threadContext = context[m];
-                    threadContext.SyncEvent = syncEvents[threadIndex];
-                    threadContext.SyncEvent.Reset();
-                    //ThreadPool.QueueUserWorkItem(CalcThread, threadContext);
-                    ThreadPool.QueueUserWorkItem(CalcThreadEz, threadContext);
-
-                    // Обработка завершившегося потока
-                    if (executedThreadContext.ExitCode != 0)
-                    {
-                        errorCount++;
-                    }
-                    else
-                    {
-                        int contextDeliveryCount = executedThreadContext.DeliveryCount;
-                        if (contextDeliveryCount > 0)
-                        {
-                            if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
-                            {
-                                int size = allDeliveries.Length / 2;
-                                if (size < contextDeliveryCount)
-                                    size = contextDeliveryCount;
-                                Array.Resize(ref allDeliveries, allDeliveries.Length + size);
-                            }
-
-                            executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
-                            deliveryCount += contextDeliveryCount;
-                        }
-                    }
-                }
-
-                //WaitHandle.WaitAll(syncEvents);
-
-                for (int i = 0; i < syncEvents.Length; i++)
-                {
-                    syncEvents[i].WaitOne();
-                }
-
-                //Thread.EndThreadAffinity();
-                for (int i = 0; i < threadCount; i++)
-                {
-                    syncEvents[i].Dispose();
-
-                    // Обработка последних завершившихся потоков
-                    CalcThreadContext executedThreadContext = context[contextIndex[i]];
-                    int contextDeliveryCount = executedThreadContext.DeliveryCount;
-                    if (contextDeliveryCount > 0)
-                    {
-                        if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
-                        {
-                            int size = allDeliveries.Length / 2;
-                            if (size < contextDeliveryCount)
-                                size = contextDeliveryCount;
-                            Array.Resize(ref allDeliveries, allDeliveries.Length + size);
-                        }
-
-                        executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
-                        deliveryCount += contextDeliveryCount;
-                    }
-                }
-//ff:
-                if (deliveryCount <= 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(261, $"CreateDeliveriesEx. service_id = {service_id.Value}. Exit rc = {rc}", 0);
-                    #endif
-
-                    return rc = 0;
-                }
-
-                if (deliveryCount < allDeliveries.Length)
-                {
-                    Array.Resize(ref allDeliveries, deliveryCount);
-                }
-
-                // 14. Сохраняем построенные отгрузки
-                rc = 14;
-
-                //#if debug
-                //    Logger.WriteToLog(27, $"CreateDeliveriesEx. service_id = {service_id.Value}. Saving deliveries...", 0);
-                //#endif
-
-                //using (SqlConnection connection = new SqlConnection("context connection=true"))
-                //{
-                // 14.1 Открываем соединение
-                //rc = 141;
-                //connection.Open();
-
-                // 14.2 Очищаем отгрузки: таблицы lsvNodeDeliveryTime, lsvDeliveryNodeInfo, lsvDeliveryOrders, lsvDeliveries
-                rc = 142;
-                rc1 = ClearDeliveries(connection);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(28, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Clear deliveries failed", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-
-                // 14.3 Сохраняем построенные отгрузки
-                rc = 143;
-                //rc1 = SaveDeliveries(allDeliveries, connection);
-                #if debug
-                    Logger.WriteToLog(290, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saving({allDeliveries.Length})...", 0);
-                #endif
-
-                rc1 = SaveDeliveriesEx(allDeliveries, GetServerName(connection), connection.Database);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(28, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-
-                connection.Close();
-                //connection.Close();
-                //return rc = 777;
-            }
-
-            #if debug
-                Logger.WriteToLog(291, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saved", 0);
-            #endif
-
-            // 15. Выход - Ok
-            rc = 0;
-            return rc;
-        }
-        catch (Exception ex)
-        {
-            #if debug
-                Logger.WriteToLog(3, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Exception {ex.Message}", 2);
-            #endif
-            return rc;
-        }
-        finally
-        {
-            #if debug
-                Logger.WriteToLog(2, $"<--- CreateDeliveriesEx. service_id = {service_id.Value}. calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}. rc = {rc}", 0);
-            #endif
-        }
-    }
-
-    /// <summary>
-    /// Построение всех возможных отгрузок для всех
-    /// отмеченных магазинов
-    /// </summary>
-    /// <param name="service_id">ID LogisticsService</param>
-    /// <param name="calc_time">Момент времени, на который проводятся расчеты</param>
-    /// <returns>0 - отгрузки построены; иначе отгрузки не построены</returns>
-    [SqlProcedure]
-    public static SqlInt32 CreateCovers(SqlInt32 service_id, SqlDateTime calc_time)
-    {
-        // 1. Инициализация
-        int rc = 1;
-        int rc1 = 1;
-
-        try
-        {
-            #if debug
-                Logger.WriteToLog(1, $"---> CreateDeliveriesEx. service_id = {service_id.Value}, calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}", 0);
-            #endif
-
-            // 2. Проверяем исходные данные
-            rc = 2;
-            if (!SqlContext.IsAvailable)
-            {
-                #if debug
-                    Logger.WriteToLog(4, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. SQLContext is not available", 1);
-                #endif
-                return rc;
-            }
-
-            // 3. Открываем соединение в контексте текущей сессии
-            //    и загружаем все необходимые данные
-            rc = 3;
-            Shop[] shops = null;
-            Order[] orders = null;
-            int[] requiredVehicleTypes = null;
-            CourierTypeRecord[] courierTypeRecords = null;
-            CourierRecord[] courierRecords = null;
-            AverageDeliveryCostRecord[] thresholdRecords;
-            MaxOrdersOfRouteRecord[] routeLimitationRecords;
-
-            using (SqlConnection connection = new SqlConnection("context connection=true"))
-            {
-                // 3.1 Открываем соединение
-                rc = 31;
-                connection.Open();
-                //#if debug
-                //    Logger.WriteToLog(444, $"CreateDeliveriesEx. service_id = {service_id.Value}. DataSource = {GetServerName(connection)}, Database = {connection.Database}" , 0);
-                //#endif
-                
-                // 3.2 Выбираем магазины для пересчета отгрузок
-                rc = 32;
-                rc1 = SelectShops(connection, out shops);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(4, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not selected", 1);
-                    #endif
-                    return rc = 1000000 * rc + rc1;
-                }
-                if (shops == null || shops.Length <= 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(5, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Shops are not found", 0);
-                    #endif
-                    return rc = 0;
-                }
-
-                #if debug
-                    Logger.WriteToLog(6, $"CreateDeliveriesEx. service_id = {service_id.Value}. Selected shops: {shops.Length}", 0);
-                #endif
-
-                // 3.3 Выбираем заказы, для которых нужно построить отгрузки
-                rc = 33;
-                rc1 = SelectOrders(connection, out orders);
-                if (rc1 != 0)
-                {
-                    #if debug
-                        Logger.WriteToLog(7, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not selected", 1);
-                    #endif
                     return rc = 1000000 * rc + rc1;
                 }
 
@@ -1110,16 +1112,15 @@ public partial class StoredProcedures
 
                 if (orders == null || orders.Length <= 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(8, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not found", 0);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(8, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Orders are not found", 0);
+                #endif
                     return rc = 0;
                 }
 
-                #if debug
-                    Logger.WriteToLog(9, $"CreateDeliveriesEx. service_id = {service_id.Value}. Selected orders: {orders.Length}", 0);
-                #endif
-
+            #if debug
+                Logger.WriteToLog(9, $"CreateCovers. service_id = {service_id.Value}. Selected orders: {orders.Length}", 0);
+            #endif
 
                 // 3.4 Выбираем способы доставки заказов,
                 //     которые могут быть использованы
@@ -1127,31 +1128,31 @@ public partial class StoredProcedures
                 requiredVehicleTypes = AllOrders.GetOrderVehicleTypes(orders);
                 if (requiredVehicleTypes == null || requiredVehicleTypes.Length <= 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(10, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Orders vehicle types are not found", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(10, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. Orders vehicle types are not found", 1);
+                #endif
                     return rc;
                 }
 
-                #if debug
-                    Logger.WriteToLog(11, $"CreateDeliveriesEx. service_id = {service_id.Value}. Order vehicle  types: {requiredVehicleTypes.Length}", 0);
-                #endif
+            #if debug
+                Logger.WriteToLog(11, $"CreateCovers. service_id = {service_id.Value}. Order vehicle  types: {requiredVehicleTypes.Length}", 0);
+            #endif
 
                 // 3.5 Загружаем параметры способов отгрузки
                 rc = 35;
                 rc1 = SelectCourierTypes(requiredVehicleTypes, connection, out courierTypeRecords);
                 if (rc1 != 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(12, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Courier types are not selected", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(12, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Courier types are not selected", 1);
+                #endif
                     return rc = 1000000 * rc + rc1;
                 }
                 if (courierTypeRecords == null || courierTypeRecords.Length <= 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(13, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Courier types are not found", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(13, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. Courier types are not found", 1);
+                #endif
                     return rc;
                 }
 
@@ -1160,37 +1161,37 @@ public partial class StoredProcedures
                 rc1 = SelectCouriers(connection, out courierRecords);
                 if (rc1 != 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(14, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Couriers are not selected", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(14, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Couriers are not selected", 1);
+                #endif
                     return rc = 1000000 * rc + rc1;
                 }
                 if (courierRecords == null || courierRecords.Length <= 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(15, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Courier are not found", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(15, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. Courier are not found", 1);
+                #endif
                     return rc;
                 }
 
-                #if debug
-                    Logger.WriteToLog(16, $"CreateDeliveriesEx. service_id = {service_id.Value}. Courier records: {courierRecords.Length}", 0);
+            #if debug
+                Logger.WriteToLog(16, $"CreateCovers. service_id = {service_id.Value}. Courier records: {courierRecords.Length}", 0);
 
-                    for (int i = 0; i < courierRecords.Length; i++)
-                    {
-                        Logger.WriteToLog(161, $"CreateDeliveriesEx. service_id = {service_id.Value}. courierRecords[{i}].Id = {courierRecords[i].CourierId}, courierRecords[{i}].VehicleID = {courierRecords[i].VehicleId}", 0);
+                for (int i = 0; i < courierRecords.Length; i++)
+                {
+                    Logger.WriteToLog(161, $"CreateCovers. service_id = {service_id.Value}. courierRecords[{i}].Id = {courierRecords[i].CourierId}, courierRecords[{i}].VehicleID = {courierRecords[i].VehicleId}", 0);
 
-                    }
-                #endif
+                }
+            #endif
 
                 // 3.7 Загружаем пороги для среднего времени доставки заказов
                 rc = 37;
                 rc1 = SelectThresholds(connection, out thresholdRecords);
                 if (rc1 != 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(17, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Thresholds are not selected", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(17, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Thresholds are not selected", 1);
+                #endif
                     return rc = 1000000 * rc + rc1;
                 }
                 //if (thresholdRecords == null || thresholdRecords.Length <= 0)
@@ -1201,16 +1202,16 @@ public partial class StoredProcedures
                 rc1 = SelectMaxOrdersOfRoute(service_id.Value, connection, out routeLimitationRecords);
                 if (rc1 != 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(18, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Max route length are not selected", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(18, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Max route length are not selected", 1);
+                #endif
                     return rc = 1000000 * rc + rc1;
                 }
                 if (routeLimitationRecords == null || routeLimitationRecords.Length <= 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(19, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Max route length records are not found", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(19, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. Max route length records are not found", 1);
+                #endif
                     return rc;
                 }
 
@@ -1221,7 +1222,7 @@ public partial class StoredProcedures
                 if (rc1 != 0)
                 {
                 #if debug
-                    Logger.WriteToLog(20, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allCouriers is not created", 1);
+                    Logger.WriteToLog(20, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allCouriers is not created", 1);
                 #endif
                     return rc = 1000000 * rc + rc1;
                 }
@@ -1232,9 +1233,9 @@ public partial class StoredProcedures
                 rc1 = allOrders.Create(orders);
                 if (rc1 != 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(21, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allOrders is not created", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(21, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. allOrders is not created", 1);
+                #endif
                     return rc = 1000000 * rc + rc1;
                 }
 
@@ -1244,9 +1245,9 @@ public partial class StoredProcedures
                 rc1 = thresholds.Create(thresholdRecords);
                 if (rc1 != 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(22, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. thresholds is not created", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(22, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. thresholds is not created", 1);
+                #endif
                     return rc = 1000000 * rc + rc1;
                 }
 
@@ -1256,9 +1257,9 @@ public partial class StoredProcedures
                 rc1 = limitations.Create(routeLimitationRecords);
                 if (rc1 != 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(23, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. limitations is not created", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(23, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. limitations is not created", 1);
+                #endif
                     return rc = 1000000 * rc + rc1;
                 }
 
@@ -1280,17 +1281,17 @@ public partial class StoredProcedures
                 CalcThreadContext[] context = GetCalcThreadContext(connection, service_id.Value, calc_time.Value, shops, allOrders, allCouriers, limitations);
                 if (context == null || context.Length <= 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(24, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Thread context is not created", 1);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(24, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. Thread context is not created", 1);
+                #endif
                 }
 
                 if (context.Length < threadCount)
                     threadCount = context.Length;
 
-                #if debug
-                    Logger.WriteToLog(25, $"CreateDeliveriesEx. service_id = {service_id.Value}. Thread context count: {context.Length}. Thread count: {threadCount}", 0);
-                #endif
+            #if debug
+                Logger.WriteToLog(25, $"CreateCovers. service_id = {service_id.Value}. Thread context count: {context.Length}. Thread count: {threadCount}", 0);
+            #endif
 
                 // 10. Сортируем контексты по убыванию числа заказов
                 rc = 10;
@@ -1307,9 +1308,9 @@ public partial class StoredProcedures
                 CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[500000];
                 int deliveryCount = 0;
 
-                #if debug
-                    Logger.WriteToLog(26, $"CreateDeliveriesEx. service_id = {service_id.Value}. Thread context count: {context.Length}", 0);
-                #endif
+            #if debug
+                Logger.WriteToLog(26, $"CreateCovers. service_id = {service_id.Value}. Thread context count: {context.Length}", 0);
+            #endif
 
                 //Thread.BeginThreadAffinity();
                 for (int i = 0; i < threadCount; i++)
@@ -1396,9 +1397,9 @@ public partial class StoredProcedures
 
                 if (deliveryCount <= 0)
                 {
-                    #if debug
-                        Logger.WriteToLog(261, $"CreateDeliveriesEx. service_id = {service_id.Value}. Exit rc = {rc}", 0);
-                    #endif
+                #if debug
+                    Logger.WriteToLog(261, $"CreateCovers. service_id = {service_id.Value}. Exit rc = {rc}", 0);
+                #endif
 
                     return rc = 0;
                 }
@@ -1414,92 +1415,140 @@ public partial class StoredProcedures
                 CourierDeliveryInfo[] covers;
                 OrderRejectionCause[] rejectedOrders;
 
+            #if debug
+                System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+            #endif
+
                 rc1 = CreateCover.Create(allDeliveries, allOrders, allCouriers, connection, out recomendations, out covers, out rejectedOrders);
-                if (rc1 == 0)
+            #if debug
+                sw.Stop();
+                Logger.WriteToLog(292, $"CreateCover.Create.rc = {rc1}. Elapsed Time = {sw.ElapsedMilliseconds}, recomendations = {(recomendations == null ? 0 : recomendations.Length)}, covers = {(covers == null ? 0 : covers.Length)}, rejectedOrders = {(rejectedOrders == null ? 0 : rejectedOrders.Length)}", 0);
+            #endif
+            
+                if (rc1 != 0)
+                    return rc = 1000000 * rc + rc1;
+
+                // 14.1 Отменяем заказы
+                rc = 141;
+                if (rejectedOrders != null && rejectedOrders.Length > 0)
                 {
-                    // 14.1 Отменяем заказы
-                    rc = 141;
-                    if (rejectedOrders != null && rejectedOrders.Length > 0)
-                    {
-                        RejectOrders(rejectedOrders, service_id.Value, connection);
-                    }
-
-                    // 14.2 Объединяем отгрузки для сохранения
-                    rc = 142;
-                    int recomendationCount = (recomendations == null ? 0 : recomendations.Length);
-                    int coverCount = (covers == null ? 0 : covers.Length);
-                    CourierDeliveryInfo[] savedDeliveries = null;
-
-                    if (recomendationCount > 0 && coverCount > 0)
-                    {
-                        savedDeliveries = new CourierDeliveryInfo[recomendationCount + coverCount];
-                        recomendations.CopyTo(savedDeliveries, 0);
-                        covers.CopyTo(savedDeliveries, recomendationCount);
-                    }
-                    else if (recomendationCount > 0 && coverCount <= 0)
-                    {
-                        savedDeliveries = recomendations;
-                    }
-                    else if (recomendationCount <= 0 && coverCount > 0)
-                    {
-                        savedDeliveries = covers;
-                    }
-
-                    // 14.3 Очищаем отгрузки
-                    rc = 143;
-                    rc1 = ClearDeliveries(connection);
-                    if (rc1 != 0)
-                    {
-                        #if debug
-                            Logger.WriteToLog(28, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Clear deliveries failed", 1);
-                        #endif
-                        return rc = 1000000 * rc + rc1;
-                    }
-
-                    // 14.3 Сохраняем отгрузки
-                    rc = 143;
-                    if (savedDeliveries != null)
-                    {
-                    #if debug
-                        Logger.WriteToLog(290, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saving({allDeliveries.Length})...", 0);
-                    #endif
-
-                        rc1 = SaveDeliveriesEx(savedDeliveries, GetServerName(connection), connection.Database);
-                        if (rc1 != 0)
-                        {
-                    #if debug
-                            Logger.WriteToLog(28, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
-                    #endif
-                            //return rc = 1000000 * rc + rc1;
-                        }
-                        else
-                        {
-                            #if debug
-                                Logger.WriteToLog(291, $"CreateDeliveriesEx. service_id = {service_id.Value}. Deliveries saved", 0);
-                            #endif
-                        }
-                    }
-
-                    // 14.4 Отправляем рекомендации
-                    rc = 144;
-                    if (recomendations != null && recomendations.Length > 0)
-                    {
-                        SendDeliveries(recomendations, 0, service_id.Value, allCouriers, connection);
-                        //SendRecomendations(recomendations, service_id.Value, connection);
-                    }
-
-                    // 14.5 Делим команды на отгрузку на две группы:
-                    //          команды, отправляемые немедленно
-                    //          команды, помещаемые в очередь
-                    rc = 145;
-
-
+                    RejectOrders(rejectedOrders, service_id.Value, connection);
                 }
 
+                // 14.2 Объединяем отгрузки для сохранения
+                rc = 142;
+                int recomendationCount = (recomendations == null ? 0 : recomendations.Length);
+                int coverCount = (covers == null ? 0 : covers.Length);
+                CourierDeliveryInfo[] savedDeliveries = null;
 
+                if (recomendationCount > 0 && coverCount > 0)
+                {
+                    savedDeliveries = new CourierDeliveryInfo[recomendationCount + coverCount];
+                    recomendations.CopyTo(savedDeliveries, 0);
+                    covers.CopyTo(savedDeliveries, recomendationCount);
+                }
+                else if (recomendationCount > 0 && coverCount <= 0)
+                {
+                    savedDeliveries = recomendations;
+                }
+                else if (recomendationCount <= 0 && coverCount > 0)
+                {
+                    savedDeliveries = covers;
+                }
+
+                // 14.3 Очищаем отгрузки
+                rc = 143;
+                rc1 = ClearDeliveries(connection);
+                if (rc1 != 0)
+                {
+                #if debug
+                    Logger.WriteToLog(28, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. Clear deliveries failed", 1);
+                #endif
+                    return rc = 1000000 * rc + rc1;
+                }
+
+                // 14.4 Сохраняем отгрузки
+                rc = 144;
+                if (savedDeliveries != null)
+                {
+                #if debug
+                    Logger.WriteToLog(290, $"CreateCovers. service_id = {service_id.Value}. Deliveries saving({allDeliveries.Length})...", 0);
+                #endif
+
+                    rc1 = SaveDeliveriesEx(savedDeliveries, GetServerName(connection), connection.Database);
+                    if (rc1 != 0)
+                    {
+                    #if debug
+                        Logger.WriteToLog(28, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
+                    #endif
+                        //return rc = 1000000 * rc + rc1;
+                    }
+                    else
+                    {
+                    #if debug
+                        Logger.WriteToLog(291, $"CreateCovers. service_id = {service_id.Value}. Deliveries saved", 0);
+                    #endif
+                    }
+                }
+
+                // 14.5 Отправляем рекомендации
+                rc = 145;
+                if (recomendations != null && recomendations.Length > 0)
+                {
+                    rc1 = SendDeliveries(recomendations, 0, service_id.Value, allCouriers, connection);
+                    #if debug
+                        if (rc1 != 0)
+                            Logger.WriteToLog(293, $"CreateCovers. service_id = {service_id.Value}. SendDeliveries.rc = {rc1}", 1);
+                    #endif
+                    //SendRecomendations(recomendations, service_id.Value, connection);
+                }
+
+                // 14.6 Добавляем отгрузки в очередь
+                rc = 146;
+                if (coverCount > 0)
+                {
+                    rc1 = CreateQueue(service_id.Value, covers, allCouriers, thresholds, connection);
+                    #if debug
+                        if (rc1 != 0)
+                            Logger.WriteToLog(293, $"CreateCovers. service_id = {service_id.Value}. CreateQueue.rc = {rc1}", 1);
+                    #endif
+                }
+
+                // 14.7 Удаляем из очереди отгрузки магазинов, для которых покрытие пусто и сбрасываем для магазинов shpUpdated
+                rc = 147;
+                int[] coverShopId = GetShopsFromDeliveries(covers);
+                int[] notCoveredShopId;
+
+                notCoveredShopId = new int[shops.Length];
+                if (coverShopId == null || coverShopId.Length <= 0)
+                {
+                    for (int i= 0; i < shops.Length; i++)
+                    {
+                        notCoveredShopId[i] = shops[i].Id;
+                    }
+                }
+                else
+                {
+                    int cnt = 0;
+                    for (int i = 0; i < shops.Length; i++)
+                    {
+                        if (Array.BinarySearch(coverShopId, shops[i].Id) < 0)
+                        notCoveredShopId[cnt++] = shops[i].Id;
+                    }
+
+                    if (cnt < notCoveredShopId.Length)
+                    {
+                        Array.Resize(ref notCoveredShopId, cnt);
+                    }
+                }
+
+                ClearQueueDeliveries(notCoveredShopId, connection);
+                SetShopUpdated(false, notCoveredShopId, connection);
+
+                // 14.8 Закрываем соединение
+                rc = 148;
                 connection.Close();
-                //connection.Close();
-                //return rc = 777;
             }
 
 
@@ -1509,22 +1558,32 @@ public partial class StoredProcedures
         }
         catch (Exception ex)
         {
-            #if debug
-                Logger.WriteToLog(3, $"CreateDeliveriesEx. service_id = {service_id.Value}. rc = {rc}. Exception {ex.Message}", 2);
-            #endif
+        #if debug
+            Logger.WriteToLog(3, $"CreateCovers. service_id = {service_id.Value}. rc = {rc}. Exception {ex.Message}", 2);
+        #endif
             return rc;
         }
         finally
         {
-            #if debug
-                Logger.WriteToLog(2, $"<--- CreateDeliveriesEx. service_id = {service_id.Value}. calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}. rc = {rc}", 0);
-            #endif
+        #if debug
+            Logger.WriteToLog(2, $"<--- CreateCovers. service_id = {service_id.Value}. calc_time = {calc_time.Value: yyyy-MM-dd HH:mm:ss.fff}. rc = {rc}", 0);
+        #endif
         }
     }
 
+    /// <summary>
+    /// Обработка построенного покрытия
+    /// </summary>
+    /// <param name="serviceId">ID сервиса логистики</param>
+    /// <param name="deliveries">Отгрузки, образующие покрытия</param>
+    /// <param name="allCouriers">Все курьеры</param>
+    /// <param name="courierCostThresholds">Пороги для средней стоимости доставки одного заказа</param>
+    /// <param name="connection">Открытое соединение</param>
+    /// <returns>0 - покрытия успешно обработаны; покрытие не обработано</returns>
     private static int CreateQueue(int serviceId, CourierDeliveryInfo[] deliveries, AllCouriers allCouriers, AverageCostThresholds courierCostThresholds, SqlConnection connection)
     {
         // 1. Инициализация
+        int rc1 = 1;
         int rc = 1;
 
         try
@@ -1553,7 +1612,9 @@ public partial class StoredProcedures
                 parameter.Direction = ParameterDirection.Input;
                 parameter.Value = serviceId;
 
-                try { shipmentTrigger = (bool)query.ExecuteScalar(); } catch { }
+                try
+                { shipmentTrigger = (bool)query.ExecuteScalar(); }
+                catch { }
             }
 
             using (SqlCommand query = new SqlCommand("dbo.[lsvGetTaxiAlertInterval]", connection))
@@ -1563,7 +1624,9 @@ public partial class StoredProcedures
                 parameter.Direction = ParameterDirection.Input;
                 parameter.Value = serviceId;
 
-                try { taxiMargin = (double) query.ExecuteScalar(); } catch { }
+                try
+                { taxiMargin = (double)query.ExecuteScalar(); }
+                catch { }
             }
 
             using (SqlCommand query = new SqlCommand("dbo.[lsvGetCourierAlertInterval]", connection))
@@ -1573,7 +1636,9 @@ public partial class StoredProcedures
                 parameter.Direction = ParameterDirection.Input;
                 parameter.Value = serviceId;
 
-                try { courierMargin = (double) query.ExecuteScalar(); } catch { }
+                try
+                { courierMargin = (double)query.ExecuteScalar(); }
+                catch { }
             }
 
             // 5. Сортируем отгрузки по Shop.Id
@@ -1587,7 +1652,7 @@ public partial class StoredProcedures
             DateTime thresholdTime = DateTime.Now.AddSeconds(30);
             CourierDeliveryInfo[] startNowDelivery = new CourierDeliveryInfo[deliveries.Length];
             CourierDeliveryInfo[] queueDelivery = new CourierDeliveryInfo[deliveries.Length];
-            
+
             int startNowCount = 0;
             int queueCount = 0;
 
@@ -1617,7 +1682,7 @@ public partial class StoredProcedures
                     eventTime = delivery.StartDeliveryInterval;
                     cause = 2;
                 }
-                else if (courier.IsTaxi) 
+                else if (courier.IsTaxi)
                 {
                     eventTime = delivery.EndDeliveryInterval.AddMinutes(-taxiMargin);
                     if (eventTime < delivery.StartDeliveryInterval)
@@ -1653,17 +1718,32 @@ public partial class StoredProcedures
                     Array.Resize(ref startNowDelivery, startNowCount);
                 }
 
-                int rc1 = SendDeliveries(startNowDelivery, 1, serviceId, allCouriers, connection);
+                rc1 = SendDeliveries(startNowDelivery, 1, serviceId, allCouriers, connection);
                 if (rc1 == 0)
                 {
                     SetOrderCompleted(startNowDelivery, connection);
                 }
+
+                int[] startNowShopId = GetShopsFromDeliveries(startNowDelivery);
+                ClearQueueDeliveries(startNowShopId, connection);
+                SetShopUpdated(false, startNowShopId, connection);
             }
 
             // 8. Создаём очередь
-            rc = 7;
+            rc = 8;
 
+            if (queueCount > 0)
+            {
+                if (queueCount < queueDelivery.Length)
+                {
+                    Array.Resize(ref queueDelivery, queueCount);
 
+                    rc1 = AddToDeliveryQueue(queueDelivery, connection);
+                }
+            }
+
+            // 9. Выход - Ok
+            rc = 0;
             return rc;
         }
         catch
@@ -1671,6 +1751,13 @@ public partial class StoredProcedures
             return rc;
         }
     }
+
+    /// <summary>
+    /// Добавление отгрузок в очереди
+    /// </summary>
+    /// <param name="deliveries">Добавляемые отгрузки</param>
+    /// <param name="connection">Открытое соединение</param>
+    /// <returns>0 - отгрузки добавлены в очередь; иначе - отгрузки не добавлены</returns>
     private static int AddToDeliveryQueue(CourierDeliveryInfo[] deliveries, SqlConnection connection)
     {
         // 1. Инициализация
@@ -1692,67 +1779,284 @@ public partial class StoredProcedures
             // 4. Цикл добавления новых записей об отгрузках, которые замещают старые
             rc = 4;
             int currentShopId = -1;
-            string sqlText =
-"INSERT dbo.lsvDeliveryQueue(dlqEventTime, dlqEventType, dlqCourierID, dlqShopID, dlqCalculationTime, dlqOrderCount, dlqOrderCost, dlqWeight, dlqDeliveryTime, dlqExecutionTime, dlqIsLoop, dlqReserveTime, dlqStartDeliveryInterval, dlqEndDeliveryInterval, dlqCost, dlqStartDelivery, dlqCompleted, dlqPermutationKey) " +
-                     "VALUES(@dlqEventTime, @dlqEventType, @dlqCourierID, @dlqShopID, @dlqCalculationTime, @dlqOrderCount, @dlqOrderCost, @dlqWeight, @dlqDeliveryTime, @dlqExecutionTime, @dlqIsLoop, @dlqReserveTime, @dlqStartDeliveryInterval, @dlqEndDeliveryInterval, @dlqCost, @dlqStartDelivery, @dlqCompleted, @dlqPermutationKey)";
+            StringBuilder sbPermutationKey = new StringBuilder(150);
+            int[] sortedOrders = new int[128];
 
-            using (SqlCommand cmd = new SqlCommand())
+            using (SqlCommand queryQueue = CreateInsert_lsvDeliveryQueue(connection))
+            using (SqlCommand queryOrders = CreateInsert_lsvDeliveryQueueOrders(connection))
+            using (SqlCommand queryTime = CreateInsert_lsvNodeDeliveryQueueTime(connection))
+            using (SqlCommand queryInfo = CreateInsert_lsvDeliveryQueueNodeInfo(connection))
             {
-                // @dlqEventTime
-                var parameter = cmd.Parameters.Add("@dlqEventTime", SqlDbType.DateTime);
-                parameter.Direction = ParameterDirection.Input;
-
-                // @dlqEventType
-                parameter = cmd.Parameters.Add("@dlqEventType", SqlDbType.Int);
-                parameter.Direction = ParameterDirection.Input;
-
-                // @dlqCourierID
-                parameter = cmd.Parameters.Add("@dlqCourierID", SqlDbType.Int);
-                parameter.Direction = ParameterDirection.Input;
-
-                // @dlqShopID
-                parameter = cmd.Parameters.Add("dlqShopID", SqlDbType.Int);
-                parameter.Direction = ParameterDirection.Input;
-
-                // @dlqCalculationTime
-                parameter = cmd.Parameters.Add("@dlqCalculationTime", SqlDbType.DateTime);
-                parameter.Direction = ParameterDirection.Input;
-
-                // @dlqOrderCount
-                parameter = cmd.Parameters.Add("dlqOrderCount", SqlDbType.Int);
-                parameter.Direction = ParameterDirection.Input;
+                SqlParameter cmdParameterId = queryQueue.Parameters["@ID"];
 
                 for (int i = 0; i < deliveries.Length; i++)
                 {
                     // 4.1. Извлекаем очередную отгрузку
                     rc = 41;
                     CourierDeliveryInfo delivery = deliveries[i];
+                    Order[] deliveryOrders = delivery.Orders;
+                    int orderCount = deliveryOrders.Length;
+
+                    for (int j = 0; j < orderCount; j++)
+                    {
+                        sortedOrders[j] = deliveryOrders[j].Id;
+                    }
+
+                    Array.Sort(sortedOrders, 0, orderCount);
+
+                    sbPermutationKey.Length = 0;
+                    sbPermutationKey.Append(delivery.DeliveryCourier.VehicleID);
+                    sbPermutationKey.Append('.');
+                    sbPermutationKey.Append(sortedOrders[0]);
+
+                    for (int j = 1; j < orderCount; j++)
+                    {
+                        Order order = deliveryOrders[j];
+                        sbPermutationKey.Append('.');
+                        sbPermutationKey.Append(sortedOrders[j]);
+                    }
 
                     // 4.2 Смена магазина
                     rc = 42;
                     if (delivery.FromShop.Id != currentShopId)
                     {
+                        if (currentShopId != -1)
+                            SetShopUpdated(false, new int[] { currentShopId}, connection);
                         currentShopId = delivery.FromShop.Id;
-                        sqlText = $"DELETE dbo.lsvDeliveryQueue WHERE dlqShopID = {currentShopId}";
+                        string sqlText = $"DELETE dbo.lsvDeliveryQueue WHERE dlqShopID = {currentShopId}";
 
                         using (SqlCommand query = new SqlCommand(sqlText, connection))
                         { query.ExecuteNonQuery(); }
                     }
 
+                    // 4.3 Добавляем запись в lsvDeliveryQueue
+                    rc = 43;
+                    sbPermutationKey.Length = 0;
+                    sbPermutationKey.Append(delivery.DeliveryCourier.VehicleID);
+                    sbPermutationKey.Append('.');
+                    sbPermutationKey.Append(sortedOrders[0]);
 
+                    queryQueue.Parameters["@dlqEventTime"].Value = delivery.EventTime;
+                    queryQueue.Parameters["@dlqEventType"].Value = 1;
+                    queryQueue.Parameters["@dlqCourierID"].Value = delivery.DeliveryCourier.Id;
+                    queryQueue.Parameters["@dlqShopID"].Value = delivery.FromShop.Id;
+                    queryQueue.Parameters["@dlqCalculationTime"].Value = delivery.CalculationTime;
+                    queryQueue.Parameters["@dlqOrderCount"].Value = delivery.OrderCount;
+                    queryQueue.Parameters["@dlqOrderCost"].Value = delivery.OrderCost;
+                    queryQueue.Parameters["@dlqWeight"].Value = delivery.Weight;
+                    queryQueue.Parameters["@dlqDeliveryTime"].Value = delivery.DeliveryTime;
+                    queryQueue.Parameters["@dlqExecutionTime"].Value = delivery.ExecutionTime;
+                    queryQueue.Parameters["@dlqIsLoop"].Value = delivery.IsLoop;
+                    queryQueue.Parameters["@dlqReserveTime"].Value = delivery.ReserveTime.TotalMinutes;
+                    queryQueue.Parameters["@dlqStartDeliveryInterval"].Value = delivery.StartDeliveryInterval;
+                    queryQueue.Parameters["@dlqEndDeliveryInterval"].Value = delivery.EndDeliveryInterval;
+                    queryQueue.Parameters["@dlqCost"].Value = delivery.Cost;
+                    queryQueue.Parameters["@dlqStartDelivery"].Value = delivery.StartDeliveryInterval;
+                    queryQueue.Parameters["@dlqCompleted"].Value = 0;
+                    queryQueue.Parameters["@dlqPermutationKey"].Value = sbPermutationKey.ToString();
+                    cmdParameterId.Value = -1;
 
+                    queryQueue.ExecuteNonQuery();
+                    int dlqId = (int)cmdParameterId.Value;
+
+                    // 4.4 Добавляем запись в lsvDeliveryQueueOrders
+                    rc = 44;
+                    queryOrders.Parameters["@dqoDlqID"].Value = dlqId;
+
+                    for (int j = 0; j < orderCount; j++)
+                    {
+                        queryOrders.Parameters["@dqoOrderID"].Value = deliveryOrders[j].Id;
+                        queryQueue.ExecuteNonQuery();
+                    }
+
+                    // 4.5 Добавляем запись в lsvNodeDeliveryQueueTime
+                    rc = 45;
+                    queryTime.Parameters["@nqtDlqID"].Value = dlqId;
+
+                    for (int j = 0; j < delivery.NodeDeliveryTime.Length; j++)
+                    {
+                        queryTime.Parameters["@nqtTime"].Value = delivery.NodeDeliveryTime[j];
+                        queryTime.ExecuteNonQuery();
+                    }
+
+                    // 4.6 Добавляем запись в lsvDeliveryQueueNodeInfo
+                    rc = 46;
+                    queryInfo.Parameters["@dqiDlqID"].Value = dlqId;
+
+                    for (int j = 0; j < delivery.NodeInfo.Length; j++)
+                    {
+                        queryInfo.Parameters["@dqiDistance"].Value = delivery.NodeInfo[j].X;
+                        queryInfo.Parameters["@dqiTime"].Value = delivery.NodeInfo[j].Y;
+                        queryInfo.ExecuteNonQuery();
+                    }
                 }
 
+                if (currentShopId != -1)
+                    SetShopUpdated(false, new int[] { currentShopId }, connection);
             }
 
-
-
+            // 5. Выход - Ok
+            rc = 0;
+            return rc;
         }
         catch
         {
             return rc;
         }
+    }
 
+    private static SqlCommand CreateInsert_lsvDeliveryQueue(SqlConnection connection)
+    {
+        string sqlText =
+        "INSERT dbo.lsvDeliveryQueue(dlqEventTime, dlqEventType, dlqCourierID, dlqShopID, dlqCalculationTime, dlqOrderCount, dlqOrderCost, dlqWeight, dlqDeliveryTime, dlqExecutionTime, dlqIsLoop, dlqReserveTime, dlqStartDeliveryInterval, dlqEndDeliveryInterval, dlqCost, dlqStartDelivery, dlqCompleted, dlqPermutationKey) " +
+                                "VALUES(@dlqEventTime, @dlqEventType, @dlqCourierID, @dlqShopID, @dlqCalculationTime, @dlqOrderCount, @dlqOrderCost, @dlqWeight, @dlqDeliveryTime, @dlqExecutionTime, @dlqIsLoop, @dlqReserveTime, @dlqStartDeliveryInterval, @dlqEndDeliveryInterval, @dlqCost, @dlqStartDelivery, @dlqCompleted, @dlqPermutationKey); " +
+                                "SELECT @ID = @@IDENTITY";
+
+        SqlCommand cmd = new SqlCommand(sqlText, connection);
+
+        // @dlqEventTime
+        var parameter = cmd.Parameters.Add("@dlqEventTime", SqlDbType.DateTime);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqEventType
+        parameter = cmd.Parameters.Add("@dlqEventType", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqCourierID
+        parameter = cmd.Parameters.Add("@dlqCourierID", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqShopID
+        parameter = cmd.Parameters.Add("dlqShopID", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqCalculationTime
+        parameter = cmd.Parameters.Add("@dlqCalculationTime", SqlDbType.DateTime);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqOrderCount
+        parameter = cmd.Parameters.Add("@dlqOrderCount", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqOrderCount
+        parameter = cmd.Parameters.Add("@dlqOrderCost", SqlDbType.Float);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqWeight
+        parameter = cmd.Parameters.Add("@dlqWeight", SqlDbType.Float);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqDeliveryTime
+        parameter = cmd.Parameters.Add("@dlqDeliveryTime", SqlDbType.Float);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqExecutionTime
+        parameter = cmd.Parameters.Add("@dlqExecutionTime", SqlDbType.Float);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqIsLoop
+        parameter = cmd.Parameters.Add("@dlqIsLoop", SqlDbType.Bit);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqReserveTime
+        parameter = cmd.Parameters.Add("@dlqReserveTime", SqlDbType.Float);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqStartDeliveryInterval
+        parameter = cmd.Parameters.Add("@dlqStartDeliveryInterval", SqlDbType.DateTime);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqEndDeliveryInterval
+        parameter = cmd.Parameters.Add("@dlqEndDeliveryInterval", SqlDbType.DateTime);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqCost
+        parameter = cmd.Parameters.Add("@dlqCost", SqlDbType.Float);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqStartDelivery
+        parameter = cmd.Parameters.Add("@dlqStartDelivery", SqlDbType.DateTime);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqCompleted
+        parameter = cmd.Parameters.Add("@dlqCompleted", SqlDbType.Bit);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dlqPermutationKey
+        parameter = cmd.Parameters.Add("@dlqPermutationKey", SqlDbType.VarChar, 128);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @ID
+        var idParameter = cmd.Parameters.Add("@ID", SqlDbType.Int);
+        idParameter.Direction = ParameterDirection.Output;
+
+        cmd.Prepare();
+
+        return cmd;
+    }
+
+    private static SqlCommand CreateInsert_lsvDeliveryQueueOrders(SqlConnection connection)
+    {
+        string sqlText =
+        "INSERT dbo.lsvDeliveryQueueOrders(dqoDlqID, dqoOrderID) VALUES(@dqoDlqID, @dqoOrderID);";
+
+        SqlCommand cmd = new SqlCommand(sqlText, connection);
+
+        // @dqoDlqID
+        var parameter = cmd.Parameters.Add("@dqoDlqID", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dqoOrderID
+        parameter = cmd.Parameters.Add("@dqoOrderID", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        cmd.Prepare();
+
+        return cmd;
+    }
+
+    private static SqlCommand CreateInsert_lsvNodeDeliveryQueueTime(SqlConnection connection)
+    {
+        string sqlText =
+        "INSERT dbo.lsvNodeDeliveryQueueTime(nqtDlqID, nqtTime) VALUES(@nqtDlqID, @nqtTime);";
+
+        SqlCommand cmd = new SqlCommand(sqlText, connection);
+
+        // @nqtDlqID
+        var parameter = cmd.Parameters.Add("@nqtDlqID", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @nqtTime
+        parameter = cmd.Parameters.Add("@nqtTime", SqlDbType.Float);
+        parameter.Direction = ParameterDirection.Input;
+
+        cmd.Prepare();
+
+        return cmd;
+    }
+
+    private static SqlCommand CreateInsert_lsvDeliveryQueueNodeInfo(SqlConnection connection)
+    {
+        string sqlText =
+        "INSERT dbo.lsvDeliveryQueueNodeInfo(dqiDlqID, dqiDistance, dqiTime) VALUES(@dqiDlqID, @dqiDistance, @dqiTime);";
+
+        SqlCommand cmd = new SqlCommand(sqlText, connection);
+
+        // @dqiDlqID
+        var parameter = cmd.Parameters.Add("@dqiDlqID", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dqiDistance
+        parameter = cmd.Parameters.Add("@dqiDistance", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        // @dqiTime
+        parameter = cmd.Parameters.Add("@dqiTime", SqlDbType.Int);
+        parameter.Direction = ParameterDirection.Input;
+
+        cmd.Prepare();
+
+        return cmd;
     }
 
     /// <summary>
@@ -1812,38 +2116,90 @@ public partial class StoredProcedures
         }
     }
 
-//-- <deliveries>
-//--	<delivery guid = "..." status="." shop_id="." delivery_service_id="." courier_id="." date_target="." date_target_end=".">
-//--	   <orders>
-//--		  <order status = "..." order_id="..."/>
-//--		  <order status = "..." order_id="..."/>
-//--	   </orders>
-//--	   <alternative_delivery_service>
-//--		  <service id="..." />
-//--          <service id="..."/>
-//--	   </alternative_delivery_service>  
-//--	   <node_info calc_time="..." cost="..." weight="..." is_loop="..." start_delivery_interval="..." end_delivery_interval="..." reserve_time="..." delivery_time="..."  execution_time="...">
-//--		  <node distance = "..." duration="..."/>
-//--		  <node distance = "..." duration="..."/>
-//--		                 . . .
-//--		  <node distance = "..." duration="..."/>
-//--	   </node_info>
-//--	   <node_delivery_time>
-//--		  <node delivery_time="..."/>
-//--		  <node delivery_time="..."/>
-//--                   . . .
-//--		  <node delivery_time="..."/>
-//--       </node_delivery_time >
-//--    </delivery>
-//--       . . .
-//--    <delivery>
-//--       . . .
-//--    </delivery>
-//-- </deliveries>
-//--
-//-- response:
-//--
-//--   <result code="..."/>
+    /// <summary>
+    /// Установка ordCompleted = 1 в таблице lsvOrders для заданных заказов
+    /// </summary>
+    /// <param name="value">Устанавливаемое значение shpUpdated в таблице lsvShops</param>
+    /// <param name="shopId">ID магазинов, для которых устаавливается shpUpdated</param>
+    /// <param name="connection">Открытое соединение</param>
+    /// <returns>0 - установка выполнена; иначе - установка не выполнена</returns>
+    private static int SetShopUpdated(bool value, int[] shopId, SqlConnection connection)
+    {
+        // 1. Инициализация
+        int rc = 1;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (shopId == null || shopId.Length <= 0)
+                return rc;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Строим UPDATE-команду
+            rc = 3;
+            StringBuilder sb = new StringBuilder(100 + 15 * shopId.Length);
+            sb.Append($"UPDATE dbo.lsvShops SET shpUpdated = {(value ? 1 : 0)} WHERE shpShopID IN (");
+            sb.Append(shopId[0]);
+
+            for (int i = 1; i < shopId.Length; i++)
+            {
+                sb.Append(',');
+                sb.Append(shopId[i]);
+            }
+
+            sb.Append(");");
+
+            // 4. Исполняем UPDATE-команду
+            rc = 4;
+            using (SqlCommand cmd = new SqlCommand(sb.ToString(), connection))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+            // 5. Выход - Ok
+            rc = 0;
+            return rc;
+        }
+        catch
+        {
+            return rc;
+        }
+    }
+
+    //-- <deliveries>
+    //--	<delivery guid = "..." status="." shop_id="." delivery_service_id="." courier_id="." date_target="." date_target_end=".">
+    //--	   <orders>
+    //--		  <order status = "..." order_id="..."/>
+    //--		  <order status = "..." order_id="..."/>
+    //--	   </orders>
+    //--	   <alternative_delivery_service>
+    //--		  <service id="..." />
+    //--          <service id="..."/>
+    //--	   </alternative_delivery_service>  
+    //--	   <node_info calc_time="..." cost="..." weight="..." is_loop="..." start_delivery_interval="..." end_delivery_interval="..." reserve_time="..." delivery_time="..."  execution_time="...">
+    //--		  <node distance = "..." duration="..."/>
+    //--		  <node distance = "..." duration="..."/>
+    //--		                 . . .
+    //--		  <node distance = "..." duration="..."/>
+    //--	   </node_info>
+    //--	   <node_delivery_time>
+    //--		  <node delivery_time="..."/>
+    //--		  <node delivery_time="..."/>
+    //--                   . . .
+    //--		  <node delivery_time="..."/>
+    //--       </node_delivery_time >
+    //--    </delivery>
+    //--       . . .
+    //--    <delivery>
+    //--       . . .
+    //--    </delivery>
+    //-- </deliveries>
+    //--
+    //-- response:
+    //--
+    //--   <result code="..."/>
 
     /// <summary>
     /// Отправка рекомендаций или команд на отгрузку
@@ -1980,7 +2336,7 @@ public partial class StoredProcedures
                 // 4.5 <node ... />
                 rc = 45;
                 Point[] nodeInfo = delivery.NodeInfo;
-                
+
                 for (int j = 0; j < nodeInfo.Length; j++)
                 {
                     cmd.Append($@"<node distance=""{nodeInfo[j].X}"" duration=""{nodeInfo[j].Y}""/>");
@@ -1998,7 +2354,7 @@ public partial class StoredProcedures
                 rc = 48;
 
                 double[] nodeDeliveryTime = delivery.NodeDeliveryTime;
-                
+
                 for (int j = 0; j < nodeDeliveryTime.Length; j++)
                 {
                     deliveryTime = string.Format(CultureInfo.InvariantCulture, "{0:0.0#}", nodeDeliveryTime[j]);
@@ -2053,9 +2409,9 @@ public partial class StoredProcedures
                     // 5. Исполняем команду
                     rc = 5;
                     query.ExecuteNonQuery();
-                #if debug
+#if debug
                     Logger.WriteToLog(605, $"SendDeliveries cmd.ExecuteNonQuery(). lsvH4cmd_sendEx.rc = {returnParameter.Value}", 0);
-                #endif
+#endif
                     if ((int)returnParameter.Value != 0)
                         return rc;
 
@@ -2092,16 +2448,16 @@ public partial class StoredProcedures
         }
         catch (Exception ex)
         {
-        #if debug
+#if debug
             Logger.WriteToLog(603, $"SendDeliveries. service_id = {serviceId}. rc = {rc}. Exception {ex.Message}", 2);
-        #endif
+#endif
             return rc;
         }
         finally
         {
-        #if debug
+#if debug
             Logger.WriteToLog(603, $"SendDeliveries exit. service_id = {serviceId}. rc = {rc}", 0);
-        #endif
+#endif
         }
     }
 
@@ -2178,9 +2534,9 @@ public partial class StoredProcedures
                     // 5. Исполняем команду
                     rc = 5;
                     cmd.ExecuteNonQuery();
-                #if debug
+#if debug
                     Logger.WriteToLog(505, $"RejectOrders cmd.ExecuteNonQuery(). rc = {returnParameter.Value}", 0);
-                #endif
+#endif
                     if ((int)returnParameter.Value != 0)
                         return rc;
                 }
@@ -2193,9 +2549,9 @@ public partial class StoredProcedures
                 // 6. Исполняем команду
                 rc = 6;
                 count = cmd.ExecuteNonQuery();
-            #if debug
+#if debug
                 Logger.WriteToLog(506, $"UpdateOrders cmd.ExecuteNonQuery(). Records affected = {count}", 0);
-            #endif
+#endif
             }
 
             // 6. Выход - Ok
@@ -2359,9 +2715,9 @@ public partial class StoredProcedures
                     // 5. Исполняем команду
                     rc = 5;
                     cmd.ExecuteNonQuery();
-                #if debug
+#if debug
                     Logger.WriteToLog(505, $"SendRecomendations cmd.ExecuteNonQuery(). rc = {returnParameter.Value}", 0);
-                #endif
+#endif
                     if ((int)returnParameter.Value != 0)
                         return rc;
                 }
@@ -2399,7 +2755,7 @@ public partial class StoredProcedures
             {
                 Order order = orders[i];
                 if (order.DeliveryTimeTo > calc_time)
-                    filteredOrders[count++] = order; 
+                    filteredOrders[count++] = order;
             }
 
             if (count < filteredOrders.Length)
@@ -2479,9 +2835,9 @@ public partial class StoredProcedures
                 context.MaxRouteLength <= 0 || context.MaxRouteLength > 8)
                 return;
 
-            #if debug
-                Logger.WriteToLog(301, $"CalcThread enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(301, $"CalcThread enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
 
 
             //// 3. Выбираем гео-данные для всех точек 
@@ -2509,14 +2865,14 @@ public partial class StoredProcedures
             rc = 0;
         }
         catch
-        {   }
+        { }
         finally
         {
             if (context != null)
             {
-                #if debug
-                    Logger.WriteToLog(302, $"CalcThread exit rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
-                #endif
+#if debug
+                Logger.WriteToLog(302, $"CalcThread exit rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
                 context.ExitCode = rc;
                 if (context.SyncEvent != null)
                     context.SyncEvent.Set();
@@ -2550,9 +2906,9 @@ public partial class StoredProcedures
                 context.MaxRouteLength <= 0 || context.MaxRouteLength > 8)
                 return;
 
-            #if debug
-                Logger.WriteToLog(301, $"CalcThreadEx enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(301, $"CalcThreadEx enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
 
             // 3. Создаём ключи всех отгрузок
             rc = 3;
@@ -2566,16 +2922,16 @@ public partial class StoredProcedures
             if (threadCount > MAX_DELIVERY_THREADS)
                 threadCount = MAX_DELIVERY_THREADS;
 
-            #if debug
-                Logger.WriteToLog(304, $"CalcThreadEx enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}, thread_count = {threadCount}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(304, $"CalcThreadEx enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}, thread_count = {threadCount}", 0);
+#endif
 
             // 5. Требуется всего один поток
             rc = 5;
             if (threadCount <= 1)
             {
                 ThreadContextEx contextEx = new ThreadContextEx(context, null, deliveryKeys, 0, 1);
-                allCountextEx = new ThreadContextEx[] { contextEx};
+                allCountextEx = new ThreadContextEx[] { contextEx };
                 RouteBuilder.BuildEx(contextEx);
             }
             else
@@ -2626,29 +2982,29 @@ public partial class StoredProcedures
                         {
                             CourierDeliveryInfo threadDelivery = threadDeliveries[j];
 
-                        //#if debug
-                        //    //6.31238809.31239251.31239320.31241604.31260002
-                        //    //6.31238809.31239251.31239320.31241604.31260002
-                        //    //6.31238809.31239251.31239320.31241604.31260002
-                        //    if (threadDelivery != null && threadDelivery.DeliveryCourier.VehicleID == 6 && threadDelivery.OrderCount == 5)
-                        //    {
-                        //        for (int mm = 0; mm < threadDelivery.OrderCount; mm++)
-                        //        {
-                        //            id[mm] = threadDelivery.Orders[mm].Id;
-                        //        }
+                            //#if debug
+                            //    //6.31238809.31239251.31239320.31241604.31260002
+                            //    //6.31238809.31239251.31239320.31241604.31260002
+                            //    //6.31238809.31239251.31239320.31241604.31260002
+                            //    if (threadDelivery != null && threadDelivery.DeliveryCourier.VehicleID == 6 && threadDelivery.OrderCount == 5)
+                            //    {
+                            //        for (int mm = 0; mm < threadDelivery.OrderCount; mm++)
+                            //        {
+                            //            id[mm] = threadDelivery.Orders[mm].Id;
+                            //        }
 
-                        //        Array.Sort(id);
-                        //        if (id[0] == 31238809 &&
-                        //            id[1] == 31239251 &&
-                        //            id[2] == 31239320 &&
-                        //            id[3] == 31241604 &&
-                        //            id[4] == 31260002)
-                        //        {
+                            //        Array.Sort(id);
+                            //        if (id[0] == 31238809 &&
+                            //            id[1] == 31239251 &&
+                            //            id[2] == 31239320 &&
+                            //            id[3] == 31241604 &&
+                            //            id[4] == 31260002)
+                            //        {
 
-                        //            Logger.WriteToLog(308, $"CalcThreadEx. thread = {i}. L = {threadDeliveries.Length}. pkey = 6.31238809.31239251.31239320.31241604.31260002. index = {j}. key = {deliveryKeys[j].ToString("X")}", 2);
-                        //        }
-                        //    }
-                        //#endif
+                            //            Logger.WriteToLog(308, $"CalcThreadEx. thread = {i}. L = {threadDeliveries.Length}. pkey = 6.31238809.31239251.31239320.31241604.31260002. index = {j}. key = {deliveryKeys[j].ToString("X")}", 2);
+                            //        }
+                            //    }
+                            //#endif
 
 
 
@@ -2676,24 +3032,24 @@ public partial class StoredProcedures
                 {
                     if (deliveries[i] != null)
                     {
-//#if debug
-//                        if (count == 122644 || count == 123323)
-//                        {
-//                            StringBuilder sb = new StringBuilder(300);
-//                            sb.Append(deliveries[i].Orders[0].Id);
+                        //#if debug
+                        //                        if (count == 122644 || count == 123323)
+                        //                        {
+                        //                            StringBuilder sb = new StringBuilder(300);
+                        //                            sb.Append(deliveries[i].Orders[0].Id);
 
-//                                for (int mm = 0; mm < deliveries[i].OrderCount; mm++)
-//                                {
-//                                    sb.Append('.');
-//                                    sb.Append(deliveries[i].Orders[mm].Id);
-//                                }
+                        //                                for (int mm = 0; mm < deliveries[i].OrderCount; mm++)
+                        //                                {
+                        //                                    sb.Append('.');
+                        //                                    sb.Append(deliveries[i].Orders[mm].Id);
+                        //                                }
 
 
 
-//                            Logger.WriteToLog(388, $"CalcThreadEx. count = {count}. i = {i}. key = 6.31238809.31239251.31239320.31241604.31260002. index = {j}", 2);
-//                        }
+                        //                            Logger.WriteToLog(388, $"CalcThreadEx. count = {count}. i = {i}. key = 6.31238809.31239251.31239320.31241604.31260002. index = {j}", 2);
+                        //                        }
 
-//#endif 
+                        //#endif 
                         deliveries[count++] = deliveries[i];
                     }
                 }
@@ -2718,19 +3074,19 @@ public partial class StoredProcedures
         }
         catch (Exception ex)
         {
-            #if debug
-                Logger.WriteToLog(303, $"CalcThreadEx. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-            #endif
+#if debug
+            Logger.WriteToLog(303, $"CalcThreadEx. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
+#endif
         }
         finally
         {
             if (context != null)
             {
-                #if debug
-                    Logger.WriteToLog(302, $"CalcThreadEx exit rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
-                #endif
+#if debug
+                Logger.WriteToLog(302, $"CalcThreadEx exit rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
                 context.ExitCode = rc;
-                
+
                 if (allCountextEx != null && allCountextEx.Length > 0)
                 {
                     for (int i = 0; i < allCountextEx.Length; i++)
@@ -2776,9 +3132,9 @@ public partial class StoredProcedures
                 calcContext.Limitations == null)
                 return;
 
-            #if debug
-                Logger.WriteToLog(301, $"CalcThreadEz enter. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(301, $"CalcThreadEz enter. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id}", 0);
+#endif
 
             // 3. Анализируем состояние
             rc = 3;
@@ -2832,9 +3188,9 @@ public partial class StoredProcedures
 
             // 4. Готовим заказы для дальнейшего использования
             rc = 4;
-            Order[] iterationOrders = (Order[]) calcContext.Orders.Clone();
+            Order[] iterationOrders = (Order[])calcContext.Orders.Clone();
             int[] iterationOrderId = new int[calcContext.OrderCount];
-                       
+
             for (int i = 0; i < iterationOrders.Length; i++)
             { iterationOrderId[i] = iterationOrders[i].Id; }
 
@@ -2849,9 +3205,9 @@ public partial class StoredProcedures
 
             while (iterationOrderCount > 0)
             {
-            #if debug
+#if debug
                 Logger.WriteToLog(305, $"CalcThreadEz while 5.1. iterationOrderCount = {iterationOrderCount}", 0);
-            #endif
+#endif
                 // 5.1 Выбираем глубину и заказы для очередного расчета
                 rc = 51;
                 if (iterationOrderCount > startOrderCount)
@@ -2859,9 +3215,9 @@ public partial class StoredProcedures
                     level = startLevel;
                     double[,] geoDist = GeoDistance.CalcDistance(iterationOrders);
                     rc1 = OrdersCloud.FindCloud(iterationOrders, startOrderCount, 1300, 0.5, geoDist, out threadContextOrders);
-            #if debug
-                Logger.WriteToLog(305, $"CalcThreadEz while 5.1. iterationOrderCount = {iterationOrderCount}, FindCloud.rc = {rc1} Cloud.Orders = {(threadContextOrders == null ? 0 : threadContextOrders.Length)}" , 0);
-            #endif
+#if debug
+                    Logger.WriteToLog(305, $"CalcThreadEz while 5.1. iterationOrderCount = {iterationOrderCount}, FindCloud.rc = {rc1} Cloud.Orders = {(threadContextOrders == null ? 0 : threadContextOrders.Length)}", 0);
+#endif
                     if (rc1 != 0)
                     {
                         rc = 100 * rc + rc1;
@@ -2888,9 +3244,9 @@ public partial class StoredProcedures
                     threadContextOrders = iterationOrders;
                 }
 
-            #if debug
-                Logger.WriteToLog(306, $"CalcThreadEz while 5.2. iterationOrderCount = {iterationOrderCount}, level = {level}, threadContextOrders = {(threadContextOrders == null ? 0 : threadContextOrders.Length)}" , 0);
-            #endif
+#if debug
+                Logger.WriteToLog(306, $"CalcThreadEz while 5.2. iterationOrderCount = {iterationOrderCount}, level = {level}, threadContextOrders = {(threadContextOrders == null ? 0 : threadContextOrders.Length)}", 0);
+#endif
 
                 // 5.2 Запрашиваем гео-данные
                 rc = 52;
@@ -2935,14 +3291,14 @@ public partial class StoredProcedures
                 CourierDeliveryInfo[] iterDeliveries = iterContext.Deliveries;
                 if (level < courierMaxOrderCount)
                 {
-            #if debug
-                Logger.WriteToLog(306, $"CalcThreadEz while 5.5 before. iterDeliveries = {iterDeliveries.Length}, level = {level}, courierMaxOrderCount = {courierMaxOrderCount}" , 0);
-            #endif
+#if debug
+                    Logger.WriteToLog(306, $"CalcThreadEz while 5.5 before. iterDeliveries = {iterDeliveries.Length}, level = {level}, courierMaxOrderCount = {courierMaxOrderCount}", 0);
+#endif
                     //rc1 = DilateRoutes(ref iterDeliveries, level, courierMaxOrderCount, threadContextOrders, geoData);
                     rc1 = DilateRoutesMultuthread(ref iterDeliveries, level, courierMaxOrderCount, threadContextOrders, geoData);
-            #if debug
-                Logger.WriteToLog(306, $"CalcThreadEz while 5.5 after. iterDeliveries = {iterDeliveries.Length}, rc1 = {rc1}" , 0);
-            #endif
+#if debug
+                    Logger.WriteToLog(306, $"CalcThreadEz while 5.5 after. iterDeliveries = {iterDeliveries.Length}, rc1 = {rc1}", 0);
+#endif
                 }
 
                 // 5.6 Пополняем множество построенных отгрузок
@@ -2992,9 +3348,9 @@ public partial class StoredProcedures
                     Array.Resize(ref iterationOrderId, iterationOrderCount);
                 }
 
-            #if debug
-                Logger.WriteToLog(306, $"CalcThreadEz while end. iterationOrderCount = {iterationOrderCount}" , 0);
-            #endif
+#if debug
+                Logger.WriteToLog(306, $"CalcThreadEz while end. iterationOrderCount = {iterationOrderCount}", 0);
+#endif
             }
 
             if (deliveryCount < allDeliveries.Length)
@@ -3011,19 +3367,19 @@ public partial class StoredProcedures
         }
         catch (Exception ex)
         {
-            #if debug
-                Logger.WriteToLog(303, $"CalcThreadEz. service_id = {calcContext.ServiceId}. rc = {rc}. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id} Exception = {ex.Message}", 2);
-            #endif
+#if debug
+            Logger.WriteToLog(303, $"CalcThreadEz. service_id = {calcContext.ServiceId}. rc = {rc}. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id} Exception = {ex.Message}", 2);
+#endif
         }
         finally
         {
             if (calcContext != null)
             {
-                #if debug
-                    Logger.WriteToLog(302, $"CalcThreadEz exit rc = {rc}. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id}", 0);
-                #endif
+#if debug
+                Logger.WriteToLog(302, $"CalcThreadEz exit rc = {rc}. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id}", 0);
+#endif
                 calcContext.ExitCode = rc;
-                
+
                 if (calcContext.SyncEvent != null)
                     calcContext.SyncEvent.Set();
             }
@@ -3469,9 +3825,9 @@ public partial class StoredProcedures
             int orderCount = orders.Length;
             if (geoData == null || geoData.GetLength(0) != orderCount + 1 || geoData.GetLength(1) != orderCount + 1)
                 return rc;
-        #if debug
+#if debug
             Logger.WriteToLog(804, $"DilateRoutesMultuthread enter. = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}", 0);
-        #endif
+#endif
 
             // 3. Отбираем маршруты с исходным уровнем
             rc = 3;
@@ -3600,9 +3956,9 @@ public partial class StoredProcedures
         }
         catch (Exception ex)
         {
-        #if debug
+#if debug
             Logger.WriteToLog(806, $"DilateRoutesMultuthread.rc = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}, Exception = {ex.ToString()}", 2);
-        #endif
+#endif
 
             return rc;
         }
@@ -3673,9 +4029,9 @@ public partial class StoredProcedures
             if (step <= 0)
                 return;
 
-        #if debug
+#if debug
             Logger.WriteToLog(704, $"DilateRoutesThread enter. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}, startIndex = {startIndex}, step = {step}", 0);
-        #endif
+#endif
 
             // 3. Цикл расширения маршрутов
             rc = 3;
@@ -3686,7 +4042,7 @@ public partial class StoredProcedures
             double handInTime = courier.HandInTime;
             double maxOrderWeight = courier.MaxOrderWeight;
             double maxWeight = courier.MaxWeight;
-            int maxDistance = (int) (1000.0 * courier.MaxDistance + 0.5);
+            int maxDistance = (int)(1000.0 * courier.MaxDistance + 0.5);
             CourierDeliveryInfo[] iterDelivery = new CourierDeliveryInfo[(deliveries.Length - startIndex - 1) / step + 1];
             int count = 0;
 
@@ -3848,8 +4204,8 @@ public partial class StoredProcedures
                             // 3.5.4.1 Извлекаем гео-данные
                             rc = 3541;
                             int afterOrderIndex = orderIndex[m];
-                            geoData1 =  geoData[beforeOrderIndex, k];
-                            geoData1 =  geoData[k, afterOrderIndex];
+                            geoData1 = geoData[beforeOrderIndex, k];
+                            geoData1 = geoData[k, afterOrderIndex];
 
                             // 3.5.4.2 Проверяем доставку в срок
                             rc = 3542;
@@ -3926,7 +4282,7 @@ public partial class StoredProcedures
             }
             else
             {
-                if (extendedCount <extendedDeliveries.Length )
+                if (extendedCount < extendedDeliveries.Length)
                 {
                     Array.Resize(ref extendedDeliveries, extendedCount);
                 }
@@ -3935,9 +4291,9 @@ public partial class StoredProcedures
 
             iterDelivery = null;
             extendedDeliveries = null;
-        #if debug
+#if debug
             Logger.WriteToLog(705, $"DilateRoutesThread exit. = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}, startIndex = {startIndex}, step = {step}", 0);
-        #endif
+#endif
 
             //count = 0;
             //for (int k = 0; k <  context.ExtendedCount; k++)
@@ -3959,7 +4315,7 @@ public partial class StoredProcedures
         }
         catch
         {
-            
+
         }
         finally
         {
@@ -4792,9 +5148,9 @@ public partial class StoredProcedures
             if (limitations == null || !limitations.IsCreated)
                 return null;
 
-            #if debug
-                Logger.WriteToLog(201, $"GetThreadContext. service_id = {serviceId}. Enter...", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(201, $"GetThreadContext. service_id = {serviceId}. Enter...", 0);
+#endif
 
             // 3. Строим контексты всех потоков
             rc = 3;
@@ -4902,9 +5258,9 @@ public partial class StoredProcedures
                         }
                         else
                         {
-                            #if debug
-                                Logger.WriteToLog(204, $"GetThreadContext. service_id = {serviceId}. shop_id = {shop.Id}. orderVehicleType = {orderVehicleTypes[j]}", 0);
-                            #endif
+#if debug
+                            Logger.WriteToLog(204, $"GetThreadContext. service_id = {serviceId}. shop_id = {shop.Id}. orderVehicleType = {orderVehicleTypes[j]}", 0);
+#endif
                         }
                     }
                 }
@@ -4916,18 +5272,18 @@ public partial class StoredProcedures
             }
             rc = 0;
 
-            #if debug
-                Logger.WriteToLog(202, $"GetThreadContext. service_id = {serviceId}. Exit. context count = {contextCount}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(202, $"GetThreadContext. service_id = {serviceId}. Exit. context count = {contextCount}", 0);
+#endif
 
             // 4. Выход - Ok
             return context;
         }
         catch (Exception ex)
         {
-            #if debug
-                Logger.WriteToLog(203, $"GetThreadContext. service_id = {serviceId}. rc = {rc}. Exception = {ex.Message}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(203, $"GetThreadContext. service_id = {serviceId}. rc = {rc}. Exception = {ex.Message}", 0);
+#endif
             return null;
         }
     }
@@ -4963,9 +5319,9 @@ public partial class StoredProcedures
             if (limitations == null || !limitations.IsCreated)
                 return null;
 
-            #if debug
-                Logger.WriteToLog(201, $"GetCalcThreadContext. service_id = {serviceId}. Enter...", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(201, $"GetCalcThreadContext. service_id = {serviceId}. Enter...", 0);
+#endif
 
             // 3. Строим контексты всех потоков
             rc = 3;
@@ -5074,9 +5430,9 @@ public partial class StoredProcedures
                         }
                         else
                         {
-                            #if debug
-                                Logger.WriteToLog(204, $"GetCalcThreadContext. service_id = {serviceId}. shop_id = {shop.Id}. orderVehicleType = {orderVehicleTypes[j]}", 0);
-                            #endif
+#if debug
+                            Logger.WriteToLog(204, $"GetCalcThreadContext. service_id = {serviceId}. shop_id = {shop.Id}. orderVehicleType = {orderVehicleTypes[j]}", 0);
+#endif
                         }
                     }
                 }
@@ -5088,18 +5444,18 @@ public partial class StoredProcedures
             }
             rc = 0;
 
-            #if debug
-                Logger.WriteToLog(202, $"GetCalcThreadContext. service_id = {serviceId}. Exit. context count = {contextCount}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(202, $"GetCalcThreadContext. service_id = {serviceId}. Exit. context count = {contextCount}", 0);
+#endif
 
             // 4. Выход - Ok
             return context;
         }
         catch (Exception ex)
         {
-            #if debug
-                Logger.WriteToLog(203, $"GetCalcThreadContext. service_id = {serviceId}. rc = {rc}. Exception = {ex.Message}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(203, $"GetCalcThreadContext. service_id = {serviceId}. rc = {rc}. Exception = {ex.Message}", 0);
+#endif
             return null;
         }
     }
@@ -5135,9 +5491,9 @@ public partial class StoredProcedures
             if (limitations == null || !limitations.IsCreated)
                 return null;
 
-            #if debug
-                Logger.WriteToLog(201, $"GetThreadContext. service_id = {serviceId}. Enter...", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(201, $"GetThreadContext. service_id = {serviceId}. Enter...", 0);
+#endif
 
             // 3. Строим контексты всех потоков
             rc = 3;
@@ -5245,9 +5601,9 @@ public partial class StoredProcedures
                         }
                         else
                         {
-                            #if debug
-                                Logger.WriteToLog(204, $"GetThreadContext. service_id = {serviceId}. shop_id = {shop.Id}. orderVehicleType = {orderVehicleTypes[j]}", 0);
-                            #endif
+#if debug
+                            Logger.WriteToLog(204, $"GetThreadContext. service_id = {serviceId}. shop_id = {shop.Id}. orderVehicleType = {orderVehicleTypes[j]}", 0);
+#endif
                         }
                     }
                 }
@@ -5259,18 +5615,18 @@ public partial class StoredProcedures
             }
             rc = 0;
 
-            #if debug
-                Logger.WriteToLog(202, $"GetThreadContext. service_id = {serviceId}. Exit. context count = {contextCount}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(202, $"GetThreadContext. service_id = {serviceId}. Exit. context count = {contextCount}", 0);
+#endif
 
             // 4. Выход - Ok
             return context;
         }
         catch (Exception ex)
         {
-            #if debug
-                Logger.WriteToLog(203, $"GetThreadContext. service_id = {serviceId}. rc = {rc}. Exception = {ex.Message}", 0);
-            #endif
+#if debug
+            Logger.WriteToLog(203, $"GetThreadContext. service_id = {serviceId}. rc = {rc}. Exception = {ex.Message}", 0);
+#endif
             return null;
         }
     }
@@ -5596,6 +5952,56 @@ public partial class StoredProcedures
             using (SqlCommand cmd = new SqlCommand(CLEAR_DELIVERIES, connection))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
+                cmd.ExecuteNonQuery();
+            }
+
+            // 4. Выход - Ok
+            rc = 0;
+            return rc;
+        }
+        catch
+        {
+            return rc;
+        }
+    }
+
+    /// <summary>
+    /// Удаление из очереди отгрузок заданных магазинов
+    /// </summary>
+    /// <param name="shopId">ID магазинов, отгрузки из которых нужно удалить</param>
+    /// <param name="connection">Открытое соединение</param>
+    /// <returns>0 -отгрузки удалены; иначе - отгрузки не удалены</returns>
+    private static int ClearQueueDeliveries(int[] shopId, SqlConnection connection)
+    {
+        int rc = 1;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (shopId == null || shopId.Length <= 0)
+                return rc;
+            if (connection == null || connection.State != ConnectionState.Open)
+                return rc;
+
+            // 3. Создаём команду на удаление отгрузок
+            rc = 3;
+            StringBuilder sqlText = new StringBuilder(100 + 15 * shopId.Length);
+            sqlText.Append("DELETE dbo.lsvDeliveryQueue WHERE dlqShopID IN (");
+            sqlText.Append(shopId[0]);
+
+            for (int i = 1; i < shopId.Length; i++)
+            {
+                sqlText.Append(',');
+                sqlText.Append(shopId[i]);
+            }
+
+            sqlText.Append(");");
+
+            // 3. Исполняем команду
+            rc = 3;
+            using (SqlCommand cmd = new SqlCommand(sqlText.ToString(), connection))
+            {
                 cmd.ExecuteNonQuery();
             }
 
@@ -6173,9 +6579,9 @@ public partial class StoredProcedures
         }
         catch (Exception ex)
         {
-            #if debug
-                Logger.WriteToLog(700, $"SaveDeliveries rc = {rc} Exception = {ex.Message}", 2);
-            #endif
+#if debug
+            Logger.WriteToLog(700, $"SaveDeliveries rc = {rc} Exception = {ex.Message}", 2);
+#endif
             return rc;
         }
         //finally
@@ -6330,6 +6736,59 @@ public partial class StoredProcedures
 
             // 6. Выход - Ok
             return keys;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Выбор отсортированных ShopId из заданных отгрузок
+    /// </summary>
+    /// <param name="deliveries">Отгрузки, из которых выбирается ShopId</param>
+    /// <returns>Массив ShopId или null</returns>
+    private static int[] GetShopsFromDeliveries(CourierDeliveryInfo[] deliveries)
+    {
+        // 1. Инициализация
+        
+        try
+        {
+            // 2. Проверяем исходные данные
+            if (deliveries == null || deliveries.Length <= 0)
+                return null;
+
+            // 3. Выбираем все ShopId
+            int[] shopId = new int[deliveries.Length];
+
+            for (int i = 0; i < deliveries.Length; i++)
+            {
+                shopId[i] = deliveries[i].FromShop.Id;
+            }
+
+            // 4. Сортируем выбранные ShopId
+            Array.Sort(shopId);
+
+            // 5. Выбираем все различные ShopId
+            int currentShopId = shopId[0];
+            int count = 1;
+
+            for (int i = 1; i < shopId.Length; i++)
+            {
+                if (shopId[i] != currentShopId)
+                {
+                    currentShopId = shopId[i];
+                    shopId[count++] = currentShopId;
+                }
+            }
+
+            if (count < shopId.Length)
+            {
+                Array.Resize(ref shopId, count);
+            }
+
+            // 6. Выход - Ok
+            return shopId;
         }
         catch
         {
