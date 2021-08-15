@@ -3,6 +3,7 @@ namespace SQLCLR.DeliveryCover
 {
     using SQLCLR.Couriers;
     using SQLCLR.Deliveries;
+    using SQLCLR.Log;
     using System;
 
     /// <summary>
@@ -18,7 +19,7 @@ namespace SQLCLR.DeliveryCover
         private Courier[] _couriers;
 
         /// <summary>
-        /// Отсортированные спопсобы доставки
+        /// Отсортированные способы доставки
         /// </summary>
         private int[] _vehicleId;
 
@@ -68,7 +69,6 @@ namespace SQLCLR.DeliveryCover
 
                 // 3.Сортируем курьеров по VehicleId и OrderCount
                 rc = 3;
-
                 _couriers = (Courier[])couriers.Clone();
                 Array.Sort(_couriers, CompareCourierByVehicleIdAndOrderCount);
 
@@ -110,6 +110,9 @@ namespace SQLCLR.DeliveryCover
                     }
                 }
 
+
+                _vehicleId[count] = currentVehicleId;
+
                 if (_couriers[_couriers.Length - 1].IsTaxi)
                 {
                     _vehicleRange[count].X = startIndex;
@@ -137,6 +140,39 @@ namespace SQLCLR.DeliveryCover
             {
                 return rc;
             }
+//#if debug
+//            finally
+//            {
+//                if (IsCreated)
+//                {
+//                    if (_couriers != null && _couriers.Length > 0)
+//                    {
+//                        for (int i = 0; i < _couriers.Length; i++)
+//                        {
+//                            Logger.WriteToLog(901, $"CourierRepository.Create. _couriers[{i}].VehicleId = {_couriers[i].VehicleID}", 0);
+//                        }
+//                    }
+
+//                    if (_vehicleId != null && _vehicleId.Length > 0)
+//                    {
+//                        for (int i = 0; i < _vehicleId.Length; i++)
+//                        {
+//                            Logger.WriteToLog(902, $"CourierRepository.Create. _vehicleId[{i}] = {_vehicleId[i]}", 0);
+//                        }
+//                    }
+
+//                    if (_vehicleRange != null && _vehicleRange.Length > 0)
+//                    {
+//                        for (int i = 0; i < _vehicleRange.Length; i++)
+//                        {
+//                            Logger.WriteToLog(903, $"CourierRepository.Create. _vehicleRange[{i}] = ({_vehicleRange[i].X}, {_vehicleRange[i].Y})", 0);
+//                        }
+//                    }
+
+//                    Logger.WriteToLog(904, $"CourierRepository exit. rc = {rc}, IsCreated = {IsCreated}", 0);
+//                }
+//            }
+//#endif
         }
 
         /// <summary>

@@ -207,9 +207,9 @@ namespace SQLCLR.Couriers
                     }
                 }
 
-                #if debug
-                    Logger.WriteToLog(111, $"AllCouriers.Create. count = {count}", 0);
-                #endif
+                //#if debug
+                //    Logger.WriteToLog(111, $"AllCouriers.Create. count = {count}", 0);
+                //#endif
 
                 if (count <= 0)
                     return rc;
@@ -260,18 +260,18 @@ namespace SQLCLR.Couriers
                     Array.Resize(ref courierRange, count);
                 }
 
-                #if debug
-                    for (int i = 0; i < count; i++)
-                    {
-                        Logger.WriteToLog(113, $"AllCouriers.Create. shopKeys[{i}] = {shopKeys[i]}, courierRange[{i}] = ({courierRange[i].X}, {courierRange[i].Y})", 0);
-                    }
+                //#if debug
+                //    for (int i = 0; i < count; i++)
+                //    {
+                //        Logger.WriteToLog(113, $"AllCouriers.Create. shopKeys[{i}] = {shopKeys[i]}, courierRange[{i}] = ({courierRange[i].X}, {courierRange[i].Y})", 0);
+                //    }
 
-                    for (int i = 0; i < shopCouriers.Length; i++)
-                    {
-                        Logger.WriteToLog(114, $"AllCouriers.Create. shopCouriers[{i}].Id = {shopCouriers[i].Id}, shopCouriers[{i}].VehicleId = {shopCouriers[i].VehicleID}", 0);
-                    }
+                //    for (int i = 0; i < shopCouriers.Length; i++)
+                //    {
+                //        Logger.WriteToLog(114, $"AllCouriers.Create. shopCouriers[{i}].Id = {shopCouriers[i].Id}, shopCouriers[{i}].VehicleId = {shopCouriers[i].VehicleID}", 0);
+                //    }
 
-                #endif
+                //#endif
 
                 // 7. Выход - Ok
                 rc = 0;

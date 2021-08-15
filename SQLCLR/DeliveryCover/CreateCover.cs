@@ -3,6 +3,7 @@ namespace SQLCLR.DeliveryCover
 {
     using SQLCLR.Couriers;
     using SQLCLR.Deliveries;
+    using SQLCLR.Log;
     using SQLCLR.Orders;
     using SQLCLR.Shops;
     using System;
@@ -49,6 +50,13 @@ namespace SQLCLR.DeliveryCover
                     return rc;
                 if (connection == null || connection.State != ConnectionState.Open)
                     return rc;
+//#if debug
+//                for (int i = 0; i < deliveries.Length; i++)
+//                {
+//                    if (deliveries[i].OrderCount == 1 && (deliveries[i].Orders[0].Id == 31341925 || deliveries[i].Orders[0].Id == 31360428))
+//                        Logger.WriteToLog(671, $"CreateCover.Create i= {i}, delivery order = {deliveries[i].Orders[0].Id}", 0);
+//                }
+//#endif
 
                 // 3. Сортируем отгрузки по магазину
                 rc = 3;
@@ -123,7 +131,7 @@ namespace SQLCLR.DeliveryCover
                             if (rejectedShopOrders != null && rejectedShopOrders.Length > 0)
                             {
                                 OrderRejectionCause[] shopRejectionOrders;
-                                rc1 = ShopOrderRejectionAnalyzer(calcTime, shopDeliveries[0].FromShop, shopOrders, courierRepository, connection, out shopRejectionOrders);
+                                rc1 = ShopOrderRejectionAnalyzer(calcTime, shopDeliveries[0].FromShop, rejectedShopOrders, courierRepository, connection, out shopRejectionOrders);
                                 if (rc1 == 0)
                                 {
                                     if (shopRejectionOrders != null && shopRejectionOrders.Length > 0)
@@ -185,7 +193,7 @@ namespace SQLCLR.DeliveryCover
                     if (rejectedShopOrders != null && rejectedShopOrders.Length > 0)
                     {
                         OrderRejectionCause[] shopRejectionOrders;
-                        rc1 = ShopOrderRejectionAnalyzer(calcTime, lastShopDeliveries[0].FromShop, lastShopOrders, lastCourierRepository, connection, out shopRejectionOrders);
+                        rc1 = ShopOrderRejectionAnalyzer(calcTime, lastShopDeliveries[0].FromShop, rejectedShopOrders, lastCourierRepository, connection, out shopRejectionOrders);
                         if (rc1 == 0)
                         {
                             if (shopRejectionOrders != null && shopRejectionOrders.Length > 0)
@@ -256,7 +264,7 @@ namespace SQLCLR.DeliveryCover
                 }
                 if (shopOrders == null || shopOrders.Length <= 0)
                     return rc;
-                if (courierRepository == null || !courierRepository.IsCreated)
+                if (courierRepository == null || !courierRepository.IsCreated || courierRepository.Couriers.Length <= 0)
                     return rc;
 
                 // 4. Строим индекс для всех заказов магазина
@@ -268,13 +276,14 @@ namespace SQLCLR.DeliveryCover
 
                 Array.Sort(shopOrderId, shopOrders);
 
-                // 5. Установка приритета и флага наличия не собранных заказов для каждой отгрузки
+                // 5. Установка приоритета и флага наличия не собранных заказов для каждой отгрузки
                 rc = 5;
                 bool isReceipted = false;
                 bool[] flags1 = new bool[shopOrders.Length];
                 bool[] flags2 = new bool[shopOrders.Length];
                 int allAssembledOrderCount = 0;
                 int allActiveOrderCount = 0;
+                int[] deliveryOrderIndex = new int[shopOrders.Length];
 
                 for (int i = 0; i < shopDeliveries.Length; i++)
                 {
@@ -324,6 +333,13 @@ namespace SQLCLR.DeliveryCover
                 // 5. Сортировка всех отгрузок магазина в порядке убывания приоритета и возрастания стоимости
                 rc = 5;
                 Array.Sort(shopDeliveries, CompareDeliveriesByPriorityAndOrderCost);
+//#if debug
+//                 for (int i = 0; i < shopDeliveries.Length; i++)
+//                 {
+//                    if (shopDeliveries[i].OrderCount == 1 && (shopDeliveries[i].Orders[0].Id == 31341925 || shopDeliveries[i].Orders[0].Id == 31360428))
+//                        Logger.WriteToLog(671, $"CreateShopCover. i= {i}, delivery order = {shopDeliveries[i].Orders[0].Id}", 0);
+//                 }
+//#endif
 
                 // 6. Создаём рекомендации (покрытие 1)
                 rc = 6;
@@ -332,7 +348,6 @@ namespace SQLCLR.DeliveryCover
                     recomendations = new CourierDeliveryInfo[shopOrders.Length];
                     int recomendationCount = 0;
                     int coverOrderCount = 0;
-                    int[] deliveryOrderIndex = new int[shopOrders.Length];
 
                     Array.Clear(flags1, 0, flags1.Length);
 
@@ -353,12 +368,18 @@ namespace SQLCLR.DeliveryCover
                             recomendations[recomendationCount++] = delivery;
 
                         coverOrderCount += deliveryOrders.Length;
-                        if (coverOrderCount >= allActiveOrderCount)
-                            break;
 
                         for (int j = 0; j < deliveryOrders.Length; j++)
                         {
                             flags1[deliveryOrderIndex[j]] = true;
+                        }
+
+                        if (coverOrderCount >= allActiveOrderCount)
+                        {
+//#if debug
+//                            Logger.WriteToLog(672, $"CreateShopCover. i= {i}, break coverOrderCount = {coverOrderCount}, allActiveOrderCount = {allActiveOrderCount}", 0);
+//#endif
+                            break;
                         }
 
                         NextDelivery1:;
@@ -387,12 +408,13 @@ namespace SQLCLR.DeliveryCover
                     cover = new CourierDeliveryInfo[shopOrders.Length];
                     int coverCount = 0;
                     int coverOrderCount = 0;
-                    int[] deliveryOrderIndex = new int[shopOrders.Length];
 
                     Array.Clear(flags2, 0, flags2.Length);
 
                     for (int i = 0; i < shopDeliveries.Length; i++)
                     {
+                        // 7.1.1 Отбрасываем отгрузки с не собранными заказами
+                        rc = 711;
                         CourierDeliveryInfo delivery = shopDeliveries[i];
                         if (delivery.IsReceipted)
                             continue;
@@ -414,17 +436,33 @@ namespace SQLCLR.DeliveryCover
                             cover[coverCount++] = delivery;
 
                             coverOrderCount += deliveryOrders.Length;
-                            if (coverOrderCount >= allAssembledOrderCount)
-                                break;
-                        }
 
-                        for (int j = 0; j < deliveryOrders.Length; j++)
-                        {
-                            flags2[deliveryOrderIndex[j]] = true;
+                            for (int j = 0; j < deliveryOrders.Length; j++)
+                            {
+                                flags2[deliveryOrderIndex[j]] = true;
+                            }
+
+                            if (coverOrderCount >= allAssembledOrderCount)
+                            {
+//#if debug
+//                                Logger.WriteToLog(673, $"CreateShopCover. i= {i}, break2 coverOrderCount = {coverOrderCount}, allAssembledOrderCount = {allAssembledOrderCount}", 0);
+//#endif
+                                break;
+                            }
                         }
+//                        else
+//                        {
+//#if debug
+//                            Logger.WriteToLog(601, $"CreateShopCover. i= {i}, vehicle_id = {delivery.DeliveryCourier.VehicleID}", 0);
+//#endif
+
+//                        }
 
                         NextDelivery2:;
                     }
+                    #if debug
+                            Logger.WriteToLog(621, $"CreateShopCover. coverCount = {coverCount}, coverOrderCount = {coverOrderCount}", 0);
+                    #endif
 
                     if (coverCount < cover.Length)
                     {
@@ -443,6 +481,9 @@ namespace SQLCLR.DeliveryCover
                     {
                         if (shopOrders[i].Status == OrderStatus.Assembled)
                         {
+                    #if debug
+                            Logger.WriteToLog(625, $"CreateShopCover. rejected order = {shopOrders[i].Id}", 0);
+                    #endif
                             rejectedOrders[rejectedOrderCount++] = shopOrders[i];
                         }
                         else if (!flags1[i])
@@ -456,6 +497,9 @@ namespace SQLCLR.DeliveryCover
                 {
                     Array.Resize(ref rejectedOrders, rejectedOrderCount);
                 }
+                    #if debug
+                            Logger.WriteToLog(622, $"CreateShopCover. rejectedOrderCount = {rejectedOrderCount}", 0);
+                    #endif
 
                 // 9. Выход - Ok
                 rc = 0;
@@ -475,9 +519,9 @@ namespace SQLCLR.DeliveryCover
         /// <returns>-1 - d1 меньше 2; 0 - d1 равно d2; 1 - d1 больше d2</returns>
         private static int CompareDeliveriesByShopId(CourierDeliveryInfo d1, CourierDeliveryInfo d2)
         {
-            if (d1.FromShop.Id > d2.FromShop.Id)
-                return -1;
             if (d1.FromShop.Id < d2.FromShop.Id)
+                return -1;
+            if (d1.FromShop.Id > d2.FromShop.Id)
                 return 1;
             return 0;
         }
@@ -494,9 +538,9 @@ namespace SQLCLR.DeliveryCover
                 return -1;
             if (d1.Priority < d2.Priority)
                 return 1;
-            if (d1.OrderCount < d2.OrderCount)
+            if (d1.OrderCost < d2.OrderCost)
                 return -1;
-            if (d1.OrderCount > d2.OrderCount)
+            if (d1.OrderCost > d2.OrderCost)
                 return 1;
             return 0;
         }

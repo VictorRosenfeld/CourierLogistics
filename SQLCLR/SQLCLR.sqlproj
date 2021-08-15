@@ -9,7 +9,7 @@
     <CodePage>65001</CodePage>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{2209fccb-4580-45e9-95b7-9cb028c6d7eb}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
