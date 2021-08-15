@@ -4021,8 +4021,8 @@ public partial class StoredProcedures
         }
     }
 
-    private static void NullThread(object status)
-    { }
+    //private static void NullThread(object status)
+    //{ }
 
     /// <summary>
     /// Расширение исходных отгрузок до заданной длины

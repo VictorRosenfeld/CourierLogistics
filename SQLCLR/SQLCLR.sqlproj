@@ -75,6 +75,7 @@
     <Folder Include="Log" />
     <Folder Include="ExtraOrders" />
     <Folder Include="DeliveryCover" />
+    <Folder Include="RouteCheck" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -119,5 +120,8 @@
     <Compile Include="DeliveryCover\CreateCover.cs" />
     <Compile Include="DeliveryCover\CourierRepository.cs" />
     <Compile Include="DeliveryCover\OrderRejectionCause.cs" />
+    <Compile Include="RouteCheck\RouteCheckRequest.cs" />
+    <Compile Include="RouteCheck\RootCheckResponse.cs" />
+    <Compile Include="RouteCheck\RouteCheckProcedure.cs" />
   </ItemGroup>
 </Project>
