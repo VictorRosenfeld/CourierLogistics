@@ -60,6 +60,11 @@ public partial class StoredProcedures
     private const string SELECT_COURIER_TYPES = "SELECT * FROM lsvCourierTypes WHERE crtVehicleID IN ({0});";
 
     /// <summary>
+    /// Выбор параметров способов доставки
+    /// </summary>
+    private const string SELECT_COURIER_TYPES1 = "SELECT * FROM lsvCourierTypes WHERE crtDServiceType IN ({0});";
+
+    /// <summary>
     /// Выбор курьеров, доступных для доставки заказов
     /// </summary>
     private const string SELECT_COURIERS =

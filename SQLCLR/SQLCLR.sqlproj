@@ -123,5 +123,6 @@
     <Compile Include="RouteCheck\RouteCheckRequest.cs" />
     <Compile Include="RouteCheck\RootCheckResponse.cs" />
     <Compile Include="RouteCheck\RouteCheckProcedure.cs" />
+    <Compile Include="RouteCheck\Permutations.cs" />
   </ItemGroup>
 </Project>

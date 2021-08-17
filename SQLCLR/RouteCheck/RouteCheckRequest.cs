@@ -115,7 +115,7 @@ namespace SQLCLR.RouteCheck
         /// Долгота заказа
         /// </summary>
         [XmlAttribute()]
-        public decimal lon { get; set; }
+        public double lon { get; set; }
 
         /// <summary>
         /// Время начала интервала доставки

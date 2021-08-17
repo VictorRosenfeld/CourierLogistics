@@ -2,9 +2,7 @@
 namespace SQLCLR.RouteCheck
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Text;
     using System.Xml.Serialization;
 
     /// <summary>
@@ -71,7 +69,7 @@ namespace SQLCLR.RouteCheck
         /// Заказы отгрузки в порядке доставки
         /// </summary>
         [XmlArrayItem("order", IsNullable = false)]
-        public OrderData[] orders { get; set; }
+        public OrderSeq[] orders { get; set; }
 
         /// <summary>
         /// Гео-данные об узлах доставки
@@ -147,12 +145,12 @@ namespace SQLCLR.RouteCheck
     }
 
     /// <summary>
-    /// Данные заказа
+    /// ID заказа
     /// </summary>
     [Serializable()]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true)]
-    public class OrderData
+    public class OrderSeq
     {
         /// <summary>
         /// ID заказа
