@@ -12,7 +12,9 @@ namespace SQLCLR.RouteCheck
         /// Генератор всех перестановок заланной длины (0-base)
         /// </summary>
         /// <param name="n">Длина перестановки (1 ≤ n ≤ 10)</param>
-        /// <returns>Перестановки или null</returns>
+        /// <returns>Перестановки или null
+        /// Одна перестановка занимает n последовательных байт
+        /// </returns>
         public static byte[] Generate(int n)
         {
             // 1. Инициализация
@@ -41,9 +43,9 @@ namespace SQLCLR.RouteCheck
                 // 4. Доходим до нужного размера
                 byte[] permOut = null;
 
-                for (byte k = 4; k <= n; k++, permIn = permOut)
+                for (byte k = 3; k < n; k++, permIn = permOut)
                 {
-                    GenNext(k - 1, permIn, k, out permOut);
+                    GenNext(k, permIn, k, out permOut);
                 }
 
                 // 5. Выход - Ok

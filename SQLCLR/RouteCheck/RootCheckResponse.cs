@@ -15,9 +15,10 @@ namespace SQLCLR.RouteCheck
     public class RootCheckResponse
     {
         /// <summary>
-        /// Общие данные об отгрузке
+        /// Построенные отгрузки
         /// </summary>
-        public DeliveryData delivery { get; set; }
+        [XmlArrayItem("delivery", IsNullable = false)]
+        public DeliveryData[] deliveries { get; set; }
 
         /// <summary>
         /// ID запроса
@@ -44,10 +45,26 @@ namespace SQLCLR.RouteCheck
         public bool optimized { get; set; }
 
         /// <summary>
-        /// Код ошибки
+        /// Добавление отгрузки
         /// </summary>
-        [XmlAttribute()]
-        public int code { get; set; }
+        /// <param name="data"></param>
+        public void AddDelivery(DeliveryData data)
+        {
+            if (data != null)
+            {
+                if (deliveries == null)
+                {
+                    deliveries = new DeliveryData[] { data };
+                }
+                else
+                {
+                    DeliveryData[] deliveriesPlus = deliveries;
+                    Array.Resize(ref deliveriesPlus, deliveriesPlus.Length + 1);
+                    deliveriesPlus[deliveriesPlus.Length - 1] = data;
+                    deliveries = deliveriesPlus;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -58,12 +75,12 @@ namespace SQLCLR.RouteCheck
     [XmlType(AnonymousType = true)]
     public class DeliveryData
     {
-        /// <summary>
-        /// Альтернативные dservice_id
-        /// </summary>
-        [XmlArray()]
-        [XmlArrayItem("service_id", IsNullable = false)]
-        public int[] alternative_delivery_service { get; set; }
+        ///// <summary>
+        ///// Альтернативные dservice_id
+        ///// </summary>
+        //[XmlArray()]
+        //[XmlArrayItem("service_id", IsNullable = false)]
+        //public int[] alternative_delivery_service { get; set; }
 
         /// <summary>
         /// Заказы отгрузки в порядке доставки
@@ -120,6 +137,12 @@ namespace SQLCLR.RouteCheck
         public double weight { get; set; }
 
         /// <summary>
+        /// Стоимости отгрузки
+        /// </summary>
+        [XmlAttribute()]
+        public double cost { get; set; }
+
+        /// <summary>
         /// Флаг: true - возврат в магазин; false - отгрузка завершается в точке последнего вручения
         /// </summary>
         [XmlAttribute()]
@@ -142,6 +165,12 @@ namespace SQLCLR.RouteCheck
         /// </summary>
         [XmlAttribute()]
         public double execution_time { get; set; }
+
+        /// <summary>
+        /// Код ошибки
+        /// </summary>
+        [XmlAttribute()]
+        public int code { get; set; }
     }
 
     /// <summary>

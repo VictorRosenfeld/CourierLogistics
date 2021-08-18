@@ -1,4 +1,5 @@
-﻿using SQLCLR.Couriers;
+﻿using Microsoft.SqlServer.Server;
+using SQLCLR.Couriers;
 using SQLCLR.Deliveries;
 using SQLCLR.Log;
 using SQLCLR.Orders;
@@ -32,12 +33,60 @@ public partial class StoredProcedures
     ///	            <order order_id = "1001" desrvice_id="5" weight="10.1" lat="37.1234789" lon="54.74567345" time_from="2021-08-15T12:07:45.239" time_to="2021-08-15T14:07:45.239"/>
     ///         </orders>
     ///       </request>
+    /// ------------------------------------------------------------------------
+    /// Формат response:
+    ///       <response request_id = "123" service_id="3000" calc_time="2021-08-15T12:07:45.239" optimized="1">
+    ///          <deliveries>
+    ///	            <delivery shop_id="9999" dservice_id="14" courier_id="6" start_delivery_interval="2021-08-15T12:07:45.239" end_delivery_interval="2021-08-15T12:07:45.239" weight="29.123" is_loop="1" reserve_time="37.23" delivery_time="63.78" execution_time="63.78" code="0">
+    ///                <orders>
+    ///                   <order order_id = "1" />
+    ///                       < !-- . . . -- >
+    ///                   < order order_id="10"/>
+    ///                </orders>
+    ///                <node_info>
+    ///                   <!-- Гео-данные Yandex (первая и последняя точка всегда соответвтвуют магазину -->
+    ///    	              <node distance = "1000" duration= "123" />
+    ///                                < !-- . . . -- >
+    ///                   <node distance= "5000" duration= "475" />
+    ///                </node_info>
+    ///                <node_delivery_time>
+    ///                   <!--Время от начала отгрузки до вручения (в случае такси - от момента вызова). Первая и последняя точка соответствуют магазину  -->
+    ///             	  <node delivery_time = "3" />
+    ///                         < !-- . . . -- >
+    ///                   <node delivery_time="123.98"/>
+    ///                </node_delivery_time>
+    ///             </delivery>
+    ///	            <delivery shop_id="9999" dservice_id="14" courier_id="6" weight="29.123" is_loop="1" code="0"/>
+    ///                       < !-- . . . -- >
+    ///	            <delivery shop_id="9999" dservice_id="14" courier_id="6" start_delivery_interval="2021-08-15T12:07:45.239" end_delivery_interval="2021-08-15T12:07:45.239" weight="29.123" is_loop="1" reserve_time="37.23" delivery_time="63.78" execution_time="63.78" code="0">
+    ///                <orders>
+    ///                   <order order_id = "1" />
+    ///                       < !-- . . . -- >
+    ///                   < order order_id="10"/>
+    ///                </orders>
+    ///                <node_info>
+    ///                   <!-- Гео-данные Yandex (первая и последняя точка всегда соответвтвуют магазину -->
+    ///    	              <node distance = "1000" duration= "123" />
+    ///                                < !-- . . . -- >
+    ///                   <node distance= "5000" duration= "475" />
+    ///                </node_info>
+    ///                <node_delivery_time>
+    ///                   <!--Время от начала отгрузки до вручения (в случае такси - от момента вызова). Первая и последняя точка соответствуют магазину  -->
+    ///             	  <node delivery_time = "3" />
+    ///                         < !-- . . . -- >
+    ///                   <node delivery_time="123.98"/>
+    ///                </node_delivery_time>
+    ///             </delivery>
+    ///          </deliveries>
+    ///       </response>
+    [SqlProcedure]
     public static SqlInt32 RouteCheck(SqlString request, out SqlString response)
     {
         // 1. Инициализация
         int rc = 1;
         int rc1 = 1;
         response = null;
+        RootCheckResponse checkResponse = null;
 
         try
         {
@@ -64,7 +113,7 @@ public partial class StoredProcedures
             rc = 4;
             Shop shop = new Shop(requestData.shop.shop_id);
             shop.Latitude = requestData.shop.lat;
-            shop.Longitude = requestData.shop.lat;
+            shop.Longitude = requestData.shop.lon;
             shop.WorkStart = new TimeSpan(0, 0, 0);
             shop.WorkEnd = new TimeSpan(23, 59, 59);
 
@@ -157,10 +206,12 @@ public partial class StoredProcedures
                 // 7. Строим объекты "заказы"
                 rc = 7;
                 Order[] orders = new Order[requestData.orders.Length];
+                double weight = 0;
 
                 for (int i = 0; i < requestData.orders.Length; i++)
                 {
                     OrderData data = requestData.orders[i];
+                    weight += data.weight;
                     if (data.time_from >= data.time_to)
                         return rc = 51;
                     if (data.lat <= 0 || data.lon <= 0)
@@ -174,7 +225,7 @@ public partial class StoredProcedures
                     order.Weight = data.weight;
                     order.Priority = 5;
                     order.DeliveryTimeFrom = data.time_from;
-                    order.DeliveryTimeFrom = data.time_to;
+                    order.DeliveryTimeTo = data.time_to;
                     order.Latitude = data.lat;
                     order.Longitude = data.lon;
                     order.VehicleTypes = GetCourierVehicleId(data.desrvice_id, couriers);
@@ -192,63 +243,183 @@ public partial class StoredProcedures
                 rc = 9;
                 Array.Sort(deliveryCouriers, CompareCouriersByYandexType);
 
-                // 10. Цикл проверки маршрута по курьере
+                // 10. Создаём все перестановки, если требуется
                 rc = 10;
+                int orderCount = orders.Length;
+                byte[] permutations = null;
+                int[] geoOrderIndex = new int[orderCount + 1];
+                if (requestData.optimized && orderCount > 1)
+                {
+                    permutations = Permutations.Generate(orderCount);
+                    if (permutations == null)
+                        return rc;
+                    geoOrderIndex[orderCount] = orderCount;
+                }
+                else
+                {
+                    for (int i = 0; i <= orders.Length; i++)
+                        geoOrderIndex[i] = i;
+                }
+
+                // 11. Инициализируем отклик
+                rc = 11;
+                checkResponse = new RootCheckResponse();
+                checkResponse.calc_time = requestData.calc_time;
+                checkResponse.optimized = requestData.optimized;
+                checkResponse.request_id = requestData.request_id;
+                checkResponse.service_id = requestData.service_id;
+
+                // 12. Цикл проверки маршрута по способам доставки
+                rc = 12;
                 int currentYandexType = -1;
                 Point[,] geoData = null;
-                int[] geoOrderIndex = new int[orders.Length + 1];
-                for (int i = 0; i <= orders.Length; i++)
-                    geoOrderIndex[i] = i;
+                Order[] permutOrders = new Order[orderCount];
 
                 for (int i = 0; i < deliveryCouriers.Length; i++)
                 {
-                    // 10.0 Извлекаем курьера
-                    rc = 100;
+                    // 12.0 Извлекаем курьера
+                    rc = 120;
                     Courier courier = deliveryCouriers[i];
+                    DeliveryData data = new DeliveryData();
+                    data.courier_id = courier.Id;
+                    data.dservice_id = courier.DServiceType;
+                    data.is_loop = !courier.IsTaxi;
+                    data.shop_id = shop.Id;
+                    data.weight = weight;
 
-                    // 10.1 Обеспечиваем гео-данные
-                    rc = 101;
+                    // 12.1 Обеспечиваем гео-данные
+                    rc = 121;
                     if (courier.YandexType != currentYandexType)
                     {
-                        currentYandexType = courier.YandexType;
-                        rc1 = GeoData.Select(connection, requestData.service_id, currentYandexType, shop, orders, out geoData);
+                        rc1 = GeoData.Select(connection, requestData.service_id, courier.YandexType, shop, orders, out geoData);
                         if (rc1 != 0)
+                        {
+                            data.code = rc;
+                            checkResponse.AddDelivery(data);
                             continue;
+                        }
+                        currentYandexType = courier.YandexType;
                     }
 
-                    // 10.2 Проверяем/находим маршрут
-                    rc = 102;
+                    // 12.2 Проверяем/находим маршрут
+                    rc = 122;
                     CourierDeliveryInfo delivery;
-                    if (!requestData.optimized)
+                    CourierDeliveryInfo bestDelivery = null;
+
+                    if (permutations == null)
                     {
-                        rc1 = courier.DeliveryCheck(requestData.calc_time, shop, orders, geoOrderIndex, orders.Length, !courier.IsTaxi, geoData, out delivery);
+                        rc1 = courier.DeliveryCheck(requestData.calc_time, shop, orders, geoOrderIndex, orderCount, !courier.IsTaxi, geoData, out delivery);
+                        if (rc1 == 0)
+                            bestDelivery = delivery;
                     }
                     else
                     {
+#if debug
+                        Logger.WriteToLog(1, $"RouteCheck calc_time = {requestData.calc_time}, permutations.Length = {permutations.Length}, orderCount = {orderCount}", 0);
+#endif
+
+
+                        for (int permutOffest = 0; permutOffest < permutations.Length; permutOffest += orderCount)
+                        {
+                            for (int j = 0; j < orderCount; j++)
+                            {
+                                int orderIndex = permutations[permutOffest + j];
+                                geoOrderIndex[j] = orderIndex;
+                                permutOrders[j] = orders[orderIndex];
+                            }
+
+                            rc1 = courier.DeliveryCheck(requestData.calc_time, shop, permutOrders, geoOrderIndex, orderCount, !courier.IsTaxi, geoData, out delivery);
+                            if (rc1 == 0)
+                            {
+                                if (bestDelivery == null)
+                                { bestDelivery = delivery; }
+                                else if (delivery.Cost < bestDelivery.Cost)
+                                { bestDelivery = delivery; }
+                            }
+                        }
+                    }
+
+                    // 12.3 Добавляем отгрузку
+                    rc = 123;
+                    if (bestDelivery == null)
+                    {
+                        data.code = 100000 * rc + rc1;
+                    }
+                    else
+                    {
+                        data.delivery_time = bestDelivery.DeliveryTime;
+                        data.execution_time = bestDelivery.ExecutionTime;
+                        data.reserve_time = bestDelivery.ReserveTime.TotalMinutes;
+                        data.start_delivery_interval = bestDelivery.StartDeliveryInterval;
+                        data.end_delivery_interval = bestDelivery.EndDeliveryInterval;
+                        data.weight = bestDelivery.Weight;
+                        data.cost = bestDelivery.Cost;
+                        data.code = 0;
+
+                        // orders
+                        rc = 1231;
+                        OrderSeq[] seq = new OrderSeq[bestDelivery.Orders.Length];
+                        for (int j = 0; j < seq.Length; j++)
+                        {
+                            seq[j] = new OrderSeq();
+                            seq[j].order_id = bestDelivery.Orders[j].Id;
+                        }
+                        data.orders = seq;
+
+                        // node_info
+                        rc = 1232;
+                        DeliveryNode[] nodeInfo = new DeliveryNode[bestDelivery.NodeInfo.Length];
+                        for (int j = 0; j < nodeInfo.Length; j++)
+                        {
+                            nodeInfo[j] = new DeliveryNode();
+                            nodeInfo[j].distance = bestDelivery.NodeInfo[j].X;
+                            nodeInfo[j].duration = bestDelivery.NodeInfo[j].Y;
+                        }
+                        data.node_info = nodeInfo;
+
+                        // node_delivery_time
+                        rc = 1233;
+                        DeliveryTime[] nodeDeliveryTime = new DeliveryTime[bestDelivery.NodeDeliveryTime.Length];
+                        for (int j = 0; j < nodeDeliveryTime.Length; j++)
+                        {
+                            nodeDeliveryTime[j] = new DeliveryTime();
+                            nodeDeliveryTime[j].delivery_time = bestDelivery.NodeDeliveryTime[j];
+                        }
+                        data.node_delivery_time = nodeDeliveryTime;
 
                     }
 
-
+                    checkResponse.AddDelivery(data);
                 }
 
+                // 13. Готовим отклик
+                rc = 13;
+                serializer = new XmlSerializer(typeof(RootCheckResponse));
+                using (StringWriter stringWriter = new StringWriter())
+                {
+                    using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter))
+                    {
+                        serializer = new XmlSerializer(typeof(RootCheckResponse));
+                        serializer.Serialize(xmlWriter, checkResponse);
+                        response = new SqlString(stringWriter.ToString());
+                        xmlWriter.Close();
+                    }
+                }
 
-
-
-
-
-
-                // 6.5 Закрываем соединение
-                rc = 65;
+                // 14. Закрываем соединение
+                rc = 14;
                 connection.Close();
             }
 
-
-
-
+            // 15. Выход - Ok
+            rc = 0;
             return rc;
         }
-        catch
+        catch (Exception ex)
         {
+#if debug
+            Logger.WriteToLog(3, $"RouteCheck. rc = {rc}. Exception {ex.Message}", 2);
+#endif
             return rc;
         }
     }
