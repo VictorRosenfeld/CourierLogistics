@@ -93,7 +93,7 @@ namespace SQLCLR.RouteCheck
                 {
                     // 3.1 Новый элемент перед первым
                     permutOut[offsetOut] = value;
-                    Buffer.BlockCopy(permutIn, 0, permutOut, offsetOut + 1, n);
+                    Buffer.BlockCopy(permutIn, offsetIn, permutOut, offsetOut + 1, n);
                     offsetOut += n1;
 
                     // 3.2 Новый элемент после j

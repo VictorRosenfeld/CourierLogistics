@@ -314,10 +314,9 @@ public partial class StoredProcedures
                     }
                     else
                     {
-#if debug
-                        Logger.WriteToLog(1, $"RouteCheck calc_time = {requestData.calc_time}, permutations.Length = {permutations.Length}, orderCount = {orderCount}", 0);
-#endif
-
+//#if debug
+//                        Logger.WriteToLog(1, $"RouteCheck calc_time = {requestData.calc_time}, permutations.Length = {permutations.Length}, orderCount = {orderCount}", 0);
+//#endif
 
                         for (int permutOffest = 0; permutOffest < permutations.Length; permutOffest += orderCount)
                         {
@@ -327,6 +326,28 @@ public partial class StoredProcedures
                                 geoOrderIndex[j] = orderIndex;
                                 permutOrders[j] = orders[orderIndex];
                             }
+//#if debug
+//                            //7 < order order_id = "31316590" />
+//                            // 4 < order order_id = "31310785" />
+//                            //  6 < order order_id = "31315952" />
+//                            //   5 < order order_id = "31310862" />
+//                            //    0 < order order_id = "31299795" />
+//                            //     1 < order order_id = "31301311" />
+//                            //      2 < order order_id = "31307172" />
+//                            //       3 < order order_id = "31308851" />
+
+//                            if (geoOrderIndex[0] == 7 &&
+//                                geoOrderIndex[1] == 4 &&
+//                                geoOrderIndex[2] == 6 &&
+//                                geoOrderIndex[3] == 5 &&
+//                                geoOrderIndex[4] == 0 &&
+//                                geoOrderIndex[5] == 1 &&
+//                                geoOrderIndex[6] == 2 &&
+//                                geoOrderIndex[7] == 3)
+//                            {
+//                                Logger.WriteToLog(5, $"RouteCheck (7, 4, 6, 5, 0, 1, 2, 3) is exists", 0);
+//                            }                                                              
+//#endif
 
                             rc1 = courier.DeliveryCheck(requestData.calc_time, shop, permutOrders, geoOrderIndex, orderCount, !courier.IsTaxi, geoData, out delivery);
                             if (rc1 == 0)
@@ -395,12 +416,15 @@ public partial class StoredProcedures
                 // 13. Готовим отклик
                 rc = 13;
                 serializer = new XmlSerializer(typeof(RootCheckResponse));
+                var ns = new XmlSerializerNamespaces();
+                ns.Add("", "");
+
                 using (StringWriter stringWriter = new StringWriter())
                 {
-                    using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter))
+                    using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter, new XmlWriterSettings() { OmitXmlDeclaration = true }))
                     {
                         serializer = new XmlSerializer(typeof(RootCheckResponse));
-                        serializer.Serialize(xmlWriter, checkResponse);
+                        serializer.Serialize(xmlWriter, checkResponse, ns);
                         response = new SqlString(stringWriter.ToString());
                         xmlWriter.Close();
                     }
