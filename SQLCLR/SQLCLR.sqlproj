@@ -76,6 +76,7 @@
     <Folder Include="ExtraOrders" />
     <Folder Include="DeliveryCover" />
     <Folder Include="RouteCheck" />
+    <Folder Include="YandexGeoData" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -124,5 +125,8 @@
     <Compile Include="RouteCheck\RootCheckResponse.cs" />
     <Compile Include="RouteCheck\RouteCheckProcedure.cs" />
     <Compile Include="RouteCheck\Permutations.cs" />
+    <Compile Include="YandexGeoData\GeoRequest.cs" />
+    <Compile Include="YandexGeoData\GeoRequestArgs.cs" />
+    <Compile Include="YandexGeoData\GeoContext.cs" />
   </ItemGroup>
 </Project>
