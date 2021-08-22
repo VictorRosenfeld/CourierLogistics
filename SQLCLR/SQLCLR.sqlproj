@@ -127,6 +127,8 @@
     <Compile Include="RouteCheck\Permutations.cs" />
     <Compile Include="YandexGeoData\GeoRequest.cs" />
     <Compile Include="YandexGeoData\GeoRequestArgs.cs" />
-    <Compile Include="YandexGeoData\GeoContext.cs" />
+    <Compile Include="YandexGeoData\YandexRequestData.cs" />
+    <Compile Include="YandexGeoData\GeoIterationData.cs" />
+    <Compile Include="YandexGeoData\GeoThreadContext.cs" />
   </ItemGroup>
 </Project>

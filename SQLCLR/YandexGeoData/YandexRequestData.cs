@@ -10,7 +10,7 @@ namespace SQLCLR.YandexGeoData
     /// <summary>
     /// Контекст одного запроса гео-данных Yandex
     /// </summary>
-    public class GeoContext
+    public class YandexRequestData
     {
         #region Координаты исходных точек запроса
 
@@ -68,11 +68,6 @@ namespace SQLCLR.YandexGeoData
         public int ExitCode  { get; set; }
 
         /// <summary>
-        /// Объект синхронизации завершения работы потока
-        /// </summary>
-        public ManualResetEvent SyncEvent { get; private set; }
-
-        /// <summary>
         /// Параметрический конструктор класса GeoContext
         /// </summary>
         /// <param name="origins">Координаты исходных точек</param>
@@ -83,10 +78,9 @@ namespace SQLCLR.YandexGeoData
         /// <param name="destinationLength">Длина интервала назначения</param>
         /// <param name="modes">Способы передвижения</param>
         /// <param name="geoData">Попарные гео-данные результата (размерность Origins.Length x Destinations.Length x Modes.Length)</param>
-        /// <param name="syncEvent">Объект синхронизации завершения работы потока</param>
-        public GeoContext(GeoPoint[] origins, int startOriginIndex, int originLength,
+        public YandexRequestData(GeoPoint[] origins, int startOriginIndex, int originLength,
                           GeoPoint[] destinations, int startDestinatioIndex, int destinationLength,
-                          string[] modes, Point[,,] geoData, ManualResetEvent syncEvent)
+                          string[] modes, Point[,,] geoData)
         {
             Origins = origins;
             StartOrginIndex = startOriginIndex;
@@ -96,7 +90,6 @@ namespace SQLCLR.YandexGeoData
             DestinationLength = destinationLength;
             Modes = modes;
             GeoData = geoData;
-            SyncEvent = syncEvent;
         }
     }
 }
