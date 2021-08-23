@@ -52,5 +52,11 @@ namespace SQLCLR_TEST
                 }
             }
         }
+
+        private void butParse_Click(object sender, EventArgs e)
+        {
+            string json = @"{""rows"":[{""elements"":[{""distance"":{""value"":4770},""duration"":{""value"":526},""status"":""OK""},{""distance"":{""value"":0},""duration"":{""value"":0},""status"":""OK""}]},{""elements"":[{""distance"":{""value"":3667},""duration"":{""value"":387},""status"":""OK""},{""distance"":{""value"":755},""duration"":{""value"":93},""status"":""OK""}]}]}";
+            int rc = YandexResponseParser.Parse(json);
+        }
     }
 }

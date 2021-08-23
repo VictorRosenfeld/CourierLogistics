@@ -2,7 +2,10 @@
 using SQLCLR.YandexGeoData;
 using System;
 using System.Data.SqlTypes;
+using System.Globalization;
 using System.IO;
+using System.Net;
+using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
 
@@ -36,6 +39,8 @@ public partial class GeoRequest
     private const string MODE_TRUCK = "truck";
 
     #endregion Способы передвижения
+
+    private const string USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36";
 
     /// <summary>
     /// Запрос гео-данных Yandex
@@ -225,7 +230,197 @@ public partial class GeoRequest
 
     private static void GeoThread(object status)
     {
+        // 1. Инициализация
+        int rc = 1;
+        GeoThreadContext context = status as GeoThreadContext;
 
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (context == null)
+                return;
+            if (string.IsNullOrEmpty(context.GetUrl))
+                return;
+            if (string.IsNullOrEmpty(context.ApiKey))
+                return;
+            if (context.RequestData == null || context.RequestData.Length <= 0)
+                return;
+            if (context.StartIndex < 0 || context.StartIndex >= context.RequestData.Length)
+                return;
+            if (context.Step <= 0)
+                return;
+
+            // 3. Цикл запросов к Yandex
+            rc = 3;
+            string getUrl = context.GetUrl;
+            string apiKey = context.ApiKey;
+            StringBuilder sb = new StringBuilder(100 * 50);
+            string geoPointPattern = "{0:0.0000000},{1:0.0000000}";
+
+            for (int i = context.StartIndex; i < context.RequestData.Length; i += context.Step)
+            {
+                // 3.1 Извлекаем и проверяем данные запроса
+                rc = 31;
+                YandexRequestData requestData = context.RequestData[i];
+                if (requestData == null)
+                    continue;
+
+                GeoPoint[] origins = requestData.Origins;
+                GeoPoint[] destinations = requestData.Destinations;
+                int originStartIndex = requestData.StartOrginIndex;
+                int originLength = requestData.OriginLength;
+                int destinationStartIndex = requestData.StartDestinationIndex;
+                int destinationLength = requestData.DestinationLength;
+
+                requestData.ExitCode = 310;
+                if (origins == null || origins.Length <= 0)
+                    continue;
+                if (originStartIndex < 0 || originStartIndex >= origins.Length)
+                    continue;
+                if (originLength <= 0 || originStartIndex + originLength > origins.Length)
+                    continue;
+
+                requestData.ExitCode = 311;
+                if (destinations == null || destinations.Length <= 0)
+                    continue;
+                if (destinationStartIndex < 0 || destinationStartIndex >= destinations.Length)
+                    continue;
+                if (destinationLength <= 0 || destinationStartIndex + destinationLength > destinations.Length)
+                    continue;
+
+                requestData.ExitCode = 312;
+                string[] modes = requestData.Modes;
+                if (modes == null || modes.Length <= 0)
+                    continue;
+
+                requestData.ExitCode = 313;
+                Point[,,] geoData = requestData.GeoData;
+                if (geoData == null ||
+                    geoData.GetLength(0) != origins.Length ||
+                    geoData.GetLength(1) != destinations.Length ||
+                    geoData.GetLength(2) < modes.Length)
+                    continue;
+
+                // 3.2 Строим запрос
+                rc = 32;
+                requestData.ExitCode = rc;
+                // https://yandex.ru/routing/doc/distance_matrix/concepts/structure.html
+                //
+                // GET https://api.routing.yandex.net/v2/distancematrix
+                //      ?apikey =<string>
+                //      &origins =<lat1,lon1|lat2,lon2|...>
+                //      &destinations =<lat1,lon1|lat2,lon2|...>
+                //      &[mode=<string>]
+                //      &[departure_time=<integer>]
+                //      &[avoid_tolls=<boolean>]
+                //      &[weight=<float>]
+                //      &[axle_weight=<float>]
+                //      &[max_weight=<float>]
+                //      &[height=<float>]
+                //      &[width=<float>]
+                //      &[length=<float>]
+                //      &[payload=<float>]
+                //      &[eco_class=<integer>]
+                //      &[has_trailer=<boolean>]
+                //-------------------------------------------------------- 
+                //  Шаблон url: https://api.routing.yandex.net/v2/distancematrix?apikey={0}&origins={1}&destinations={2}&mode{3}
+                //              {0} - apikey;
+                //              {1} - origins;
+                //              {2} - destinations;
+                //              {3} - mode.
+
+                // 3.3 Строим origins-аргумент
+                rc = 33;
+                requestData.ExitCode = rc;
+                string originsArg;
+                sb.Length = 0;
+
+                sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, origins[0].lat, origins[0].lon);
+
+                for (int j = 1; j < origins.Length; j++)
+                {
+                    sb.Append('|');
+                    sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, origins[j].lat, origins[j].lon);
+                }
+
+                originsArg = sb.ToString();
+
+                // 3.4 Строим destinations-аргумент
+                rc = 34;
+                requestData.ExitCode = rc;
+                string destinationsArg;
+                sb.Length = 0;
+
+                sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, destinations[0].lat, destinations[0].lon);
+
+                for (int j = 1; j < destinations.Length; j++)
+                {
+                    sb.Append('|');
+                    sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, destinations[j].lat, destinations[j].lon);
+                }
+
+                destinationsArg = sb.ToString();
+
+                // 3.5 Цикл получения данных по режиму
+                rc = 35;
+                //JsonSerializer serializer = JsonSerializer.Create();
+
+                for (int m = 0; m < modes.Length; m++)
+                {
+                    string url = string.Format(getUrl, apiKey, originsArg, destinationsArg, modes[m]);
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                    request.Method = "GET";
+                    request.UserAgent = USER_AGENT;
+                    request.Accept = "application/json";
+                    request.ContentType = "application/json";
+                    request.Timeout = 10000;
+
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    {
+                        if (response.StatusCode != HttpStatusCode.OK)
+                        {
+                            requestData.ExitCode = - (int)response.StatusCode;
+                        }
+                        else
+                        {
+
+                        }
+
+                        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                        {
+                            //string json = reader.ReadToEnd();
+                            //YandexResponse rsp = (YandexResponse)serializer.Deserialize(reader, typeof(YandexResponse));
+                            //if (rsp == null)
+                            //    return rc;
+                            //if (rsp.result != 0)
+                            //    return rc = 10000 * rc + rsp.result;
+                        }
+                    }
+
+
+                }
+
+
+            }
+
+
+
+
+        }
+        catch
+        {
+
+        }
+        finally
+        {
+            if (context != null)
+            {
+                context.ExitCode = rc;
+                if (context.SyncEvent != null)
+                    context.SyncEvent.Set();
+            }
+        }
     }
 
     /// <summary>
@@ -815,14 +1010,6 @@ public partial class GeoRequest
         }
     }
 
-    /// <summary>
-    /// Для заданного числа number выбор пар чисел x, y
-    /// таких, что 
-    ///            (1)    0 ≤ number - x * y ≤ differenceLim (y ≥ x > 0)
-    /// </summary>
-    /// <param name="number">Заданное число</param>
-    /// <param name="differenceLim">Порог для разницы в неравенстве (1)</param>
-    /// <returns>Найденные множители или null</returns>
     private static Point[] GetMultiplierPairs(int number, int differenceLim = 1)
     {
         // 1. Инициализация
@@ -868,4 +1055,6 @@ public partial class GeoRequest
             return null;
         }
     }
+
+    // https://api.routing.yandex.net/v2/distancematrix?apikey=e3c2008c-94f3-43a0-8136-e9ff62226931&mode=driving|walking&origins=55.7538127,37.5755189|55.7539127,37.5655189&destinations=55.7489841,37.564189
 }

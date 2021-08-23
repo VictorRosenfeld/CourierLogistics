@@ -130,5 +130,6 @@
     <Compile Include="YandexGeoData\YandexRequestData.cs" />
     <Compile Include="YandexGeoData\GeoIterationData.cs" />
     <Compile Include="YandexGeoData\GeoThreadContext.cs" />
+    <Compile Include="YandexGeoData\YandexResponse.cs" />
   </ItemGroup>
 </Project>
