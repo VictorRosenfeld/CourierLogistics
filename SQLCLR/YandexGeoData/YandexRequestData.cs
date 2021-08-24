@@ -68,6 +68,16 @@ namespace SQLCLR.YandexGeoData
         public int ExitCode  { get; set; }
 
         /// <summary>
+        /// Status Code Http-запроса
+        /// </summary>
+        public int HttpStatusCode  { get; set; }
+
+        /// <summary>
+        /// Status Description Http-запроса или Erros-сообщение Yandex
+        /// </summary>
+        public string ErrorMessage  { get; set; }
+
+        /// <summary>
         /// Параметрический конструктор класса GeoContext
         /// </summary>
         /// <param name="origins">Координаты исходных точек</param>
