@@ -1,103 +1,100 @@
-п»ї
-namespace SQLCLR_TEST
+
+namespace SQLCLR.YandexGeoData
 {
     using System;
 
     /// <summary>
-    /// РџР°СЂСЃРµСЂ РѕС‚РєР»РёРєР° Yandex
+    /// Парсер отклика Yandex
     /// </summary>
     public class YandexResponseParser
     {
-        #region РћС‚РєР»РёРє СЃ СЃРѕРѕР±С‰РµРЅРёРµРј РѕР± РѕС€РёР±РєРµ
+        #region Отклик с сообщением об ошибке
 
         /// <summary>
-        /// РџСЂРµС„РёРєСЃ РѕС‚РєР»РёРєР° СЃ СЃРѕРѕР±С‰РµРЅРёРµРј РѕР± РѕС€РёР±РєРµ
+        /// Префикс отклика с сообщением об ошибке
         /// </summary>
         private const string ERROR_MESSAGE_PREFIX = @"""errors"":[""";
 
         /// <summary>
-        /// РЎСѓС„С„РёРєСЃ РѕС‚РєР»РёРєР° СЃ СЃРѕРѕР±С‰РµРЅРёРµРј РѕР± РѕС€РёР±РєРµ
+        /// Суффикс отклика с сообщением об ошибке
         /// </summary>
         private const string ERROR_MESSAGE_SUFFIX = @"""]}";
 
-        #endregion РћС‚РєР»РёРє СЃ СЃРѕРѕР±С‰РµРЅРёРµРј РѕР± РѕС€РёР±РєРµ
+        #endregion Отклик с сообщением об ошибке
 
-        #region РћС‚РєР»РёРє СЃ РіРµРѕРґР°РЅРЅС‹РјРё
+        #region Отклик с геоданными
 
         /// <summary>
-        /// РџСЂРµС„РёРєСЃ РѕС‚РєР»РёРєР° СЃ РґР°РЅРЅС‹РјРё
+        /// Префикс отклика с данными
         /// </summary>
         private const string DATA_RESPONSE_STARTS_WITH = @"{""rows""";
 
         /// <summary>
-        /// РђС‚СЂРёР±СѓС‚ distance
+        /// Атрибут distance
         /// </summary>
         private const string DATA_RESPONSE_ITEM_DISTANCE = @"""distance""";
 
         /// <summary>
-        /// РђС‚СЂРёР±СѓС‚ duration
+        /// Атрибут duration
         /// </summary>
         private const string DATA_RESPONSE_ITEM_DURATION = @"""duration""";
 
         /// <summary>
-        /// РђС‚СЂРёР±СѓС‚ status
+        /// Атрибут status
         /// </summary>
         private const string DATA_RESPONSE_ITEM_STATUS = @"""status""";
 
-
         /// <summary>
-        /// РђС‚СЂРёР±СѓС‚ value
+        /// Атрибут value
         /// </summary>
         private const string DATA_RESPONSE_ITEM_VALUE = @"""value""";
 
         /// <summary>
-        /// РџСЂРµС„РёРєСЃ РґР»СЏ РІС‹РґРµР»РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚Р° distance
+        /// Префикс для выделения атрибута distance
         /// </summary>
         private const string DATA_RESPONSE_ITEM_DISTANCE_START_WITH = @"""di";
 
-
         /// <summary>
-        /// РџСЂРµС„РёРєСЃ РґР»СЏ РІС‹РґРµР»РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚Р° duration
+        /// Префикс для выделения атрибута duration
         /// </summary>
         private const string DATA_RESPONSE_ITEM_DURATION_START_WITH = @"""du";
 
-
         /// <summary>
-        /// РџСЂРµС„РёРєСЃ РґР»СЏ РІС‹РґРµР»РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚Р° status
+        /// Префикс для выделения атрибута status
         /// </summary>
         private const string DATA_RESPONSE_ITEM_STATUS_START_WITH = @"""st";
 
-        #endregion РћС‚РєР»РёРє СЃ РіРµРѕРґР°РЅРЅС‹РјРё
+        #endregion Отклик с геоданными
 
         /// <summary>
-        /// Р”РµСЃРµСЂРёР°Р»РёР·Р°С†РёСЏ РѕС‚РєР»РёРєР° СЃ РґР°РЅРЅС‹РјРё
+        /// Десериализация отклика с данными
         /// </summary>
-        /// <param name="json">Json С‚РµРєСЃС‚ РѕС‚РєР»РёРєР°</param>
-        /// <param name="items">Р”Р°РЅРЅС‹Рµ РґР»СЏ РїР°СЂ С‚РѕС‡РµРє</param>
-        /// <returns>0 - Р”РµСЃРµСЂРёР°Р»РёР·Р°С†РёСЏ РІС‹РїРѕР»РЅРµРЅР°; РёРЅР°С‡Рµ - РґРµСЃРµСЂРёР°Р»РёР·Р°С†РёСЏ РЅРµ РІС‹РїРѕР»РЅРµРЅР°</returns>
+        /// <param name="json">Json текст отклика</param>
+        /// <param name="items">Данные для пар точек</param>
+        /// <returns>0 - Десериализация выполнена; иначе - десериализация не выполнена</returns>
         //{"rows":[{"elements":[{"distance":{"value":4770},"duration":{"value":526},"status":"OK"},{"distance":{"value":0},"duration":{"value":0},"status":"OK"}]},{"elements":[{"distance":{"value":3667},"duration":{"value":387},"status":"OK"},{"distance":{"value":755},"duration":{"value":93},"status":"OK"}]}]}
 
         public static int TryParse(string json, out YandexResponseItem[] items)
         {
-            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
+            // 1. Инициализация
             int rc = 1;
             items = null;
 
             try
             {
-                // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
+                // 2. Проверяем исходные данные
                 rc = 2;
                 if (string.IsNullOrWhiteSpace(json))
                     return rc;
 
                 json = json.Trim();
 
-                // 3. РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСЂР°РІРёР»СЊРЅРѕРіРѕ РЅР°С‡Р°Р»Р°
+                // 3. Проверяем наличие правильного начала
                 rc = 3;
                 if (!json.StartsWith(DATA_RESPONSE_STARTS_WITH, StringComparison.InvariantCultureIgnoreCase))
                     return rc;
 
-                // 4. Р¦РёРєР» РѕР±СЂР°Р±РѕС‚РєРё
+                // 4. Цикл обработки
                 rc = 4;
                 int count = 0;
                 int distance = -1;
@@ -183,7 +180,7 @@ namespace SQLCLR_TEST
                     Array.Resize(ref items, count);
                 }
 
-                // 5. Р’С‹С…РѕРґ - Ok
+                // 5. Выход - Ok
                 rc = 0;
                 return rc;
             }
@@ -194,24 +191,24 @@ namespace SQLCLR_TEST
         }
 
         /// <summary>
-        /// Р’С‹Р±РѕСЂ СЃРѕРѕР±С‰РµРЅРёР№ РѕР± РѕС€РёР±РєР°С… Yandex
+        /// Выбор сообщений об ошибках Yandex
         /// </summary>
-        /// <param name="json">json-РѕС‚РєР»РёРє СЃ РѕС€РёР±РєР°РјРё</param>
-        /// <returns>РЎРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕС€РёР±РєР°С… РёР»Рё null</returns>
+        /// <param name="json">json-отклик с ошибками</param>
+        /// <returns>Сообщения об ошибках или null</returns>
         public static string GetErrorMessages(string json)
         {
             try
             {
-                // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
+                // 2. Проверяем исходные данные
                 if (string.IsNullOrWhiteSpace(json))
                     return null;
 
-                // 3. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ '"'
+                // 3. Продвигаемся до '"'
                 int charIndex = ScanCharIndex(json, '"', 0);
                 if (charIndex < 0)
                     return null;
 
-                // 4. РќР°С…РѕРґРёРј РјРµСЃС‚РѕРїРѕР»РѕР¶РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ
+                // 4. Находим местоположение сообщения
                 int iStart = json.IndexOf(ERROR_MESSAGE_PREFIX, charIndex, StringComparison.CurrentCultureIgnoreCase);
                 if (iStart < 0)
                     return null;
@@ -219,7 +216,7 @@ namespace SQLCLR_TEST
                 if (iEnd < 0)
                     return null;
 
-                // 4. Р’РѕР·РІСЂР°С‰Р°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
+                // 4. Возвращаем результат
                 return json.Substring(iStart + ERROR_MESSAGE_PREFIX.Length - 1, iEnd - iStart - ERROR_MESSAGE_PREFIX.Length + 2);
             }
             catch
@@ -229,31 +226,31 @@ namespace SQLCLR_TEST
         }
 
         /// <summary>
-        /// Р”РµСЃРµСЂР°Р»РёР·Р°С†РёСЏ Р·РЅР°С‡РµРЅРёСЏ ': { "value" : d...d }'
+        /// Десерализация значения ': { "value" : d...d }'
         /// </summary>
         /// <param name="json"></param>
-        /// <param name="startIndex">РРЅРґРµРєСЃ СЃРёРјРІРѕР»Р° РїСЂРµРґС€РµСЃС‚РІСѓСЋС‰РµРіРѕ СЌР»РµРјРµРЅС‚Сѓ</param>
-        /// <param name="eoi">РџСЂРёР·РЅР°Рє РїРѕСЃР»РµРґРЅРµРіРѕ Р·РЅР°С‡РµРЅРёСЏ СЌР»РµРјРµРЅС‚Р°</param>
-        /// <returns>Р—РЅР°С‡РµРЅРёРµ d...d >= 0 РёР»Рё РѕС€РёР±РєР°</returns>
+        /// <param name="startIndex">Индекс символа предшествующего элементу</param>
+        /// <param name="eoi">Признак последнего значения элемента</param>
+        /// <returns>Значение d...d >= 0 или ошибка</returns>
         /// startIndex                eoi
         ///     |                      |
-        ///       : {"value":d...d} } РёР»Рё ]
+        ///       : {"value":d...d} } или ]
         private static int ParseIntValue(string json, ref int startIndex, ref bool eoi)
         {
-            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
+            // 1. Инициализация
             int rc = 1;
             eoi = false;
 
             try
             {
-                // 2. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ ':'
+                // 2. Продвигаемся до ':'
                 rc = 2;
                 int charIndex = ScanCharIndex(json, ':', startIndex);
                 if (charIndex < 0)
                     return -rc;
                 startIndex = charIndex + 1;
 
-                // 3. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ '{'
+                // 3. Продвигаемся до '{'
                 rc = 3;
                 charIndex = ScanCharIndex(json, '{', startIndex);
                 if (charIndex < 0)
@@ -261,7 +258,7 @@ namespace SQLCLR_TEST
 
                 startIndex = charIndex + 1;
 
-                // 4. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ '"' Рё РїСЂРѕРІРµСЂСЏРµРј "value"
+                // 4. Продвигаемся до '"' и проверяем "value"
                 rc = 4;
                 charIndex = ScanCharIndex(json, '"', startIndex);
                 if (charIndex < 0)
@@ -271,14 +268,14 @@ namespace SQLCLR_TEST
 
                 startIndex = charIndex + DATA_RESPONSE_ITEM_VALUE.Length;
 
-                // 5. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ ':'
+                // 5. Продвигаемся до ':'
                 rc = 5;
                 charIndex = ScanCharIndex(json, ':', startIndex);
                 if (charIndex < 0)
                     return -rc;
                 startIndex = charIndex + 1;
 
-                // 6. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ РїРµСЂРІРѕР№ С†РёС„СЂС‹
+                // 6. Продвигаемся до первой цифры
                 rc = 6;
                 char s = char.MinValue;
 
@@ -297,13 +294,13 @@ namespace SQLCLR_TEST
                 int firstDigit = charIndex;
                 startIndex = charIndex + 1;
 
-                // 7. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ СЃРёРјРІРѕР»Р° СЃР»РµРґСѓСЋС‰РµРіРѕ Р·Р° РїРѕСЃР»РµРґРЅРµР№ С†РёС„СЂРѕР№
+                // 7. Продвигаемся до символа следующего за последней цифрой
                 rc = 7;
                 for (charIndex = startIndex; charIndex < json.Length; charIndex++)
                 {
                     s = json[charIndex];
                     if (!char.IsDigit(s))
-                         break;
+                        break;
                 }
 
                 if (char.IsDigit(s))
@@ -313,13 +310,13 @@ namespace SQLCLR_TEST
 
                 startIndex = charIndex;
 
-                // 8. РџСЂРµРѕР±СЂР°Р·СѓРµРј РІ int
+                // 8. Преобразуем в int
                 rc = 8;
                 int value;
                 if (!int.TryParse(json.Substring(firstDigit, lastDigit - firstDigit), out value))
                     return -rc;
 
-                // 9. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ '}'
+                // 9. Продвигаемся до '}'
                 rc = 9;
                 charIndex = ScanCharIndex(json, '}', startIndex);
                 if (charIndex < 0)
@@ -330,7 +327,7 @@ namespace SQLCLR_TEST
 
                 startIndex = charIndex + 1;
 
-                // 9. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ РїРµСЂРІРѕРіРѕ РЅРµ РїСЂРѕР±РµР»Р°
+                // 9. Продвигаемся до первого не пробела
                 rc = 9;
                 for (charIndex = startIndex; charIndex < json.Length; charIndex++)
                 {
@@ -345,7 +342,7 @@ namespace SQLCLR_TEST
 
                 startIndex = charIndex;
 
-                // 10. Р’С‹С…РѕРґ - Ok
+                // 10. Выход - Ok
                 return value;
             }
             catch
@@ -355,29 +352,29 @@ namespace SQLCLR_TEST
         }
 
         /// <summary>
-        /// Р”РµСЃРµСЂРёР°Р»РёР·Р°С†РёСЏ Р·РЅР°С‡РµРЅРёСЏ ': "..."'
+        /// Десериализация значения ': "..."'
         /// </summary>
         /// <param name="json"></param>
-        /// <param name="startIndex">РРЅРґРµРєСЃ СЃРёРјРІРѕР»Р° РїСЂРµРґС€РµСЃС‚РІСѓСЋС‰РµРіРѕ СЌР»РµРјРµРЅС‚Сѓ</param>
-        /// <param name="eoi">РџСЂРёР·РЅР°Рє РїРѕСЃР»РµРґРЅРµРіРѕ Р·РЅР°С‡РµРЅРёСЏ СЌР»РµРјРµРЅС‚Р°</param>
-        /// <returns>Р—РЅР°С‡РµРЅРёРµ ... РёР»Рё null</returns>
+        /// <param name="startIndex">Индекс символа предшествующего элементу</param>
+        /// <param name="eoi">Признак последнего значения элемента</param>
+        /// <returns>Значение ... или null</returns>
         /// startIndex   eoi
         ///     |         |
         ///       : "..." }
         private static string ParseStringValue(string json, ref int startIndex, ref bool eoi)
         {
-            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
+            // 1. Инициализация
             eoi = false;
 
             try
             {
-                // 2. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ ':'
+                // 2. Продвигаемся до ':'
                 int charIndex = ScanCharIndex(json, ':', startIndex);
                 if (charIndex < 0)
                     return null;
                 startIndex = charIndex + 1;
 
-                // 3. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ РїРµСЂРІРѕРіРѕ '"'
+                // 3. Продвигаемся до первого '"'
                 charIndex = ScanCharIndex(json, '"', startIndex);
                 if (charIndex < 0)
                     return null;
@@ -385,7 +382,7 @@ namespace SQLCLR_TEST
                 int firstSym = startIndex;
                 startIndex = charIndex + 1;
 
-                // 4. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ РїРѕСЃР»РµРґРЅРµРіРѕ '"'
+                // 4. Продвигаемся до последнего '"'
                 charIndex = startIndex;
                 int endSym = -1;
 
@@ -420,7 +417,7 @@ namespace SQLCLR_TEST
 
                 startIndex = endSym + 1;
 
-                // 5. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ РїРµСЂРІРѕРіРѕ РЅРµ РїСЂРѕР±РµР»Р°
+                // 5. Продвигаемся до первого не пробела
                 for (charIndex = startIndex; charIndex < json.Length; charIndex++)
                 {
                     char s = json[charIndex];
@@ -434,7 +431,7 @@ namespace SQLCLR_TEST
 
                 startIndex = charIndex + 1;
 
-                // 5. Р’С‹С…РѕРґ - Ok
+                // 5. Выход - Ok
                 firstSym++;
                 endSym--;
                 if (firstSym > endSym)
@@ -448,21 +445,29 @@ namespace SQLCLR_TEST
             }
         }
 
+        /// <summary>
+        /// Продвижение до заданного символа
+        /// с пропуском лидирующих пробелов
+        /// </summary>
+        /// <param name="json">Сканируемая строка</param>
+        /// <param name="scanChar">Сканируемый символ</param>
+        /// <param name="startIndex">Индекс начала сканирования</param>
+        /// <returns>Индеск позиции симвода или отрицательное значение</returns>
         private static int ScanCharIndex(string json, char scanChar, int startIndex)
         {
-            // 1. РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
+            // 1. Инициализация
             int rc = 1;
 
             try
             {
-                // 2. РџСЂРѕРІРµСЂСЏРµРј РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
+                // 2. Проверяем исходные данные
                 rc = 2;
                 if (string.IsNullOrEmpty(json))
                     return -rc;
                 if (startIndex < 0 || startIndex >= json.Length)
                     return -rc;
 
-                // 3. РџСЂРѕРґРІРёРіР°РµРјСЃСЏ РґРѕ Р·Р°РґР°РЅРЅРѕРіРѕ СЃРёРјРІРѕР»Р°
+                // 3. Продвигаемся до заданного символа
                 rc = 3;
                 for (int i = startIndex; i < json.Length; i++)
                 {
@@ -473,7 +478,7 @@ namespace SQLCLR_TEST
                         return -rc;
                 }
 
-                // 4. РЎРёРјРІРѕР» РЅРµ РЅР°Р№РґРµРЅ
+                // 4. Символ не найден
                 rc = 4;
                 return -rc;
             }
@@ -481,22 +486,6 @@ namespace SQLCLR_TEST
             {
                 return -1;
             }
-        }
-    }
-
-    public class YandexResponseItem
-    {
-        public int distance { get; set; }
-
-        public int duration { get; set; }
-
-        public string status { get; set; }
-
-        public YandexResponseItem(int arg_distance, int arg_duration, string arg_status)
-        {
-            distance = arg_distance;
-            duration = arg_duration;
-            status = arg_status;
         }
     }
 }

@@ -198,8 +198,42 @@ public partial class GeoRequest
             if (rc1 != 0)
                 return rc = 1000000 * rc + rc1;
 
-            // 8. Формируем response
+            // 8. Заполняем cycling-способ передвижения
             rc = 8;
+            if (requestArgs.HasCycling)
+            {
+                int walkingIndex = requestArgs.WalkingIndex;
+                int cyclingIndex =  requestArgs.CyclingIndex;
+                int originCount = requestArgs.origins.Length;
+                int destinationCount = requestArgs.destinations.Length;
+                double c = cycling_duration_ratio.Value;
+
+                if (cyclingIndex == walkingIndex)
+                {
+                    for (int i = 0; i < originCount; i++)
+                    {
+                        for (int j = 0; j < originCount; j++)
+                        {
+                            geoData[i, j, cyclingIndex].Y = (int) (c * geoData[i, j, cyclingIndex].Y);
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < originCount; i++)
+                    {
+                        for (int j = 0; j < originCount; j++)
+                        {
+                            geoData[i, j, cyclingIndex].X = geoData[i, j, walkingIndex].X;
+                            geoData[i, j, cyclingIndex].Y = (int) (c * geoData[i, j, walkingIndex].Y);
+                        }
+                    }
+                }
+            }
+
+            // 9. Создаём отклик с результатом
+            rc = 9;
+
 
 
 
@@ -228,6 +262,10 @@ public partial class GeoRequest
         }
     }
 
+    /// <summary>
+    /// Выполнение гео-запросов Yandex
+    /// </summary>
+    /// <param name="status">Объект типа GeoThreadContext с данными для запросов</param>
     private static void GeoThread(object status)
     {
         // 1. Инициализация
@@ -258,11 +296,11 @@ public partial class GeoRequest
             StringBuilder sb = new StringBuilder(100 * 50);
             string geoPointPattern = "{0:0.0000000},{1:0.0000000}";
 
-            for (int i = context.StartIndex; i < context.RequestData.Length; i += context.Step)
+            for (int contextIndex = context.StartIndex; contextIndex < context.RequestData.Length; contextIndex += context.Step)
             {
                 // 3.1 Извлекаем и проверяем данные запроса
                 rc = 31;
-                YandexRequestData requestData = context.RequestData[i];
+                YandexRequestData requestData = context.RequestData[contextIndex];
                 if (requestData == null)
                     continue;
 
@@ -336,9 +374,9 @@ public partial class GeoRequest
                 string originsArg;
                 sb.Length = 0;
 
-                sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, origins[0].lat, origins[0].lon);
+                sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, origins[originStartIndex].lat, origins[originStartIndex].lon);
 
-                for (int j = 1; j < origins.Length; j++)
+                for (int j = originStartIndex + 1; j < originStartIndex + originLength; j++)
                 {
                     sb.Append('|');
                     sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, origins[j].lat, origins[j].lon);
@@ -352,9 +390,9 @@ public partial class GeoRequest
                 string destinationsArg;
                 sb.Length = 0;
 
-                sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, destinations[0].lat, destinations[0].lon);
+                sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, destinations[destinationStartIndex].lat, destinations[destinationStartIndex].lon);
 
-                for (int j = 1; j < destinations.Length; j++)
+                for (int j = destinationStartIndex + 1; j < destinationStartIndex + destinationLength; j++)
                 {
                     sb.Append('|');
                     sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, destinations[j].lat, destinations[j].lon);
@@ -376,37 +414,82 @@ public partial class GeoRequest
                     request.ContentType = "application/json";
                     request.Timeout = 10000;
 
+                    // 3.5.1 Отправляем запрос
+                    rc = 351;
+
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     {
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
-                            requestData.ExitCode = - (int)response.StatusCode;
+                            // 3.5.2 Http-статус
+                            rc = 352;
+                            requestData.HttpStatusCode = -(int)response.StatusCode;
+                            requestData.ErrorMessage = response.StatusDescription;
                         }
                         else
                         {
+                            // 3.5.3 Читаем отклик
+                            rc = 353;
+                            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                            {
+                                string json = reader.ReadToEnd();
 
-                        }
+                                // 3.5.4 Отклик с ошибками
+                                rc = 354;
+                                string errors = YandexResponseParser.GetErrorMessages(json);
+                                if (errors != null)
+                                {
+                                    requestData.ExitCode = rc;
+                                    requestData.ErrorMessage = errors;
+                                    return;
+                                }
 
-                        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                        {
-                            //string json = reader.ReadToEnd();
-                            //YandexResponse rsp = (YandexResponse)serializer.Deserialize(reader, typeof(YandexResponse));
-                            //if (rsp == null)
-                            //    return rc;
-                            //if (rsp.result != 0)
-                            //    return rc = 10000 * rc + rsp.result;
+                                // 3.5.5 Извлекаем данные из отклика
+                                rc = 355;
+                                YandexResponseItem[] items;
+                                int rc1 = YandexResponseParser.TryParse(json, out items);
+                                if (rc1 != 0)
+                                {
+                                    requestData.ErrorMessage = json;
+                                    rc = 1000000 * rc + rc1;
+                                    return;
+                                }
+
+                                // 3.5.6 Проверяем число полученных жлементов данных
+                                rc = 356;
+                                if (items.Length != originLength * destinationLength)
+                                {
+                                    requestData.ErrorMessage = json;
+                                    return;
+                                }
+
+                                // 3.5.7 Переносим данные в массив результата
+                                rc = 356;
+                                int k = 0;
+
+                                for (int i = originStartIndex; i < originStartIndex + originLength; i++)
+                                {
+                                    for (int j = destinationStartIndex; j < destinationStartIndex + destinationLength; j++)
+                                    {
+                                        YandexResponseItem item = items[k++];
+                                        if (!"OK".Equals(item.status, StringComparison.InvariantCultureIgnoreCase))
+                                        {
+                                            requestData.ErrorMessage = json;
+                                            return;
+                                        }
+
+                                        geoData[i, j, m].X = item.distance;
+                                        geoData[i, j, m].Y = item.duration;
+                                    }
+                                }
+                            }
                         }
                     }
-
-
                 }
-
-
             }
 
-
-
-
+            // 4. Выход - Ok
+            rc = 0;
         }
         catch
         {
@@ -490,37 +573,51 @@ public partial class GeoRequest
             string[] allModes = new string[5];
             int yandexModeCount = 0;
             int allModeCount = 0;
+            //
+            int drivingIndex = -1;
+            int walkingIndex = -1;
+            int cyclingIndex = -1;
+            int truckIndex = -1;
+            int transitIndex = -1;
 
             if (hasDriving)
             {
+                drivingIndex = yandexModeCount;
                 yandexModes[yandexModeCount++] = MODE_DRIVING;
                 allModes[allModeCount++] = MODE_DRIVING;
             }
 
             if (hasWalking)
             {
+                walkingIndex = yandexModeCount;
                 yandexModes[yandexModeCount++] = MODE_WALKING;
                 allModes[allModeCount++] = MODE_WALKING;
             }
 
             if (hasTransit)
             {
+                transitIndex = yandexModeCount;
                 yandexModes[yandexModeCount++] = MODE_TRANSIT;
                 allModes[allModeCount++] = MODE_TRANSIT;
             }
 
             if (hasTruck)
             {
+                truckIndex = yandexModeCount;
                 yandexModes[yandexModeCount++] = MODE_TRUCK;
                 allModes[allModeCount++] = MODE_TRUCK;
             }
 
             if (hasCycling)
             {
+                cyclingIndex = yandexModeCount;
                 allModes[allModeCount++] = MODE_CYCLING;
 
                 if (!hasWalking)
+                {
+                    walkingIndex = yandexModeCount;
                     yandexModes[yandexModeCount++] = MODE_WALKING;
+                }
             }
 
             if (allModeCount < allModes.Length)
@@ -532,6 +629,12 @@ public partial class GeoRequest
             {
                 Array.Resize(ref yandexModes, yandexModeCount);
             }
+
+            requestArgs.DrivingIndex = drivingIndex;
+            requestArgs.CyclingIndex = cyclingIndex;
+            requestArgs.WalkingIndex = walkingIndex;
+            requestArgs.TransitIndex = transitIndex;
+            requestArgs.TruckIndex = truckIndex;
 
             // 5. Выделяем память под результат
             rc = 5;

@@ -63,6 +63,36 @@ namespace SQLCLR.YandexGeoData
         /// </summary>
         [XmlIgnore]
         public bool HasCycling { get; set; }
+
+        /// <summary>
+        /// Индекс mode = driving в geoData
+        /// </summary>
+        [XmlIgnore]
+        public int DrivingIndex { get; set;  }
+
+        /// <summary>
+        /// Индекс mode = cycling в geoData
+        /// </summary>
+        [XmlIgnore]
+        public int CyclingIndex { get; set;  }
+
+        /// <summary>
+        /// Индекс mode = walking в geoData
+        /// </summary>
+        [XmlIgnore]
+        public int WalkingIndex { get; set;  }
+
+        /// <summary>
+        /// Индекс mode = truck в geoData
+        /// </summary>
+        [XmlIgnore]
+        public int TruckIndex { get; set;  }
+
+        /// <summary>
+        /// Индекс mode = transit в geoData
+        /// </summary>
+        [XmlIgnore]
+        public int TransitIndex { get; set;  }
     }
 
     /// <summary>
