@@ -40,6 +40,9 @@ public partial class GeoRequest
 
     #endregion Способы передвижения
 
+    /// <summary>
+    /// User Agent для Http-запроса
+    /// </summary>
     private const string USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36";
 
     /// <summary>
@@ -60,6 +63,7 @@ public partial class GeoRequest
     ///         <mode>walking</mode>
     ///         <mode>cycling</mode>*)
     ///         <mode>transit</mode>
+    ///         <mode>truck</mode>
     ///      </modes>
     ///      <origins>
     ///         <point lat = "..." lon="..."/>
@@ -80,7 +84,7 @@ public partial class GeoRequest
     ///-------------------------------------------------------------------------------------------------------
     /// Формат response *)
     ///   <yandex>
-    ///      <mode type = "driving" >
+    ///      <mode type = "driving">
     ///         <row>
     ///           <data distance="..." duration="..."/>
     ///                          . . .
@@ -118,7 +122,7 @@ public partial class GeoRequest
         // 1. Инициализация
         int rc = 1;
         int rc1 = 1;
-        response = new SqlXml();
+        response = null;
         GeoThreadContext[] contexts = null;
 
         try
@@ -200,12 +204,13 @@ public partial class GeoRequest
 
             // 8. Заполняем cycling-способ передвижения
             rc = 8;
+            int originCount = requestArgs.origins.Length;
+            int destinationCount = requestArgs.destinations.Length;
+
             if (requestArgs.HasCycling)
             {
                 int walkingIndex = requestArgs.WalkingIndex;
                 int cyclingIndex =  requestArgs.CyclingIndex;
-                int originCount = requestArgs.origins.Length;
-                int destinationCount = requestArgs.destinations.Length;
                 double c = cycling_duration_ratio.Value;
 
                 if (cyclingIndex == walkingIndex)
@@ -233,12 +238,55 @@ public partial class GeoRequest
 
             // 9. Создаём отклик с результатом
             rc = 9;
+            StringBuilder sbXml = new StringBuilder(15000);
+            string[] mode = new string[] { MODE_DRIVING, MODE_CYCLING, MODE_WALKING, MODE_TRANSIT, MODE_TRUCK };
+            int[] modeIndex = new int[] { requestArgs.DrivingIndex, requestArgs.CyclingIndex, requestArgs.WalkingIndex, requestArgs.TransitIndex, requestArgs.TransitIndex };
 
+            sbXml.Append("<yandex>");
 
+            for (int m = 0; m < mode.Length; m++)
+            {
+                // 9.1 Пропускаем не заданные режимы
+                rc = 91;
+                int index = modeIndex[m];
+                if (index < 0)
+                    continue;
 
+                // 9.2 Добавляем открывающий тэг <mode ... >
+                rc = 92;
+                sbXml.Append($@"<mode type=""{mode[m]}"">");
 
+                // 9.3 Добавляем данные для текущего способа передвижения
+                rc = 93;
+                for (int i = 0; i < originCount; i++)
+                {
+                    for (int j = 0; j < originCount; j++)
+                    {
+                        Point pt = geoData[i, j, index];
+                        sbXml.Append($@"<data distance=""{pt.X}"" duration=""{pt.Y}""/>");
+                    }
+                }
 
+                // 9.4 Добавляем закрывающий тэг </mode>
+                rc = 94;
+                sbXml.Append(@"</mode>");
+            }
 
+            // 9.5 Добавляем закрывающий тэг </yandex>
+            rc = 95;
+            sbXml.Append("</yandex>");
+
+            // 10. Присваиваем результат
+            rc = 10;
+            //using (MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(sbXml.ToString())))
+            //{ response = new SqlXml(ms); }
+
+            MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(sbXml.ToString()));
+            response = new SqlXml(ms);
+            ms = null;
+
+            // 11. Выход - Ok
+            rc = 0;
             return rc;
         }
         catch
