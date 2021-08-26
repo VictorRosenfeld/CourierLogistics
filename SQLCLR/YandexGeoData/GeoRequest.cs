@@ -1,4 +1,6 @@
-﻿using SQLCLR.Deliveries;
+﻿using Microsoft.SqlServer.Server;
+using SQLCLR.Deliveries;
+using SQLCLR.Log;
 using SQLCLR.YandexGeoData;
 using System;
 using System.Data.SqlTypes;
@@ -117,7 +119,8 @@ public partial class GeoRequest
     ///
     ///    <data distance = "-1" duration="-1"/>
     ///-------------------------------------------------------------------------------------------------------
-    public static int Request(SqlString getUrl, SqlString apiKey, SqlInt32 pair_limit, SqlDouble cycling_duration_ratio, SqlXml request, out SqlXml response)
+    [SqlProcedure]
+    public static int YandexGeoRequest(SqlString getUrl, SqlString apiKey, SqlInt32 pair_limit, SqlDouble cycling_duration_ratio, SqlXml request, out SqlXml response)
     {
         // 1. Инициализация
         int rc = 1;
@@ -139,6 +142,9 @@ public partial class GeoRequest
                 return rc;
             if (request == null || request.IsNull)
                 return rc;
+#if debug
+            Logger.WriteToLog(1001, $"---> YandexGeoRequest. request = {request.Value}", 0);
+#endif
 
             // 3. Извлекаем параметры запроса
             rc = 3;
@@ -151,6 +157,9 @@ public partial class GeoRequest
             rc = 4;
             YandexRequestData[] requestData;
             rc1 = GetGeoContext(requestArgs, pair_limit.Value, out requestData);
+#if debug
+            Logger.WriteToLog(1003, $"YandexGeoRequest -> GetGeoContext. rc = {rc1} requestData = {(requestData == null ? 0 : requestData.Length)}", 0);
+#endif
             if (rc1 != 0)
                 return rc = 10000 * rc + rc1;
 
@@ -163,6 +172,9 @@ public partial class GeoRequest
             { threadCount = 1; }
             else if (threadCount > 8)
             { threadCount = 8; }
+#if debug
+            Logger.WriteToLog(1004, $"YandexGeoRequest threadCount = {threadCount}", 0);
+#endif
 
             // 6. Запускаем обработку и дожидаемся её завершения
             rc = 6;
@@ -171,6 +183,9 @@ public partial class GeoRequest
                 GeoThreadContext context = new GeoThreadContext(getUrl.Value, apiKey.Value, requestData, 0, 1, null);
                 GeoThread(context);
                 rc1 = context.ExitCode;
+#if debug
+            Logger.WriteToLog(1004, $"YandexGeoRequest threadCount = {threadCount}, ExitCode = {context.ExitCode}", 0);
+#endif
             }
             else
             {
@@ -241,6 +256,9 @@ public partial class GeoRequest
             StringBuilder sbXml = new StringBuilder(15000);
             string[] mode = new string[] { MODE_DRIVING, MODE_CYCLING, MODE_WALKING, MODE_TRANSIT, MODE_TRUCK };
             int[] modeIndex = new int[] { requestArgs.DrivingIndex, requestArgs.CyclingIndex, requestArgs.WalkingIndex, requestArgs.TransitIndex, requestArgs.TransitIndex };
+#if debug
+            Logger.WriteToLog(1007, $"YandexGeoRequest DrivingIndex = {requestArgs.DrivingIndex}, CyclingIndex = {requestArgs.CyclingIndex}, WalkingIndex = {requestArgs.WalkingIndex}, TransitIndex = {requestArgs.TransitIndex}, TruckIndex = {requestArgs.TruckIndex}", 0);
+#endif
 
             sbXml.Append("<yandex>");
 
@@ -260,7 +278,7 @@ public partial class GeoRequest
                 rc = 93;
                 for (int i = 0; i < originCount; i++)
                 {
-                    for (int j = 0; j < originCount; j++)
+                    for (int j = 0; j < destinationCount; j++)
                     {
                         Point pt = geoData[i, j, index];
                         sbXml.Append($@"<data distance=""{pt.X}"" duration=""{pt.Y}""/>");
@@ -275,6 +293,9 @@ public partial class GeoRequest
             // 9.5 Добавляем закрывающий тэг </yandex>
             rc = 95;
             sbXml.Append("</yandex>");
+#if debug
+            Logger.WriteToLog(1005, $"YandexGeoRequest response = {sbXml.ToString()}", 0);
+#endif
 
             // 10. Присваиваем результат
             rc = 10;
@@ -289,8 +310,11 @@ public partial class GeoRequest
             rc = 0;
             return rc;
         }
-        catch
+        catch (Exception ex)
         {
+#if debug
+            Logger.WriteToLog(1006, $"YandexGeoRequest. rc = {rc}. Exception {ex.Message}", 2);
+#endif
             return rc;
         }
         finally
@@ -307,6 +331,9 @@ public partial class GeoRequest
                     }
                 }
             }
+#if debug
+            Logger.WriteToLog(1002, $"<--- YandexGeoRequest. rc = {rc}, request = {request.Value}, response = {(response == null ? "null" : response.Value)}", 0);
+#endif
         }
     }
 
@@ -455,6 +482,10 @@ public partial class GeoRequest
                 for (int m = 0; m < modes.Length; m++)
                 {
                     string url = string.Format(getUrl, apiKey, originsArg, destinationsArg, modes[m]);
+//#if debug
+//                    Logger.WriteToLog(1008, $"YandexGeoRequest -> GeoThread url = {url}", 0);
+//#endif
+
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                     request.Method = "GET";
                     request.UserAgent = USER_AGENT;
@@ -520,14 +551,16 @@ public partial class GeoRequest
                                     for (int j = destinationStartIndex; j < destinationStartIndex + destinationLength; j++)
                                     {
                                         YandexResponseItem item = items[k++];
-                                        if (!"OK".Equals(item.status, StringComparison.InvariantCultureIgnoreCase))
+                                        if ("OK".Equals(item.status, StringComparison.InvariantCultureIgnoreCase))
                                         {
-                                            requestData.ErrorMessage = json;
-                                            return;
+                                            geoData[i, j, m].X = item.distance;
+                                            geoData[i, j, m].Y = item.duration;
                                         }
-
-                                        geoData[i, j, m].X = item.distance;
-                                        geoData[i, j, m].Y = item.duration;
+                                        else
+                                        {
+                                            geoData[i, j, m].X = -1;
+                                            geoData[i, j, m].Y = -1;
+                                        }
                                     }
                                 }
                             }
