@@ -167,11 +167,13 @@ public partial class GeoRequest
 
             // 5. Определяем число потоков
             rc = 5;
-            int threadCount = requestData.Length / 4;
+            int requestPerThread = 4;
+            int threadCount = (requestData.Length + requestPerThread - 1)/ requestPerThread;
             if (threadCount < 1)
             { threadCount = 1; }
             else if (threadCount > 8)
             { threadCount = 8; }
+            //threadCount = 1;
 #if debug
             Logger.WriteToLog(1004, $"YandexGeoRequest threadCount = {threadCount}", 0);
 #endif
