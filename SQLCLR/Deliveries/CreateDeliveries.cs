@@ -3254,7 +3254,8 @@ public partial class StoredProcedures
                 {
                     level = startLevel;
                     double[,] geoDist = GeoDistance.CalcDistance(iterationOrders);
-                    rc1 = OrdersCloud.FindCloud(iterationOrders, startOrderCount, 1300, 0.5, geoDist, out threadContextOrders);
+                    //rc1 = OrdersCloud.FindCloud(iterationOrders, startOrderCount, 1300, 0.5, geoDist, out threadContextOrders);
+                    rc1 = OrdersCloud.FindCloud(iterationOrders, startOrderCount, 1300, 30, geoDist, out threadContextOrders);
 #if debug
                     Logger.WriteToLog(305, $"CalcThreadEz while 5.1. iterationOrderCount = {iterationOrderCount}, FindCloud.rc = {rc1} Cloud.Orders = {(threadContextOrders == null ? 0 : threadContextOrders.Length)}", 0);
 #endif

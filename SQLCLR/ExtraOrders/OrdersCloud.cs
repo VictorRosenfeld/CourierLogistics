@@ -11,6 +11,17 @@ namespace SQLCLR.ExtraOrders
     /// </summary>
     public class OrdersCloud
     {
+        /// <summary>
+        /// Выбор наиболее плотной группы близлежащих точек
+        /// среди заданных заказов
+        /// </summary>
+        /// <param name="orders">Заказы</param>
+        /// <param name="ordersLimit">Максимальное число отбираемых точек</param>
+        /// <param name="radius">Радиус области, метров</param>
+        /// <param name="Δt">Время для расширения вилки доставки</param>
+        /// <param name="distance">Попарные расстояния между точками, метров</param>
+        /// <param name="cloud">Отобранные заказы</param>
+        /// <returns></returns>
         public static int FindCloud(Order[] orders, int ordersLimit, double radius, double Δt, double[,] distance, out Order[] cloud)
         {
             // 1. Инициализация
@@ -93,7 +104,7 @@ namespace SQLCLR.ExtraOrders
                 Order[] bestOrders = new Order[orderCount];
                 double[] bestDist = new double[orderCount];
 
-                tmin = bestOrder.DeliveryTimeFrom.AddMinutes(Δt);
+                tmin = bestOrder.DeliveryTimeFrom.AddMinutes(-Δt);
                 tmax = bestOrder.DeliveryTimeTo.AddMinutes(Δt);
                 bestNeighbourCount = 0;
 
