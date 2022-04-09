@@ -2916,15 +2916,13 @@ public partial class StoredProcedures
                 context.ExitCode = rc;
                 if (context.SyncEvent != null)
                     context.SyncEvent.Set();
-
-
             }
         }
     }
 
     /// <summary>
-    /// Контекст-построитель отгрузок
-    /// в отдельном потоке
+    /// Контекст-построитель отгрузок полным перебором
+    /// в отдельном потоке (не более 256 отгрузок)
     /// </summary>
     /// <param name="status">Контекст потока</param>
     private static void CalcThreadEx(object status)
@@ -2963,7 +2961,7 @@ public partial class StoredProcedures
                 threadCount = MAX_DELIVERY_THREADS;
 
 #if debug
-            Logger.WriteToLog(304, $"CalcThreadEx enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}, thread_count = {threadCount}", 0);
+            Logger.WriteToLog(304, $"CalcThreadEx enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}, thread_count = {threadCount}, key_count = {deliveryKeys.Length}", 0);
 #endif
 
             // 5. Требуется всего один поток
@@ -3149,6 +3147,562 @@ public partial class StoredProcedures
     }
 
     /// <summary>
+    /// Контекст-построитель отгрузок полным перебором
+    /// в отдельном потоке
+    /// </summary>
+    /// <param name="status">Контекст потока</param>
+    private static void CalcThreadFull(object status)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        ThreadContext context = status as ThreadContext;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (context == null ||
+                context.OrderCount <= 0 ||
+                context.ShopCourier == null ||
+                context.ShopFrom == null ||
+                context.Orders == null || context.Orders.Length <= 0 ||
+                context.MaxRouteLength <= 0 || context.MaxRouteLength > 8)
+                return;
+
+            // 3. Вызываем частный метод
+            rc = 3;
+            if (context.MaxRouteLength > 4)
+            { CalcThreadEx(status); }
+            else if (context.MaxRouteLength >= 4)
+            { CalcThreadEx4(status); }
+            else if (context.MaxRouteLength >= 3)
+            { CalcThreadEx3(status); }
+            else // if (context.MaxRouteLength >= 2)
+            { CalcThreadEx2(status); }
+
+            // 8. Выход - Ok
+            rc = 0;
+        }
+        catch (Exception ex)
+        {
+#if debug
+            Logger.WriteToLog(303, $"CalcThreadFull. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
+#endif
+        }
+        finally
+        {
+            if (context != null)
+            {
+                if (context.SyncEvent != null)
+                {
+                    try { context.SyncEvent.Set(); } catch { }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Контекст-построитель отгрузок длины 2
+    /// полным перебором в отдельном потоке
+    /// </summary>
+    /// <param name="status">Контекст потока</param>
+    private static void CalcThreadEx2(object status)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        ThreadContext context = status as ThreadContext;
+        ThreadContextEx[] allCountextEx = null;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (context == null ||
+                context.OrderCount <= 0 ||
+                context.ShopCourier == null ||
+                context.ShopFrom == null ||
+                context.Orders == null || context.Orders.Length <= 0 ||
+                context.MaxRouteLength != 2)
+                return;
+
+#if debug
+            Logger.WriteToLog(301, $"CalcThreadEx2 enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
+
+            // 3. Вычисляем число потоков для построения отгрузок из ThreadContext
+            rc = 3;
+            int orderCount = context.Orders.Length;
+            int size = 1;
+
+            if (orderCount >= 2)
+            { size = orderCount + (orderCount - 1) * orderCount / 2; }
+
+            int threadCount = (size + DELIVERIES_PER_THREAD - 1) / DELIVERIES_PER_THREAD;
+            if (threadCount > MAX_DELIVERY_THREADS)
+                threadCount = MAX_DELIVERY_THREADS;
+
+            // 4. Требуется всего один поток
+            rc = 4;
+            if (threadCount <= 1)
+            {
+                ThreadContextEx contextEx = new ThreadContextEx(context, null, null, 0, 1);
+                allCountextEx = new ThreadContextEx[] { contextEx };
+                RouteBuilder.BuildEx2(contextEx);
+            }
+            else
+            {
+                // 5. Требуется несколько потоков
+                rc = 5;
+                allCountextEx = new ThreadContextEx[threadCount];
+                for (int i = 0; i < threadCount; i++)
+                {
+                    ManualResetEvent syncEvent = new ManualResetEvent(false);
+                    int k = i;
+                    ThreadContextEx contextEx = new ThreadContextEx(context, syncEvent, null, k, threadCount);
+                    allCountextEx[k] = contextEx;
+                    ThreadPool.QueueUserWorkItem(RouteBuilder.BuildEx2, contextEx);
+                }
+
+                for (int i = 0; i < threadCount; i++)
+                {
+                    allCountextEx[i].SyncEvent.WaitOne();
+                    allCountextEx[i].SyncEvent.Dispose();
+                    allCountextEx[i].SyncEvent = null;
+                }
+            }
+
+            // 6. Строим общий результат
+            rc = 6;
+            CourierDeliveryInfo[] deliveries = null;
+            int rc1 = 0;
+
+            if (threadCount <= 1)
+            {
+                deliveries = allCountextEx[0].Deliveries;
+                rc1 = allCountextEx[0].ExitCode;
+            }
+            else
+            {
+                // 6.1 Подсчитываем число отгрузок
+                rc = 61;
+                size = 0;
+                for (int i = 0; i < threadCount; i++)
+                {
+                    var contextEx = allCountextEx[i];
+                    if (contextEx.ExitCode != 0)
+                    {
+                        rc1 = contextEx.ExitCode;
+                    }
+                    else
+                    {
+                        size += contextEx.DeliveryCount;
+                    }
+                }
+
+                // 6.2 Объединяем все отгрузки
+                rc = 62;
+
+                if (size > 0)
+                {
+                    deliveries = new CourierDeliveryInfo[size];
+                    size = 0;
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        var contextEx = allCountextEx[i];
+                        if (contextEx.ExitCode == 0 && contextEx.DeliveryCount > 0)
+                        {
+                            contextEx.Deliveries.CopyTo(deliveries, size);
+                            size += contextEx.DeliveryCount;
+                        }
+                    }
+                }
+            }
+
+            context.Deliveries = deliveries;
+            allCountextEx = null;
+
+            if (rc1 != 0)
+            {
+                rc = 100000 * rc + rc1;
+                return;
+            }
+
+            // 7. Выход - Ok
+            rc = 0;
+        }
+        catch (Exception ex)
+        {
+#if debug
+            Logger.WriteToLog(303, $"CalcThreadEx2. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
+#endif
+        }
+        finally
+        {
+            if (context != null)
+            {
+#if debug
+                Logger.WriteToLog(302, $"CalcThreadEx2 exit rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
+                context.ExitCode = rc;
+
+                if (allCountextEx != null && allCountextEx.Length > 0)
+                {
+                    for (int i = 0; i < allCountextEx.Length; i++)
+                    {
+                        ThreadContextEx contextEx = allCountextEx[i];
+                        ManualResetEvent syncEvent = contextEx.SyncEvent;
+                        if (syncEvent != null)
+                        {
+                            syncEvent.Dispose();
+                            contextEx.SyncEvent = null;
+                        }
+                    }
+                }
+
+                if (context.SyncEvent != null)
+                    context.SyncEvent.Set();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Контекст-построитель отгрузок длины 3
+    /// полным перебором в отдельном потоке
+    /// </summary>
+    /// <param name="status">Контекст потока</param>
+    private static void CalcThreadEx3(object status)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        ThreadContext context = status as ThreadContext;
+        ThreadContextEx[] allCountextEx = null;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (context == null ||
+                context.OrderCount <= 0 ||
+                context.ShopCourier == null ||
+                context.ShopFrom == null ||
+                context.Orders == null || context.Orders.Length <= 0 ||
+                context.MaxRouteLength != 3)
+                return;
+
+#if debug
+            Logger.WriteToLog(301, $"CalcThreadEx3 enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
+
+            // 3. Вычисляем число потоков для построения отгрузок из ThreadContext
+            rc = 3;
+            int orderCount = context.Orders.Length;
+            int size = 1;
+
+            if (orderCount >= 3)
+            { size = orderCount + (orderCount - 1) * orderCount / 2 + (orderCount - 2) * (orderCount - 1) * orderCount / 6; }
+            else if (orderCount >= 2)
+            { size = orderCount + (orderCount - 1) * orderCount / 2; }
+
+            int threadCount = (size + DELIVERIES_PER_THREAD - 1) / DELIVERIES_PER_THREAD;
+            if (threadCount > MAX_DELIVERY_THREADS)
+                threadCount = MAX_DELIVERY_THREADS;
+
+            // 4. Требуется всего один поток
+            rc = 4;
+            if (threadCount <= 1)
+            {
+                ThreadContextEx contextEx = new ThreadContextEx(context, null, null, 0, 1);
+                allCountextEx = new ThreadContextEx[] { contextEx };
+                RouteBuilder.BuildEx3(contextEx);
+            }
+            else
+            {
+                // 5. Требуется несколько потоков
+                rc = 5;
+                allCountextEx = new ThreadContextEx[threadCount];
+                for (int i = 0; i < threadCount; i++)
+                {
+                    ManualResetEvent syncEvent = new ManualResetEvent(false);
+                    int k = i;
+                    ThreadContextEx contextEx = new ThreadContextEx(context, syncEvent, null, k, threadCount);
+                    allCountextEx[k] = contextEx;
+                    ThreadPool.QueueUserWorkItem(RouteBuilder.BuildEx3, contextEx);
+                }
+
+                for (int i = 0; i < threadCount; i++)
+                {
+                    allCountextEx[i].SyncEvent.WaitOne();
+                    allCountextEx[i].SyncEvent.Dispose();
+                    allCountextEx[i].SyncEvent = null;
+                }
+            }
+
+            // 6. Строим общий результат
+            rc = 6;
+            CourierDeliveryInfo[] deliveries = null;
+            int rc1 = 0;
+
+            if (threadCount <= 1)
+            {
+                deliveries = allCountextEx[0].Deliveries;
+                rc1 = allCountextEx[0].ExitCode;
+            }
+            else
+            {
+                // 6.1 Подсчитываем число отгрузок
+                rc = 61;
+                size = 0;
+                for (int i = 0; i < threadCount; i++)
+                {
+                    var contextEx = allCountextEx[i];
+                    if (contextEx.ExitCode != 0)
+                    {
+                        rc1 = contextEx.ExitCode;
+                    }
+                    else
+                    {
+                        size += contextEx.DeliveryCount;
+                    }
+                }
+
+                // 6.2 Объединяем все отгрузки
+                rc = 62;
+
+                if (size > 0)
+                {
+                    deliveries = new CourierDeliveryInfo[size];
+                    size = 0;
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        var contextEx = allCountextEx[i];
+                        if (contextEx.ExitCode == 0 && contextEx.DeliveryCount > 0)
+                        {
+                            contextEx.Deliveries.CopyTo(deliveries, size);
+                            size += contextEx.DeliveryCount;
+                        }
+                    }
+                }
+            }
+
+            context.Deliveries = deliveries;
+            allCountextEx = null;
+
+            if (rc1 != 0)
+            {
+                rc = 100000 * rc + rc1;
+                return;
+            }
+
+            // 7. Выход - Ok
+            rc = 0;
+        }
+        catch (Exception ex)
+        {
+#if debug
+            Logger.WriteToLog(303, $"CalcThreadEx3. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
+#endif
+        }
+        finally
+        {
+            if (context != null)
+            {
+#if debug
+                Logger.WriteToLog(302, $"CalcThreadEx3 exit rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
+                context.ExitCode = rc;
+
+                if (allCountextEx != null && allCountextEx.Length > 0)
+                {
+                    for (int i = 0; i < allCountextEx.Length; i++)
+                    {
+                        ThreadContextEx contextEx = allCountextEx[i];
+                        ManualResetEvent syncEvent = contextEx.SyncEvent;
+                        if (syncEvent != null)
+                        {
+                            syncEvent.Dispose();
+                            contextEx.SyncEvent = null;
+                        }
+                    }
+                }
+
+                if (context.SyncEvent != null)
+                    context.SyncEvent.Set();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Контекст-построитель отгрузок длины 4
+    /// полным перебором в отдельном потоке
+    /// </summary>
+    /// <param name="status">Контекст потока</param>
+    private static void CalcThreadEx4(object status)
+    {
+        // 1. Инициализация
+        int rc = 1;
+        ThreadContext context = status as ThreadContext;
+        ThreadContextEx[] allCountextEx = null;
+
+        try
+        {
+            // 2. Проверяем исходные данные
+            rc = 2;
+            if (context == null ||
+                context.OrderCount <= 0 ||
+                context.ShopCourier == null ||
+                context.ShopFrom == null ||
+                context.Orders == null || context.Orders.Length <= 0 ||
+                context.MaxRouteLength != 4)
+                return;
+
+#if debug
+            Logger.WriteToLog(301, $"CalcThreadEx4 enter. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
+
+            // 3. Вычисляем число потоков для построения отгрузок из ThreadContext
+            rc = 3;
+            int orderCount = context.Orders.Length;
+            int size = 1;
+
+            if (orderCount >= 4)
+            { size = orderCount + (orderCount - 1) * orderCount / 2 + (orderCount - 2) * (orderCount - 1) * orderCount / 6 + (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount / 24; }
+            else if (orderCount >= 3)
+            { size = orderCount + (orderCount - 1) * orderCount / 2 + (orderCount - 2) * (orderCount - 1) * orderCount / 6; }
+            else if (orderCount >= 2)
+            { size = orderCount + (orderCount - 1) * orderCount / 2; }
+
+            int threadCount = (size + DELIVERIES_PER_THREAD - 1) / DELIVERIES_PER_THREAD;
+            if (threadCount > MAX_DELIVERY_THREADS)
+                threadCount = MAX_DELIVERY_THREADS;
+
+            // 4. Требуется всего один поток
+            rc = 4;
+            if (threadCount <= 1)
+            {
+                ThreadContextEx contextEx = new ThreadContextEx(context, null, null, 0, 1);
+                allCountextEx = new ThreadContextEx[] { contextEx };
+                RouteBuilder.BuildEx4(contextEx);
+            }
+            else
+            {
+                // 5. Требуется несколько потоков
+                rc = 5;
+                allCountextEx = new ThreadContextEx[threadCount];
+                for (int i = 0; i < threadCount; i++)
+                {
+                    ManualResetEvent syncEvent = new ManualResetEvent(false);
+                    int k = i;
+                    ThreadContextEx contextEx = new ThreadContextEx(context, syncEvent, null, k, threadCount);
+                    allCountextEx[k] = contextEx;
+                    ThreadPool.QueueUserWorkItem(RouteBuilder.BuildEx4, contextEx);
+                }
+
+                for (int i = 0; i < threadCount; i++)
+                {
+                    allCountextEx[i].SyncEvent.WaitOne();
+                    allCountextEx[i].SyncEvent.Dispose();
+                    allCountextEx[i].SyncEvent = null;
+                }
+            }
+
+            // 6. Строим общий результат
+            rc = 6;
+            CourierDeliveryInfo[] deliveries = null;
+            int rc1 = 0;
+
+            if (threadCount <= 1)
+            {
+                deliveries = allCountextEx[0].Deliveries;
+                rc1 = allCountextEx[0].ExitCode;
+            }
+            else
+            {
+                // 6.1 Подсчитываем число отгрузок
+                rc = 61;
+                size = 0;
+                for (int i = 0; i < threadCount; i++)
+                {
+                    var contextEx = allCountextEx[i];
+                    if (contextEx.ExitCode != 0)
+                    {
+                        rc1 = contextEx.ExitCode;
+                    }
+                    else
+                    {
+                        size += contextEx.DeliveryCount;
+                    }
+                }
+
+                // 6.2 Объединяем все отгрузки
+                rc = 62;
+
+                if (size > 0)
+                {
+                    deliveries = new CourierDeliveryInfo[size];
+                    size = 0;
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        var contextEx = allCountextEx[i];
+                        if (contextEx.ExitCode == 0 && contextEx.DeliveryCount > 0)
+                        {
+                            contextEx.Deliveries.CopyTo(deliveries, size);
+                            size += contextEx.DeliveryCount;
+                        }
+                    }
+                }
+            }
+
+            context.Deliveries = deliveries;
+            allCountextEx = null;
+
+            if (rc1 != 0)
+            {
+                rc = 100000 * rc + rc1;
+                return;
+            }
+
+            // 7. Выход - Ok
+            rc = 0;
+        }
+        catch (Exception ex)
+        {
+#if debug
+            Logger.WriteToLog(303, $"CalcThreadEx4. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
+#endif
+        }
+        finally
+        {
+            if (context != null)
+            {
+#if debug
+                Logger.WriteToLog(302, $"CalcThreadEx4 exit rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+#endif
+                context.ExitCode = rc;
+
+                if (allCountextEx != null && allCountextEx.Length > 0)
+                {
+                    for (int i = 0; i < allCountextEx.Length; i++)
+                    {
+                        ThreadContextEx contextEx = allCountextEx[i];
+                        ManualResetEvent syncEvent = contextEx.SyncEvent;
+                        if (syncEvent != null)
+                        {
+                            syncEvent.Dispose();
+                            contextEx.SyncEvent = null;
+                        }
+                    }
+                }
+
+                if (context.SyncEvent != null)
+                    context.SyncEvent.Set();
+            }
+        }
+    }
+
+    /// <summary>
     /// Контекст-построитель отгрузок
     /// в отдельном потоке
     /// </summary>
@@ -3198,7 +3752,8 @@ public partial class StoredProcedures
                 }
 
                 ThreadContext iterContext = new ThreadContext(calcContext.ServiceId, calcContext.CalcTime, courierMaxOrderCount, calcContext.ShopFrom, calcContext.Orders, calcContext.ShopCourier, geoData, null);
-                CalcThreadEx(iterContext);
+                //CalcThreadEx(iterContext);
+                CalcThreadFull(iterContext);
                 calcContext.Deliveries = iterContext.Deliveries;
                 rc = (iterContext.ExitCode == 0 ? 0 : 100000 * rc + calcContext.ExitCode);
                 return;
@@ -3320,7 +3875,8 @@ public partial class StoredProcedures
 
                 // 5.4 Строим маршруты полным перебором
                 rc = 54;
-                CalcThreadEx(iterContext);
+                //CalcThreadEx(iterContext);
+                CalcThreadFull(iterContext);
                 if (iterContext.ExitCode != 0)
                 {
                     rc = (iterContext.ExitCode == 0 ? 0 : 100000 * rc + calcContext.ExitCode);
