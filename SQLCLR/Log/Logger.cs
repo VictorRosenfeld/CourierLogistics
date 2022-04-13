@@ -29,6 +29,8 @@ namespace SQLCLR.Log
             return string.Format(LOG_FILE_PATTERN, DateTime.Now.ToString("yyyy-MM-dd"));
         }
 
+        private static object syncRoot = new object();
+
         /// <summary>
         /// Запись в лог
         /// </summary>
@@ -37,38 +39,41 @@ namespace SQLCLR.Log
         /// <param name="severity">Тип сообщения (-1 - не печатать; 0 - info; 1 - warn; 2 - error</param>
         public static void WriteToLog(int messageNo, string message, int severity)
         {
-            try
+            lock (syncRoot)
             {
-                // 1. Форматируем тип сообщения
-                string messageType = null;
-                switch (severity)
+                try
                 {
-                    case -1:
-                        messageType = "";
-                        break;
-                    case 0:
-                        messageType = "info";
-                        break;
-                    case 1:
-                        messageType = "warn";
-                        break;
-                    case 2:
-                        messageType = "error";
-                        break;
-                    default:
-                        messageType = severity.ToString();
-                        break;
-                }
+                    // 1. Форматируем тип сообщения
+                    string messageType = null;
+                    switch (severity)
+                    {
+                        case -1:
+                            messageType = "";
+                            break;
+                        case 0:
+                            messageType = "info";
+                            break;
+                        case 1:
+                            messageType = "warn";
+                            break;
+                        case 2:
+                            messageType = "error";
+                            break;
+                        default:
+                            messageType = severity.ToString();
+                            break;
+                    }
 
-                // 2. Выводим в лог
-                using (StreamWriter sw = new StreamWriter(GetLogFileName(), true))
-                {
-                    sw.WriteLine(string.Format(MESSAGE_PATTERN, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), messageNo, messageType, message));
-                    sw.Close();
+                    // 2. Выводим в лог
+                    using (StreamWriter sw = new StreamWriter(GetLogFileName(), true))
+                    {
+                        sw.WriteLine(string.Format(MESSAGE_PATTERN, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"), messageNo, messageType, message));
+                        sw.Close();
+                    }
                 }
+                catch
+                { }
             }
-            catch
-            {   }
         }
     }
 }

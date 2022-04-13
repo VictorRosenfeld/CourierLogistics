@@ -1,5 +1,5 @@
 ﻿
-namespace SQLCLR.RouteCheck
+namespace SQLCLRex.RouteCheck
 {
     using System;
 
@@ -9,7 +9,7 @@ namespace SQLCLR.RouteCheck
     public class Permutations
     {
         /// <summary>
-        /// Генератор всех перестановок заданной длины (0-base)
+        /// Генератор всех перестановок заланной длины (0-base)
         /// </summary>
         /// <param name="n">Длина перестановки (1 ≤ n ≤ 10)</param>
         /// <returns>Перестановки или null

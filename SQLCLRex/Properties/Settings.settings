@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SQLCLRex.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="CalcTime" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">04/05/2022 08:00:00</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

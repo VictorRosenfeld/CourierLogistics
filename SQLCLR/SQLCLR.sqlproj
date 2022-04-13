@@ -37,7 +37,7 @@
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>3</WarningLevel>
+    <WarningLevel>2</WarningLevel>
     <PlatformTarget>x64</PlatformTarget>
     <DefineConstants>debug</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

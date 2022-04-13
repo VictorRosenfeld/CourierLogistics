@@ -1,10 +1,10 @@
 ﻿
-namespace SQLCLR.Deliveries
+namespace SQLCLRex.Deliveries
 {
-    using SQLCLR.Couriers;
-    using SQLCLR.MaxOrdersOfRoute;
-    using SQLCLR.Orders;
-    using SQLCLR.Shops;
+    using SQLCLRex.Couriers;
+    using SQLCLRex.MaxOrdersOfRoute;
+    using SQLCLRex.Orders;
+    using SQLCLRex.Shops;
     using System;
     using System.Threading;
 

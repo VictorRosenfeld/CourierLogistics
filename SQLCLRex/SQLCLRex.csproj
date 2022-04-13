@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6E9C0812-CCA2-426F-96E0-CFD28B72C575}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SQLCLRex</RootNamespace>
+    <AssemblyName>SQLCLRex</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;debug</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SQLCLRex.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Deployment">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AverageDeliveryCost\AverageCostThresholds.cs" />
+    <Compile Include="AverageDeliveryCost\AverageDeliveryCostRecord.cs" />
+    <Compile Include="Couriers\AllCouriers.cs" />
+    <Compile Include="Couriers\Courier.cs" />
+    <Compile Include="Couriers\CourierBase.cs" />
+    <Compile Include="Couriers\CourierRecord.cs" />
+    <Compile Include="Couriers\CourierStatus.cs" />
+    <Compile Include="Couriers\CourierTypeData.cs" />
+    <Compile Include="Couriers\CourierTypeRecord.cs" />
+    <Compile Include="Couriers\ICourierType.cs" />
+    <Compile Include="Couriers\ICourierTypeCalculator.cs" />
+    <Compile Include="Couriers\TimeAndCostCalculator.cs" />
+    <Compile Include="Deliveries\CalcThreadContext.cs" />
+    <Compile Include="Deliveries\CourierDeliveryInfo.cs" />
+    <Compile Include="Deliveries\CreateDeliveries.cs" />
+    <Compile Include="Deliveries\DeliveryKeyComparer.cs" />
+    <Compile Include="Deliveries\DilateRoutesContext.cs" />
+    <Compile Include="Deliveries\GeoData.cs" />
+    <Compile Include="Deliveries\GeoDataResponse.cs" />
+    <Compile Include="Deliveries\Point.cs" />
+    <Compile Include="Deliveries\RouteBuilder.cs" />
+    <Compile Include="Deliveries\ThreadContext.cs" />
+    <Compile Include="Deliveries\ThreadContextEx.cs" />
+    <Compile Include="DeliveryCover\CourierRepository.cs" />
+    <Compile Include="DeliveryCover\CreateCover.cs" />
+    <Compile Include="DeliveryCover\OrderRejectionCause.cs" />
+    <Compile Include="ExtraOrders\GeoDistance.cs" />
+    <Compile Include="ExtraOrders\OrdersCloud.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Log\Logger.cs" />
+    <Compile Include="MaxOrdersOfRoute\MaxOrdersOfRouteRecord.cs" />
+    <Compile Include="MaxOrdersOfRoute\RouteLimitations.cs" />
+    <Compile Include="Orders\AllOrders.cs" />
+    <Compile Include="Orders\Order.cs" />
+    <Compile Include="Orders\OrderRejectionReason.cs" />
+    <Compile Include="Orders\OrderStatus.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RouteCheck\Permutations.cs" />
+    <Compile Include="RouteCheck\RootCheckResponse.cs" />
+    <Compile Include="RouteCheck\RouteCheckProcedure.cs" />
+    <Compile Include="RouteCheck\RouteCheckRequest.cs" />
+    <Compile Include="Shops\Shop.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
