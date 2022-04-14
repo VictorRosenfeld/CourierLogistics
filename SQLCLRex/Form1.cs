@@ -47,14 +47,12 @@ namespace SQLCLRex
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            txtCalcTime.Text = Properties.Settings.Default.CalcTime.ToString();
+            LoadProperties();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            try
-            { Properties.Settings.Default.CalcTime = DateTime.Parse(txtCalcTime.Text); } catch { }
-            Properties.Settings.Default.Save();
+            SaveProperties();
         }
 
         private void tmrElapsedTime_Tick(object sender, EventArgs e)
@@ -77,6 +75,60 @@ namespace SQLCLRex
                 tsk.Dispose();
                 tsk = null;
             }
+        }
+
+        private void SaveProperties()
+        {
+            try
+            {
+                Properties.Settings.Default.ServerName = txtServerName.Text;
+                Properties.Settings.Default.DbName = txtDbName.Text;
+
+                int value;
+                if (int.TryParse(txtServiceID.Text, out value))
+                { Properties.Settings.Default.ServiceID =value; }
+
+                DateTime dt;
+                if (DateTime.TryParse(txtCalcTime.Text, out dt))
+                { Properties.Settings.Default.CalcTime =dt; }
+
+                if (int.TryParse(txtCloudRadius.Text, out value))
+                { Properties.Settings.Default.CloudRadius =value; }
+
+                if (int.TryParse(txtCloud5Size.Text, out value))
+                { Properties.Settings.Default.Cloud5Size =value; }
+
+                if (int.TryParse(txtCloud6Size.Text, out value))
+                { Properties.Settings.Default.Cloud6Size =value; }
+
+                if (int.TryParse(txtCloud7Size.Text, out value))
+                { Properties.Settings.Default.Cloud7Size =value; }
+
+                if (int.TryParse(txtCloud8Size.Text, out value))
+                { Properties.Settings.Default.Cloud8Size =value; }
+
+                Properties.Settings.Default.Save();
+            }
+            catch
+            { }
+        }
+
+        private void LoadProperties()
+        {
+            try
+            {
+                txtServerName.Text = Properties.Settings.Default.ServerName;
+                txtDbName.Text = Properties.Settings.Default.DbName;
+                txtServiceID.Text = Properties.Settings.Default.ServiceID.ToString();
+                txtCalcTime.Text = Properties.Settings.Default.CalcTime.ToString();
+                txtCloudRadius.Text = Properties.Settings.Default.CloudRadius.ToString();
+                txtCloud5Size.Text = Properties.Settings.Default.Cloud5Size.ToString();
+                txtCloud6Size.Text = Properties.Settings.Default.Cloud6Size.ToString();
+                txtCloud7Size.Text = Properties.Settings.Default.Cloud7Size.ToString();
+                txtCloud8Size.Text = Properties.Settings.Default.Cloud8Size.ToString();
+            }
+            catch
+            { }
         }
     }
 }

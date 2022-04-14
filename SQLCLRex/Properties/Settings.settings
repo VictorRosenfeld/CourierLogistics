@@ -5,5 +5,29 @@
     <Setting Name="CalcTime" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)">04/05/2022 08:00:00</Value>
     </Setting>
+    <Setting Name="CloudRadius" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1300</Value>
+    </Setting>
+    <Setting Name="Cloud5Size" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">55</Value>
+    </Setting>
+    <Setting Name="Cloud6Size" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">45</Value>
+    </Setting>
+    <Setting Name="Cloud7Size" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">35</Value>
+    </Setting>
+    <Setting Name="Cloud8Size" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">30</Value>
+    </Setting>
+    <Setting Name="ServerName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">srv-sql15</Value>
+    </Setting>
+    <Setting Name="DbName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">logisticservice59</Value>
+    </Setting>
+    <Setting Name="ServiceID" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">59</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

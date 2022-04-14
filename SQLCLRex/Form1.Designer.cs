@@ -41,6 +41,22 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtCalcTime = new System.Windows.Forms.TextBox();
             this.txtRc = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtCloudRadius = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtCloud5Size = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtCloud6Size = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtCloud7Size = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtCloud8Size = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -96,7 +112,7 @@
             // 
             // butStart
             // 
-            this.butStart.Location = new System.Drawing.Point(22, 157);
+            this.butStart.Location = new System.Drawing.Point(22, 282);
             this.butStart.Name = "butStart";
             this.butStart.Size = new System.Drawing.Size(263, 51);
             this.butStart.TabIndex = 2;
@@ -111,7 +127,7 @@
             // 
             // txtElapsedTime
             // 
-            this.txtElapsedTime.Location = new System.Drawing.Point(22, 224);
+            this.txtElapsedTime.Location = new System.Drawing.Point(22, 349);
             this.txtElapsedTime.Name = "txtElapsedTime";
             this.txtElapsedTime.ReadOnly = true;
             this.txtElapsedTime.Size = new System.Drawing.Size(263, 22);
@@ -136,17 +152,156 @@
             // 
             // txtRc
             // 
-            this.txtRc.Location = new System.Drawing.Point(22, 252);
+            this.txtRc.Location = new System.Drawing.Point(22, 377);
             this.txtRc.Name = "txtRc";
             this.txtRc.ReadOnly = true;
             this.txtRc.Size = new System.Drawing.Size(263, 22);
             this.txtRc.TabIndex = 3;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(19, 132);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(91, 17);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Cloud radius:";
+            // 
+            // txtCloudRadius
+            // 
+            this.txtCloudRadius.Location = new System.Drawing.Point(123, 129);
+            this.txtCloudRadius.Name = "txtCloudRadius";
+            this.txtCloudRadius.Size = new System.Drawing.Size(68, 22);
+            this.txtCloudRadius.TabIndex = 1;
+            this.txtCloudRadius.Text = "1300";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(19, 160);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(95, 17);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Cloud5 count:";
+            // 
+            // txtCloud5Size
+            // 
+            this.txtCloud5Size.Location = new System.Drawing.Point(123, 157);
+            this.txtCloud5Size.Name = "txtCloud5Size";
+            this.txtCloud5Size.Size = new System.Drawing.Size(68, 22);
+            this.txtCloud5Size.TabIndex = 1;
+            this.txtCloud5Size.Text = "55";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(19, 188);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(95, 17);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Cloud6 count:";
+            // 
+            // txtCloud6Size
+            // 
+            this.txtCloud6Size.Location = new System.Drawing.Point(123, 185);
+            this.txtCloud6Size.Name = "txtCloud6Size";
+            this.txtCloud6Size.Size = new System.Drawing.Size(68, 22);
+            this.txtCloud6Size.TabIndex = 1;
+            this.txtCloud6Size.Text = "45";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(19, 216);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(95, 17);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Cloud7 count:";
+            // 
+            // txtCloud7Size
+            // 
+            this.txtCloud7Size.Location = new System.Drawing.Point(123, 213);
+            this.txtCloud7Size.Name = "txtCloud7Size";
+            this.txtCloud7Size.Size = new System.Drawing.Size(68, 22);
+            this.txtCloud7Size.TabIndex = 1;
+            this.txtCloud7Size.Text = "35";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(19, 244);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(95, 17);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Cloud8 count:";
+            // 
+            // txtCloud8Size
+            // 
+            this.txtCloud8Size.Location = new System.Drawing.Point(123, 241);
+            this.txtCloud8Size.Name = "txtCloud8Size";
+            this.txtCloud8Size.Size = new System.Drawing.Size(68, 22);
+            this.txtCloud8Size.TabIndex = 1;
+            this.txtCloud8Size.Text = "30";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(197, 160);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(34, 17);
+            this.label10.TabIndex = 0;
+            this.label10.Text = "(65)";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(19, 160);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(95, 17);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Cloud5 count:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(197, 188);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(34, 17);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "(56)";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(197, 216);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(34, 17);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "(51)";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(197, 244);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(34, 17);
+            this.label14.TabIndex = 0;
+            this.label14.Text = "(48)";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(197, 132);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(50, 17);
+            this.label15.TabIndex = 0;
+            this.label15.Text = "(1300)";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(345, 309);
+            this.ClientSize = new System.Drawing.Size(345, 431);
             this.Controls.Add(this.txtRc);
             this.Controls.Add(this.txtElapsedTime);
             this.Controls.Add(this.butStart);
@@ -156,6 +311,22 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtCalcTime);
             this.Controls.Add(this.label4);
+            this.Controls.Add(this.txtCloud8Size);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.txtCloud7Size);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.txtCloud6Size);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.txtCloud5Size);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.txtCloudRadius);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.txtServiceID);
             this.Controls.Add(this.label1);
             this.MaximizeBox = false;
@@ -182,6 +353,22 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtCalcTime;
         private System.Windows.Forms.TextBox txtRc;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txtCloudRadius;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtCloud5Size;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtCloud6Size;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox txtCloud7Size;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox txtCloud8Size;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
     }
 }
 

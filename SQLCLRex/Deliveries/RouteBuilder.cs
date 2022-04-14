@@ -4232,7 +4232,7 @@ namespace SQLCLRex.Deliveries
                 if (context != null)
                 {
 #if debug
-                    Logger.WriteToLog(3090, $"BuildEx4 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
+                    Logger.WriteToLog(3090, $"BuildEx5 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
 #endif
                     context.ExitCode = rc;
                     ManualResetEvent syncEvent = context.SyncEvent;
@@ -4244,373 +4244,545 @@ namespace SQLCLRex.Deliveries
             }
         }
 
-//        /// <summary>
-//        /// Построение всех возможных отгрузок длины 4 для
-//        /// заданного контекста и гео-данных
-//        /// </summary>
-//        /// <param name="status">Расширенный контекст</param>
-//        /// <returns>0 - отгрузки построены; иначе - отгрузки не построены</returns>
-//        public static void BuildEx8(object status)
-//        {
-//            // 1. Инициализация
-//            int rc = 1;
-//            ThreadContextEx context = status as ThreadContextEx;
+        /// <summary>
+        /// Построение всех возможных отгрузок длины 6 для
+        /// заданного контекста и гео-данных
+        /// </summary>
+        /// <param name="status">Расширенный контекст</param>
+        /// <returns>0 - отгрузки построены; иначе - отгрузки не построены</returns>
+        public static void BuildEx6(object status)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            ThreadContextEx context = status as ThreadContextEx;
+            #if (debug)
+                        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                        sw.Start();
+                        DateTime startTime = DateTime.Now;
+            #endif
 
-//            try
-//            {
-//                // 2. Проверяем исходные данные
-//                rc = 2;
-//                if (context == null)
-//                    return;
-//                context.Deliveries = null;
-//                Point[,] geoData = context.GeoData;
-//                if (geoData == null)
-//                    return;
-//#if (debug)
-//                Logger.WriteToLog(309, $"BuildEx8 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
-//                // 3. Извлекаем и проверяем данные из контекста
-//                rc = 3;
-//                int level = context.MaxRouteLength;
-//                if (level < 1 || level > 8)
-//                    return;
-//                DateTime calcTime = context.CalcTime;
-//                Order[] contextOrders = context.Orders;
-//                if (contextOrders == null || contextOrders.Length <= 0)
-//                    return;
-//                int orderCount = contextOrders.Length;
-//                Shop contextShop = context.ShopFrom;
-//                if (contextShop == null)
-//                    return;
-//                Courier contextCourier = context.ShopCourier;
-//                if (contextCourier == null)
-//                    return;
-//                int startIndex = context.StartOrderIndex;
-//                if (startIndex < 0 || startIndex >= orderCount)
-//                    return;
-//                int step = context.OrderIndexStep;
-//                if (step <= 0)
-//                    return;
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (context == null)
+                    return;
+                context.Deliveries = null;
+                Point[,] geoData = context.GeoData;
+                if (geoData == null)
+                    return;
+#if (debug)
+                Logger.WriteToLog(309, $"BuildEx6 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
+#endif
+                // 3. Извлекаем и проверяем данные из контекста
+                rc = 3;
+                int level = context.MaxRouteLength;
+                if (level != 6)
+                    return;
+                DateTime calcTime = context.CalcTime;
+                Order[] contextOrders = context.Orders;
+                if (contextOrders == null || contextOrders.Length <= 0)
+                    return;
+                int orderCount = contextOrders.Length;
+                if (orderCount > 24)
+                    return;
 
-//                // 4. Выделяем память под результат
-//                rc = 4;
-//                long size = CalcCapacityEx(level, orderCount);
-//                size = (size + step - 1) / step;
-//                int sizeOfFloat = sizeof(float);
-//                int itemSize = 1 + level + sizeOfFloat;
-//                size *= itemSize;
-//                if (size >= 0x7FFFFFFF)
-//                    return;
-//                byte[] result = new byte[size];
-//                int ptr = 0;
+                Shop contextShop = context.ShopFrom;
+                if (contextShop == null)
+                    return;
+                Courier contextCourier = context.ShopCourier;
+                if (contextCourier == null)
+                    return;
+                int startIndex = context.StartOrderIndex;
+                if (startIndex < 0 || startIndex >= orderCount)
+                    return;
+                int step = context.OrderIndexStep;
+                if (step <= 0)
+                    return;
 
-//                // 5. Цикл перебора вариантов
-//                rc = 5;
-//                Order[] orders = new Order[8];
-//                int[] orderGeoIndex = new int[9];
-//                bool isLoop = !contextCourier.IsTaxi;
-//                int shopIndex = orderCount;
+                // 4. Выделяем память под результат
+                rc = 4;
+                long size = 1 << orderCount;
+                CourierDeliveryInfo[] result = new CourierDeliveryInfo[size];
 
-//                // 4. Цикл выбора допустимых маршрутов
-//                rc = 4;
-//                CourierDeliveryInfo delivery;
-//                byte b1;
-//                byte b2;
-//                byte b3;
-//                byte b4;
-//                byte b5;
-//                byte b6;
-//                byte b7;
-//                byte b8;
-//                bool[] alreadySelected = new bool[orderCount];
-//                int offset;
+                // 5. Цикл перебора вариантов
+                rc = 5;
+                Order[] orders = new Order[6];
+                int[] orderGeoIndex = new int[7];
+                bool isLoop = !contextCourier.IsTaxi;
+                int shopIndex = orderCount;
 
-//                for (int i1 = startIndex; i1 < orderCount; i1 += step)
-//                {
-//                    orderGeoIndex[0] = i1;
-//                    orderGeoIndex[1] = shopIndex;
-//                    orders[0] = contextOrders[i1];
-//                    int rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 1, isLoop, geoData, out delivery);
+                // 6. Цикл выбора допустимых маршрутов
+                rc = 6;
+                CourierDeliveryInfo delivery;
+                int key = 0;
+                bool[] alreadySelected = new bool[orderCount];
+                int k1;
+                int k2;
+                int k3;
+                int k4;
+                int k5;
+                int k6;
 
-//                    if (rcFind == 0)
-//                    {
-//                        b1 = (byte)i1;
-//                        alreadySelected[i1] = true;
+                for (int i1 = startIndex; i1 < orderCount; i1 += step)
+                {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+                    orders[0] = contextOrders[i1];
+                    int rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 1, isLoop, geoData, out delivery);
 
-//                        // [f0][f1][f2][f3][1][b1]
-//                        BitConverter.GetBytes((float)delivery.Cost).CopyTo(result, ptr);
-//                        result[ptr + sizeOfFloat] = 1;
-//                        result[ptr + sizeOfFloat + 1] = b1;
-//                        ptr += itemSize;
+                    if (rcFind == 0)
+                    {
+                        alreadySelected[i1] = true;
+                        k1 = 1 << i1;
+                        key |= k1;
 
-//                        if (level >= 2)
-//                        {
-//                            for (int i2 = 0; i2 < orderCount; i2++)
-//                            {
-//                                if (alreadySelected[i2])
-//                                    continue;
+                        result[key] = delivery;
 
-//                                orderGeoIndex[1] = i2;
-//                                orderGeoIndex[2] = shopIndex;
-//                                orders[1] = contextOrders[i2];
-//                                rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 2, isLoop, geoData, out delivery);
+                        for (int i2 = 0; i2 < orderCount; i2++)
+                        {
+                            if (alreadySelected[i2])
+                                continue;
 
-//                                if (rcFind == 0)
-//                                {
-//                                    b2 = (byte)i2;
-//                                    alreadySelected[i2] = true;
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = shopIndex;
+                            orders[1] = contextOrders[i2];
+                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 2, isLoop, geoData, out delivery);
 
-//                                    // [f0][f1][f2][f3][1][b1][b2]
-//                                    BitConverter.GetBytes((float)delivery.Cost).CopyTo(result, ptr);
-//                                    offset = ptr + sizeOfFloat;
-//                                    result[offset] = 2;
-//                                    result[offset + 1] = b1;
-//                                    result[offset + 2] = b2;
-//                                    ptr += itemSize;
+                            if (rcFind == 0)
+                            {
+                                alreadySelected[i2] = true;
+                                k2 = 1 << i2;
+                                key |= k2;
 
-//                                    if (level >= 3)
-//                                    {
-//                                        for (int i3 = 0; i3 < orderCount; i3++)
-//                                        {
-//                                            if (alreadySelected[i3])
-//                                                continue;
+                                if (result[key] == null || delivery.Cost < result[key].Cost)
+                                { result[key] = delivery; }
 
-//                                            orderGeoIndex[2] = i3;
-//                                            orderGeoIndex[3] = shopIndex;
-//                                            orders[2] = contextOrders[i3];
-//                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery);
+                                for (int i3 = 0; i3 < orderCount; i3++)
+                                {
+                                    if (alreadySelected[i3])
+                                        continue;
 
-//                                            if (rcFind == 0)
-//                                            {
-//                                                b3 = (byte)i3;
-//                                                alreadySelected[i3] = true;
+                                    orderGeoIndex[2] = i3;
+                                    orderGeoIndex[3] = shopIndex;
+                                    orders[2] = contextOrders[i3];
+                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery);
 
-//                                                // [f0][f1][f2][f3][1][b1][b2][b3]
-//                                                BitConverter.GetBytes((float)delivery.Cost).CopyTo(result, ptr);
-//                                                offset = ptr + sizeOfFloat;
-//                                                result[offset] = 3;
-//                                                result[offset + 1] = b1;
-//                                                result[offset + 2] = b2;
-//                                                result[offset + 3] = b3;
-//                                                ptr += itemSize;
+                                    if (rcFind == 0)
+                                    {
+                                        alreadySelected[i3] = true;
+                                        k3 = 1 << i3;
+                                        key |= k3;
 
-//                                                if (level >= 4)
-//                                                {
-//                                                    for (int i4 = 0; i4 < orderCount; i4++)
-//                                                    {
-//                                                        if (alreadySelected[i4])
-//                                                            continue;
+                                        if (result[key] == null || delivery.Cost < result[key].Cost)
+                                        { result[key] = delivery; }
 
-//                                                        orderGeoIndex[3] = i4;
-//                                                        orderGeoIndex[4] = shopIndex;
-//                                                        orders[3] = contextOrders[i4];
-//                                                        rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 4, isLoop, geoData, out delivery);
+                                        for (int i4 = 0; i4 < orderCount; i4++)
+                                        {
+                                            if (alreadySelected[i4])
+                                                continue;
 
-//                                                        if (rcFind == 0)
-//                                                        {
-//                                                            b4 = (byte)i4;
-//                                                            alreadySelected[i4] = true;
+                                            orderGeoIndex[3] = i4;
+                                            orderGeoIndex[4] = shopIndex;
+                                            orders[3] = contextOrders[i4];
+                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 4, isLoop, geoData, out delivery);
 
-//                                                            // [f0][f1][f2][f3][1][b1][b2][b3][b4]
-//                                                            BitConverter.GetBytes((float)delivery.Cost).CopyTo(result, ptr);
-//                                                            offset = ptr + sizeOfFloat;
-//                                                            result[offset] = 4;
-//                                                            result[offset + 1] = b1;
-//                                                            result[offset + 2] = b2;
-//                                                            result[offset + 3] = b3;
-//                                                            result[offset + 4] = b4;
-//                                                            ptr += itemSize;
+                                            if (rcFind == 0)
+                                            {
+                                                alreadySelected[i4] = true;
+                                                k4 = 1 << i4;
+                                                key |= k4;
+                                                if (result[key] == null || delivery.Cost < result[key].Cost)
+                                                { result[key] = delivery; }
 
-//                                                            if (level >= 5)
-//                                                            {
-//                                                                for (int i5 = 0; i5 < orderCount; i5++)
-//                                                                {
-//                                                                    if (alreadySelected[i5])
-//                                                                        continue;
+                                                for (int i5 = 0; i5 < orderCount; i5++)
+                                                {
+                                                    if (alreadySelected[i5])
+                                                        continue;
 
-//                                                                    orderGeoIndex[4] = i5;
-//                                                                    orderGeoIndex[5] = shopIndex;
-//                                                                    orders[4] = contextOrders[i5];
-//                                                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 5, isLoop, geoData, out delivery);
+                                                    orderGeoIndex[4] = i5;
+                                                    orderGeoIndex[5] = shopIndex;
+                                                    orders[4] = contextOrders[i5];
+                                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 5, isLoop, geoData, out delivery);
 
-//                                                                    if (rcFind == 0)
-//                                                                    {
-//                                                                        b5 = (byte)i5;
-//                                                                        alreadySelected[i5] = true;
+                                                    if (rcFind == 0)
+                                                    {
+                                                        alreadySelected[i5] = true;
+                                                        k5 = 1 << i5;
+                                                        key |= k5;
+                                                        if (result[key] == null || delivery.Cost < result[key].Cost)
+                                                        { result[key] = delivery; }
 
-//                                                                        // [f0][f1][f2][f3][1][b1][b2][b3][b4][b5]
-//                                                                        BitConverter.GetBytes((float)delivery.Cost).CopyTo(result, ptr);
-//                                                                        offset = ptr + sizeOfFloat;
-//                                                                        result[offset] = 5;
-//                                                                        result[offset + 1] = b1;
-//                                                                        result[offset + 2] = b2;
-//                                                                        result[offset + 3] = b3;
-//                                                                        result[offset + 4] = b4;
-//                                                                        result[offset + 5] = b5;
-//                                                                        ptr += itemSize;
+                                                        for (int i6 = 0; i6 < orderCount; i6++)
+                                                        {
+                                                            if (alreadySelected[i6])
+                                                                continue;
 
-//                                                                        if (level >= 6)
-//                                                                        {
-//                                                                            for (int i6 = 0; i6 < orderCount; i6++)
-//                                                                            {
-//                                                                                if (alreadySelected[i6])
-//                                                                                    continue;
+                                                            orderGeoIndex[5] = i6;
+                                                            orderGeoIndex[6] = shopIndex;
+                                                            orders[5] = contextOrders[i6];
+                                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 6, isLoop, geoData, out delivery);
 
-//                                                                                orderGeoIndex[5] = i6;
-//                                                                                orderGeoIndex[6] = shopIndex;
-//                                                                                orders[5] = contextOrders[i6];
-//                                                                                rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 6, isLoop, geoData, out delivery);
+                                                            if (rcFind == 0)
+                                                            {
+                                                                k6 = key | (1 << i6);
+                                                                if (result[k6] == null || delivery.Cost < result[k6].Cost)
+                                                                { result[k6] = delivery; }
+                                                            }
+                                                        }
 
-//                                                                                if (rcFind == 0)
-//                                                                                {
-//                                                                                    b6 = (byte)i6;
-//                                                                                    alreadySelected[i6] = true;
+                                                        alreadySelected[i5] = false;
+                                                        key ^= k5;
+                                                    }
+                                                }
 
-//                                                                                    // [f0][f1][f2][f3][1][b1][b2][b3][b4][b5][b6]
-//                                                                                    BitConverter.GetBytes((float)delivery.Cost).CopyTo(result, ptr);
-//                                                                                    offset = ptr + sizeOfFloat;
-//                                                                                    result[offset] = 6;
-//                                                                                    result[offset + 1] = b1;
-//                                                                                    result[offset + 2] = b2;
-//                                                                                    result[offset + 3] = b3;
-//                                                                                    result[offset + 4] = b4;
-//                                                                                    result[offset + 5] = b5;
-//                                                                                    result[offset + 6] = b6;
-//                                                                                    ptr += itemSize;
+                                                alreadySelected[i4] = false;
+                                                key ^= k4;
+                                            }
+                                        }
 
-//                                                                                    if (level >= 7)
-//                                                                                    {
-//                                                                                        for (int i7 = 0; i7 < orderCount; i7++)
-//                                                                                        {
-//                                                                                            if (alreadySelected[i7])
-//                                                                                                continue;
+                                        alreadySelected[i3] = false;
+                                        key ^= k3;
+                                    }
+                                }
 
-//                                                                                            orderGeoIndex[6] = i7;
-//                                                                                            orderGeoIndex[7] = shopIndex;
-//                                                                                            orders[6] = contextOrders[i7];
-//                                                                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 7, isLoop, geoData, out delivery);
+                                alreadySelected[i2] = false;
+                                key ^= k2;
+                            }
+                        }
 
-//                                                                                            if (rcFind == 0)
-//                                                                                            {
-//                                                                                                b7 = (byte)i7;
-//                                                                                                alreadySelected[i7] = true;
+                        alreadySelected[i1] = false;
+                        key ^= k1;
+                    }
+                }
 
-//                                                                                                // [f0][f1][f2][f3][1][b1][b2][b3][b4][b5][b6][b7]
-//                                                                                                BitConverter.GetBytes((float)delivery.Cost).CopyTo(result, ptr);
-//                                                                                                offset = ptr + sizeOfFloat;
-//                                                                                                result[offset] = 7;
-//                                                                                                result[offset + 1] = b1;
-//                                                                                                result[offset + 2] = b2;
-//                                                                                                result[offset + 3] = b3;
-//                                                                                                result[offset + 4] = b4;
-//                                                                                                result[offset + 5] = b5;
-//                                                                                                result[offset + 6] = b6;
-//                                                                                                result[offset + 7] = b7;
-//                                                                                                ptr += itemSize;
+                // 7. Сжатие
+                rc = 7;
+                key = 0;
+                for (int i = 0; i < result.Length; i++)
+                {
+                    delivery = result[i];
+                    if (delivery != null)
+                    { result[key++] = delivery; }
+                }
 
-//                                                                                                if (level >= 8)
-//                                                                                                {
-//                                                                                                    for (int i8 = 0; i8 < orderCount; i8++)
-//                                                                                                    {
-//                                                                                                        if (alreadySelected[i8])
-//                                                                                                            continue;
+                if (key < result.Length)
+                {
+                    Array.Resize(ref result, key);
+                }
 
-//                                                                                                        orderGeoIndex[7] = i8;
-//                                                                                                        orderGeoIndex[8] = shopIndex;
-//                                                                                                        orders[7] = contextOrders[i8];
-//                                                                                                        rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 8, isLoop, geoData, out delivery);
+                context.Deliveries = result;
 
-//                                                                                                        if (rcFind == 0)
-//                                                                                                        {
-//                                                                                                            b8 = (byte)i8;
-//                                                                                                            //alreadySelected[i8] = true;
+                // 8. Выход - Ok
+                rc = 0;
+                return;
+            }
+            catch (Exception ex)
+            {
+#if debug
+                Logger.WriteToLog(373, $"BuildEx6. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
+#endif
+                return;
+            }
+            finally
+            {
+                if (context != null)
+                {
+#if debug
+                    //Logger.WriteToLog(3090, $"BuildEx8 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}, delivery_count = {context.ItemCount}", 0);
+                    Logger.WriteToLog(3090, $"BuildEx6 exit ({startTime.ToString("yyyy-MM-dd HH:mm:ss.fff")} ET = {sw.ElapsedMilliseconds}). vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}. startIndex = {context.StartOrderIndex}. step = {context.OrderIndexStep}, delivery_count = {context.DeliveryCount}", 0);
+#endif
+                    context.ExitCode = rc;
+                    ManualResetEvent syncEvent = context.SyncEvent;
+                    if (syncEvent != null)
+                    {
+                        syncEvent.Set();
+                    }
+                }
+            }
+        }
 
-//                                                                                                            // [f0][f1][f2][f3][1][b1][b2][b3][b4][b5][b6][b7][b8]
-//                                                                                                            BitConverter.GetBytes((float)delivery.Cost).CopyTo(result, ptr);
-//                                                                                                            offset = ptr + sizeOfFloat;
-//                                                                                                            result[offset] = 8;
-//                                                                                                            result[offset + 1] = b1;
-//                                                                                                            result[offset + 2] = b2;
-//                                                                                                            result[offset + 3] = b3;
-//                                                                                                            result[offset + 4] = b4;
-//                                                                                                            result[offset + 5] = b5;
-//                                                                                                            result[offset + 6] = b6;
-//                                                                                                            result[offset + 7] = b7;
-//                                                                                                            result[offset + 8] = b8;
-//                                                                                                            ptr += itemSize;
+        /// <summary>
+        /// Построение всех возможных отгрузок длины 7 для
+        /// заданного контекста и гео-данных
+        /// </summary>
+        /// <param name="status">Расширенный контекст</param>
+        /// <returns>0 - отгрузки построены; иначе - отгрузки не построены</returns>
+        public static void BuildEx7(object status)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            ThreadContextEx context = status as ThreadContextEx;
+            #if (debug)
+                        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                        sw.Start();
+                        DateTime startTime = DateTime.Now;
+            #endif
 
-//                                                                                                            //alreadySelected[i8] = false;
-//                                                                                                        }
-//                                                                                                    }
-//                                                                                                }
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (context == null)
+                    return;
+                context.Deliveries = null;
+                Point[,] geoData = context.GeoData;
+                if (geoData == null)
+                    return;
+#if (debug)
+                Logger.WriteToLog(309, $"BuildEx7 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
+#endif
+                // 3. Извлекаем и проверяем данные из контекста
+                rc = 3;
+                int level = context.MaxRouteLength;
+                if (level != 7)
+                    return;
+                DateTime calcTime = context.CalcTime;
+                Order[] contextOrders = context.Orders;
+                if (contextOrders == null || contextOrders.Length <= 0)
+                    return;
+                int orderCount = contextOrders.Length;
+                if (orderCount > 24)
+                    return;
 
-//                                                                                                alreadySelected[i7] = false;
-//                                                                                            }
-//                                                                                        }
-//                                                                                    }
+                Shop contextShop = context.ShopFrom;
+                if (contextShop == null)
+                    return;
+                Courier contextCourier = context.ShopCourier;
+                if (contextCourier == null)
+                    return;
+                int startIndex = context.StartOrderIndex;
+                if (startIndex < 0 || startIndex >= orderCount)
+                    return;
+                int step = context.OrderIndexStep;
+                if (step <= 0)
+                    return;
 
-//                                                                                    alreadySelected[i6] = false;
-//                                                                                }
-//                                                                            }
-//                                                                        }
+                // 4. Выделяем память под результат
+                rc = 4;
+                long size = 1 << orderCount;
+                CourierDeliveryInfo[] result = new CourierDeliveryInfo[size];
 
-//                                                                        alreadySelected[i5] = false;
-//                                                                    }
-//                                                                }
-//                                                            }
+                // 5. Цикл перебора вариантов
+                rc = 5;
+                Order[] orders = new Order[7];
+                int[] orderGeoIndex = new int[8];
+                bool isLoop = !contextCourier.IsTaxi;
+                int shopIndex = orderCount;
 
-//                                                            alreadySelected[i4] = false;
-//                                                        }
-//                                                    }
-//                                                }
+                // 6. Цикл выбора допустимых маршрутов
+                rc = 6;
+                CourierDeliveryInfo delivery;
+                int key = 0;
+                bool[] alreadySelected = new bool[orderCount];
+                int k1;
+                int k2;
+                int k3;
+                int k4;
+                int k5;
+                int k6;
+                int k7;
 
-//                                                alreadySelected[i3] = false;
-//                                            }
-//                                        }
-//                                    }
+                for (int i1 = startIndex; i1 < orderCount; i1 += step)
+                {
+                    orderGeoIndex[0] = i1;
+                    orderGeoIndex[1] = shopIndex;
+                    orders[0] = contextOrders[i1];
+                    int rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 1, isLoop, geoData, out delivery);
 
-//                                    alreadySelected[i2] = false;
-//                                }
-//                            }
-//                        }
+                    if (rcFind == 0)
+                    {
+                        alreadySelected[i1] = true;
+                        k1 = 1 << i1;
+                        key |= k1;
 
-//                        alreadySelected[i1] = false;
-//                    }
-//                }
+                        result[key] = delivery;
 
-//                if (ptr < result.Length)
-//                { Array.Resize(ref result, ptr); }
+                        for (int i2 = 0; i2 < orderCount; i2++)
+                        {
+                            if (alreadySelected[i2])
+                                continue;
 
-//                context.Items = result;
-//                context.ItemCount = ptr / itemSize;
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = shopIndex;
+                            orders[1] = contextOrders[i2];
+                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 2, isLoop, geoData, out delivery);
 
-//                // 5. Выход - Ok
-//                rc = 0;
-//                return;
-//            }
-//            catch (Exception ex)
-//            {
-//#if debug
-//                Logger.WriteToLog(373, $"BuildEx8. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-//#endif
-//                return;
-//            }
-//            finally
-//            {
-//                if (context != null)
-//                {
-//#if debug
-//                    Logger.WriteToLog(3090, $"BuildEx8 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}, delivery_count = {context.ItemCount}", 0);
-//#endif
-//                    context.ExitCode = rc;
-//                    ManualResetEvent syncEvent = context.SyncEvent;
-//                    if (syncEvent != null)
-//                    {
-//                        syncEvent.Set();
-//                    }
-//                }
-//            }
-//        }
+                            if (rcFind == 0)
+                            {
+                                alreadySelected[i2] = true;
+                                k2 = 1 << i2;
+                                key |= k2;
+
+                                if (result[key] == null || delivery.Cost < result[key].Cost)
+                                { result[key] = delivery; }
+
+                                for (int i3 = 0; i3 < orderCount; i3++)
+                                {
+                                    if (alreadySelected[i3])
+                                        continue;
+
+                                    orderGeoIndex[2] = i3;
+                                    orderGeoIndex[3] = shopIndex;
+                                    orders[2] = contextOrders[i3];
+                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery);
+
+                                    if (rcFind == 0)
+                                    {
+                                        alreadySelected[i3] = true;
+                                        k3 = 1 << i3;
+                                        key |= k3;
+
+                                        if (result[key] == null || delivery.Cost < result[key].Cost)
+                                        { result[key] = delivery; }
+
+                                        for (int i4 = 0; i4 < orderCount; i4++)
+                                        {
+                                            if (alreadySelected[i4])
+                                                continue;
+
+                                            orderGeoIndex[3] = i4;
+                                            orderGeoIndex[4] = shopIndex;
+                                            orders[3] = contextOrders[i4];
+                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 4, isLoop, geoData, out delivery);
+
+                                            if (rcFind == 0)
+                                            {
+                                                alreadySelected[i4] = true;
+                                                k4 = 1 << i4;
+                                                key |= k4;
+                                                if (result[key] == null || delivery.Cost < result[key].Cost)
+                                                { result[key] = delivery; }
+
+                                                for (int i5 = 0; i5 < orderCount; i5++)
+                                                {
+                                                    if (alreadySelected[i5])
+                                                        continue;
+
+                                                    orderGeoIndex[4] = i5;
+                                                    orderGeoIndex[5] = shopIndex;
+                                                    orders[4] = contextOrders[i5];
+                                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 5, isLoop, geoData, out delivery);
+
+                                                    if (rcFind == 0)
+                                                    {
+                                                        alreadySelected[i5] = true;
+                                                        k5 = 1 << i5;
+                                                        key |= k5;
+                                                        if (result[key] == null || delivery.Cost < result[key].Cost)
+                                                        { result[key] = delivery; }
+
+                                                        for (int i6 = 0; i6 < orderCount; i6++)
+                                                        {
+                                                            if (alreadySelected[i6])
+                                                                continue;
+
+                                                            orderGeoIndex[5] = i6;
+                                                            orderGeoIndex[6] = shopIndex;
+                                                            orders[5] = contextOrders[i6];
+                                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 6, isLoop, geoData, out delivery);
+
+                                                            if (rcFind == 0)
+                                                            {
+                                                                alreadySelected[i6] = true;
+                                                                k6 = 1 << i6;
+                                                                key |= k6;
+                                                                if (result[key] == null || delivery.Cost < result[key].Cost)
+                                                                { result[key] = delivery; }
+
+                                                                for (int i7 = 0; i7 < orderCount; i7++)
+                                                                {
+                                                                    if (alreadySelected[i7])
+                                                                        continue;
+
+                                                                    orderGeoIndex[6] = i7;
+                                                                    orderGeoIndex[7] = shopIndex;
+                                                                    orders[6] = contextOrders[i7];
+                                                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 7, isLoop, geoData, out delivery);
+
+                                                                    if (rcFind == 0)
+                                                                    {
+                                                                        k7 = key | (1 << i7);
+                                                                        if (result[k7] == null || delivery.Cost < result[k7].Cost)
+                                                                        { result[k7] = delivery; }
+                                                                    }
+                                                                }
+
+                                                                alreadySelected[i6] = false;
+                                                                key ^= k6;
+                                                            }
+                                                        }
+
+                                                        alreadySelected[i5] = false;
+                                                        key ^= k5;
+                                                    }
+                                                }
+
+                                                alreadySelected[i4] = false;
+                                                key ^= k4;
+                                            }
+                                        }
+
+                                        alreadySelected[i3] = false;
+                                        key ^= k3;
+                                    }
+                                }
+
+                                alreadySelected[i2] = false;
+                                key ^= k2;
+                            }
+                        }
+
+                        alreadySelected[i1] = false;
+                        key ^= k1;
+                    }
+                }
+
+                // 7. Сжатие
+                rc = 7;
+                key = 0;
+                for (int i = 0; i < result.Length; i++)
+                {
+                    delivery = result[i];
+                    if (delivery != null)
+                    { result[key++] = delivery; }
+                }
+
+                if (key < result.Length)
+                {
+                    Array.Resize(ref result, key);
+                }
+
+                context.Deliveries = result;
+
+                // 8. Выход - Ok
+                rc = 0;
+                return;
+            }
+            catch (Exception ex)
+            {
+#if debug
+                Logger.WriteToLog(373, $"BuildEx7. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
+#endif
+                return;
+            }
+            finally
+            {
+                if (context != null)
+                {
+#if debug
+                    //Logger.WriteToLog(3090, $"BuildEx8 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}, delivery_count = {context.ItemCount}", 0);
+                    Logger.WriteToLog(3090, $"BuildEx7 exit ({startTime.ToString("yyyy-MM-dd HH:mm:ss.fff")} ET = {sw.ElapsedMilliseconds}). vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}. startIndex = {context.StartOrderIndex}. step = {context.OrderIndexStep}, delivery_count = {context.DeliveryCount}", 0);
+#endif
+                    context.ExitCode = rc;
+                    ManualResetEvent syncEvent = context.SyncEvent;
+                    if (syncEvent != null)
+                    {
+                        syncEvent.Set();
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Построение всех возможных отгрузок длины 8 для
@@ -4919,546 +5091,6 @@ namespace SQLCLRex.Deliveries
         }
 
         /// <summary>
-        /// Построение всех возможных отгрузок длины 7 для
-        /// заданного контекста и гео-данных
-        /// </summary>
-        /// <param name="status">Расширенный контекст</param>
-        /// <returns>0 - отгрузки построены; иначе - отгрузки не построены</returns>
-        public static void BuildEx7(object status)
-        {
-            // 1. Инициализация
-            int rc = 1;
-            ThreadContextEx context = status as ThreadContextEx;
-            #if (debug)
-                        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-                        sw.Start();
-                        DateTime startTime = DateTime.Now;
-            #endif
-
-            try
-            {
-                // 2. Проверяем исходные данные
-                rc = 2;
-                if (context == null)
-                    return;
-                context.Deliveries = null;
-                Point[,] geoData = context.GeoData;
-                if (geoData == null)
-                    return;
-#if (debug)
-                Logger.WriteToLog(309, $"BuildEx7 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-#endif
-                // 3. Извлекаем и проверяем данные из контекста
-                rc = 3;
-                int level = context.MaxRouteLength;
-                if (level != 7)
-                    return;
-                DateTime calcTime = context.CalcTime;
-                Order[] contextOrders = context.Orders;
-                if (contextOrders == null || contextOrders.Length <= 0)
-                    return;
-                int orderCount = contextOrders.Length;
-                if (orderCount > 24)
-                    return;
-
-                Shop contextShop = context.ShopFrom;
-                if (contextShop == null)
-                    return;
-                Courier contextCourier = context.ShopCourier;
-                if (contextCourier == null)
-                    return;
-                int startIndex = context.StartOrderIndex;
-                if (startIndex < 0 || startIndex >= orderCount)
-                    return;
-                int step = context.OrderIndexStep;
-                if (step <= 0)
-                    return;
-
-                // 4. Выделяем память под результат
-                rc = 4;
-                long size = 1 << orderCount;
-                CourierDeliveryInfo[] result = new CourierDeliveryInfo[size];
-
-                // 5. Цикл перебора вариантов
-                rc = 5;
-                Order[] orders = new Order[8];
-                int[] orderGeoIndex = new int[9];
-                bool isLoop = !contextCourier.IsTaxi;
-                int shopIndex = orderCount;
-
-                // 6. Цикл выбора допустимых маршрутов
-                rc = 6;
-                CourierDeliveryInfo delivery;
-                int key = 0;
-                bool[] alreadySelected = new bool[orderCount];
-                int k1;
-                int k2;
-                int k3;
-                int k4;
-                int k5;
-                int k6;
-                int k7;
-
-                for (int i1 = startIndex; i1 < orderCount; i1 += step)
-                {
-                    orderGeoIndex[0] = i1;
-                    orderGeoIndex[1] = shopIndex;
-                    orders[0] = contextOrders[i1];
-                    int rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 1, isLoop, geoData, out delivery);
-
-                    if (rcFind == 0)
-                    {
-                        alreadySelected[i1] = true;
-                        k1 = 1 << i1;
-                        key |= k1;
-
-                        result[key] = delivery;
-
-                        for (int i2 = 0; i2 < orderCount; i2++)
-                        {
-                            if (alreadySelected[i2])
-                                continue;
-
-                            orderGeoIndex[1] = i2;
-                            orderGeoIndex[2] = shopIndex;
-                            orders[1] = contextOrders[i2];
-                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 2, isLoop, geoData, out delivery);
-
-                            if (rcFind == 0)
-                            {
-                                alreadySelected[i2] = true;
-                                k2 = 1 << i2;
-                                key |= k2;
-
-                                if (result[key] == null || delivery.Cost < result[key].Cost)
-                                { result[key] = delivery; }
-
-                                for (int i3 = 0; i3 < orderCount; i3++)
-                                {
-                                    if (alreadySelected[i3])
-                                        continue;
-
-                                    orderGeoIndex[2] = i3;
-                                    orderGeoIndex[3] = shopIndex;
-                                    orders[2] = contextOrders[i3];
-                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery);
-
-                                    if (rcFind == 0)
-                                    {
-                                        alreadySelected[i3] = true;
-                                        k3 = 1 << i3;
-                                        key |= k3;
-
-                                        if (result[key] == null || delivery.Cost < result[key].Cost)
-                                        { result[key] = delivery; }
-
-                                        for (int i4 = 0; i4 < orderCount; i4++)
-                                        {
-                                            if (alreadySelected[i4])
-                                                continue;
-
-                                            orderGeoIndex[3] = i4;
-                                            orderGeoIndex[4] = shopIndex;
-                                            orders[3] = contextOrders[i4];
-                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 4, isLoop, geoData, out delivery);
-
-                                            if (rcFind == 0)
-                                            {
-                                                alreadySelected[i4] = true;
-                                                k4 = 1 << i4;
-                                                key |= k4;
-                                                if (result[key] == null || delivery.Cost < result[key].Cost)
-                                                { result[key] = delivery; }
-
-                                                for (int i5 = 0; i5 < orderCount; i5++)
-                                                {
-                                                    if (alreadySelected[i5])
-                                                        continue;
-
-                                                    orderGeoIndex[4] = i5;
-                                                    orderGeoIndex[5] = shopIndex;
-                                                    orders[4] = contextOrders[i5];
-                                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 5, isLoop, geoData, out delivery);
-
-                                                    if (rcFind == 0)
-                                                    {
-                                                        alreadySelected[i5] = true;
-                                                        k5 = 1 << i5;
-                                                        key |= k5;
-                                                        if (result[key] == null || delivery.Cost < result[key].Cost)
-                                                        { result[key] = delivery; }
-
-                                                        for (int i6 = 0; i6 < orderCount; i6++)
-                                                        {
-                                                            if (alreadySelected[i6])
-                                                                continue;
-
-                                                            orderGeoIndex[5] = i6;
-                                                            orderGeoIndex[6] = shopIndex;
-                                                            orders[5] = contextOrders[i6];
-                                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 6, isLoop, geoData, out delivery);
-
-                                                            if (rcFind == 0)
-                                                            {
-                                                                alreadySelected[i6] = true;
-                                                                k6 = 1 << i6;
-                                                                key |= k6;
-                                                                if (result[key] == null || delivery.Cost < result[key].Cost)
-                                                                { result[key] = delivery; }
-
-                                                                for (int i7 = 0; i7 < orderCount; i7++)
-                                                                {
-                                                                    if (alreadySelected[i7])
-                                                                        continue;
-
-                                                                    orderGeoIndex[6] = i7;
-                                                                    orderGeoIndex[7] = shopIndex;
-                                                                    orders[6] = contextOrders[i7];
-                                                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 7, isLoop, geoData, out delivery);
-
-                                                                    if (rcFind == 0)
-                                                                    {
-                                                                        k7 = key | (1 << i7);
-                                                                        if (result[k7] == null || delivery.Cost < result[k7].Cost)
-                                                                        { result[k7] = delivery; }
-                                                                    }
-                                                                }
-
-                                                                alreadySelected[i6] = false;
-                                                                key ^= k6;
-                                                            }
-                                                        }
-
-                                                        alreadySelected[i5] = false;
-                                                        key ^= k5;
-                                                    }
-                                                }
-
-                                                alreadySelected[i4] = false;
-                                                key ^= k4;
-                                            }
-                                        }
-
-                                        alreadySelected[i3] = false;
-                                        key ^= k3;
-                                    }
-                                }
-
-                                alreadySelected[i2] = false;
-                                key ^= k2;
-                            }
-                        }
-
-                        alreadySelected[i1] = false;
-                        key ^= k1;
-                    }
-                }
-
-                // 7. Сжатие
-                rc = 7;
-                key = 0;
-                for (int i = 0; i < result.Length; i++)
-                {
-                    delivery = result[i];
-                    if (delivery != null)
-                    { result[key++] = delivery; }
-                }
-
-                if (key < result.Length)
-                {
-                    Array.Resize(ref result, key);
-                }
-
-                context.Deliveries = result;
-
-                // 8. Выход - Ok
-                rc = 0;
-                return;
-            }
-            catch (Exception ex)
-            {
-#if debug
-                Logger.WriteToLog(373, $"BuildEx7. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-#endif
-                return;
-            }
-            finally
-            {
-                if (context != null)
-                {
-#if debug
-                    //Logger.WriteToLog(3090, $"BuildEx8 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}, delivery_count = {context.ItemCount}", 0);
-                    Logger.WriteToLog(3090, $"BuildEx7 exit ({startTime.ToString("yyyy-MM-dd HH:mm:ss.fff")} ET = {sw.ElapsedMilliseconds}). vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}. startIndex = {context.StartOrderIndex}. step = {context.OrderIndexStep}, delivery_count = {context.DeliveryCount}", 0);
-#endif
-                    context.ExitCode = rc;
-                    ManualResetEvent syncEvent = context.SyncEvent;
-                    if (syncEvent != null)
-                    {
-                        syncEvent.Set();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Построение всех возможных отгрузок длины 6 для
-        /// заданного контекста и гео-данных
-        /// </summary>
-        /// <param name="status">Расширенный контекст</param>
-        /// <returns>0 - отгрузки построены; иначе - отгрузки не построены</returns>
-        public static void BuildEx6(object status)
-        {
-            // 1. Инициализация
-            int rc = 1;
-            ThreadContextEx context = status as ThreadContextEx;
-            #if (debug)
-                        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-                        sw.Start();
-                        DateTime startTime = DateTime.Now;
-            #endif
-
-            try
-            {
-                // 2. Проверяем исходные данные
-                rc = 2;
-                if (context == null)
-                    return;
-                context.Deliveries = null;
-                Point[,] geoData = context.GeoData;
-                if (geoData == null)
-                    return;
-#if (debug)
-                Logger.WriteToLog(309, $"BuildEx6 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-#endif
-                // 3. Извлекаем и проверяем данные из контекста
-                rc = 3;
-                int level = context.MaxRouteLength;
-                if (level != 6)
-                    return;
-                DateTime calcTime = context.CalcTime;
-                Order[] contextOrders = context.Orders;
-                if (contextOrders == null || contextOrders.Length <= 0)
-                    return;
-                int orderCount = contextOrders.Length;
-                if (orderCount > 24)
-                    return;
-
-                Shop contextShop = context.ShopFrom;
-                if (contextShop == null)
-                    return;
-                Courier contextCourier = context.ShopCourier;
-                if (contextCourier == null)
-                    return;
-                int startIndex = context.StartOrderIndex;
-                if (startIndex < 0 || startIndex >= orderCount)
-                    return;
-                int step = context.OrderIndexStep;
-                if (step <= 0)
-                    return;
-
-                // 4. Выделяем память под результат
-                rc = 4;
-                long size = 1 << orderCount;
-                CourierDeliveryInfo[] result = new CourierDeliveryInfo[size];
-
-                // 5. Цикл перебора вариантов
-                rc = 5;
-                Order[] orders = new Order[8];
-                int[] orderGeoIndex = new int[9];
-                bool isLoop = !contextCourier.IsTaxi;
-                int shopIndex = orderCount;
-
-                // 6. Цикл выбора допустимых маршрутов
-                rc = 6;
-                CourierDeliveryInfo delivery;
-                int key = 0;
-                bool[] alreadySelected = new bool[orderCount];
-                int k1;
-                int k2;
-                int k3;
-                int k4;
-                int k5;
-                int k6;
-
-                for (int i1 = startIndex; i1 < orderCount; i1 += step)
-                {
-                    orderGeoIndex[0] = i1;
-                    orderGeoIndex[1] = shopIndex;
-                    orders[0] = contextOrders[i1];
-                    int rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 1, isLoop, geoData, out delivery);
-
-                    if (rcFind == 0)
-                    {
-                        alreadySelected[i1] = true;
-                        k1 = 1 << i1;
-                        key |= k1;
-
-                        result[key] = delivery;
-
-                        for (int i2 = 0; i2 < orderCount; i2++)
-                        {
-                            if (alreadySelected[i2])
-                                continue;
-
-                            orderGeoIndex[1] = i2;
-                            orderGeoIndex[2] = shopIndex;
-                            orders[1] = contextOrders[i2];
-                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 2, isLoop, geoData, out delivery);
-
-                            if (rcFind == 0)
-                            {
-                                alreadySelected[i2] = true;
-                                k2 = 1 << i2;
-                                key |= k2;
-
-                                if (result[key] == null || delivery.Cost < result[key].Cost)
-                                { result[key] = delivery; }
-
-                                for (int i3 = 0; i3 < orderCount; i3++)
-                                {
-                                    if (alreadySelected[i3])
-                                        continue;
-
-                                    orderGeoIndex[2] = i3;
-                                    orderGeoIndex[3] = shopIndex;
-                                    orders[2] = contextOrders[i3];
-                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery);
-
-                                    if (rcFind == 0)
-                                    {
-                                        alreadySelected[i3] = true;
-                                        k3 = 1 << i3;
-                                        key |= k3;
-
-                                        if (result[key] == null || delivery.Cost < result[key].Cost)
-                                        { result[key] = delivery; }
-
-                                        for (int i4 = 0; i4 < orderCount; i4++)
-                                        {
-                                            if (alreadySelected[i4])
-                                                continue;
-
-                                            orderGeoIndex[3] = i4;
-                                            orderGeoIndex[4] = shopIndex;
-                                            orders[3] = contextOrders[i4];
-                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 4, isLoop, geoData, out delivery);
-
-                                            if (rcFind == 0)
-                                            {
-                                                alreadySelected[i4] = true;
-                                                k4 = 1 << i4;
-                                                key |= k4;
-                                                if (result[key] == null || delivery.Cost < result[key].Cost)
-                                                { result[key] = delivery; }
-
-                                                for (int i5 = 0; i5 < orderCount; i5++)
-                                                {
-                                                    if (alreadySelected[i5])
-                                                        continue;
-
-                                                    orderGeoIndex[4] = i5;
-                                                    orderGeoIndex[5] = shopIndex;
-                                                    orders[4] = contextOrders[i5];
-                                                    rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 5, isLoop, geoData, out delivery);
-
-                                                    if (rcFind == 0)
-                                                    {
-                                                        alreadySelected[i5] = true;
-                                                        k5 = 1 << i5;
-                                                        key |= k5;
-                                                        if (result[key] == null || delivery.Cost < result[key].Cost)
-                                                        { result[key] = delivery; }
-
-                                                        for (int i6 = 0; i6 < orderCount; i6++)
-                                                        {
-                                                            if (alreadySelected[i6])
-                                                                continue;
-
-                                                            orderGeoIndex[5] = i6;
-                                                            orderGeoIndex[6] = shopIndex;
-                                                            orders[5] = contextOrders[i6];
-                                                            rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 6, isLoop, geoData, out delivery);
-
-                                                            if (rcFind == 0)
-                                                            {
-                                                                k6 = key | (1 << i6);
-                                                                if (result[k6] == null || delivery.Cost < result[k6].Cost)
-                                                                { result[k6] = delivery; }
-                                                            }
-                                                        }
-
-                                                        alreadySelected[i5] = false;
-                                                        key ^= k5;
-                                                    }
-                                                }
-
-                                                alreadySelected[i4] = false;
-                                                key ^= k4;
-                                            }
-                                        }
-
-                                        alreadySelected[i3] = false;
-                                        key ^= k3;
-                                    }
-                                }
-
-                                alreadySelected[i2] = false;
-                                key ^= k2;
-                            }
-                        }
-
-                        alreadySelected[i1] = false;
-                        key ^= k1;
-                    }
-                }
-
-                // 7. Сжатие
-                rc = 7;
-                key = 0;
-                for (int i = 0; i < result.Length; i++)
-                {
-                    delivery = result[i];
-                    if (delivery != null)
-                    { result[key++] = delivery; }
-                }
-
-                if (key < result.Length)
-                {
-                    Array.Resize(ref result, key);
-                }
-
-                context.Deliveries = result;
-
-                // 8. Выход - Ok
-                rc = 0;
-                return;
-            }
-            catch (Exception ex)
-            {
-#if debug
-                Logger.WriteToLog(373, $"BuildEx6. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-#endif
-                return;
-            }
-            finally
-            {
-                if (context != null)
-                {
-#if debug
-                    //Logger.WriteToLog(3090, $"BuildEx8 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}, delivery_count = {context.ItemCount}", 0);
-                    Logger.WriteToLog(3090, $"BuildEx6 exit ({startTime.ToString("yyyy-MM-dd HH:mm:ss.fff")} ET = {sw.ElapsedMilliseconds}). vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}. startIndex = {context.StartOrderIndex}. step = {context.OrderIndexStep}, delivery_count = {context.DeliveryCount}", 0);
-#endif
-                    context.ExitCode = rc;
-                    ManualResetEvent syncEvent = context.SyncEvent;
-                    if (syncEvent != null)
-                    {
-                        syncEvent.Set();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Вычисление приближенного числа
         /// ожидаемых отгрузок
         /// </summary>
@@ -5544,7 +5176,6 @@ namespace SQLCLRex.Deliveries
 
             return sum;
         }
-
 
         /// <summary>
         /// Значение биномиального коэффициента
