@@ -77,6 +77,7 @@
     <Folder Include="DeliveryCover" />
     <Folder Include="RouteCheck" />
     <Folder Include="YandexGeoData" />
+    <Folder Include="StartCalcProcess" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -133,5 +134,6 @@
     <Compile Include="YandexGeoData\YandexResponse.cs" />
     <Compile Include="YandexGeoData\YandexResponseItem.cs" />
     <Compile Include="YandexGeoData\YandexResponseParser.cs" />
+    <Compile Include="StartCalcProcess\StartCreateDeliveries.cs" />
   </ItemGroup>
 </Project>

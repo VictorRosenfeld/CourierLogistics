@@ -14,6 +14,7 @@ namespace SQLCLRex
 
         private int tickCount = 0;
         Task<int> tsk = null;
+        CalcConfig config = null;
 
         private void butStart_Click(object sender, EventArgs e)
         {
@@ -21,16 +22,20 @@ namespace SQLCLRex
             tickCount = 0;
             txtElapsedTime.Text = null;
             txtRc.Text = null;
+            config = null;
 
             try
             {
-                int id = int.Parse(txtServiceID.Text);
-                string serverName = txtServerName.Text;
-                string dbName = txtDbName.Text;
-                DateTime calcTime = DateTime.Parse(txtCalcTime.Text);
+                config = GetConfig();
+                if (config == null)
+                {
+                    txtRc.Text = "-1";
+                    //return;
+                }
+                butStart.Enabled = false;
                 tmrElapsedTime.Enabled = true;
 
-                tsk = Task.Run(() => StoredProcedures.CreateDeliveriesEx(id, calcTime, serverName, dbName));
+                tsk = Task.Run(() => StoredProcedures.CreateDeliveriesEx(config));
             }
             catch (Exception ex)
             {
@@ -71,7 +76,8 @@ namespace SQLCLRex
             {
                 tmrElapsedTime.Enabled = false;
                 butStart.Enabled = true;
-                txtRc.Text = tsk.Result.ToString();
+                txtRc.Text = config.ExitCode.ToString();
+                txtElapsedTime.Text = ((int) config.ElapsedTime.TotalMilliseconds).ToString();
                 tsk.Dispose();
                 tsk = null;
             }
@@ -129,6 +135,117 @@ namespace SQLCLRex
             }
             catch
             { }
+        }
+
+        /// <summary>
+        /// Выбор установленных парамтров расчета
+        /// </summary>
+        /// <returns></returns>
+        private CalcConfig GetConfig()
+        {
+            // 1. Инициализация
+            CalcConfig config = new CalcConfig();
+
+            // 2. ServerName
+            if (string.IsNullOrWhiteSpace(txtServerName.Text))
+            {
+                MessageBox.Show("Server Name не задан", "Create Deliveries", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtServerName.Focus();
+                return null;
+            }
+
+            config.ServerName = txtServerName.Text;
+
+            // 3. DbName
+            if (string.IsNullOrWhiteSpace(txtDbName.Text))
+            {
+                MessageBox.Show("DB Name не задан", "Create Deliveries", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtDbName.Focus();
+                return null;
+            }
+
+            config.DbName = txtDbName.Text;
+
+            // 4. ServiceId
+            int value;
+            if (!int.TryParse(txtServiceID.Text, out value) || value <= 0)
+            {
+                MessageBox.Show("Service ID не задан или имеет недопустимое значение", "Create Deliveries", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtServiceID.SelectAll();
+                txtServiceID.Focus();
+                return null;
+            }
+
+            config.ServiceId = value;
+
+            // 5. Calc Time
+            DateTime dt;
+            if (!DateTime.TryParse(txtCalcTime.Text, out dt))
+            {
+                MessageBox.Show("Calc Time не задан или имеет недопустимое значение", "Create Deliveries", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtCalcTime.SelectAll();
+                txtCalcTime.Focus();
+                return null;
+            }
+
+            config.CalcTime = dt;
+
+            // 6. Cloud Readius
+            if (!int.TryParse(txtCloudRadius.Text, out value) || value <= 0)
+            {
+                MessageBox.Show("Cloud Readius не задан или имеет недопустимое значение", "Create Deliveries", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtCloudRadius.SelectAll();
+                txtCloudRadius.Focus();
+                return null;
+            }
+
+            config.CloudRadius = value;
+
+            // 7. Cloud5 Size
+            if (!int.TryParse(txtCloud5Size.Text, out value) || value <= 0)
+            {
+                MessageBox.Show("Cloud5 Size не задан или имеет недопустимое значение", "Create Deliveries", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtCloud5Size.SelectAll();
+                txtCloud5Size.Focus();
+                return null;
+            }
+
+            config.Cloud5Size = value;
+
+            // 8. Cloud6 Size
+            if (!int.TryParse(txtCloud6Size.Text, out value) || value <= 0)
+            {
+                MessageBox.Show("Cloud6 Size не задан или имеет недопустимое значение", "Create Deliveries", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtCloud6Size.SelectAll();
+                txtCloud6Size.Focus();
+                return null;
+            }
+
+            config.Cloud6Size = value;
+
+            // 9. Cloud7 Size
+            if (!int.TryParse(txtCloud7Size.Text, out value) || value <= 0)
+            {
+                MessageBox.Show("Cloud7 Size не задан или имеет недопустимое значение", "Create Deliveries", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtCloud7Size.SelectAll();
+                txtCloud7Size.Focus();
+                return null;
+            }
+
+            config.Cloud7Size = value;
+
+            // 10. Cloud8 Size
+            if (!int.TryParse(txtCloud8Size.Text, out value) || value <= 0)
+            {
+                MessageBox.Show("Cloud8 Size не задан или имеет недопустимое значение", "Create Deliveries", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtCloud8Size.SelectAll();
+                txtCloud8Size.Focus();
+                return null;
+            }
+
+            config.Cloud8Size = value;
+
+            return config;
         }
     }
 }

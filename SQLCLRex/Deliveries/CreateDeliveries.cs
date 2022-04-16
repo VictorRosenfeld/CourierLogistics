@@ -1595,11 +1595,17 @@
         /// <param name="service_id">ID LogisticsService</param>
         /// <param name="calc_time">Момент времени, на который проводятся расчеты</param>
         /// <returns>0 - отгрузки построены; иначе отгрузки не построены</returns>
-        public static int CreateDeliveriesEx(int service_id, DateTime calc_time, string serverName, string dbName)
+        //public static int CreateDeliveriesEx(int service_id, DateTime calc_time, string serverName, string dbName)
+        public static int CreateDeliveriesEx(CalcConfig config)
         {
             // 1. Инициализация
+            config.StartTime = DateTime.Now;
             int rc = 1;
             int rc1 = 1;
+            int service_id = config.ServiceId;
+            DateTime calc_time = config.CalcTime;
+            string serverName = config.ServerName;
+            string dbName = config.DbName;
 
             try
             {
@@ -1847,6 +1853,9 @@
 
                     if (context.Length < threadCount)
                         threadCount = context.Length;
+
+                    for (int i = 0; i < context.Length; i++ )
+                    { context[i].Config = config; }
 
 #if debug
                 Logger.WriteToLog(25, $"CreateCovers. service_id = {service_id}. Thread context count: {context.Length}. Thread count: {threadCount}", 0);
@@ -2134,6 +2143,8 @@
 #if debug
             Logger.WriteToLog(2, $"<--- CreateCovers. service_id = {service_id}. calc_time = {calc_time: yyyy-MM-dd HH:mm:ss.fff}. rc = {rc}", 0);
 #endif
+                config.ExitCode = rc;
+                config.EndTime = DateTime.Now;
             }
         }
 
@@ -5062,13 +5073,13 @@
                 {
                     startLevel = 4;
                     if (maxOrderCount == 5)
-                    { startOrderCount = 55; }    // 65
+                    { startOrderCount = calcContext.Config.Cloud5Size; }    // 55 - 65
                     else if (maxOrderCount == 6)
-                    { startOrderCount = 45; }    // 56
+                    { startOrderCount = calcContext.Config.Cloud6Size; }    // 45 - 56
                     else if (maxOrderCount == 7)
-                    { startOrderCount = 35; }    // 51
+                    { startOrderCount = calcContext.Config.Cloud7Size; }    // 35 - 51
                     else
-                    { startOrderCount = 30; }    // 48
+                    { startOrderCount = calcContext.Config.Cloud8Size; }    // 30 - 48
                 }
 
                 // 4. Готовим заказы для дальнейшего использования
@@ -5112,7 +5123,7 @@
                         level = startLevel;
                         double[,] geoDist = GeoDistance.CalcDistance(iterationOrders);
                         //rc1 = OrdersCloud.FindCloud(iterationOrders, startOrderCount, 1300, 0.5, geoDist, out threadContextOrders);
-                        rc1 = OrdersCloud.FindCloud(iterationOrders, startOrderCount, 1300, 30, geoDist, out threadContextOrders);
+                        rc1 = OrdersCloud.FindCloud(iterationOrders, startOrderCount, calcContext.Config.CloudRadius, 30, geoDist, out threadContextOrders);
 #if debug
                     Logger.WriteToLog(305, $"CalcThreadEs while 5.1. iterationOrderCount = {iterationOrderCount}, FindCloud.rc = {rc1} Cloud.Orders = {(threadContextOrders == null ? 0 : threadContextOrders.Length)}", 0);
 #endif

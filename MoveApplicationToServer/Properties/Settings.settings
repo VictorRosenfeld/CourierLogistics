@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MoveApplicationToServer.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ServerName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">srv-sql15</Value>
+    </Setting>
+    <Setting Name="DbName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">logisticservice59</Value>
+    </Setting>
+    <Setting Name="ServerFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\LogisticsService\</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

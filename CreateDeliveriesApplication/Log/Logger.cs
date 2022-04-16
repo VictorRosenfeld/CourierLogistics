@@ -1,5 +1,5 @@
 ﻿
-namespace SQLCLRex.Log
+namespace CreateDeliveriesApplication.Log
 {
     using System;
     using System.IO;
@@ -9,7 +9,7 @@ namespace SQLCLRex.Log
     /// </summary>
     public static class Logger
     {
-        private const string LOG_FILE_PATTERN = @"C:\LogisticsService\Log\LS_CLR1_{0}.log";
+        private const string LOG_FILE_PATTERN = @"C:\LogisticsService\Log\LS_App_{0}.log";
 
         /// <summary>
         /// Шаблон сообщения

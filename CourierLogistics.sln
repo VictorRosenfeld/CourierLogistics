@@ -21,6 +21,10 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "YandexGeo", "YandexGeo\Yand
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCLRex", "SQLCLRex\SQLCLRex.csproj", "{6E9C0812-CCA2-426F-96E0-CFD28B72C575}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateDeliveriesApplication", "CreateDeliveriesApplication\CreateDeliveriesApplication.csproj", "{3A7DFAF5-228C-44D6-8ED2-EE8CB8265BA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveApplicationToServer", "MoveApplicationToServer\MoveApplicationToServer.csproj", "{1FC6FBCA-E07E-4013-A28C-F044E4196AC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +71,14 @@ Global
 		{6E9C0812-CCA2-426F-96E0-CFD28B72C575}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E9C0812-CCA2-426F-96E0-CFD28B72C575}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E9C0812-CCA2-426F-96E0-CFD28B72C575}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A7DFAF5-228C-44D6-8ED2-EE8CB8265BA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A7DFAF5-228C-44D6-8ED2-EE8CB8265BA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A7DFAF5-228C-44D6-8ED2-EE8CB8265BA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A7DFAF5-228C-44D6-8ED2-EE8CB8265BA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FC6FBCA-E07E-4013-A28C-F044E4196AC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FC6FBCA-E07E-4013-A28C-F044E4196AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FC6FBCA-E07E-4013-A28C-F044E4196AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FC6FBCA-E07E-4013-A28C-F044E4196AC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

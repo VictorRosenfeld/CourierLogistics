@@ -1,10 +1,10 @@
 
-namespace SQLCLRex.Deliveries
+namespace CreateDeliveriesApplication.Deliveries
 {
-    using SQLCLRex.Couriers;
-    using SQLCLRex.MaxOrdersOfRoute;
-    using SQLCLRex.Orders;
-    using SQLCLRex.Shops;
+    using CreateDeliveriesApplication.Couriers;
+    using CreateDeliveriesApplication.MaxOrdersOfRoute;
+    using CreateDeliveriesApplication.Orders;
+    using CreateDeliveriesApplication.Shops;
     using System;
     using System.Threading;
 
@@ -26,12 +26,12 @@ namespace SQLCLRex.Deliveries
         /// <summary>
         /// Имя сервера
         /// </summary>
-        public string ServerName  { get; private set; }
+        public string ServerName { get; private set; }
 
         /// <summary>
         /// Имя БД
         /// </summary>
-        public string DbName  { get; private set; }
+        public string DbName { get; private set; }
 
         /// <summary>
         /// ID LogisticsService
@@ -57,11 +57,6 @@ namespace SQLCLRex.Deliveries
         /// Курьер, c помощью которого выполняются отгрузки
         /// </summary>
         public Courier ShopCourier { get; private set; }
-
-        ///// <summary>
-        ///// Максимальная длина маршрута для полного перебора
-        ///// </summary>
-        //public int MaxRouteLength { get; set; }
 
         /// <summary>
         /// Ограничения на длину маршрута от числа заказов

@@ -5,6 +5,7 @@ namespace SQLCLR_LogParser
     using System.Diagnostics;
     using System.IO;
     using System.Text;
+    using System.Threading;
     using System.Windows.Forms;
 
     public partial class Form1 : Form
@@ -16,6 +17,18 @@ namespace SQLCLR_LogParser
 
         private void butFormatLog_Click(object sender, EventArgs e)
         {
+            int workerThreads1;
+            int completionPortThreads1;
+            ThreadPool.GetMaxThreads(out workerThreads1, out completionPortThreads1);
+            
+            int workerThreads2;
+            int completionPortThreads2;
+            ThreadPool.GetMinThreads(out workerThreads2, out completionPortThreads2);
+
+            int workerThreads3;
+            int completionPortThreads3;
+            ThreadPool.GetAvailableThreads(out workerThreads3, out completionPortThreads3);
+
             //FormatLogFile(@"C:\T1\SQL_CLR.log");
             ofdSelectLogFile.Title = "Select log file";
             ofdSelectLogFile.Filter = "Log Files(*.log;*.txt)|*.log;*.txt|All files (*.*)|*.*";
