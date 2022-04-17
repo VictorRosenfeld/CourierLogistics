@@ -401,14 +401,13 @@ namespace CreateDeliveriesApplication.Deliveries
                     int errorCount = 0;
                     CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[500000];
                     int deliveryCount = 0;
-
 #if debug
                     Logger.WriteToLog(26, $"CreateCovers. service_id = {service_id}. Thread context count: {context.Length}", 0);
                     int workerThreads, completionPortThreads;
                     ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
-                    Logger.WriteToLog(261, $"CreateCovers. AvailableThreads: workerThreads = {workerThreads}, completionPortThreads = {context.Length}", 0);
+                    Logger.WriteToLog(261, $"CreateCovers. AvailableThreads: workerThreads = {workerThreads}, completionPortThreads = {completionPortThreads}", 0);
                     ThreadPool.GetMaxThreads(out workerThreads, out completionPortThreads);
-                    Logger.WriteToLog(262, $"CreateCovers. GetMaxThreads: workerThreads = {workerThreads}, completionPortThreads = {context.Length}", 0);
+                    Logger.WriteToLog(262, $"CreateCovers. GetMaxThreads: workerThreads = {workerThreads}, completionPortThreads = {completionPortThreads}", 0);
 #endif
 
                     //Thread.BeginThreadAffinity();
@@ -1879,7 +1878,35 @@ namespace CreateDeliveriesApplication.Deliveries
                         int k = i;
                         ThreadContextEx contextEx = new ThreadContextEx(context, syncEvent, null, k, threadCount);
                         allCountextEx[k] = contextEx;
-                        ThreadPool.QueueUserWorkItem(callback, contextEx);
+                        //ThreadPool.QueueUserWorkItem(callback, contextEx);
+                        Thread th;
+                        switch (level)
+                        {
+                            case 1:
+                            case 2:
+                                th  = new Thread(RouteBuilder.BuildEx2);
+                                break;
+                            case 3:
+                                th  = new Thread(RouteBuilder.BuildEx3);
+                                break;
+                            case 4:
+                                th  = new Thread(RouteBuilder.BuildEx4);
+                                break;
+                            case 5:
+                                th  = new Thread(RouteBuilder.BuildEx5);
+                                break;
+                            case 6:
+                                th  = new Thread(RouteBuilder.BuildEx6);
+                                break;
+                            case 7:
+                                th  = new Thread(RouteBuilder.BuildEx7);
+                                break;
+                            //case 8:
+                            default:
+                                th  = new Thread(RouteBuilder.BuildEx8);
+                                break;
+                        }
+                        th.Start(contextEx);
                     }
 
                     for (int i = 0; i < threadCount; i++)
@@ -2467,7 +2494,7 @@ namespace CreateDeliveriesApplication.Deliveries
                     syncEvents = new ManualResetEvent[threadCount];
                     DilateRoutesContext[] threadContext = new DilateRoutesContext[threadCount];
                     //ThreadPool.QueueUserWorkItem(NullThread);
-                    Thread.BeginThreadAffinity();
+                    //Thread.BeginThreadAffinity();
 
                     for (int i = 0; i < threadCount; i++)
                     {
@@ -2506,7 +2533,7 @@ namespace CreateDeliveriesApplication.Deliveries
                             rc1 = threadContext[i].ExitCode;
                         }
                     }
-                    Thread.EndThreadAffinity();
+                    //Thread.EndThreadAffinity();
 
                     syncEvents = null;
 

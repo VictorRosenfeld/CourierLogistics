@@ -5540,7 +5540,7 @@ public partial class StoredProcedures
                 syncEvents = new ManualResetEvent[threadCount];
                 DilateRoutesContext[] threadContext = new DilateRoutesContext[threadCount];
                 //ThreadPool.QueueUserWorkItem(NullThread);
-                Thread.BeginThreadAffinity();
+                //Thread.BeginThreadAffinity();
 
                 for (int i = 0; i < threadCount; i++)
                 {
@@ -5579,7 +5579,7 @@ public partial class StoredProcedures
                         rc1 = threadContext[i].ExitCode;
                     }
                 }
-                Thread.EndThreadAffinity();
+                //Thread.EndThreadAffinity();
 
                 syncEvents = null;
 

@@ -40,7 +40,7 @@ public partial class StoredProcedures
 
             // 3. Формируем аргументы вызывамого процесса
             rc = 3;
-            string args = serverName.Value + " " + dbName.Value + " " + service_id.ToString() + " " + calc_time.Value.ToString();
+            string args = @"""" + serverName.Value + @""" """ + dbName.Value + @""" " + service_id.ToString() + @" """ + calc_time.Value.ToString()+ @"""";
 
             // 4. Запускаем процесс и дожидаемся его завершения
             rc = 4;

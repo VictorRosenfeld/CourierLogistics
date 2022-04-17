@@ -86,10 +86,10 @@ namespace CreateDeliveriesApplication.Deliveries
         {
             CalcTime = DateTime.Now;
             CloudRadius = 1300;
-            Cloud5Size = 55;
-            Cloud6Size = 45;
-            Cloud7Size = 35;
-            Cloud8Size = 30;
+            Cloud5Size = 40;
+            Cloud6Size = 35;
+            Cloud7Size = 30;
+            Cloud8Size = 25;
             CloudDelta = 30;
         }
     }

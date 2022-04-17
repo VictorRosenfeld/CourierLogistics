@@ -5811,7 +5811,7 @@
                     syncEvents = new ManualResetEvent[threadCount];
                     DilateRoutesContext[] threadContext = new DilateRoutesContext[threadCount];
                     //ThreadPool.QueueUserWorkItem(NullThread);
-                    Thread.BeginThreadAffinity();
+                    //Thread.BeginThreadAffinity();
 
                     for (int i = 0; i < threadCount; i++)
                     {
@@ -5850,7 +5850,7 @@
                             rc1 = threadContext[i].ExitCode;
                         }
                     }
-                    Thread.EndThreadAffinity();
+                    //Thread.EndThreadAffinity();
 
                     syncEvents = null;
 

@@ -2,7 +2,6 @@
 namespace CreateDeliveriesApplication.Couriers
 {
     using CreateDeliveriesApplication.Deliveries;
-    using CreateDeliveriesApplication.Log;
     using CreateDeliveriesApplication.Orders;
     using CreateDeliveriesApplication.Shops;
     using System;
