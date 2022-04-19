@@ -17,18 +17,6 @@ namespace SQLCLR_LogParser
 
         private void butFormatLog_Click(object sender, EventArgs e)
         {
-            int workerThreads1;
-            int completionPortThreads1;
-            ThreadPool.GetMaxThreads(out workerThreads1, out completionPortThreads1);
-            
-            int workerThreads2;
-            int completionPortThreads2;
-            ThreadPool.GetMinThreads(out workerThreads2, out completionPortThreads2);
-
-            int workerThreads3;
-            int completionPortThreads3;
-            ThreadPool.GetAvailableThreads(out workerThreads3, out completionPortThreads3);
-
             //FormatLogFile(@"C:\T1\SQL_CLR.log");
             ofdSelectLogFile.Title = "Select log file";
             ofdSelectLogFile.Filter = "Log Files(*.log;*.txt)|*.log;*.txt|All files (*.*)|*.*";
@@ -147,6 +135,27 @@ namespace SQLCLR_LogParser
             {
                 return rc;
             }
+        }
+
+        private void butCreateExcelFile_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ofdSelectLogFile.Title = "Select log file";
+                ofdSelectLogFile.Filter = "Log Files(*.log;*.txt)|*.log;*.txt|All files (*.*)|*.*";
+                ofdSelectLogFile.Multiselect = false;
+                //ofdSelectLogFile.RestoreDirectory = true;
+                ofdSelectLogFile.SupportMultiDottedExtensions = false;
+                ofdSelectLogFile.FileName = "";
+                if (ofdSelectLogFile.ShowDialog(this) == DialogResult.Cancel)
+                    return;
+                CreateExcelChart.Create(ofdSelectLogFile.FileName, int.Parse(txtServiceID.Text));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Create Excel file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
     }
 }
