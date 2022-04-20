@@ -76,7 +76,7 @@
             this.txtServiceID.Name = "txtServiceID";
             this.txtServiceID.Size = new System.Drawing.Size(69, 22);
             this.txtServiceID.TabIndex = 2;
-            this.txtServiceID.Text = "1";
+            this.txtServiceID.Text = "2";
             // 
             // groupBox1
             // 
@@ -98,6 +98,8 @@
             this.Controls.Add(this.butFormatLog);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

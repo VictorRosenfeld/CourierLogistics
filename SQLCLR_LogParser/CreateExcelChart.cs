@@ -32,11 +32,12 @@ namespace SQLCLR_LogParser
                     IXLWorksheet worksheet = workbook.AddWorksheet("Elapsed Time");
                     worksheet.Cell(1, 1).Value = "Time";
                     worksheet.Cell(1, 2).Value = "Elapsed Time";
-                    worksheet.Range(1, 1, 1, 2).Style.Font.Bold = true;
-                    worksheet.Range(1, 1, 1, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    worksheet.Range(1, 1, 1, 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    worksheet.Cell(1, 3).Value = "Orders";
+                    worksheet.Range(1, 1, 1, 3).Style.Font.Bold = true;
+                    worksheet.Range(1, 1, 1, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    worksheet.Range(1, 1, 1, 3).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
-                    worksheet.Range(1, 1, 1, 2).SetAutoFilter();
+                    worksheet.Range(1, 1, 1, 3).SetAutoFilter();
                     worksheet.SheetView.FreezeRows(1);
 
                     // 5. Обрабатываем исходные данные
@@ -88,6 +89,8 @@ namespace SQLCLR_LogParser
                                 //const string shops = "Selected shops: ";
                                 //const string orders = "Selected orders: ";
                                 const string et = "Elapsed Time = ";
+                                const string orders = "orders = ";
+                                // @2022-04-19 16:44:29.110 101 info > lsvH4routes_clr. Service.ID = 2. Deliveries created (CreateDeliveries.rc = 0, orders =  32, Elapsed Time = 56534)
 
                                 switch (message_no)
                                 {
@@ -116,24 +119,39 @@ namespace SQLCLR_LogParser
                                     case "101":
                                         if (GetServiceID(message) == serviceId)
                                         {
+                                            orderCount = -1;
+                                            ipos = message.IndexOf(orders, StringComparison.CurrentCultureIgnoreCase);
+                                            if (iPos > 0)
+                                            {
+                                                int startIndex = ipos + orders.Length;
+                                                int ipos1 = message.IndexOf(',', startIndex);
+                                                if (ipos1 > 0)
+                                                {
+
+                                                    if (int.TryParse(message.Substring(startIndex, ipos1 - startIndex).Trim(), out v))
+                                                    { orderCount = v; }
+                                                }
+                                            }
+
+                                            elapsedTime = -1;
                                             ipos = message.IndexOf(et, StringComparison.CurrentCultureIgnoreCase);
                                             if (ipos > 0)
                                             {
                                                 int startIndex = ipos + et.Length;
                                                 if (int.TryParse(message.Substring(startIndex, message.Length - startIndex - 1).Trim(), out v))
-                                                {
-                                                    elapsedTime = v;
-                                                    row++;
-                                                    worksheet.Cell(row, 1).Value = dateTime.Substring(12, 8);
-                                                    worksheet.Cell(row, 2).Value = elapsedTime;
-                                                    //if (shopCount > 0)
-                                                    //{ worksheet.Cell(row, 3).Value = shopCount;}
-                                                    //if (orderCount > 0)
-                                                    //{ worksheet.Cell(row, 4).Value = orderCount;}
+                                                { elapsedTime = v; }
+                                            }
 
-                                                    //shopCount = 0;
-                                                    //orderCount = 0;
-                                                }
+                                            if (orderCount >= 0 || elapsedTime >= 0)
+                                            {
+                                                row++;
+                                                worksheet.Cell(row, 1).Value = dateTime.Substring(12, 8);
+
+                                                if (elapsedTime >= 0)
+                                                { worksheet.Cell(row, 2).Value = elapsedTime; }
+                                                if (orderCount >= 0)
+                                                { worksheet.Cell(row, 3).Value = orderCount; }
+
                                             }
                                         }
                                         break;

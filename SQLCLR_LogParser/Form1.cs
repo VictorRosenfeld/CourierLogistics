@@ -5,7 +5,6 @@ namespace SQLCLR_LogParser
     using System.Diagnostics;
     using System.IO;
     using System.Text;
-    using System.Threading;
     using System.Windows.Forms;
 
     public partial class Form1 : Form
@@ -156,6 +155,21 @@ namespace SQLCLR_LogParser
                 MessageBox.Show(ex.Message, "Create Excel file", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            txtServiceID.Text = Properties.Settings.Default.ServiceId.ToString();
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            int v;
+            if (int.TryParse(txtServiceID.Text, out v))
+            {
+                Properties.Settings.Default.ServiceId = v;
+                Properties.Settings.Default.Save();
+            }
         }
     }
 }
