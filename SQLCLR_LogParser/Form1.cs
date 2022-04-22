@@ -16,6 +16,13 @@ namespace SQLCLR_LogParser
 
         private void butFormatLog_Click(object sender, EventArgs e)
         {
+
+            //string s1 = "2022-04-22 00:20:51.927";
+            //string s2 = "2022-04-22 00:20:51.000";
+            //DateTime t1 = DateTime.Parse(s1);
+            //DateTime t2 = DateTime.Parse(s2);
+            //double ts = (t1 - t2).TotalMilliseconds;
+
             //FormatLogFile(@"C:\T1\SQL_CLR.log");
             ofdSelectLogFile.Title = "Select log file";
             ofdSelectLogFile.Filter = "Log Files(*.log;*.txt)|*.log;*.txt|All files (*.*)|*.*";
@@ -140,7 +147,7 @@ namespace SQLCLR_LogParser
         {
             try
             {
-                ofdSelectLogFile.Title = "Select log file";
+                ofdSelectLogFile.Title = "Select LS log file";
                 ofdSelectLogFile.Filter = "Log Files(*.log;*.txt)|*.log;*.txt|All files (*.*)|*.*";
                 ofdSelectLogFile.Multiselect = false;
                 //ofdSelectLogFile.RestoreDirectory = true;
@@ -152,7 +159,7 @@ namespace SQLCLR_LogParser
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Create Excel file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Create LS Excel file", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
@@ -170,6 +177,27 @@ namespace SQLCLR_LogParser
                 Properties.Settings.Default.ServiceId = v;
                 Properties.Settings.Default.Save();
             }
+        }
+
+        private void butCreateCmds_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ofdSelectLogFile.Title = "Select S1 log file";
+                ofdSelectLogFile.Filter = "Log Files(*.log;*.txt)|*.log;*.txt|All files (*.*)|*.*";
+                ofdSelectLogFile.Multiselect = false;
+                //ofdSelectLogFile.RestoreDirectory = true;
+                ofdSelectLogFile.SupportMultiDottedExtensions = false;
+                ofdSelectLogFile.FileName = "";
+                if (ofdSelectLogFile.ShowDialog(this) == DialogResult.Cancel)
+                    return;
+                CreateExcelChart.CreateS1(ofdSelectLogFile.FileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Create S1 Excel file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
     }
 }

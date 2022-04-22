@@ -34,6 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txtServiceID = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.butCreateCmds = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,7 +58,7 @@
             this.butCreateExcelFile.Name = "butCreateExcelFile";
             this.butCreateExcelFile.Size = new System.Drawing.Size(149, 49);
             this.butCreateExcelFile.TabIndex = 0;
-            this.butCreateExcelFile.Text = "Create Excel File";
+            this.butCreateExcelFile.Text = "Create LS Excel File";
             this.butCreateExcelFile.UseVisualStyleBackColor = true;
             this.butCreateExcelFile.Click += new System.EventHandler(this.butCreateExcelFile_Click);
             // 
@@ -89,11 +90,22 @@
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             // 
+            // butCreateCmds
+            // 
+            this.butCreateCmds.Location = new System.Drawing.Point(28, 231);
+            this.butCreateCmds.Name = "butCreateCmds";
+            this.butCreateCmds.Size = new System.Drawing.Size(149, 49);
+            this.butCreateCmds.TabIndex = 0;
+            this.butCreateCmds.Text = "Create S1 Excel File";
+            this.butCreateCmds.UseVisualStyleBackColor = true;
+            this.butCreateCmds.Click += new System.EventHandler(this.butCreateCmds_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(377, 267);
+            this.ClientSize = new System.Drawing.Size(377, 401);
+            this.Controls.Add(this.butCreateCmds);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.butFormatLog);
             this.Name = "Form1";
@@ -114,6 +126,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtServiceID;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button butCreateCmds;
     }
 }
 
