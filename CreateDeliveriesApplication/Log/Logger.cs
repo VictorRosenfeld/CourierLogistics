@@ -9,7 +9,7 @@ namespace CreateDeliveriesApplication.Log
     /// </summary>
     public static class Logger
     {
-        private const string LOG_FILE_PATTERN = @"C:\LogisticsService\Log\LS_App_{0}.log";
+        public static string LOG_FILE_PATTERN = @"C:\LogisticsService\Log\LS_App_{0}.log";
 
         /// <summary>
         /// Шаблон сообщения

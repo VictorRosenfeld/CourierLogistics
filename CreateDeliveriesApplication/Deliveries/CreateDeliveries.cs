@@ -135,6 +135,7 @@ namespace CreateDeliveriesApplication.Deliveries
 
             try
             {
+                Logger.LOG_FILE_PATTERN = $@"C:\LogisticsService\Log\LS_App_{service_id}_{{0}}.log";
 #if debug
                 Logger.WriteToLog(1, $"---> CreateCovers. service_id = {service_id}, calc_time = {calc_time: yyyy-MM-dd HH:mm:ss.fff}", 0);
 #endif
