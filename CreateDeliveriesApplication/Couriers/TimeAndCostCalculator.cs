@@ -780,6 +780,184 @@ namespace CreateDeliveriesApplication.Couriers
             }
         }
 
+        /// <summary>
+        /// Расчет времени и стоимости отгрузки - общее время доставки
+        /// </summary>
+        /// <param name="courierType">Параметры курьера</param>
+        /// <param name="nodeInfo">
+        /// nodeInfo[i] - расстояние и время движения от точки i-1 до точки i
+        /// (nodeInfo[0] = (0,0) - соотв. магазину; общее число точек = число заказов + 2)
+        /// </param>
+        /// <param name="totalWeight">Общий вес всех заказов</param>
+        /// <param name="isLoop">true - возврат в магазин; false - без возврата в магазин</param>
+        /// <param name="nodeDeliveryTime">Расчетное время доставки в заданную точку, мин</param>
+        /// <param name="totalDeliveryTime">Суммарное время доставки всех заказов (время от старта до вручения последнего заказа)</param>
+        /// <param name="totalExecutionTime">Общее время отгрузки (при isLoop = false совпадает с nodeDeliveryTime)</param>
+        /// <param name="totalCost">Общая стоимость отгрузки</param>
+        /// <returns>0 - расчет выполнен; иначе - расчет не выполнен</returns>
+        public static int GetTimeAndCost_FullTime(ICourierType courierType, Point[] nodeInfo, double totalWeight, bool isLoop, out double[] nodeDeliveryTime, out double totalDeliveryTime, out double totalExecutionTime, out double totalCost)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            nodeDeliveryTime = null;
+            totalDeliveryTime = 0;
+            totalExecutionTime = 0;
+            totalCost = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 20;
+                if (courierType == null)
+                    return rc;
+                rc = 22;
+                if (totalWeight > courierType.MaxWeight)
+                    return rc;
+                if (nodeInfo == null || nodeInfo.Length < 2)
+                        return rc;
+                int nodeCount = nodeInfo.Length;
+                rc = 23;
+                if (isLoop)
+                {
+                    if (nodeCount < 3)
+                        return rc;
+                    if (nodeCount - 2 > courierType.MaxOrderCount)
+                        return rc;
+                }
+                else
+                {
+                    if (nodeCount - 1 > courierType.MaxOrderCount)
+                        return rc;
+                }
+
+                // 3. Расчитываем время доставки до всех точек доставки
+                rc = 3;
+                nodeDeliveryTime = new double[nodeCount];
+                nodeDeliveryTime[0] = courierType.StartDelay + courierType.GetOrderTime;
+
+                int sumDist = 0;
+
+                for (int i = 1; i < nodeCount; i++)
+                {
+                    sumDist += nodeInfo[i].X;
+                    nodeDeliveryTime[i] = nodeDeliveryTime[i - 1] + courierType.HandInTime + nodeInfo[i].Y / 60.0;
+                }
+
+                // 4. Устанавливаем время выходных параметров total_delivery_time и total_execution_time
+                rc = 4;
+                totalDeliveryTime = nodeDeliveryTime[nodeCount - 2];
+                if (isLoop)
+                {
+                    totalExecutionTime = nodeDeliveryTime[nodeCount - 1];
+                }
+                else
+                {
+                    totalExecutionTime = totalDeliveryTime;
+                    sumDist -= nodeInfo[nodeCount - 1].X;
+                }
+
+                double distance = sumDist / 1000.0;
+                if (distance > courierType.MaxDistance)
+                    return rc;
+
+                // 5. Устанавливаем стоимость
+                rc = 0;
+                totalCost = totalExecutionTime;
+
+                // 6. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Расчет времени и стоимости отгрузки - общая длина доставки
+        /// </summary>
+        /// <param name="courierType">Параметры курьера</param>
+        /// <param name="nodeInfo">
+        /// nodeInfo[i] - расстояние и время движения от точки i-1 до точки i
+        /// (nodeInfo[0] = (0,0) - соотв. магазину; общее число точек = число заказов + 2)
+        /// </param>
+        /// <param name="totalWeight">Общий вес всех заказов</param>
+        /// <param name="isLoop">true - возврат в магазин; false - без возврата в магазин</param>
+        /// <param name="nodeDeliveryTime">Расчетное время доставки в заданную точку, мин</param>
+        /// <param name="totalDeliveryTime">Суммарное время доставки всех заказов (время от старта до вручения последнего заказа)</param>
+        /// <param name="totalExecutionTime">Общее время отгрузки (при isLoop = false совпадает с nodeDeliveryTime)</param>
+        /// <param name="totalCost">Общая стоимость отгрузки</param>
+        /// <returns>0 - расчет выполнен; иначе - расчет не выполнен</returns>
+        public static int GetTimeAndCost_FullDistance(ICourierType courierType, Point[] nodeInfo, double totalWeight, bool isLoop, out double[] nodeDeliveryTime, out double totalDeliveryTime, out double totalExecutionTime, out double totalCost)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            nodeDeliveryTime = null;
+            totalDeliveryTime = 0;
+            totalExecutionTime = 0;
+            totalCost = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 20;
+                if (courierType == null)
+                    return rc;
+                if (nodeInfo == null || nodeInfo.Length < 3)
+                    return rc;
+                rc = 22;
+                if (totalWeight > courierType.MaxWeight)
+                    return rc;
+                int nodeCount = nodeInfo.Length;
+                rc = 23;
+                if (nodeCount - 2 > courierType.MaxOrderCount)
+                    return rc;
+
+                // 3. Расчитываем время доставки до всех точек доставки
+                rc = 3;
+                nodeDeliveryTime = new double[nodeCount];
+                nodeDeliveryTime[0] = courierType.StartDelay + courierType.GetOrderTime;
+
+                int sumDist = 0;
+
+                for (int i = 1; i < nodeCount; i++)
+                {
+                    sumDist += nodeInfo[i].X;
+                    nodeDeliveryTime[i] = nodeDeliveryTime[i - 1] + courierType.HandInTime + nodeInfo[i].Y / 60.0;
+                }
+
+                // 4. Устанавливаем время выходных параметров total_delivery_time и total_execution_time
+                rc = 4;
+                totalDeliveryTime = nodeDeliveryTime[nodeCount - 2];
+                if (isLoop)
+                {
+                    totalExecutionTime = nodeDeliveryTime[nodeCount - 1];
+                }
+                else
+                {
+                    totalExecutionTime = totalDeliveryTime;
+                    sumDist -= nodeInfo[nodeCount - 1].X;
+                }
+
+                double distance = sumDist / 1000.0;
+                if (distance > courierType.MaxDistance)
+                    return rc;
+
+                // 5. Устанавливаем стоимость
+                rc = 0;
+                totalCost = distance;
+
+                // 6. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
         #endregion Calc methods
     }
 }
