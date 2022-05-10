@@ -3,8 +3,6 @@ namespace SQLCLR.ExtraOrders
 {
     using SQLCLR.Orders;
     using System;
-    using System.Collections.Generic;
-    using System.Text;
 
     /// <summary>
     /// Поиск сгустков заказов

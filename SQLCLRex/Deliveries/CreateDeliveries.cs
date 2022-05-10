@@ -5766,7 +5766,7 @@
                     Array.Resize(ref iterDelivery, count);
                 }
 
-                // 4. Опренделяем число потоков для расширения маршрутов
+                // 4. Определяем число потоков для расширения маршрутов
                 rc = 4;
                 count = count * (fromLevel + 1) * (orderCount - fromLevel);
                 int threadCount = (count + 99999) / 100000;

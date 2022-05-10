@@ -149,7 +149,7 @@ public class StoredProcedures
             using (StringReader sr = new StringReader(request.Value))
             { requestArgs = (GeoRequestArgs)serializer.Deserialize(sr); }
 
-            // 4. Строим котексты запросов
+            // 4. Строим контексты запросов
             rc = 4;
             YandexRequestData[] requestData;
             rc1 = GetGeoContext(requestArgs, pair_limit.Value, out requestData);
