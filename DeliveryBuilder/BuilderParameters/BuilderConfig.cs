@@ -148,7 +148,7 @@ namespace DeliveryBuilder.BuilderParameters
         /// Условия старта отгрузок
         /// </summary>
         [XmlElement("delivery_start_condition")]
-        public DeliveryStartCondition delivery_start_condition { get; set; }
+        public DeliveryStartCondition StartCondition { get; set; }
 
         /// <remarks/>
         /// <summary>

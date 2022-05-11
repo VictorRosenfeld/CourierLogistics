@@ -1,5 +1,5 @@
 ﻿
-namespace LogisticsService.Log
+namespace DeliveryBuilder.Log
 {
     using log4net;
     using log4net.Appender;
@@ -78,7 +78,7 @@ namespace LogisticsService.Log
                 // 3.1 PatternLayout
                 rc = 31;
                 PatternLayout patternLayout = new PatternLayout();
-                patternLayout.ConversionPattern = $"@%date{{dd.MM.yy HH:mm:ss}} %property{{{MESSAGE_NUMBER_PROPERTY}}} %-5level > %message%newline";
+                patternLayout.ConversionPattern = $"@%date{{dd.MM.yy HH:mm:ss.fff}} %property{{{MESSAGE_NUMBER_PROPERTY}}} %-5level > %message%newline";
                 patternLayout.ActivateOptions();
 
                 // 3.2 Appender
@@ -91,7 +91,7 @@ namespace LogisticsService.Log
                 appender.MaxSizeRollBackups = savedDays;
                 appender.MaximumFileSize = "300MB";
                 appender.RollingStyle = RollingFileAppender.RollingMode.Date;
-                appender.Name = "CourierLogistics.Logger";
+                appender.Name = "DeliverBuilder.Logger";
                 appender.DatePattern = "_yy-MM-dd";
                 appender.ImmediateFlush = true;
                 appender.StaticLogFileName = false;
@@ -109,8 +109,8 @@ namespace LogisticsService.Log
 
                 // 3.3 Собственно логгер
                 rc = 33;
-                ILogger logger = hierarchy.LoggerFactory.CreateLogger(hierarchy, "myLogger");
-                log = LogManager.GetLogger(hierarchy.Name, "myLogger");
+                ILogger logger = hierarchy.LoggerFactory.CreateLogger(hierarchy, "DeliveryBuilderLogger");
+                log = LogManager.GetLogger(hierarchy.Name, "DeliveryBuilderLogger");
 
                 // 4. Выход - Ok
                 rc = 0;
@@ -175,6 +175,42 @@ namespace LogisticsService.Log
         }
 
         /// <summary>
+        /// Запись в лог
+        /// </summary>
+        /// <param name="message"></param>
+        public static void WriteToLog(int msgNo, MsessageSeverity severity, string message)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (!IsCreated)
+                    return;
+                if (string.IsNullOrWhiteSpace(message))
+                    return;
+
+                // 3. Печатаем сообщение
+                GlobalContext.Properties[MESSAGE_NUMBER_PROPERTY] = msgNo;
+                switch (severity)
+                {
+                    case MsessageSeverity.Info:
+                        log.Info(message);
+                        break;
+                    case MsessageSeverity.Warn:
+                        log.Warn(message);
+                        break;
+                    case MsessageSeverity.Error:
+                        log.Error(message);
+                        break;
+                    default:
+                        log.Info(message);
+                        break;
+                }
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
         /// Чтение файла лога целиком в строку
         /// </summary>
         /// <returns>Прочитанный лог или null</returns>
@@ -199,5 +235,17 @@ namespace LogisticsService.Log
                 return null;
             }
         }
+    }
+
+    /// <summary>
+    /// Типы сообщений
+    /// </summary>
+    public enum MsessageSeverity
+    {
+        Info = 1,
+
+        Warn = 2,
+
+        Error = 3,
     }
 }

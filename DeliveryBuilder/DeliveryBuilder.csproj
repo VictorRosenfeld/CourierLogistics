@@ -52,6 +52,7 @@
     <Compile Include="LogisticsService.cs" />
     <Compile Include="Geo\GeoCache.cs" />
     <Compile Include="Log\Logger.cs" />
+    <Compile Include="Log\Messages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

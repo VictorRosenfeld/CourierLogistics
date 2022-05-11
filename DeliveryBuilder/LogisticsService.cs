@@ -4,9 +4,11 @@ namespace DeliveryBuilder
     using DeliveryBuilder.BuilderParameters;
     using DeliveryBuilder.Db;
     using DeliveryBuilder.Geo;
-    using global::LogisticsService.Log;
+    using DeliveryBuilder.Log;
+    //using global::LogisticsService.Log;
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Reflection;
     using System.Timers;
 
@@ -84,6 +86,7 @@ namespace DeliveryBuilder
             disposedValue = false;
             IsCreated = false;
             LastException = null;
+            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 
             try
             {
@@ -107,7 +110,19 @@ namespace DeliveryBuilder
 
                 // 5. Открываем лог
                 rc = 5;
+                string logFolder = Path.GetDirectoryName(config.LoggerParameters.Filename);
+                if (!Directory.Exists(logFolder))
+                    Directory.CreateDirectory(logFolder);
                 Logger.Create(config.LoggerParameters.Filename, config.LoggerParameters.SaveDays);
+
+                // 6. Выводим сообщение о начале работы
+                rc = 6;
+                Logger.WriteToLog(1, MsessageSeverity.Info, string.Format(Messages.MSG_001, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
+
+                // 7. Проверяем параметры построителя
+                rc = 7;
+                if (!TestBuilderConfig(config))
+                    return rc;
 
 
 
@@ -118,8 +133,49 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
+                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, nameof(this.Create),(ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
+            }
+            finally
+            {
+                // Сообщение о завершении работы
+                Logger.WriteToLog(2, MsessageSeverity.Info, string.Format(Messages.MSG_002, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
+            }
+        }
+
+        private bool TestBuilderConfig(BuilderConfig config)
+        {
+            // 1. Инициализация
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (config == null)
+                {
+                    Logger.WriteToLog(3, MsessageSeverity.Error, Messages.MSG_003);
+                    return false;
+                }
+
+                // 3. Проверка Fuctional Parameters
+                bool passed = false;
+                if (config.Parameters.CourierDeliveryMargin < 0)
+                { Logger.WriteToLog(4, MsessageSeverity.Error, string.Format(Messages.MSG_004, nameof(config.Parameters.CourierDeliveryMargin))); }
+                else if (config.Parameters.TaxiDeliveryMargin < 0)
+                { Logger.WriteToLog(4, MsessageSeverity.Error, string.Format(Messages.MSG_004, nameof(config.Parameters.TaxiDeliveryMargin))); }
+                else
+                { passed = true; }
+
+
+
+                // Выход
+                return passed;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, nameof(this.TestBuilderConfig),(ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                LastException = ex;
+                return false;
             }
         }
 
