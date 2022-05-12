@@ -11,7 +11,12 @@ namespace DeliveryBuilder.Log
         internal const string MSG_668 = "{0}({1})";
 
         internal const string MSG_003 = "Config = null"; 
-        internal const string MSG_004 = "Тэг functional_parameters. Параметр {0} не задан или имеет недопустимое значение"; 
+        internal const string MSG_004 = "Тэг functional_parameters не задан"; 
+        internal const string MSG_005 = "Тэг functional_parameters. Параметр {0} не задан или имеет недопустимое значение"; 
+        internal const string MSG_006 = "Тэг salesman_levels не задан или имеет недопустимые значения"; 
+        internal const string MSG_007 = "Тэг cloud_parameters не задан"; 
+        internal const string MSG_008 = "Тэг cloud_parameters. Параметр {0} не задан или имеет недопустимое значение"; 
+        internal const string MSG_009 = "Тэг service. Параметр {0} не задан или имеет недопустимое значение"; 
 
     }
 }

@@ -49,6 +49,11 @@
     <Compile Include="BuilderParameters\BuilderConfig.cs" />
     <Compile Include="Db\ExternalDb.cs" />
     <Compile Include="Db\LSData.cs" />
+    <Compile Include="Geo\GeoCacheItem.cs" />
+    <Compile Include="Geo\GeoCacheItemInfo.cs" />
+    <Compile Include="Geo\GeoData.cs" />
+    <Compile Include="Geo\GeoYandex.cs" />
+    <Compile Include="Geo\Point.cs" />
     <Compile Include="LogisticsService.cs" />
     <Compile Include="Geo\GeoCache.cs" />
     <Compile Include="Log\Logger.cs" />

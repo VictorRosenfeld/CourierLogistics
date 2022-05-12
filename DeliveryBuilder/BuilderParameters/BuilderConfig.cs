@@ -327,7 +327,7 @@ namespace DeliveryBuilder.BuilderParameters
         /// Timeout для ожидания подключения, сек
         /// </summary>
         [XmlAttribute("connection_timeout")]
-        public int connection_timeout { get; set; }
+        public int ConnectionTimeout { get; set; }
 
         /// <summary>
         /// Параметры службы CmdService

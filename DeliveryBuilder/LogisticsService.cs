@@ -5,7 +5,6 @@ namespace DeliveryBuilder
     using DeliveryBuilder.Db;
     using DeliveryBuilder.Geo;
     using DeliveryBuilder.Log;
-    //using global::LogisticsService.Log;
     using System;
     using System.Diagnostics;
     using System.IO;
@@ -110,10 +109,20 @@ namespace DeliveryBuilder
 
                 // 5. Открываем лог
                 rc = 5;
-                string logFolder = Path.GetDirectoryName(config.LoggerParameters.Filename);
-                if (!Directory.Exists(logFolder))
-                    Directory.CreateDirectory(logFolder);
-                Logger.Create(config.LoggerParameters.Filename, config.LoggerParameters.SaveDays);
+                if (config.LoggerParameters != null && !string.IsNullOrWhiteSpace(config.LoggerParameters.Filename))
+                {
+                    string logFolder = Path.GetDirectoryName(config.LoggerParameters.Filename);
+                    if (!Directory.Exists(logFolder))
+                        Directory.CreateDirectory(logFolder);
+                    Logger.Create(config.LoggerParameters.Filename, config.LoggerParameters.SaveDays);
+                }
+                else
+                {
+                    string filename = Path.GetFileName(fileVersionInfo.FileName);
+                    filename = Path.ChangeExtension(filename, ".log");
+                    filename = Path.Combine(Path.GetDirectoryName(fileVersionInfo.FileName), filename);
+                    Logger.Create(filename, 7);
+                }
 
                 // 6. Выводим сообщение о начале работы
                 rc = 6;
@@ -124,6 +133,10 @@ namespace DeliveryBuilder
                 if (!TestBuilderConfig(config))
                     return rc;
 
+                // 8. Сздаём гео-кэш
+                rc = 8;
+
+
 
 
                 // Выход - Ok
@@ -133,7 +146,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, nameof(this.Create),(ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
             }
@@ -144,10 +157,15 @@ namespace DeliveryBuilder
             }
         }
 
+        /// <summary>
+        /// Проверка конфига
+        /// </summary>
+        /// <param name="config">Конфиг</param>
+        /// <returns>true - конфиг проверен; false - конфиг содержит ошибки</returns>
         private bool TestBuilderConfig(BuilderConfig config)
         {
             // 1. Инициализация
-
+             
             try
             {
                 // 2. Проверяем исходные данные
@@ -159,16 +177,130 @@ namespace DeliveryBuilder
 
                 // 3. Проверка Fuctional Parameters
                 bool passed = false;
-                if (config.Parameters.CourierDeliveryMargin < 0)
-                { Logger.WriteToLog(4, MsessageSeverity.Error, string.Format(Messages.MSG_004, nameof(config.Parameters.CourierDeliveryMargin))); }
+                if (config.Parameters == null)
+                { Logger.WriteToLog(4, MsessageSeverity.Error, Messages.MSG_004); }
+                else if (config.Parameters.CourierDeliveryMargin < 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.CourierDeliveryMargin))); }
                 else if (config.Parameters.TaxiDeliveryMargin < 0)
-                { Logger.WriteToLog(4, MsessageSeverity.Error, string.Format(Messages.MSG_004, nameof(config.Parameters.TaxiDeliveryMargin))); }
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.TaxiDeliveryMargin))); }
+                else if (config.Parameters.СheckingMargin < 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.СheckingMargin))); }
+                else if (config.Parameters.TickInterval < 50)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.TickInterval))); }
+                else if (config.Parameters.HeartbeatInterval <= 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.HeartbeatInterval))); }
+                else if (config.Parameters.RecalcInterval <= 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.RecalcInterval))); }
+                else if (config.Parameters.QueueInterval <= 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.QueueInterval))); }
+                else if (config.Parameters.QueueCatchingInterval < 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.QueueCatchingInterval))); }
+                else if (config.Parameters.GeoCache == null)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache))); }
+                else if (config.Parameters.GeoCache.Capacity < 100)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache.Capacity))); }
+                else if (config.Parameters.GeoCache.SavingInterval < 10)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache.SavingInterval))); }
+                else if (config.Parameters.GeoCache.CheckInterval <= 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache.CheckInterval))); }
+                else if (config.Parameters.GeoYandex == null)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.GeoYandex.ApiKey))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.ApiKey))); }
+                else if (config.Parameters.GeoYandex.CyclingRatio <= 0 || config.Parameters.GeoYandex.CyclingRatio > 1)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.CyclingRatio))); }
+                else if (config.Parameters.GeoYandex.Timeout <= 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.Timeout))); }
+                else if (config.Parameters.GeoYandex.TypeNames == null || config.Parameters.GeoYandex.TypeNames.Length <= 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.TypeNames))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.GeoYandex.Url))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.Url))); }
+                else if (config.Parameters.StartCondition == null)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.StartCondition))); }
+                else if (config.Parameters.ExternalDb == null)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.СonnectionString))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.СonnectionString))); }
+                else if (config.Parameters.ExternalDb.ConnectionTimeout <= 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.ConnectionTimeout))); }
+                else if (config.Parameters.ExternalDb.CmdService == null)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.Cmd1MessageType))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Cmd1MessageType))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.Cmd2MessageType))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Cmd2MessageType))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.Cmd3MessageType))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Cmd3MessageType))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.DataMessageType))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.DataMessageType))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.HeartbeatMessageType))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.HeartbeatMessageType))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.Name))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Name))); }
+                else if (config.Parameters.ExternalDb.DataService == null)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.DataService.CourierMesageType))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.CourierMesageType))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.DataService.OrderMesageType))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.OrderMesageType))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.DataService.QueueName))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.QueueName))); }
+                else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.DataService.ShopMesageType))
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.ShopMesageType))); }
+                else if (config.Parameters.ExternalDb.DataService.ReceiveTimeout <= 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.ReceiveTimeout))); }
                 else
                 { passed = true; }
 
+                if (!passed)
+                    return false;
 
+                // 4. Проверка Salesman Levels
+                passed = true;
 
-                // Выход
+                if (config.SalesmanLevels == null || config.SalesmanLevels.Length <= 0)
+                {
+                    Logger.WriteToLog(6, MsessageSeverity.Error, Messages.MSG_006);
+                    passed = false;
+                }
+                else
+                {
+                    foreach (var slevel in config.SalesmanLevels)
+                    {
+                        if (slevel.Level <= 0 || slevel.Orders <= 0)
+                        {
+                            Logger.WriteToLog(6, MsessageSeverity.Error, Messages.MSG_006);
+                            passed = false;
+                        }
+                    }
+                }
+
+                if (!passed)
+                    return false;
+
+                // 5. Проверка Cloud Parameters
+                passed = false;
+
+                if (config.Cloud == null)
+                { Logger.WriteToLog(7, MsessageSeverity.Error, Messages.MSG_007);}
+                else if (config.Cloud.Delta < 0)
+                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Delta))); }
+                else if (config.Cloud.Radius <= 0)
+                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Radius))); }
+                else if (config.Cloud.Size5 <= 0)
+                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size5))); }
+                else if (config.Cloud.Size6 <= 0)
+                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size6))); }
+                else if (config.Cloud.Size7 <= 0)
+                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size7))); }
+                else if (config.Cloud.Size8 <= 0)
+                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size8))); }
+                else if (string.IsNullOrWhiteSpace(config.GroupId))
+                { Logger.WriteToLog(9, MsessageSeverity.Error, string.Format(Messages.MSG_009, nameof(config.GroupId)))}
+                else
+                { passed = true; }
+
+                // 6. Выход
                 return passed;
             }
             catch (Exception ex)
@@ -205,8 +337,6 @@ namespace DeliveryBuilder
             //    if (isCatched)
             //        syncMutex.ReleaseMutex();
             }
-
-
 
         #region IDisposable Support
 
