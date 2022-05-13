@@ -75,7 +75,6 @@ namespace DeliveryBuilder.BuilderParameters
     [XmlType(AnonymousType = true)]
     public class FunctionalParameters
     {
-
         /// <summary>
         /// Отступ от максимального времени старта отгрузки
         /// с доставкой вовремя для курьера, мин
@@ -142,7 +141,7 @@ namespace DeliveryBuilder.BuilderParameters
         /// Параметры запроса гео-данных Yandex
         /// </summary>
         [XmlElement("geo_yandex")]
-        public GeoYandexParaeters GeoYandex { get; set; }
+        public GeoYandexParameters GeoYandex { get; set; }
 
         /// <summary>
         /// Условия старта отгрузок
@@ -227,7 +226,7 @@ namespace DeliveryBuilder.BuilderParameters
     [Serializable()]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true)]
-    public class GeoYandexParaeters
+    public class GeoYandexParameters
     {
         /// <summary>
         /// Соответствия типов способов доставки типам Yandex
@@ -236,10 +235,22 @@ namespace DeliveryBuilder.BuilderParameters
         public YandexTypeName[] TypeNames { get; set; }
 
         /// <summary>
+        /// Кличество способов передвижеия Yandex
+        /// </summary>
+        [XmlIgnore()]
+        public int TypeNameCount => (TypeNames == null ? 0 : TypeNames.Length);
+
+        /// <summary>
         /// GET-запрос к Yandex
         /// </summary>
         [XmlAttribute("url")]
         public string Url { get; set; }
+
+        /// <summary>
+        /// Предельное число пар точек в одном запросе
+        /// </summary>
+        [XmlAttribute("pair_limit")]
+        public int PairLimit { get; set; }
 
         /// <summary>
         /// API Key
@@ -258,7 +269,7 @@ namespace DeliveryBuilder.BuilderParameters
         /// велокурьера из времени пешего курьера
         /// </summary>
         [XmlAttribute("cycling_ratio")]
-        public decimal CyclingRatio { get; set; }
+        public double CyclingRatio { get; set; }
     }
 
     /// <summary>

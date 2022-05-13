@@ -215,6 +215,8 @@ namespace DeliveryBuilder
                 { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.TypeNames))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.GeoYandex.Url))
                 { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.Url))); }
+                else if (config.Parameters.GeoYandex.PairLimit <= 0)
+                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.PairLimit))); }
                 else if (config.Parameters.StartCondition == null)
                 { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.StartCondition))); }
                 else if (config.Parameters.ExternalDb == null)
@@ -296,7 +298,7 @@ namespace DeliveryBuilder
                 else if (config.Cloud.Size8 <= 0)
                 { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size8))); }
                 else if (string.IsNullOrWhiteSpace(config.GroupId))
-                { Logger.WriteToLog(9, MsessageSeverity.Error, string.Format(Messages.MSG_009, nameof(config.GroupId)))}
+                { Logger.WriteToLog(9, MsessageSeverity.Error, string.Format(Messages.MSG_009, nameof(config.GroupId))); }
                 else
                 { passed = true; }
 

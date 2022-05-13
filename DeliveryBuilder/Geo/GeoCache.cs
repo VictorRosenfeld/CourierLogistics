@@ -64,6 +64,12 @@ namespace DeliveryBuilder.Geo
         /// </summary>
         public Dictionary<ulong, GeoCacheItem>[] VehicleGeoData => vehicleGeoData;
 
+        /// <summary>
+        /// Создание экземпляра гео-кэша
+        /// </summary>
+        /// <param name="parameters">Параметры кэша</param>
+        /// <param name="vehicleTypeCount">Количество способов передвижения в гео-кэше</param>
+        /// <returns></returns>
         public int Create(GeoCacheParameters parameters, int vehicleTypeCount)
         {
             // 1. Иициализация
@@ -111,6 +117,19 @@ namespace DeliveryBuilder.Geo
                 Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoCache)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
+        }
+
+        /// <summary>
+        /// Округление координат до 4-х знаков после запятой 
+        /// </summary>
+        /// <param name="srcLatitude">Исходная широта</param>
+        /// <param name="srcLongitude">Исходная долгота</param>
+        /// <param name="rndLatitude">Округленная широта</param>
+        /// <param name="rndLongitude">Округленная долгота</param>
+        public static void RoundCoordinate(double srcLatitude, double srcLongitude, out double rndLatitude, out double rndLongitude)
+        {
+            rndLatitude = Math.Round(srcLatitude, 4);
+            rndLongitude = Math.Round(srcLongitude, 4);
         }
 
         /// <summary>
@@ -330,6 +349,120 @@ namespace DeliveryBuilder.Geo
                 LastException = ex;
                 Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoCache)}.{nameof(this.GetPointsDataTable)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
+            }
+        }
+
+        /// <summary>
+        /// Сохранение данных в гео-кэше
+        /// </summary>
+        /// <param name="timeReceived">Временная ометка</param>
+        /// <param name="latitude">Широта</param>
+        /// <param name="longitude">Долгота</param>
+        /// <param name="vehicleTypeIndex">Идекс способа передвижения</param>
+        /// <param name="dataTable">Таблица с гео-данными</param>
+        /// <returns>0 - данные сохранены; иначе - данные не сохранены</returns>
+        public int PutPointsDataTable(DateTime timeReceived, double[] latitude, double[] longitude, int vehicleTypeIndex, Point[,] dataTable)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            dataTable = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsCreated)
+                    return rc;
+                if (vehicleTypeIndex < 0 || vehicleTypeIndex >= vehicleGeoData.Length)
+                    return rc;
+                if (latitude == null || latitude.Length <= 0)
+                    return rc;
+                if (longitude == null || longitude.Length != latitude.Length)
+                    return rc;
+
+                // 3. Строим hash для координат
+                rc = 3;
+                int n = latitude.Length;
+                uint[] pointHash = new uint[n];
+
+                for (int i = 0; i < n; i++)
+                {
+                    pointHash[i] = GetCoordinateHash(latitude[i], longitude[i]);
+                }
+
+                // 4. Сохраняем переданные данные
+                rc = 4;
+                dataTable = new Point[n, n];
+                Dictionary<ulong, GeoCacheItem> vehicleData = vehicleGeoData[vehicleTypeIndex];
+
+                for (int i = 0; i < n; i++)
+                {
+                    uint hash1 = pointHash[i];
+
+                    for (int j = i + 1; j < n; j++)
+                    {
+                        uint hash2 = pointHash[j];
+                        if (hash1 != hash2)
+                        {
+                            Point pt = dataTable[i, j];
+                            if (pt.X >= 0)
+                            {
+                                GeoCacheItem item;
+                                ulong key = GetKey(hash1, hash2);
+                                if (vehicleData.TryGetValue(key, out item))
+                                {
+                                    item.SetData(timeReceived, pt.X, pt.Y);
+                                }
+                                else
+                                {
+                                    vehicleData.Add(key, new GeoCacheItem(timeReceived, pt.X, pt.Y));
+                                }
+                            }
+
+                            pt = dataTable[j, i];
+                            if (pt.X >= 0)
+                            {
+                                GeoCacheItem item;
+                                ulong key = GetKey(hash2, hash1);
+                                if (vehicleData.TryGetValue(key, out item))
+                                {
+                                    item.SetData(timeReceived, pt.X, pt.Y);
+                                }
+                                else
+                                {
+                                    vehicleData.Add(key, new GeoCacheItem(timeReceived, pt.X, pt.Y));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 5. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                LastException = ex;
+                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoCache)}.{nameof(this.GetPointsDataTable)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Кличество элементов в гео-кэше
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                if (!IsCreated || vehicleGeoData == null)
+                    return 0;
+                int count = 0;
+                for (int i = 0; i < vehicleGeoData.Length; i++)
+                { count += vehicleGeoData[i].Count; }
+
+                return count;
             }
         }
     }

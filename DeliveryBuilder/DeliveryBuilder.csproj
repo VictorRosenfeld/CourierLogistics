@@ -52,8 +52,15 @@
     <Compile Include="Geo\GeoCacheItem.cs" />
     <Compile Include="Geo\GeoCacheItemInfo.cs" />
     <Compile Include="Geo\GeoData.cs" />
-    <Compile Include="Geo\GeoYandex.cs" />
+    <Compile Include="Geo\GeoIterationData.cs" />
+    <Compile Include="Geo\GeoPoint.cs" />
+    <Compile Include="Geo\Yandex\GeoYandexThreadContext.cs" />
+    <Compile Include="Geo\Yandex\GeoYandex.cs" />
+    <Compile Include="Geo\Yandex\GeoYandexRequest.cs" />
     <Compile Include="Geo\Point.cs" />
+    <Compile Include="Geo\Yandex\GeoYandexReqestData.cs" />
+    <Compile Include="Geo\Yandex\GeoYandexResponseItem.cs" />
+    <Compile Include="Geo\Yandex\GeoYandexResponseParser.cs" />
     <Compile Include="LogisticsService.cs" />
     <Compile Include="Geo\GeoCache.cs" />
     <Compile Include="Log\Logger.cs" />
