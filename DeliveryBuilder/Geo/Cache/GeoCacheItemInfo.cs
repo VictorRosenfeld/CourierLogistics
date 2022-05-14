@@ -1,5 +1,5 @@
 ﻿
-namespace DeliveryBuilder.Geo
+namespace DeliveryBuilder.Geo.Cache
 {
     /// <summary>
     /// Идеификатор элемента кэша

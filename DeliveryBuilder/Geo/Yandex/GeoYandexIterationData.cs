@@ -4,7 +4,7 @@ namespace DeliveryBuilder.Geo
     /// <summary>
     /// Параметры итерации построения GeoContext
     /// </summary>
-    public class GeoIterationData
+    public class GeoYandexIterationData
     {
         /// <summary>
         /// Индекс первой точки исходного интервала
@@ -33,7 +33,7 @@ namespace DeliveryBuilder.Geo
         /// <param name="originRemainder">Количество точек в исходном интервале</param>
         /// <param name="destinationStartIndex">Индекс первой точки интервала назначения</param>
         /// <param name="destinationRemainder">Количество точек в интервале назначения</param>
-        public GeoIterationData(int originStartIndex, int originRemainder, int destinationStartIndex, int destinationRemainder)
+        public GeoYandexIterationData(int originStartIndex, int originRemainder, int destinationStartIndex, int destinationRemainder)
         {
             OriginStartIndex = originStartIndex;
             OriginRemainder = originRemainder;

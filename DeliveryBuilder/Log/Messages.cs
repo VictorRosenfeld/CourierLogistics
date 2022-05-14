@@ -18,5 +18,11 @@ namespace DeliveryBuilder.Log
         internal const string MSG_008 = "Тэг cloud_parameters. Параметр {0} не задан или имеет недопустимое значение"; 
         internal const string MSG_009 = "Тэг service. Параметр {0} не задан или имеет недопустимое значение"; 
 
+        internal const string MSG_010 = @"Тэг <type_name name=""walking"" не найден"; 
+        internal const string MSG_011 = @"Тэг <type_name name=""cycling"" не найден"; 
+        internal const string MSG_012 = @"Тэг <type_name name=""driving"" не найден"; 
+        internal const string MSG_013 = @"Тэг <type_name id=""{0}"" не найден"; 
+
+
     }
 }

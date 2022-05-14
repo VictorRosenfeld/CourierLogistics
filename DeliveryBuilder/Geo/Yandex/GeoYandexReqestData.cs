@@ -4,7 +4,7 @@ namespace DeliveryBuilder.Geo.Yandex
     /// <summary>
     /// Контекст одного запроса гео-данных Yandex
     /// </summary>
-    public class YandexRequestData
+    public class GeoYandexRequestData
     {
         #region Координаты исходных точек запроса
 
@@ -82,7 +82,7 @@ namespace DeliveryBuilder.Geo.Yandex
         /// <param name="destinationLength">Длина интервала назначения</param>
         /// <param name="modes">Способы передвижения</param>
         /// <param name="geoData">Попарные гео-данные результата (размерность Origins.Length x Destinations.Length x Modes.Length)</param>
-        public YandexRequestData(GeoPoint[] origins, int startOriginIndex, int originLength,
+        public GeoYandexRequestData(GeoPoint[] origins, int startOriginIndex, int originLength,
                           GeoPoint[] destinations, int startDestinatioIndex, int destinationLength,
                           string[] modes, Point[,,] geoData)
         {

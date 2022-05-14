@@ -172,7 +172,7 @@ namespace DeliveryBuilder.Geo.Yandex
 
                 // 4. Строим контексты запросов
                 rc = 4;
-                YandexRequestData[] requestData;
+                GeoYandexRequestData[] requestData;
                 rc1 = GetGeoContext(request, pairLimit, out requestData);
                 if (rc1 != 0)
                     return rc = 10000 * rc + rc1;
@@ -260,7 +260,7 @@ namespace DeliveryBuilder.Geo.Yandex
         /// <param name="pairLimit">Максимальное количество пар в одном запросе</param>
         /// <param name="geoContext">Результат - контексты запросов</param>
         /// <returns>0 - контексты построены; контексты не построены</returns>
-        public static int GetGeoContext(GeoYandexRequest requestArgs, int pairLimit, out YandexRequestData[] geoContext)
+        public static int GetGeoContext(GeoYandexRequest requestArgs, int pairLimit, out GeoYandexRequestData[] geoContext)
         {
             // 1. Инициализация
             int rc = 1;
@@ -295,7 +295,7 @@ namespace DeliveryBuilder.Geo.Yandex
 
                 if (originCount * destinationCount <= pairLimit)
                 {
-                    geoContext = new YandexRequestData[] { new YandexRequestData(origins, 0, originCount, destinations, 0, destinationCount, modes, geoData) };
+                    geoContext = new GeoYandexRequestData[] { new GeoYandexRequestData(origins, 0, originCount, destinations, 0, destinationCount, modes, geoData) };
                     return rc = 0;
                 }
                 else if (originCount * destinationCount <= pairLimit2)
@@ -303,25 +303,25 @@ namespace DeliveryBuilder.Geo.Yandex
                     if ((originCount % 2) == 0)
                     {
                         int length = originCount / 2;
-                        geoContext = new YandexRequestData[] {
-                        new YandexRequestData(origins, 0, length, destinations, 0, destinationCount, modes, geoData),
-                        new YandexRequestData(origins, length, originCount - length, destinations, 0, destinationCount, modes, geoData)
+                        geoContext = new GeoYandexRequestData[] {
+                        new GeoYandexRequestData(origins, 0, length, destinations, 0, destinationCount, modes, geoData),
+                        new GeoYandexRequestData(origins, length, originCount - length, destinations, 0, destinationCount, modes, geoData)
                         };
                     }
                     else if ((destinationCount % 2) == 0)
                     {
                         int length = destinationCount / 2;
-                        geoContext = new YandexRequestData[] {
-                        new YandexRequestData(origins, 0, originCount, destinations, 0, length, modes, geoData),
-                        new YandexRequestData(origins, 0, originCount, destinations, length, destinationCount - length, modes, geoData)
+                        geoContext = new GeoYandexRequestData[] {
+                        new GeoYandexRequestData(origins, 0, originCount, destinations, 0, length, modes, geoData),
+                        new GeoYandexRequestData(origins, 0, originCount, destinations, length, destinationCount - length, modes, geoData)
                         };
                     }
                     else
                     {
                         int length = originCount / 2;
-                        geoContext = new YandexRequestData[] {
-                        new YandexRequestData(origins, 0, length, destinations, 0, destinationCount, modes, geoData),
-                        new YandexRequestData(origins, length, originCount - length, destinations, 0, destinationCount, modes, geoData)
+                        geoContext = new GeoYandexRequestData[] {
+                        new GeoYandexRequestData(origins, 0, length, destinations, 0, destinationCount, modes, geoData),
+                        new GeoYandexRequestData(origins, length, originCount - length, destinations, 0, destinationCount, modes, geoData)
                         };
                     }
 
@@ -329,14 +329,14 @@ namespace DeliveryBuilder.Geo.Yandex
                 }
                 else if (pairLimit == 1)
                 {
-                    geoContext = new YandexRequestData[originCount * destinationCount];
+                    geoContext = new GeoYandexRequestData[originCount * destinationCount];
                     int cnt = 0;
 
                     for (int i = 0; i < originCount; i++)
                     {
                         for (int j = 0; j < destinationCount; j++)
                         {
-                            geoContext[cnt++] = new YandexRequestData(origins, i, 1, destinations, j, 1, modes, geoData);
+                            geoContext[cnt++] = new GeoYandexRequestData(origins, i, 1, destinations, j, 1, modes, geoData);
                         }
                     }
 
@@ -344,14 +344,14 @@ namespace DeliveryBuilder.Geo.Yandex
                 }
                 else if (pairLimit == 2)
                 {
-                    geoContext = new YandexRequestData[(originCount * destinationCount + 1) / 2];
+                    geoContext = new GeoYandexRequestData[(originCount * destinationCount + 1) / 2];
                     int cnt = 0;
 
                     for (int i = 0; i < originCount; i++)
                     {
                         for (int j = 0; j < destinationCount - 1; j += 2)
                         {
-                            geoContext[cnt++] = new YandexRequestData(origins, i, 1, destinations, j, 2, modes, geoData);
+                            geoContext[cnt++] = new GeoYandexRequestData(origins, i, 1, destinations, j, 2, modes, geoData);
                         }
                     }
 
@@ -359,12 +359,12 @@ namespace DeliveryBuilder.Geo.Yandex
                     {
                         for (int i = 0; i < originCount - 1; i += 2)
                         {
-                            geoContext[cnt++] = new YandexRequestData(origins, i, 2, destinations, destinationCount - 1, 1, modes, geoData);
+                            geoContext[cnt++] = new GeoYandexRequestData(origins, i, 2, destinations, destinationCount - 1, 1, modes, geoData);
                         }
 
                         if ((originCount % 2) != 0)
                         {
-                            geoContext[cnt++] = new YandexRequestData(origins, originCount - 1, 1, destinations, destinationCount - 1, 1, modes, geoData);
+                            geoContext[cnt++] = new GeoYandexRequestData(origins, originCount - 1, 1, destinations, destinationCount - 1, 1, modes, geoData);
                         }
                     }
 
@@ -374,7 +374,7 @@ namespace DeliveryBuilder.Geo.Yandex
                 // 7. Выделяем память под результат
                 rc = 7;
                 int size = (originCount * destinationCount + pairLimit - 1) / pairLimit + 2;
-                YandexRequestData[] result = new YandexRequestData[size];
+                GeoYandexRequestData[] result = new GeoYandexRequestData[size];
                 int count = 0;
 
                 // 8. Делим destination-точки на группы по pairLimit точек + остаток (от 0 до pairLimit - 1);
@@ -396,7 +396,7 @@ namespace DeliveryBuilder.Geo.Yandex
                     {
                         for (int j = 0; j < lim; j += pairLimit)
                         {
-                            result[count++] = new YandexRequestData(origins, i, 1, destinations, j, pairLimit, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, i, 1, destinations, j, pairLimit, modes, geoData);
                         }
                     }
                 }
@@ -429,7 +429,7 @@ namespace DeliveryBuilder.Geo.Yandex
                     {
                         for (int j = 0; j < lim; j += pairLimit)
                         {
-                            result[count++] = new YandexRequestData(origins, j, pairLimit, destinations, i, 1, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, j, pairLimit, destinations, i, 1, modes, geoData);
                         }
                     }
                 }
@@ -454,15 +454,15 @@ namespace DeliveryBuilder.Geo.Yandex
 
                 // 11. Цикл дальнейшего построения
                 rc = 11;
-                GeoIterationData[] iterationData = new GeoIterationData[originRemainder * destinationRemainder];
-                iterationData[0] = new GeoIterationData(originStartIndex, originRemainder, destinationStartIndex, destinationRemainder);
+                GeoYandexIterationData[] iterationData = new GeoYandexIterationData[originRemainder * destinationRemainder];
+                iterationData[0] = new GeoYandexIterationData(originStartIndex, originRemainder, destinationStartIndex, destinationRemainder);
                 int iterDataCount = 1;
 
                 while (iterDataCount > 0)
                 {
                     // 11.0 Извлекаем параметры для очередной итерации
                     rc = 110;
-                    GeoIterationData data = iterationData[--iterDataCount];
+                    GeoYandexIterationData data = iterationData[--iterDataCount];
                     originRemainder = data.OriginRemainder;
                     destinationRemainder = data.DestinationRemainder;
                     if (originRemainder <= 0 || destinationRemainder <= 0)
@@ -476,7 +476,7 @@ namespace DeliveryBuilder.Geo.Yandex
 
                     if (size <= pairLimit)
                     {
-                        result[count++] = new YandexRequestData(origins, originStartIndex, originRemainder, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                        result[count++] = new GeoYandexRequestData(origins, originStartIndex, originRemainder, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
                         continue;
                     }
                     else if (size <= pairLimit2)
@@ -484,20 +484,20 @@ namespace DeliveryBuilder.Geo.Yandex
                         if ((originRemainder % 2) == 0)
                         {
                             int length = originRemainder / 2;
-                            result[count++] = new YandexRequestData(origins, originStartIndex, length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
-                            result[count++] = new YandexRequestData(origins, originStartIndex + length, originRemainder - length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex, length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex + length, originRemainder - length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
                         }
                         else if ((destinationCount % 2) == 0)
                         {
                             int length = destinationRemainder / 2;
-                            result[count++] = new YandexRequestData(origins, originStartIndex, originRemainder, destinations, destinationStartIndex, length, modes, geoData);
-                            result[count++] = new YandexRequestData(origins, originStartIndex, originRemainder, destinations, destinationStartIndex + length, destinationRemainder - length, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex, originRemainder, destinations, destinationStartIndex, length, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex, originRemainder, destinations, destinationStartIndex + length, destinationRemainder - length, modes, geoData);
                         }
                         else
                         {
                             int length = originRemainder / 2;
-                            result[count++] = new YandexRequestData(origins, originStartIndex, length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
-                            result[count++] = new YandexRequestData(origins, originStartIndex + length, originRemainder - length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex, length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex + length, originRemainder - length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
                         }
 
                         continue;
@@ -529,7 +529,7 @@ namespace DeliveryBuilder.Geo.Yandex
                                 {
                                     for (int k = destinationStartIndex; k < destinationStartIndex + destinationRemainder; k += y)
                                     {
-                                        result[count++] = new YandexRequestData(origins, j, x, destinations, k, y, modes, geoData);
+                                        result[count++] = new GeoYandexRequestData(origins, j, x, destinations, k, y, modes, geoData);
                                     }
                                 }
 
@@ -541,7 +541,7 @@ namespace DeliveryBuilder.Geo.Yandex
                                 {
                                     for (int k = destinationStartIndex; k < destinationStartIndex + destinationRemainder; k += x)
                                     {
-                                        result[count++] = new YandexRequestData(origins, j, y, destinations, k, x, modes, geoData);
+                                        result[count++] = new GeoYandexRequestData(origins, j, y, destinations, k, x, modes, geoData);
                                     }
                                 }
 
@@ -684,7 +684,7 @@ namespace DeliveryBuilder.Geo.Yandex
                         {
                             for (int j = destinationStartIndex; j < destinatioEndIndex; j += minY)
                             {
-                                result[count++] = new YandexRequestData(origins, i, minX, destinations, j, minY, modes, geoData);
+                                result[count++] = new GeoYandexRequestData(origins, i, minX, destinations, j, minY, modes, geoData);
                             }
                         }
 
@@ -698,7 +698,7 @@ namespace DeliveryBuilder.Geo.Yandex
                                 // originReminder = n1 * x + r1  --> r2
                                 int destinationStartIndex1 = destinationStartIndex + n2 * minY;
                                 int destinationRemainder1 = r2;
-                                iterationData[iterDataCount++] = new GeoIterationData(originStartIndex, originRemainder, destinationStartIndex1, destinationRemainder1);
+                                iterationData[iterDataCount++] = new GeoYandexIterationData(originStartIndex, originRemainder, destinationStartIndex1, destinationRemainder1);
                             }
 
                             if (r1 > 0)
@@ -707,7 +707,7 @@ namespace DeliveryBuilder.Geo.Yandex
                                 int originStartIndex1 = originStartIndex + n1 * minX;
                                 int originRemainder1 = r1;
                                 int destinationRemainder2 = n2 * minY;
-                                iterationData[iterDataCount++] = new GeoIterationData(originStartIndex1, originRemainder1, destinationStartIndex, destinationRemainder2);
+                                iterationData[iterDataCount++] = new GeoYandexIterationData(originStartIndex1, originRemainder1, destinationStartIndex, destinationRemainder2);
                             }
                         }
                         else
@@ -721,7 +721,7 @@ namespace DeliveryBuilder.Geo.Yandex
                                 int originRemainder1 = n1 * minX;
                                 int destinationStartIndex1 = destinationStartIndex + n2 * minY;
                                 int destinationRemainder1 = r2;
-                                iterationData[iterDataCount++] = new GeoIterationData(originStartIndex1, originRemainder1, destinationStartIndex1, destinationRemainder1);
+                                iterationData[iterDataCount++] = new GeoYandexIterationData(originStartIndex1, originRemainder1, destinationStartIndex1, destinationRemainder1);
                             }
 
                             if (r1 > 0)
@@ -729,7 +729,7 @@ namespace DeliveryBuilder.Geo.Yandex
                                 // 11.5.2.2 r1 --> destinationReminder = n2 * y + r2
                                 int originStartIndex2 = originStartIndex + n1 * minX;
                                 int originRemainder2 = r1;
-                                iterationData[iterDataCount++] = new GeoIterationData(originStartIndex2, originRemainder2, destinationStartIndex, destinationRemainder);
+                                iterationData[iterDataCount++] = new GeoYandexIterationData(originStartIndex2, originRemainder2, destinationStartIndex, destinationRemainder);
                             }
                         }
                     }
@@ -842,7 +842,7 @@ namespace DeliveryBuilder.Geo.Yandex
                 {
                     // 3.1 Извлекаем и проверяем данные запроса
                     rc = 31;
-                    YandexRequestData requestData = context.RequestData[contextIndex];
+                    GeoYandexRequestData requestData = context.RequestData[contextIndex];
                     if (requestData == null)
                         continue;
 

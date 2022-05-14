@@ -21,7 +21,7 @@ namespace DeliveryBuilder.Geo.Yandex
         /// <summary>
         /// Данные запросов
         /// </summary>
-        public YandexRequestData[] RequestData { get; private set; }
+        public GeoYandexRequestData[] RequestData { get; private set; }
 
         /// <summary>
         /// Индекс первого обрбатываемого запроса
@@ -52,7 +52,7 @@ namespace DeliveryBuilder.Geo.Yandex
         /// <param name="startIndex">Индекс первого обрбатываемого запроса</param>
         /// <param name="step"> Шаг обработки запросов</param>
         /// <param name="syncEvent">Объект синхронизации</param>
-        public GeoYandexThreadContext(string getUrl, string apiKey, YandexRequestData[] requestData, int startIndex, int step, ManualResetEvent syncEvent)
+        public GeoYandexThreadContext(string getUrl, string apiKey, GeoYandexRequestData[] requestData, int startIndex, int step, ManualResetEvent syncEvent)
         {
             GetUrl = getUrl;
             ApiKey = apiKey;

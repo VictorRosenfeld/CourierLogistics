@@ -1,9 +1,12 @@
 ﻿
 namespace DeliveryBuilder
 {
+    using DeliveryBuilder.AverageDeliveryCost;
     using DeliveryBuilder.BuilderParameters;
+    using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Db;
     using DeliveryBuilder.Geo;
+    using DeliveryBuilder.Geo.Cache;
     using DeliveryBuilder.Log;
     using System;
     using System.Diagnostics;
@@ -47,14 +50,27 @@ namespace DeliveryBuilder
         public BuilderConfig Config => config;
         
         /// <summary>
-        /// Гео-кэш
+        /// Объект для работы с гео-данными
         /// </summary>
-        private GeoCache geoCache;
+        private GeoData geoData;
         
         /// <summary>
         /// Гео-кэш
         /// </summary>
-        private GeoCache Cache => geoCache;
+        public GeoData Geo => geoData;
+
+        /// <summary>
+        /// Пороги для средней стоимсти доставки
+        /// </summary>
+        private AverageCostThresholds thresholds;
+
+        /// <summary>
+        /// Пороги для средней стоимсти доставки
+        /// </summary>
+        private AverageCostThresholds CostThresholds => thresholds;
+
+
+
 
         /// <summary>
         /// Таймер сервиса логистики
@@ -133,14 +149,33 @@ namespace DeliveryBuilder
                 if (!TestBuilderConfig(config))
                     return rc;
 
-                // 8. Сздаём гео-кэш
+                // 8. Создаём объект для работы гео-данными
                 rc = 8;
+                geoData = new GeoData();
+                int rc1 = geoData.Create(config);
+                if (rc1 != 0)
+                    return rc = 10000 * rc + rc1;
+
+                // 9. Cоздаём объект для работы с порогами средней стоимости
+                rc = 9;
+                AverageDeliveryCostRecord[] records;
+                rc1 = lsDataDb.SelectThresholds(out records);
+                if (rc1 != 0)
+                    return rc = 10000 * rc + rc1;
+                thresholds = new AverageCostThresholds();
+                rc1 = thresholds.Create(records);
+                if (rc1 != 0)
+                    return rc = 10000 * rc + rc1;
+
+                // 10. Загружаем параметры способов отгрузки
+                rc = 35;
+                CourierTypeRecord[] courierTypeRecords = null;
+                rc1 = lsDataDb.SelectCourierTypes(out courierTypeRecords);
+                if (rc1 != 0)
 
 
-
-
-                // Выход - Ok
-                rc = 0;
+                    // Выход - Ok
+                    rc = 0;
                 IsCreated = true;
                 return rc;
             }
@@ -379,7 +414,7 @@ namespace DeliveryBuilder
                     //}
 
                     config = null;
-                    geoCache = null;
+                    //geoCache = null;
                     //allCouriers = null;
                     //allOrders = null;
                     //allShops = null;
