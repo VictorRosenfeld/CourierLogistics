@@ -285,7 +285,7 @@ namespace DeliveryBuilder.BuilderParameters
         /// Код способа доставки
         /// </summary>
         [XmlAttribute("id")]
-        public byte Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Наименование Yandex

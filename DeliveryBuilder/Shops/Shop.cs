@@ -14,6 +14,11 @@ namespace DeliveryBuilder.Shops
         public int Id { get; private set; }
 
         /// <summary>
+        /// Флаг: true - требуется пересчет; false - пересчет не тебуется 
+        /// </summary>
+        public bool Updated { get; set; }
+
+        /// <summary>
         /// Начало работы
         /// </summary>
         public TimeSpan WorkStart { get; set; }

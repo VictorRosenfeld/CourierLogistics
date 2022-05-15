@@ -146,6 +146,29 @@ namespace DeliveryBuilder.Couriers
         }
 
         /// <summary>
+        /// Выбор значения int-параметра
+        /// </summary>
+        /// <param name="name">Имя параметра</param>
+        /// <returns>Значение параметра или int.MinValue</returns>
+        public int GetIntParameterValue(string name)
+        {
+            try
+            {
+                // 2. Извлекаем параметр
+                VehicleParameter param = FindParameter(name);
+                if (param == null)
+                    return int.MinValue;
+
+                // 3. Преобразуем значение параметра из string в double
+                return int.Parse(param.Value, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return int.MinValue;
+            }
+        }
+
+        /// <summary>
         /// Выбор значения string-параметра
         /// </summary>
         /// <param name="name">Имя параметра</param>
@@ -239,6 +262,12 @@ namespace DeliveryBuilder.Couriers
         /// </summary>
         [XmlAttribute(AttributeName = "type")]
         public string Value { get; set; }
+
+        /// <summary>
+        /// ID гео-типа Yandex
+        /// </summary>
+        [XmlIgnore()]
+        public int Id  { get; set; }
     }
 
     /// <summary>

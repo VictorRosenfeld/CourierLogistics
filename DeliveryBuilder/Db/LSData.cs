@@ -53,6 +53,9 @@ namespace DeliveryBuilder.Db
             ConnectionString = connectionString;
         }
 
+        /// <summary>
+        /// Открытие соединения
+        /// </summary>
         public void Open()
         {
             // 1. Инициализация
@@ -242,7 +245,7 @@ namespace DeliveryBuilder.Db
         /// <param name="connection">Открытое соединение</param>
         /// <param name="dataRecords">Параметры способов доставки или null</param>
         /// <returns>0 - параметры выбраны; иначе - параметры не выбраны</returns>
-        private int SelectServiceVehicles(int serviceId, out VehiclesRecord[] dataRecords)
+        public int SelectServiceVehicles(int serviceId, out VehiclesRecord[] dataRecords)
         {
             // 1. Инициализация
             int rc = 1;
@@ -287,6 +290,7 @@ namespace DeliveryBuilder.Db
                             using (XmlReader xmlReader = dataXml.CreateReader())
                             {
                                 ctd = (CourierTypeData)serializer.Deserialize(xmlReader);
+                                ctd.Create();
                             }
 
                             // 5.3 Сохраняем тип

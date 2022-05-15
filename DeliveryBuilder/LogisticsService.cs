@@ -8,6 +8,7 @@ namespace DeliveryBuilder
     using DeliveryBuilder.Geo;
     using DeliveryBuilder.Geo.Cache;
     using DeliveryBuilder.Log;
+    using DeliveryBuilder.Shops;
     using System;
     using System.Diagnostics;
     using System.IO;
@@ -69,8 +70,25 @@ namespace DeliveryBuilder
         /// </summary>
         private AverageCostThresholds CostThresholds => thresholds;
 
+        /// <summary>
+        /// Все курьеры
+        /// </summary>
+        private AllCouriersEx couriers;
 
+        /// <summary>
+        /// Все курьеры
+        /// </summary>
+        public AllCouriersEx Couriers => couriers;
 
+        /// <summary>
+        /// Все магазины
+        /// </summary>
+        private AllShops shops;
+
+        /// <summary>
+        /// Все магазины
+        /// </summary>
+        public AllShops Shops => shops;
 
         /// <summary>
         /// Таймер сервиса логистики
@@ -168,10 +186,22 @@ namespace DeliveryBuilder
                     return rc = 10000 * rc + rc1;
 
                 // 10. Загружаем параметры способов отгрузки
-                rc = 35;
-                CourierTypeRecord[] courierTypeRecords = null;
-                rc1 = lsDataDb.SelectCourierTypes(out courierTypeRecords);
+                rc = 10;
+                VehiclesRecord[] vehiclesRecords = null;
+                rc1 = lsDataDb.SelectServiceVehicles(serviceId, out vehiclesRecords);
                 if (rc1 != 0)
+                    return rc = 10000 * rc + rc1;
+
+                // 11. Создаём курьеров
+                rc = 11;
+                couriers = new AllCouriersEx();
+                rc1 = couriers.Create(vehiclesRecords, config.Parameters.GeoYandex.TypeNames, thresholds);
+                if (rc1 != 0)
+                    return rc = 10000 * rc + rc1;
+
+                // 12. Создаём магазины
+                rc = 12;
+                shops = new AllShops();
 
 
                     // Выход - Ok
