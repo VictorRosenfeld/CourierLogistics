@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AverageDeliveryCost\AverageCostThresholds.cs" />
     <Compile Include="Cmds\DataRequest.cs" />
+    <Compile Include="Cmds\Deliveries.cs" />
     <Compile Include="Cmds\Heartbeat.cs" />
     <Compile Include="Cmds\Rejections.cs" />
     <Compile Include="Couriers\AllCouriersEx.cs" />

@@ -7,6 +7,7 @@ namespace DeliveryBuilder.Db
     using System.Data.SqlTypes;
     using System.IO;
     using System.Text;
+    using System.Xml.Serialization;
 
     /// <summary>
     /// Работа с внешней БД
@@ -277,6 +278,67 @@ namespace DeliveryBuilder.Db
                 return rc;
             }
 
+        }
+
+        /// <summary>
+        /// Отправка команды в отдельном диалоге
+        /// </summary>
+        /// <param name="serviceName">Имя сервиса</param>
+        /// <param name="contractName">Имя контракта</param>
+        /// <param name="messageType">Тип сообщения</param>
+        /// <param name="messageClass">Сообщение</param>
+        /// <returns>0 - сообщение оправлено; иначе - сообщение не отправлено</returns>
+        public int SendXmlCmd<T>(string serviceName, string contractName, string messageType, T messageClass) where T: class
+        {
+            // 1. Инициализация
+            int rc = 1;
+            LastException = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsOpen())
+                    return rc;
+                if (string.IsNullOrWhiteSpace(serviceName))
+                    return rc;
+                if (string.IsNullOrWhiteSpace(contractName))
+                    return rc;
+                if (string.IsNullOrWhiteSpace(messageType))
+                    return rc;
+                if (messageClass == null)
+                    return rc;
+                
+                // 3. Отправляем команду
+                rc = 3;
+                XmlSerializer serializer = new XmlSerializer(typeof(T));
+
+                using (StringWriter writer = new StringWriter())
+                {
+                    serializer.Serialize(writer, messageClass);
+
+                    using (MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(writer.ToString())))
+                    {
+                        using (SqlCommand cmd = new SqlCommand(string.Format(sqlSendCmd, serviceName, contractName, messageType), connection))
+                        {
+                            var parameter = cmd.Parameters.Add("@xml_cmd", SqlDbType.Xml);
+                            parameter.Direction = ParameterDirection.Input;
+                            parameter.Value = new SqlXml(ms);
+
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                LastException = ex;
+                return rc;
+            }
         }
     }
 }
