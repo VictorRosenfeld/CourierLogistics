@@ -4,6 +4,9 @@ namespace DeliveryBuilder.Db
     using System;
     using System.Data;
     using System.Data.SqlClient;
+    using System.Data.SqlTypes;
+    using System.IO;
+    using System.Text;
 
     /// <summary>
     /// Работа с внешней БД
@@ -132,6 +135,17 @@ namespace DeliveryBuilder.Db
             "SELECT queuing_order, conversation_handle, message_sequence_number, message_type_name, CAST(message_body as nvarchar(max)) As messageBody FROM @dataTable;";
 
         /// <summary>
+        /// Sql-процедура для отправки команды в отдельном диалоге
+        /// </summary>
+        private const string sqlSendCmd =
+            "DECLARE @send_conversation_handle uniqueidentifier; " +
+            "BEGIN DIALOG CONVERSATION @send_conversation_handle " +
+            "FROM SERVICE[{0}] TO SERVICE '{0}' ON CONTRACT {1} WITH ENCRYPTION = OFF; " +
+            "SEND ON CONVERSATION @send_conversation_handle MESSAGE TYPE[{2}] (@xml_cmd); " +
+            "END CONVERSATION @send_conversation_handle; ";
+
+
+        /// <summary>
         /// Получение данных из очереди вешнего сервиса
         /// </summary>
         /// <param name="queueName">Имя очереди сервиса</param>
@@ -208,6 +222,61 @@ namespace DeliveryBuilder.Db
                 LastException = ex;
                 return rc;
             }
+        }
+
+        /// <summary>
+        /// Отправка команды в отдельном диалоге
+        /// </summary>
+        /// <param name="serviceName">Имя сервиса</param>
+        /// <param name="contractName">Имя контракта</param>
+        /// <param name="messageType">Тип сообщения</param>
+        /// <param name="xmlMessage">xml-сообщение</param>
+        /// <returns>0 - сообщение оправлено; иначе - сообщение не отправлено</returns>
+        public int SendXmlCmd(string serviceName, string contractName, string messageType, string xmlMessage)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            LastException = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsOpen())
+                    return rc;
+                if (string.IsNullOrWhiteSpace(serviceName))
+                    return rc;
+                if (string.IsNullOrWhiteSpace(contractName))
+                    return rc;
+                if (string.IsNullOrWhiteSpace(messageType))
+                    return rc;
+                if (string.IsNullOrWhiteSpace(xmlMessage))
+                    return rc;
+
+                // 3. Отправляем команду
+                rc = 3;
+                using (MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(xmlMessage)))
+                {
+                    using (SqlCommand cmd = new SqlCommand(string.Format(sqlSendCmd, serviceName, contractName, messageType), connection))
+                    {
+                        var parameter = cmd.Parameters.Add("@xml_cmd", SqlDbType.Xml);
+                        parameter.Direction = ParameterDirection.Input;
+                        parameter.Value = new SqlXml(ms);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                LastException = ex;
+                return rc;
+            }
+
         }
     }
 }

@@ -25,7 +25,7 @@ namespace DeliveryBuilder.Couriers
         /// ID сервиса логистики
         /// </summary>
         [XmlAttribute("service_id")]
-        public byte ServiceId { get; set; }
+        public int ServiceId { get; set; }
     }
 
     /// <summary>
