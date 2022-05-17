@@ -662,5 +662,46 @@ namespace DeliveryBuilder.Couriers
                     return CourierStatus.Unknown;
             }
         }
+
+        /// <summary>
+        /// Выбор VehicleID для заданных DServiceID
+        /// </summary>
+        /// <param name="dserviceId">DServiceId</param>
+        /// <returns>VehicleIDs или null</returns>
+        public int[] GetVehiclesTypesForDService(int[] dserviceId)
+        {
+            // 1. Иициализация
+            
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (!IsCreated || baseTypes == null)
+                    return null;
+                if (dserviceId == null || dserviceId.Length <= 0)
+                    return null;
+
+                // 3. Выбираем VehicleID для заданных DServiceID
+                int[] result = new int[baseTypes.Length];
+                int count = 0;
+                Array.Sort(dserviceId);
+
+                for (int i = 0; i < baseTypes.Length; i++)
+                {
+                    CourierBase baseType = baseTypes[i];
+                    if (Array.BinarySearch(dserviceId, baseType.DServiceType) >= 0)
+                    { result[count++] = baseType.VehicleID; }
+                }
+
+                if (count < result.Length)
+                { Array.Resize(ref result, count); }
+
+                // 4. Выход - Ok
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

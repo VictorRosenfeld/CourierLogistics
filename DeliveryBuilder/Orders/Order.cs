@@ -69,6 +69,11 @@ namespace DeliveryBuilder.Orders
         public int Priority { get; set; }
 
         /// <summary>
+        /// Флаг: true - заказ отгружен; false - заказ не отгружен
+        /// </summary>
+        public bool Completed { get; set; }
+
+        /// <summary>
         /// Флаг отмены проверок временных ограничений:
         /// true - проверки отменены; false - проверки остаются в силе
         /// </summary>

@@ -105,6 +105,7 @@
     <Compile Include="MaxOrdersOfRoute\MaxOrdersOfRouteRecord.cs" />
     <Compile Include="MaxOrdersOfRoute\RouteLimitations.cs" />
     <Compile Include="Orders\AllOrders.cs" />
+    <Compile Include="Orders\AllOrdersEx.cs" />
     <Compile Include="Orders\Order.cs" />
     <Compile Include="Orders\OrderRejectionReason.cs" />
     <Compile Include="Orders\OrderStatus.cs" />
