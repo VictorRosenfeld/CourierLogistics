@@ -6,8 +6,9 @@ namespace DeliveryBuilder
     using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Db;
     using DeliveryBuilder.Geo;
-    using DeliveryBuilder.Geo.Cache;
     using DeliveryBuilder.Log;
+    using DeliveryBuilder.Orders;
+    using DeliveryBuilder.SalesmanProblemLevels;
     using DeliveryBuilder.Shops;
     using System;
     using System.Diagnostics;
@@ -91,9 +92,51 @@ namespace DeliveryBuilder
         public AllShops Shops => shops;
 
         /// <summary>
+        /// Все заказы
+        /// </summary>
+        public AllOrdersEx orders;
+
+        /// <summary>
+        /// Все заказы
+        /// </summary>
+        public AllOrdersEx Orders => orders;
+
+        /// <summary>
+        /// Ограничения а число заказов в зависимости
+        /// от глубины при полном переборе
+        /// </summary>
+        public SalesmanLevels limitations;
+
+        /// <summary>
+        /// Ограничения а число заказов в зависимости
+        /// от глубины при полном переборе
+        /// </summary>
+        public SalesmanLevels Limitations => limitations;
+
+        /// <summary>
         /// Таймер сервиса логистики
         /// </summary>
         private Timer timer;
+
+        /// <summary>
+        /// Количество тиков до сердцебиения
+        /// </summary>
+        private int hearbeatTickCount;
+
+        /// <summary>
+        /// Количество тиков до проверки очереди
+        /// </summary>
+        private int queueTickCount;
+
+        /// <summary>
+        /// Количество тиков до пересчета
+        /// </summary>
+        private int recalcTickCount;
+
+        /// <summary>
+        /// Количество тиков до чистки гео-кэша
+        /// </summary>
+        private int geoTickCount;
 
         /// <summary>
         /// Последнее прерывание
@@ -203,9 +246,37 @@ namespace DeliveryBuilder
                 rc = 12;
                 shops = new AllShops();
 
+                // 13. Создаём заказы
+                rc = 13;
+                orders = new AllOrdersEx();
+                rc1 = orders.Create();
+                if (rc1 != 0)
+                    return rc = 10000 * rc + rc1;
 
-                    // Выход - Ok
-                    rc = 0;
+                // 14. Создаём Salesman Levels
+                rc = 14;
+                limitations = new SalesmanLevels();
+                rc1 = limitations.Create(config.SalesmanLevels);
+                if (rc1 != 0)
+                    return rc = 10000 * rc + rc1;
+
+                // 15. Устанавливаем счечики тиков
+                rc = 15;
+                hearbeatTickCount = config.Parameters.HeartbeatInterval;
+                queueTickCount = config.Parameters.QueueInterval;
+                recalcTickCount = config.Parameters.RecalcInterval;
+                geoTickCount = config.Parameters.GeoCache.CheckInterval;
+
+                // 16. Создаём и включаем таймер
+                rc = 16;
+                timer = new Timer();
+                timer.Interval = config.Parameters.TickInterval;
+                timer.AutoReset = true;
+                timer.Elapsed += Timer_Elapsed;
+                timer.Start();
+
+                // 17. Выход - Ok
+                rc = 0;
                 IsCreated = true;
                 return rc;
             }
@@ -214,11 +285,6 @@ namespace DeliveryBuilder
                 Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
-            }
-            finally
-            {
-                // Сообщение о завершении работы
-                Logger.WriteToLog(2, MsessageSeverity.Info, string.Format(Messages.MSG_002, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
             }
         }
 
@@ -433,7 +499,7 @@ namespace DeliveryBuilder
 
                     if (externalDb != null)
                     {
-                        //externalDb.Close();
+                        externalDb.Close();
                         externalDb = null;
                     }
 
@@ -444,15 +510,16 @@ namespace DeliveryBuilder
                     //}
 
                     config = null;
-                    //geoCache = null;
-                    //allCouriers = null;
-                    //allOrders = null;
-                    //allShops = null;
-                    //queue = null;
-                    //checkingQueue = null;
-                    //salesmanSolution = null;
-
-                    // TODO: dispose managed state (managed objects).
+                    geoData = null;
+                    thresholds = null;
+                    couriers = null;
+                    shops = null;
+                    orders = null;
+                    limitations = null;
+                    hearbeatTickCount = 0;
+                    queueTickCount = 0;
+                    recalcTickCount = 0;
+                    geoTickCount = 0;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

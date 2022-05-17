@@ -111,6 +111,10 @@
     <Compile Include="Orders\OrderStatus.cs" />
     <Compile Include="Orders\OrdersUpdates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queue\DeliveryQueue.cs" />
+    <Compile Include="Queue\QueueItem.cs" />
+    <Compile Include="Queue\QueueItemType.cs" />
+    <Compile Include="SalesmanProblemLevels\SalesmanLevels.cs" />
     <Compile Include="Shops\AllShops.cs" />
     <Compile Include="Shops\Shop.cs" />
     <Compile Include="Shops\ShopsUpdates.cs" />

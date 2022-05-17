@@ -2,8 +2,9 @@
 namespace DeliveryBuilder.Deliveries
 {
     using DeliveryBuilder.Couriers;
-    using DeliveryBuilder.MaxOrdersOfRoute;
+    //using DeliveryBuilder.MaxOrdersOfRoute;
     using DeliveryBuilder.Orders;
+    using DeliveryBuilder.SalesmanProblemLevels;
     using DeliveryBuilder.Shops;
     using System;
     using System.Threading;
@@ -62,7 +63,7 @@ namespace DeliveryBuilder.Deliveries
         /// Ограничения на длину маршрута от числа заказов
         /// (при построении полным перебором)
         /// </summary>
-        public RouteLimitations Limitations { get; set; }
+        public SalesmanLevels Limitations { get; set; }
 
         /// <summary>
         /// Время, на которое создаются отгрузки
@@ -114,7 +115,7 @@ namespace DeliveryBuilder.Deliveries
         /// <param name="courier">Курьер</param>
         /// <param name="limitations">Длины маршрутов в зависимости от числа заказов при полном переборе</param>
         /// <param name="syncEvent">Объект синхронизации</param>
-        public CalcThreadContext(string serverName, string dbName, int serviceId, DateTime calcTime, Shop shop, Order[] orders, Courier courier, RouteLimitations limitations, ManualResetEvent syncEvent)
+        public CalcThreadContext(string serverName, string dbName, int serviceId, DateTime calcTime, Shop shop, Order[] orders, Courier courier, SalesmanLevels limitations, ManualResetEvent syncEvent)
         {
             ServerName = serverName;
             DbName = dbName;

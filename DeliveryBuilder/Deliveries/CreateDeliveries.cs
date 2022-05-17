@@ -8,8 +8,9 @@ namespace DeliveryBuilder.Deliveries
     using DeliveryBuilder.ExtraOrders;
     using DeliveryBuilder.Geo;
     using DeliveryBuilder.Log;
-    using DeliveryBuilder.MaxOrdersOfRoute;
+    //using DeliveryBuilder.MaxOrdersOfRoute;
     using DeliveryBuilder.Orders;
+    using DeliveryBuilder.SalesmanProblemLevels;
     using DeliveryBuilder.Shops;
     using System;
     using System.Collections.Generic;
@@ -158,7 +159,7 @@ namespace DeliveryBuilder.Deliveries
                 CourierTypeRecord[] courierTypeRecords = null;
                 CourierRecord[] courierRecords = null;
                 AverageDeliveryCostRecord[] thresholdRecords;
-                MaxOrdersOfRouteRecord[] routeLimitationRecords;
+                //MaxOrdersOfRouteRecord[] routeLimitationRecords;
 
                 using (SqlConnection connection = new SqlConnection($"Server={serverName};Database={dbName};Integrated Security=true"))
                 {
@@ -280,7 +281,7 @@ namespace DeliveryBuilder.Deliveries
 
                     // 3.7 Загружаем пороги для среднего времени доставки заказов
                     rc = 37;
-                    rc1 = SelectThresholds(connection, out thresholdRecords);
+                    //rc1 = SelectThresholds(connection, out thresholdRecords);
                     if (rc1 != 0)
                     {
 #if debug
@@ -293,7 +294,7 @@ namespace DeliveryBuilder.Deliveries
 
                     // 3.8 Загружаем ограничения на длину маршрутов от числа заказов
                     rc = 38;
-                    rc1 = SelectMaxOrdersOfRoute(service_id, connection, out routeLimitationRecords);
+                    //rc1 = SelectMaxOrdersOfRoute(service_id, connection, out routeLimitationRecords);
                     if (rc1 != 0)
                     {
 #if debug
@@ -301,13 +302,13 @@ namespace DeliveryBuilder.Deliveries
 #endif
                         return rc = 1000000 * rc + rc1;
                     }
-                    if (routeLimitationRecords == null || routeLimitationRecords.Length <= 0)
-                    {
-#if debug
-                        Logger.WriteToLog(19, $"CreateCovers. service_id = {service_id}. rc = {rc}. Max route length records are not found", 1);
-#endif
-                        return rc;
-                    }
+//                    if (routeLimitationRecords == null || routeLimitationRecords.Length <= 0)
+//                    {
+//#if debug
+//                        Logger.WriteToLog(19, $"CreateCovers. service_id = {service_id}. rc = {rc}. Max route length records are not found", 1);
+//#endif
+//                        return rc;
+//                    }
 
                     // 4. Создаём объект для работы c курьерами
                     rc = 4;
@@ -336,7 +337,7 @@ namespace DeliveryBuilder.Deliveries
                     // 6. Создаём объект для работы c порогами средней стоимости доставки
                     rc = 6;
                     AverageCostThresholds thresholds = new AverageCostThresholds();
-                    rc1 = thresholds.Create(thresholdRecords);
+                    //rc1 = thresholds.Create(thresholdRecords);
                     if (rc1 != 0)
                     {
 #if debug
@@ -347,8 +348,8 @@ namespace DeliveryBuilder.Deliveries
 
                     // 7. Создаём объект для работы c ограничениями на длину маршрута от числа заказов (при полном переборе)
                     rc = 7;
-                    RouteLimitations limitations = new RouteLimitations();
-                    rc1 = limitations.Create(routeLimitationRecords);
+                    //RouteLimitations limitations = new RouteLimitations();
+                    //rc1 = limitations.Create(routeLimitationRecords);
                     if (rc1 != 0)
                     {
 #if debug
@@ -2047,7 +2048,7 @@ namespace DeliveryBuilder.Deliveries
                 // 3. Анализируем состояние
                 rc = 3;
                 int orderCount = calcContext.OrderCount;
-                RouteLimitations limitations = calcContext.Limitations;
+                SalesmanLevels limitations = calcContext.Limitations;
                 int courierMaxOrderCount = calcContext.ShopCourier.MaxOrderCount;
                 int yandexTypeId = calcContext.ShopCourier.YandexType;
 
@@ -3444,71 +3445,71 @@ namespace DeliveryBuilder.Deliveries
         //    }
         //}
 
-        /// <summary>
-        /// Загрузка ограничений на длину маршрута по числу заказов,
-        /// из которых создаются отгрузки
-        /// </summary>
-        /// <param name="service_id">ID LogisticsService</param>
-        /// <param name="connection">Открытое соединение</param>
-        /// <param name="records">Записи таблицы lsvAverageDeliveryCost</param>
-        /// <returns>0 - пороги выбраны; иначе - попроги не выбраны</returns>
-        private static int SelectMaxOrdersOfRoute(int service_id, SqlConnection connection, out MaxOrdersOfRouteRecord[] records)
-        {
-            // 1. Инициализация
-            int rc = 1;
-            records = null;
+        ///// <summary>
+        ///// Загрузка ограничений на длину маршрута по числу заказов,
+        ///// из которых создаются отгрузки
+        ///// </summary>
+        ///// <param name="service_id">ID LogisticsService</param>
+        ///// <param name="connection">Открытое соединение</param>
+        ///// <param name="records">Записи таблицы lsvAverageDeliveryCost</param>
+        ///// <returns>0 - пороги выбраны; иначе - попроги не выбраны</returns>
+        //private static int SelectMaxOrdersOfRoute(int service_id, SqlConnection connection, out MaxOrdersOfRouteRecord[] records)
+        //{
+        //    // 1. Инициализация
+        //    int rc = 1;
+        //    records = null;
 
-            try
-            {
-                // 2. Проверяем исходные данные
-                rc = 2;
-                if (connection == null || connection.State != ConnectionState.Open)
-                    return rc;
+        //    try
+        //    {
+        //        // 2. Проверяем исходные данные
+        //        rc = 2;
+        //        if (connection == null || connection.State != ConnectionState.Open)
+        //            return rc;
 
-                // 3. Выбираем заказы
-                rc = 3;
-                MaxOrdersOfRouteRecord[] allRecords = new MaxOrdersOfRouteRecord[16];
-                int count = 0;
+        //        // 3. Выбираем заказы
+        //        rc = 3;
+        //        MaxOrdersOfRouteRecord[] allRecords = new MaxOrdersOfRouteRecord[16];
+        //        int count = 0;
 
-                using (SqlCommand cmd = new SqlCommand(string.Format(SELECT_MAX_ORDERS_OF_ROUTE, service_id), connection))
-                {
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        int iLength = reader.GetOrdinal("Length");
-                        int iMaxOrders = reader.GetOrdinal("MaxOrders");
+        //        using (SqlCommand cmd = new SqlCommand(string.Format(SELECT_MAX_ORDERS_OF_ROUTE, service_id), connection))
+        //        {
+        //            using (SqlDataReader reader = cmd.ExecuteReader())
+        //            {
+        //                int iLength = reader.GetOrdinal("Length");
+        //                int iMaxOrders = reader.GetOrdinal("MaxOrders");
 
-                        while (reader.Read())
-                        {
-                            MaxOrdersOfRouteRecord record = new MaxOrdersOfRouteRecord(
-                                reader.GetInt32(iLength),
-                                reader.GetInt32(iMaxOrders));
+        //                while (reader.Read())
+        //                {
+        //                    MaxOrdersOfRouteRecord record = new MaxOrdersOfRouteRecord(
+        //                        reader.GetInt32(iLength),
+        //                        reader.GetInt32(iMaxOrders));
 
-                            if (count >= allRecords.Length)
-                            {
-                                Array.Resize(ref allRecords, (int)(1.25 * allRecords.Length));
-                            }
+        //                    if (count >= allRecords.Length)
+        //                    {
+        //                        Array.Resize(ref allRecords, (int)(1.25 * allRecords.Length));
+        //                    }
 
-                            allRecords[count++] = record;
-                        }
-                    }
-                }
+        //                    allRecords[count++] = record;
+        //                }
+        //            }
+        //        }
 
-                if (count < allRecords.Length)
-                {
-                    Array.Resize(ref allRecords, count);
-                }
+        //        if (count < allRecords.Length)
+        //        {
+        //            Array.Resize(ref allRecords, count);
+        //        }
 
-                records = allRecords;
+        //        records = allRecords;
 
-                // 5. Выход - Ok
-                rc = 0;
-                return rc;
-            }
-            catch
-            {
-                return rc;
-            }
-        }
+        //        // 5. Выход - Ok
+        //        rc = 0;
+        //        return rc;
+        //    }
+        //    catch
+        //    {
+        //        return rc;
+        //    }
+        //}
 
         /// <summary>
         /// Построение всех расчетных контекстов
@@ -3521,7 +3522,7 @@ namespace DeliveryBuilder.Deliveries
         /// <param name="allCouriers">Курьеры</param>
         /// <param name="limitations">Ограничения на длину маршрута по числу заказов</param>
         /// <returns>Контексты или null</returns>
-        private static CalcThreadContext[] GetCalcThreadContext(SqlConnection connection, int serviceId, DateTime calcTime, Shop[] shops, AllOrders allOrders, AllCouriers allCouriers, RouteLimitations limitations)
+        private static CalcThreadContext[] GetCalcThreadContext(SqlConnection connection, int serviceId, DateTime calcTime, Shop[] shops, AllOrders allOrders, AllCouriers allCouriers, SalesmanLevels limitations)
         {
             // 1. Инициализация
             int rc = 1;

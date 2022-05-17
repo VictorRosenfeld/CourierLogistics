@@ -3,8 +3,9 @@ namespace DeliveryBuilder.Deliveries
 {
     using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Geo;
-    using DeliveryBuilder.MaxOrdersOfRoute;
+    //using DeliveryBuilder.MaxOrdersOfRoute;
     using DeliveryBuilder.Orders;
+    using DeliveryBuilder.SalesmanProblemLevels;
     using DeliveryBuilder.Shops;
     using System;
     using System.Threading;
@@ -47,7 +48,7 @@ namespace DeliveryBuilder.Deliveries
         /// <param name="orderIndexStep">Шаг изменения индекса обрабатываемых заказов в массиве orders</param>
         public ThreadContextEx(int serviceId,
                                DateTime calcTime,
-                               RouteLimitations limitations,
+                               SalesmanLevels limitations,
                                int maxRouteLength,
                                Shop shop, Order[] orders,
                                Courier courier,

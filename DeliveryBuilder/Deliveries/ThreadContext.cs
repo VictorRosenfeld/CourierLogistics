@@ -3,7 +3,7 @@ namespace DeliveryBuilder.Deliveries
 {
     using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Geo;
-    using DeliveryBuilder.MaxOrdersOfRoute;
+    //using DeliveryBuilder.MaxOrdersOfRoute;
     using DeliveryBuilder.Orders;
     using DeliveryBuilder.Shops;
     using System;
