@@ -12,18 +12,14 @@ namespace DeliveryBuilder.Queue
         None = 0,
 
         /// <summary>
-        /// Истечение времени ожидания отгрузки курьером или такси
+        /// Активное событие
         /// </summary>
-        CourierDeliveryAlert = 1,
+        Active = 1,
 
         /// <summary>
-        /// Истечение предельного времени отгрузки с помощью такси
+        /// Отработанное событие,
+        /// которое следует удалить из очереди
         /// </summary>
-        TaxiDeliveryAlert = 2,
-
-        /// <summary>
-        /// Элемент проверочной очереди
-        /// </summary>
-        CheckingAlert = 3,
+        Completed = 2,
     }
 }
