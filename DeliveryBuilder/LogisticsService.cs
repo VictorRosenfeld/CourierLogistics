@@ -3,11 +3,13 @@ namespace DeliveryBuilder
 {
     using DeliveryBuilder.AverageDeliveryCost;
     using DeliveryBuilder.BuilderParameters;
+    using DeliveryBuilder.Cmds;
     using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Db;
     using DeliveryBuilder.Geo;
     using DeliveryBuilder.Log;
     using DeliveryBuilder.Orders;
+    using DeliveryBuilder.Queue;
     using DeliveryBuilder.SalesmanProblemLevels;
     using DeliveryBuilder.Shops;
     using System;
@@ -22,6 +24,11 @@ namespace DeliveryBuilder
     public class LogisticsService : IDisposable
     {
         /// <summary>
+        /// ID сервиса логистики из Create-аргумента
+        /// </summary>
+        private int serviceId;
+
+        /// <summary>
         /// Объект для работы с БД LSData
         /// </summary>
         private LSData lsDataDb;
@@ -30,6 +37,11 @@ namespace DeliveryBuilder
         /// Объект для работы с внешней БД
         /// </summary>
         private ExternalDb externalDb;
+
+        /// <summary>
+        /// Флаг птеи 
+        /// </summary>
+        private bool connectionFailed;
 
         /// <summary>
         /// Объект для работы с БД LSData
@@ -94,7 +106,7 @@ namespace DeliveryBuilder
         /// <summary>
         /// Все заказы
         /// </summary>
-        public AllOrdersEx orders;
+        private AllOrdersEx orders;
 
         /// <summary>
         /// Все заказы
@@ -105,13 +117,23 @@ namespace DeliveryBuilder
         /// Ограничения а число заказов в зависимости
         /// от глубины при полном переборе
         /// </summary>
-        public SalesmanLevels limitations;
+        private SalesmanLevels limitations;
 
         /// <summary>
         /// Ограничения а число заказов в зависимости
         /// от глубины при полном переборе
         /// </summary>
         public SalesmanLevels Limitations => limitations;
+
+        /// <summary>
+        /// Очередь отгрузок
+        /// </summary>
+        private DeliveryQueue queue;
+
+        /// <summary>
+        /// Очередь отгрузок
+        /// </summary>
+        public DeliveryQueue Queue => queue;
 
         /// <summary>
         /// Таймер сервиса логистики
@@ -154,11 +176,12 @@ namespace DeliveryBuilder
         /// <param name="serviceId">ID сервиса логистики</param>
         /// <param name="conectionString">Строка подключения к БД LSData</param>
         /// <returns>0 - экземпляр создан; иначе - экземпляр не создан</returns>
-        public int Create(int serviceId, string conectionString)
+        public int Create(int serviceId, string conectionString, string logFolder = @".\Logs", int rollBackups = 7)
         {
             // 1. Инициализация
             int rc = 1;
             Dispose(true);
+            this.serviceId = serviceId;
             disposedValue = false;
             IsCreated = false;
             LastException = null;
@@ -166,81 +189,123 @@ namespace DeliveryBuilder
 
             try
             {
-                // 2. Проверяем исходные данные
+                // 2. Открываем лог
                 rc = 2;
-                if (string.IsNullOrWhiteSpace(conectionString))
-                    return rc;
+                if (string.IsNullOrWhiteSpace(logFolder))
+                    logFolder = @".\Logs";
+                if (rollBackups <= 0)
+                    rollBackups = 7;
 
-                // 3. Открываем соединение с БД LSData
+                logFolder = Path.GetDirectoryName(logFolder);
+                if (!Directory.Exists(logFolder))
+                        Directory.CreateDirectory(logFolder);
+
+                string logFile = $"{Path.GetFileNameWithoutExtension(fileVersionInfo.FileName)}({serviceId}).log";
+                logFile = Path.Combine(logFolder, logFile);
+                Logger.Create(logFile, rollBackups);
+
+                // 3. Выводим сообщение о начале работы
                 rc = 3;
+                Logger.WriteToLog(1, MsessageSeverity.Info, string.Format(Messages.MSG_001, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
+
+                // 4. Проверяем исходные данные
+                rc = 4;
+                if (string.IsNullOrWhiteSpace(conectionString))
+                {
+                    Logger.WriteToLog(20, MsessageSeverity.Error, Messages.MSG_020);
+                    return rc;
+                }
+
+                // 5. Открываем соединение с БД LSData
+                rc = 5;
                 lsDataDb = new LSData(conectionString);
                 lsDataDb.Open();
                 if (!lsDataDb.IsOpen())
+                {
+                    string exceptionMessage = lsDataDb.GetLastErrorMessage();
+                    if (string.IsNullOrEmpty(exceptionMessage))
+                    { Logger.WriteToLog(21, MsessageSeverity.Error, Messages.MSG_021); }
+                    else
+                    { Logger.WriteToLog(22, MsessageSeverity.Error, string.Format(Messages.MSG_022, exceptionMessage)); }
                     return rc;
+                }
 
-                // 4. Загружаем параметры построителя
-                rc = 4;
+                // 6. Загружаем параметры построителя
+                rc = 6;
                 config = lsDataDb.SelectConfig(serviceId);
                 if (config == null)
+                {
+                    string exceptionMessage = lsDataDb.GetLastErrorMessage();
+                    if (string.IsNullOrEmpty(exceptionMessage))
+                    { Logger.WriteToLog(23, MsessageSeverity.Error, Messages.MSG_023); }
+                    else
+                    { Logger.WriteToLog(24, MsessageSeverity.Error, string.Format(Messages.MSG_024, exceptionMessage)); }
                     return rc;
-
-                // 5. Открываем лог
-                rc = 5;
-                if (config.LoggerParameters != null && !string.IsNullOrWhiteSpace(config.LoggerParameters.Filename))
-                {
-                    string logFolder = Path.GetDirectoryName(config.LoggerParameters.Filename);
-                    if (!Directory.Exists(logFolder))
-                        Directory.CreateDirectory(logFolder);
-                    Logger.Create(config.LoggerParameters.Filename, config.LoggerParameters.SaveDays);
                 }
-                else
-                {
-                    string filename = Path.GetFileName(fileVersionInfo.FileName);
-                    filename = Path.ChangeExtension(filename, ".log");
-                    filename = Path.Combine(Path.GetDirectoryName(fileVersionInfo.FileName), filename);
-                    Logger.Create(filename, 7);
-                }
-
-                // 6. Выводим сообщение о начале работы
-                rc = 6;
-                Logger.WriteToLog(1, MsessageSeverity.Info, string.Format(Messages.MSG_001, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
 
                 // 7. Проверяем параметры построителя
                 rc = 7;
                 if (!TestBuilderConfig(config))
+                {
+                    Logger.WriteToLog(25, MsessageSeverity.Error, Messages.MSG_025);
                     return rc;
+                }
 
                 // 8. Создаём объект для работы гео-данными
                 rc = 8;
                 geoData = new GeoData();
                 int rc1 = geoData.Create(config);
                 if (rc1 != 0)
+                {
+                    Logger.WriteToLog(26, MsessageSeverity.Error, string.Format(Messages.MSG_026, rc1));
                     return rc = 10000 * rc + rc1;
+                }
 
                 // 9. Cоздаём объект для работы с порогами средней стоимости
                 rc = 9;
                 AverageDeliveryCostRecord[] records;
                 rc1 = lsDataDb.SelectThresholds(out records);
                 if (rc1 != 0)
+                {
+                    string exceptionMessage = lsDataDb.GetLastErrorMessage();
+                    if (string.IsNullOrEmpty(exceptionMessage))
+                    { Logger.WriteToLog(27, MsessageSeverity.Error, Messages.MSG_027); }
+                    else
+                    { Logger.WriteToLog(28, MsessageSeverity.Error, string.Format(Messages.MSG_028, exceptionMessage)); }
                     return rc = 10000 * rc + rc1;
+                }
+
                 thresholds = new AverageCostThresholds();
                 rc1 = thresholds.Create(records);
                 if (rc1 != 0)
+                {
+                    Logger.WriteToLog(29, MsessageSeverity.Error, string.Format(Messages.MSG_029, rc1));
                     return rc = 10000 * rc + rc1;
+                }
 
                 // 10. Загружаем параметры способов отгрузки
                 rc = 10;
                 VehiclesRecord[] vehiclesRecords = null;
                 rc1 = lsDataDb.SelectServiceVehicles(serviceId, out vehiclesRecords);
                 if (rc1 != 0)
+                {
+                    string exceptionMessage = lsDataDb.GetLastErrorMessage();
+                    if (string.IsNullOrEmpty(exceptionMessage))
+                    { Logger.WriteToLog(27, MsessageSeverity.Error, Messages.MSG_030); }
+                    else
+                    { Logger.WriteToLog(28, MsessageSeverity.Error, string.Format(Messages.MSG_031, exceptionMessage)); }
                     return rc = 10000 * rc + rc1;
+                }
 
                 // 11. Создаём курьеров
                 rc = 11;
                 couriers = new AllCouriersEx();
                 rc1 = couriers.Create(vehiclesRecords, config.Parameters.GeoYandex.TypeNames, thresholds);
                 if (rc1 != 0)
+                {
+                    Logger.WriteToLog(32, MsessageSeverity.Error, string.Format(Messages.MSG_032, rc1));
                     return rc = 10000 * rc + rc1;
+                }
 
                 // 12. Создаём магазины
                 rc = 12;
@@ -251,31 +316,42 @@ namespace DeliveryBuilder
                 orders = new AllOrdersEx();
                 rc1 = orders.Create();
                 if (rc1 != 0)
+                {
+                    Logger.WriteToLog(33, MsessageSeverity.Error, string.Format(Messages.MSG_033, rc1));
                     return rc = 10000 * rc + rc1;
+                }
 
                 // 14. Создаём Salesman Levels
                 rc = 14;
                 limitations = new SalesmanLevels();
                 rc1 = limitations.Create(config.SalesmanLevels);
                 if (rc1 != 0)
+                {
+                    Logger.WriteToLog(34, MsessageSeverity.Error, string.Format(Messages.MSG_034, rc1));
                     return rc = 10000 * rc + rc1;
+                }
 
-                // 15. Устанавливаем счечики тиков
+                // 15. Создаём очередь
                 rc = 15;
+                queue = new DeliveryQueue();
+
+                // 16. Устанавливаем счечики тиков
+                rc = 16;
                 hearbeatTickCount = config.Parameters.HeartbeatInterval;
                 queueTickCount = config.Parameters.QueueInterval;
                 recalcTickCount = config.Parameters.RecalcInterval;
                 geoTickCount = config.Parameters.GeoCache.CheckInterval;
 
-                // 16. Создаём и включаем таймер
-                rc = 16;
+                // 17. Создаём и включаем таймер
+                rc = 17;
+                connectionFailed = true;
                 timer = new Timer();
                 timer.Interval = config.Parameters.TickInterval;
                 timer.AutoReset = true;
                 timer.Elapsed += Timer_Elapsed;
                 timer.Start();
 
-                // 17. Выход - Ok
+                // 18. Выход - Ok
                 rc = 0;
                 IsCreated = true;
                 return rc;
@@ -286,6 +362,21 @@ namespace DeliveryBuilder
                 LastException = ex;
                 return rc;
             }
+            finally
+            {
+                if (lsDataDb != null)
+                { lsDataDb.Close(); }              
+            }
+        }
+
+        /// <summary>
+        /// Закрытие сервиса логистики
+        /// </summary>
+        public void Close()
+        {
+            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+            Logger.WriteToLog(1, MsessageSeverity.Info, string.Format(Messages.MSG_002, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
+            Dispose(true);
         }
 
         /// <summary>
@@ -451,6 +542,55 @@ namespace DeliveryBuilder
         /// <param name="e">Аргументы события</param>
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            // 1. Иициализация
+            ExternalDb db = null;
+
+            try
+            {
+                // 0. Если экземпляр не создан
+                if (!IsCreated || disposedValue)
+                    return;
+
+                // 1. Открываем соединение с ExternalDb
+                db = new ExternalDb(config.Parameters.ExternalDb.СonnectionString);
+                db.Open();
+                if (!db.IsOpen())
+                {
+                    string exceptionMessage = lsDataDb.GetLastErrorMessage();
+                    if (string.IsNullOrEmpty(exceptionMessage))
+                    { Logger.WriteToLog(35, MsessageSeverity.Error, Messages.MSG_035); }
+                    else
+                    { Logger.WriteToLog(36, MsessageSeverity.Error, string.Format(Messages.MSG_036, exceptionMessage)); }
+                    db.Close();
+                    connectionFailed = false;
+                    return;
+                }
+
+                // 2. Отпавляем Hearbeat
+                if (--hearbeatTickCount <= 0)
+                {
+                    SendHeartbeat(serviceId, config.Parameters.ExternalDb.CmdService.HeartbeatMessageType, db);
+                    hearbeatTickCount = config.Parameters.HeartbeatInterval;
+                }
+
+
+                else if (connectionFailed)
+                {
+
+                }
+
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+            }
+
+
+
+
             //// 1. Инициализация
             //bool isCatched = false;
             //if (!IsCreated)
@@ -470,6 +610,53 @@ namespace DeliveryBuilder
             //    if (isCatched)
             //        syncMutex.ReleaseMutex();
             }
+
+        /// <summary>
+        /// Отправка сердцебиения
+        /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="messageType">Тип сообщения</param>
+        /// <param name="db">БД ExteralDb</param>
+        /// <returns></returns>
+        private static int SendHeartbeat(int serviceId, string messageType, ExternalDb db)
+        {
+            // 1. Иициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (db == null || !db.IsOpen())
+                    return rc;
+                if (string.IsNullOrWhiteSpace(messageType))
+                    return rc;
+
+                // 3. Отправляем сердцебиение
+                rc = 3;
+                Heartbeat heartbeat = new Heartbeat();
+                heartbeat.ServiceId = serviceId;
+                string errorMessage;
+                int rc1 = db.SendXmlCmd(serviceId, messageType, heartbeat, out errorMessage);
+                if (rc1 != 0)
+                {
+                    if (string.IsNullOrWhiteSpace(errorMessage))
+                    { Logger.WriteToLog(37, MsessageSeverity.Warn, string.Format(Messages.MSG_037, rc1)); }
+                    else
+                    { Logger.WriteToLog(38, MsessageSeverity.Warn, string.Format(Messages.MSG_038, rc1, errorMessage)); }
+                    return rc = 1000 * rc + rc1;
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(38, MsessageSeverity.Error, string.Format(Messages.MSG_038, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                return rc;
+            }
+        }
 
         #region IDisposable Support
 
@@ -516,10 +703,12 @@ namespace DeliveryBuilder
                     shops = null;
                     orders = null;
                     limitations = null;
+                    queue = null;
                     hearbeatTickCount = 0;
                     queueTickCount = 0;
                     recalcTickCount = 0;
                     geoTickCount = 0;
+                    connectionFailed = false;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
