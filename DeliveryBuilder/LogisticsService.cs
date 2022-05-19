@@ -18,6 +18,7 @@ namespace DeliveryBuilder
     using System.Reflection;
     using System.Threading;
     using System.Timers;
+    using System.Xml.Serialization;
 
     /// <summary>
     /// Основной класс построителя отгрузок
@@ -595,7 +596,7 @@ namespace DeliveryBuilder
                 }
 
                 // 4. Пытаемся захватить mutex
-                isCatched = syncMutex.WaitOne(0);
+                isCatched = syncMutex.WaitOne(100);
                 if (!isCatched)
                     return;
 
@@ -615,29 +616,75 @@ namespace DeliveryBuilder
                     if (rc1 == 0 && dataRecords != null && dataRecords.Length > 0)
                     { UpdateData(dataRecords); }
 
-
+                    // 7. Пересчиываем отгрузки
+                    RecalcDeliveries();
                 }
 
+                // 8. Диспетчируем очередь
+                if (queueTickCount <= 0)
+                {
+                    Queue_Elapsed();
+                    queueTickCount = config.Parameters.QueueInterval;
+                }
             }
-            catch
+            catch (Exception ex)
             {
-
+                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Timer_Elapsed)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                LastException = ex;
             }
             finally
             {
                 if (isCatched)
                 {
-                    try { syncMutex.ReleaseMutex(); } catch { }
+                    try
+                    { syncMutex.ReleaseMutex(); }
+                    catch { }
                     isCatched = false;
                 }
                 if (db != null)
                 {
-                    try { db.Close(); } catch { }
+                    try
+                    { db.Close(); }
+                    catch { }
                     db = null;
                 }
             }
+        }
+
+        /// <summary>
+        /// Диспетчеризация очереди 
+        /// </summary>
+        /// <returns></returns>
+        private int Queue_Elapsed(ExternalDb db)
+        {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные даные
+                rc = 2;
+                if (db == null || !db.IsOpen())
+                    return rc;
+                
+                // 3. Извлекаем отгрузки требующие старта
+                rc = 3;
+                DateTime toDate = DateTime.Now.AddMinutes(config.Parameters.CourierDeliveryMargin);
+                QueueItem[] queueItems = queue.GetToStart(toDate);
+                if (queueItems == null || queueItems.Length <= 0)
+                    return rc = 0;
+
+                // 4. Отправляем отгрузки
+                rc = 4;
 
             }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Queue_Elapsed)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                LastException = ex;
+                return rc;
+            }
+        }
 
         /// <summary>
         /// Отправка сердцебиения
@@ -783,10 +830,143 @@ namespace DeliveryBuilder
         /// <summary>
         /// Обновление данных о магазинах, курьерах и заказах
         /// </summary>
-        /// <param name="dataRecords"></param>
-        /// <returns></returns>
+        /// <param name="dataRecords">Записи с данными</param>
+        /// <returns>0 - данные обновлены; иначе - данные не обновлены</returns>
         private int UpdateData(DataRecord[] dataRecords)
         {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (dataRecords == null || dataRecords.Length <= 0)
+                    return rc = 0;
+
+                // 3. Извлекаем типы сообщений
+                rc = 3;
+                string shopMessageType = config.Parameters.ExternalDb.DataService.ShopMesageType;
+                string orderMessageType = config.Parameters.ExternalDb.DataService.OrderMesageType;
+                string courierMessageType = config.Parameters.ExternalDb.DataService.CourierMesageType;
+
+                // 4. Сортируем сообщения по номеру
+                rc = 4;
+                Array.Sort(dataRecords, CompareDataRecord);
+
+                // 5. Обабатываем записи с данными
+                rc = 5;
+                XmlSerializer ordersSerializer = new XmlSerializer(typeof(OrdersUpdates));
+                XmlSerializer couriersSerializer = new XmlSerializer(typeof(CouriersUpdates));
+                XmlSerializer shopsSerializer = new XmlSerializer(typeof(ShopsUpdates));
+
+                for (int i = 0; i < dataRecords.Length; i++)
+                {
+                    // 5.1 Извлекаем запись
+                    rc = 51;
+                    DataRecord dr = dataRecords[i];
+                    if (string.IsNullOrWhiteSpace(dr.MessageTypeName) ||
+                        string.IsNullOrWhiteSpace(dr.MessageBody))
+                        continue;
+
+                    // 5.2 Десериализуем и обрабатываем данные
+                    rc = 52;
+                    if (dr.MessageTypeName.Equals(orderMessageType, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        try
+                        {
+                            OrdersUpdates ordersUpdates;
+                            using (StringReader sr = new StringReader(dr.MessageBody))
+                            {
+                                ordersUpdates = (OrdersUpdates)ordersSerializer.Deserialize(sr);
+                            }
+
+                            int rc1 = orders.Update(ordersUpdates, shops, couriers);
+                            if (rc1 != 0)
+                            {
+                                Logger.WriteToLog(45, MsessageSeverity.Warn, string.Format(Messages.MSG_045, rc, dr.MessageBody));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, dr.MessageBody));
+                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                        }
+                    }
+                    else if (dr.MessageTypeName.Equals(courierMessageType, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        try
+                        {
+                            CouriersUpdates couriersUpdates;
+                            using (StringReader sr = new StringReader(dr.MessageBody))
+                            {
+                                couriersUpdates = (CouriersUpdates) couriersSerializer.Deserialize(sr);
+                            }
+
+                            int rc1 = couriers.Update(couriersUpdates, thresholds, shops);
+                            if (rc1 != 0)
+                            {
+                                Logger.WriteToLog(46, MsessageSeverity.Warn, string.Format(Messages.MSG_046, rc, dr.MessageBody));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, dr.MessageBody));
+                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                        }
+                    }
+                    else if (dr.MessageTypeName.Equals(shopMessageType, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        try
+                        {
+                            ShopsUpdates shopsUpdates;
+                            using (StringReader sr = new StringReader(dr.MessageBody))
+                            {
+                                shopsUpdates = (ShopsUpdates) shopsSerializer.Deserialize(sr);
+                            }
+
+                            int rc1 = shops.Update(shopsUpdates);
+                            if (rc1 != 0)
+                            {
+                                Logger.WriteToLog(47, MsessageSeverity.Warn, string.Format(Messages.MSG_047, rc, dr.MessageBody));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, dr.MessageBody));
+                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                        }
+                    }
+                    else
+                    {
+                        Logger.WriteToLog(43, MsessageSeverity.Warn, string.Format(Messages.MSG_043, dr.MessageTypeName));
+                    }
+                }
+
+                // 6. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.UpdateData)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                LastException = ex;
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Cравнение двух DataRecord по номеру
+        /// </summary>
+        /// <param name="record1">Запись 1</param>
+        /// <param name="record2">Запись 2</param>
+        /// <returns></returns>
+        private static int CompareDataRecord(DataRecord record1, DataRecord record2)
+        {
+            if (record1.QueuingOrder < record2.QueuingOrder)
+                return -1;
+            if (record1.QueuingOrder > record2.QueuingOrder)
+                return -1;
             return 0;
         }
 

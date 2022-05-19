@@ -59,5 +59,11 @@ namespace DeliveryBuilder.Log
         internal const string MSG_041 = @"БД ExternalDb. Не удалось получить данные (rc = {0})"; 
         internal const string MSG_042 = @"БД ExternalDb. Не удалось получить данные (rc = {0}). Exception: {0}"; 
 
+        internal const string MSG_043 = @"Данные с неизвестным типом сообщения '{0}'"; 
+        internal const string MSG_044 = @"Не удалось десериализовать сообщение типа {0}: {1}"; 
+        internal const string MSG_045 = @"Не удалось обновить данные о заказах (rc = {0}): {1}"; 
+        internal const string MSG_046 = @"Не удалось обновить данные о курьерах (rc = {0}): {1}"; 
+        internal const string MSG_047 = @"Не удалось обновить данные о магазинах (rc = {0}): {1}"; 
+
     }
 }
