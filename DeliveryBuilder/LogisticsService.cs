@@ -16,6 +16,7 @@ namespace DeliveryBuilder
     using System.Diagnostics;
     using System.IO;
     using System.Reflection;
+    using System.Threading;
     using System.Timers;
 
     /// <summary>
@@ -39,7 +40,7 @@ namespace DeliveryBuilder
         private ExternalDb externalDb;
 
         /// <summary>
-        /// Флаг птеи 
+        /// Флаг потери связи с ExternalDb 
         /// </summary>
         private bool connectionFailed;
 
@@ -62,7 +63,13 @@ namespace DeliveryBuilder
         /// Параметры сервиса 
         /// </summary>
         public BuilderConfig Config => config;
-        
+
+        /// <summary>
+        /// Мьютекс для синхронизации получения
+        /// новых данных и их обработки
+        /// </summary>
+        private Mutex syncMutex = new Mutex();
+
         /// <summary>
         /// Объект для работы с гео-данными
         /// </summary>
@@ -138,7 +145,7 @@ namespace DeliveryBuilder
         /// <summary>
         /// Таймер сервиса логистики
         /// </summary>
-        private Timer timer;
+        private System.Timers.Timer timer;
 
         /// <summary>
         /// Количество тиков до сердцебиения
@@ -345,7 +352,8 @@ namespace DeliveryBuilder
                 // 17. Создаём и включаем таймер
                 rc = 17;
                 connectionFailed = true;
-                timer = new Timer();
+                syncMutex = new Mutex();
+                timer = new System.Timers.Timer();
                 timer.Interval = config.Parameters.TickInterval;
                 timer.AutoReset = true;
                 timer.Elapsed += Timer_Elapsed;
@@ -544,6 +552,11 @@ namespace DeliveryBuilder
         {
             // 1. Иициализация
             ExternalDb db = null;
+            bool isCatched = false;
+            hearbeatTickCount--;
+            geoTickCount--;
+            recalcTickCount--;
+            queueTickCount--;
 
             try
             {
@@ -566,16 +579,42 @@ namespace DeliveryBuilder
                     return;
                 }
 
-                // 2. Отпавляем Hearbeat
-                if (--hearbeatTickCount <= 0)
+                // 2. Отправляем Hearbeat
+                if (hearbeatTickCount <= 0)
                 {
                     SendHeartbeat(serviceId, config.Parameters.ExternalDb.CmdService.HeartbeatMessageType, db);
                     hearbeatTickCount = config.Parameters.HeartbeatInterval;
                 }
 
-
-                else if (connectionFailed)
+                // 3. Если связь восстановлена
+                if (connectionFailed)
                 {
+                    SendDataReqest(serviceId, config.Parameters.ExternalDb.CmdService.DataMessageType, db);
+                    shops.SetAllShopUpdated();
+                    connectionFailed = false;
+                }
+
+                // 4. Пытаемся захватить mutex
+                isCatched = syncMutex.WaitOne(0);
+                if (!isCatched)
+                    return;
+
+                // 5. Чистим гео-данные
+                if (geoTickCount <= 0)
+                {
+                    geoData.Cache.Refresh();
+                    geoTickCount = config.Parameters.GeoCache.CheckInterval;
+                }
+
+                if (recalcTickCount <= 0)
+                {
+                    // 6. Обновляем данные
+                    recalcTickCount = config.Parameters.RecalcInterval;
+                    DataRecord[] dataRecords;
+                    int rc1 = db.ReceiveData(serviceId, out dataRecords);
+                    if (rc1 == 0 && dataRecords != null && dataRecords.Length > 0)
+                    { UpdateData(dataRecords); }
+
 
                 }
 
@@ -586,29 +625,18 @@ namespace DeliveryBuilder
             }
             finally
             {
+                if (isCatched)
+                {
+                    try { syncMutex.ReleaseMutex(); } catch { }
+                    isCatched = false;
+                }
+                if (db != null)
+                {
+                    try { db.Close(); } catch { }
+                    db = null;
+                }
             }
 
-
-
-
-            //// 1. Инициализация
-            //bool isCatched = false;
-            //if (!IsCreated)
-            //    return;
-
-            //try
-            //{
-            //    isCatched = syncMutex.WaitOne(config.functional_parameters.data_request_interval);
-            //    Refresh(0);
-            //    //Helper.WriteInfoToLog($"GeoCache capacity {geoCache.HashCapacity}. ItemCount = {geoCache.CacheItemCount}");
-            //    Logger.WriteToLog(string.Format(MessagePatterns.GEO_CACHE_INFO, geoCache.HashCapacity, geoCache.CacheItemCount));
-            //}
-            //catch
-            //{ }
-            //finally
-            //{
-            //    if (isCatched)
-            //        syncMutex.ReleaseMutex();
             }
 
         /// <summary>
@@ -617,7 +645,7 @@ namespace DeliveryBuilder
         /// <param name="serviceId">ID сервиса логистики</param>
         /// <param name="messageType">Тип сообщения</param>
         /// <param name="db">БД ExteralDb</param>
-        /// <returns></returns>
+        /// <returns>0 - команда отправлена; иначе - команда не оправлена</returns>
         private static int SendHeartbeat(int serviceId, string messageType, ExternalDb db)
         {
             // 1. Иициализация
@@ -658,6 +686,110 @@ namespace DeliveryBuilder
             }
         }
 
+        /// <summary>
+        /// Отправка запроса данных
+        /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="messageType">Тип сообщения</param>
+        /// <param name="db">БД ExteralDb</param>
+        /// <returns>0 - запрос отправлен; иначе - запрос не оправлен</returns>
+        private static int SendDataReqest(int serviceId, string messageType, ExternalDb db)
+        {
+            // 1. Иициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (db == null || !db.IsOpen())
+                    return rc;
+                if (string.IsNullOrWhiteSpace(messageType))
+                    return rc;
+
+                // 3. Отправляем запрос данных
+                rc = 3;
+                DataRequest request = new DataRequest();
+                request.ServiceId = serviceId;
+                request.All = 1;
+                string errorMessage;
+                int rc1 = db.SendXmlCmd(serviceId, messageType, request, out errorMessage);
+                if (rc1 != 0)
+                {
+                    if (string.IsNullOrWhiteSpace(errorMessage))
+                    { Logger.WriteToLog(39, MsessageSeverity.Warn, string.Format(Messages.MSG_039, rc1)); }
+                    else
+                    { Logger.WriteToLog(40, MsessageSeverity.Warn, string.Format(Messages.MSG_040, rc1, errorMessage)); }
+                    return rc = 1000 * rc + rc1;
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(38, MsessageSeverity.Error, string.Format(Messages.MSG_040, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Получение данных
+        /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="db">БД ExteralDb</param>
+        /// <returns>0 - запрос отправлен; иначе - запрос не оправлен</returns>
+        private static int ReceiveData(int serviceId, ExternalDb db, out DataRecord[] records)
+        {
+            // 1. Иициализация
+            int rc = 1;
+            records = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (db == null || !db.IsOpen())
+                    return rc;
+
+                // 3. Отправляем запрос данных
+                rc = 3;
+                DataRequest request = new DataRequest();
+                request.ServiceId = serviceId;
+                request.All = 1;
+                int rc1 = db.ReceiveData(serviceId, out records);
+                if (rc1 != 0)
+                {
+                    string errorMessage = db.GetLastErrorMessage();
+                    if (string.IsNullOrWhiteSpace(errorMessage))
+                    { Logger.WriteToLog(41, MsessageSeverity.Warn, string.Format(Messages.MSG_041, rc1)); }
+                    else
+                    { Logger.WriteToLog(42, MsessageSeverity.Warn, string.Format(Messages.MSG_042, rc1, errorMessage)); }
+                    return rc = 1000 * rc + rc1;
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(38, MsessageSeverity.Error, string.Format(Messages.MSG_042, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Обновление данных о магазинах, курьерах и заказах
+        /// </summary>
+        /// <param name="dataRecords"></param>
+        /// <returns></returns>
+        private int UpdateData(DataRecord[] dataRecords)
+        {
+            return 0;
+        }
+
         #region IDisposable Support
 
         private bool disposedValue = false; // To detect redundant calls
@@ -690,11 +822,11 @@ namespace DeliveryBuilder
                         externalDb = null;
                     }
 
-                    //if (syncMutex != null)
-                    //{
-                    //    DisposeMutex(syncMutex);
-                    //    syncMutex = null;
-                    //}
+                    if (syncMutex != null)
+                    {
+                        try { syncMutex.Dispose(); } catch { };
+                        syncMutex = null;
+                    }
 
                     config = null;
                     geoData = null;

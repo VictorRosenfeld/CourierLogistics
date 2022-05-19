@@ -55,6 +55,18 @@ namespace DeliveryBuilder.Shops
         }
 
         /// <summary>
+        /// Установка флага Updated у всех магазинов
+        /// </summary>
+        public void SetAllShopUpdated()
+        {
+            if (shops != null)
+            {
+                foreach (var shop in shops.Values)
+                { shop.Updated = true; }
+            }
+        }
+
+        /// <summary>
         /// Обновление магазинов
         /// </summary>
         /// <param name="updates">Новые данные</param>

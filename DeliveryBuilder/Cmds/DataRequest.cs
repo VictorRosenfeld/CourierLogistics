@@ -26,10 +26,10 @@ namespace DeliveryBuilder.Cmds
         [XmlAttribute("all")]
         public byte All { get; set; }
 
-        /// <summary>
-        /// Conversation_Group_ID для сообщения с данными
-        /// </summary>
-        [XmlAttribute("group_id")]
-        public string GroupId { get; set; }
+        ///// <summary>
+        ///// Conversation_Group_ID для сообщения с данными
+        ///// </summary>
+        //[XmlAttribute("group_id")]
+        //public string GroupId { get; set; }
     }
 }

@@ -53,5 +53,11 @@ namespace DeliveryBuilder.Log
         internal const string MSG_037 = @"БД ExternalDb. Не удалось отправить сердцебиение (rc = {0})"; 
         internal const string MSG_038 = @"БД ExternalDb. Не удалось отправить сердцебиение (rc = {0}). Exception: {0}"; 
 
+        internal const string MSG_039 = @"БД ExternalDb. Не удалось отправить запрос данных (rc = {0})"; 
+        internal const string MSG_040 = @"БД ExternalDb. Не удалось отправить запрос данных (rc = {0}). Exception: {0}"; 
+
+        internal const string MSG_041 = @"БД ExternalDb. Не удалось получить данные (rc = {0})"; 
+        internal const string MSG_042 = @"БД ExternalDb. Не удалось получить данные (rc = {0}). Exception: {0}"; 
+
     }
 }

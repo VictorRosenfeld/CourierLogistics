@@ -153,6 +153,12 @@ namespace DeliveryBuilder.Db
 
 
         /// <summary>
+        /// Sql-процедура для плучения данных
+        /// (Execute @rc = SendCmd @servive_id, @message_type, @xml_cmd, @error_message OUTPUT
+        /// </summary>
+        private const string sqlReceiveData = "dbo.ReceiveData";
+
+        /// <summary>
         /// Получение данных из очереди вешнего сервиса
         /// </summary>
         /// <param name="queueName">Имя очереди сервиса</param>
@@ -209,6 +215,84 @@ namespace DeliveryBuilder.Db
                                                reader.GetInt64(iMessageSequenceNumber),
                                                reader.GetString(iMessageTypeName),
                                                reader.GetString(iMessageBody));
+                        }
+                    }
+                }
+
+                if (count < records.Length)
+                {
+                    Array.Resize(ref records, count);
+                }
+
+                dataRecords = records;
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                LastException = ex;
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Получение данных из ExternalDb
+        /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="dataRecords">Считанные записи с сообщениями</param>
+        /// <returns>0 - данные получены; иначе - данные не получены</returns>
+        public int ReceiveData(int serviceId, out DataRecord[] dataRecords)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            dataRecords = null;
+            LastException = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsOpen())
+                    return rc;
+
+                // 3. Цикл чтения записей
+                rc = 3;
+                DataRecord[] records = new DataRecord[500];
+                int count = 0;
+
+                using (SqlCommand cmd = new SqlCommand(sqlReceiveData, connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // @service_id
+                    var parameter = cmd.Parameters.Add("@service_id", SqlDbType.Int);
+                    parameter.Direction = ParameterDirection.Input;
+                    parameter.Value = serviceId;
+                    
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        // 3.1 Выбираем индексы колонок в выборке
+                        rc = 31;
+                        int iQueuingOrder = reader.GetOrdinal("queuing_order");
+                        int iMessageTypeName = reader.GetOrdinal("message_type_name");
+                        //int iMessageTypeName = reader.GetOrdinal("message_type");
+                        int iMessageBody = reader.GetOrdinal("message_body");
+
+                        while (reader.Read())
+                        {
+                            // 3.2 Сохраняем запись
+                            rc = 32;
+                            if (count >= records.Length)
+                            { Array.Resize(ref records, records.Length + 100); }
+
+                            records[count++] =
+                                new DataRecord(reader.GetInt64(iQueuingOrder),
+                                               Guid.Empty,
+                                               0,
+                                               reader.GetString(iMessageTypeName),
+                                               reader.GetSqlXml(iMessageBody).Value);
                         }
                     }
                 }
@@ -348,8 +432,9 @@ namespace DeliveryBuilder.Db
         }
 
         /// <summary>
-        /// Отправка команды в отдельном диалоге
+        /// Отправка команды
         /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
         /// <param name="messageType">Тип сообщения</param>
         /// <param name="messageClass">Сериализуемый класс-сообщение</param>
         /// <param name="errorMessage">Сообщение</param>
