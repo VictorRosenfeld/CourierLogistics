@@ -2,15 +2,12 @@
 namespace DeliveryBuilder.DeliveryCover
 {
     using DeliveryBuilder.Couriers;
-    using DeliveryBuilder.Deliveries;
     using DeliveryBuilder.Geo;
-    using DeliveryBuilder.Log;
     using DeliveryBuilder.Orders;
+    using DeliveryBuilder.Recalc;
     using DeliveryBuilder.Shops;
     using System;
     using System.Collections.Generic;
-    using System.Data;
-    using System.Data.SqlClient;
 
     /// <summary>
     /// Построение покрытия
@@ -24,12 +21,12 @@ namespace DeliveryBuilder.DeliveryCover
         /// <param name="deliveries">Отгрузки, из которых строятся покрытия</param>
         /// <param name="allOrders">Активные заказы</param>
         /// <param name="allCouriers">Доступные курьеры и такси</param>
-        /// <param name="connection">Открытое соединение с БД для полцчения гео-данных</param>
+        /// <param name="geoMng">Объект для работы с гео-данными</param>
         /// <param name="recomendations">Построенные рекомендации</param>
         /// <param name="covers">Построенные покрытия</param>
         /// <param name="rejectedOrders">Причины отказов в доставке заказов</param>
         /// <returns>0 - покрытия построены; иначе - покрытия не построены</returns>
-        public static int Create(CourierDeliveryInfo[] deliveries, AllOrders allOrders, AllCouriers allCouriers, SqlConnection connection,
+        public static int Create(CourierDeliveryInfo[] deliveries, AllOrdersEx allOrders, AllCouriersEx allCouriers, GeoData geoMng,
                         out CourierDeliveryInfo[] recomendations, out CourierDeliveryInfo[] covers, out OrderRejectionCause[] rejectedOrders)
         {
             // 1. Инициализация
@@ -49,7 +46,7 @@ namespace DeliveryBuilder.DeliveryCover
                     return rc;
                 if (allOrders == null || !allOrders.IsCreated)
                     return rc;
-                if (connection == null || connection.State != ConnectionState.Open)
+                if (geoMng == null || !geoMng.IsCreated)
                     return rc;
 //#if debug
 //                for (int i = 0; i < deliveries.Length; i++)
@@ -132,7 +129,7 @@ namespace DeliveryBuilder.DeliveryCover
                             if (rejectedShopOrders != null && rejectedShopOrders.Length > 0)
                             {
                                 OrderRejectionCause[] shopRejectionOrders;
-                                rc1 = ShopOrderRejectionAnalyzer(calcTime, shopDeliveries[0].FromShop, rejectedShopOrders, courierRepository, connection, out shopRejectionOrders);
+                                rc1 = ShopOrderRejectionAnalyzer(calcTime, shopDeliveries[0].FromShop, rejectedShopOrders, courierRepository, geoMng, out shopRejectionOrders);
                                 if (rc1 == 0)
                                 {
                                     if (shopRejectionOrders != null && shopRejectionOrders.Length > 0)
@@ -194,7 +191,7 @@ namespace DeliveryBuilder.DeliveryCover
                     if (rejectedShopOrders != null && rejectedShopOrders.Length > 0)
                     {
                         OrderRejectionCause[] shopRejectionOrders;
-                        rc1 = ShopOrderRejectionAnalyzer(calcTime, lastShopDeliveries[0].FromShop, rejectedShopOrders, lastCourierRepository, connection, out shopRejectionOrders);
+                        rc1 = ShopOrderRejectionAnalyzer(calcTime, lastShopDeliveries[0].FromShop, rejectedShopOrders, lastCourierRepository, geoMng, out shopRejectionOrders);
                         if (rc1 == 0)
                         {
                             if (shopRejectionOrders != null && shopRejectionOrders.Length > 0)
@@ -553,11 +550,11 @@ namespace DeliveryBuilder.DeliveryCover
         /// <param name="shop">Магазин</param>
         /// <param name="orders">Заказы не вошедшие в отгрузки</param>
         /// <param name="courierRepository">Доступные курьеры</param>
-        /// <param name="connection">Открытое соединение для получения гео-данных</param>
+        /// <param name="geoMng">Объект для работы с гео-данными</param>
         /// <param name="causeList">Установленные причины отказов</param>
         /// <returns>0 - причины отказов установлены; иначе - причины отказов не установлены</returns>
         private static int ShopOrderRejectionAnalyzer(DateTime calcTime, Shop shop, Order[] orders, 
-            CourierRepository courierRepository, SqlConnection connection, out OrderRejectionCause[] causeList)
+            CourierRepository courierRepository, GeoData geoMng, out OrderRejectionCause[] causeList)
         {
             // 1. Инициализация
             int rc = 1;
@@ -574,7 +571,7 @@ namespace DeliveryBuilder.DeliveryCover
                     return rc;
                 if (courierRepository == null || !courierRepository.IsCreated)
                     return rc;
-                if (connection == null || connection.State != ConnectionState.Open)
+                if (geoMng == null || !geoMng.IsCreated)
                     return rc;
 
                 // 3. Цикл выяснения причин отказа
@@ -663,19 +660,25 @@ namespace DeliveryBuilder.DeliveryCover
                         }
                         else
                         {
-                            rc1 = GeoData.Select(connection, courier.YandexType, shopLat, shopLon, orderLat, orderLon, out distance1, out duration1, out distance2, out duration2);
+                            GeoPoint pt1 = new GeoPoint(shopLat, shopLon);
+                            GeoPoint pt2 = new GeoPoint(orderLat, orderLon);
+                            //rc1 = GeoData.Select(geoMng, courier.YandexType, shopLat, shopLon, orderLat, orderLon, out distance1, out duration1, out distance2, out duration2);
+                            //rc1 = geoMng.GetData(courier.YandexType, shopLat, shopLon, orderLat, orderLon, out distance1, out duration1, out distance2, out duration2);
+                            rc1 = geoMng.GetData(courier.YandexType, pt1, pt2, out Point geoData12, out Point geoData21);
                             if (rc1 != 0)
                             {
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.GeoDataNA);
                                 continue;
                             }
 
-                            geoData = new Point[2, 2];
-                            geoData[1, 0].X = distance1;
-                            geoData[1, 0].Y = duration1;
-                            geoData[0, 1].X = distance2;
-                            geoData[0, 1].Y = duration2;
+                            distance1 = geoData12.X;
+                            duration1 = geoData12.Y;
+                            distance2 = geoData21.X;
+                            duration2 = geoData21.Y;
 
+                            geoData = new Point[2, 2];
+                            geoData[1, 0] = geoData12;
+                            geoData[0, 1] = geoData21;
                             orderGeoData.Add(courier.YandexType, geoData);
                         }
 

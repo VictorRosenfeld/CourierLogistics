@@ -65,5 +65,18 @@ namespace DeliveryBuilder.Log
         internal const string MSG_046 = @"Не удалось обновить данные о курьерах (rc = {0}): {1}"; 
         internal const string MSG_047 = @"Не удалось обновить данные о магазинах (rc = {0}): {1}"; 
 
+        internal const string MSG_048 = @"Не удалось построить команду на отгрузку из очереди (rc = {0})"; 
+        internal const string MSG_049 = @"БД ExternalDb. Не удалось отправить команду на отгрузку из очереди (rc = {0})"; 
+        internal const string MSG_050 = @"БД ExternalDb. Не удалось отправить команду на отгрузку из очереди (rc = {0}). Exception: {0}"; 
+
+        internal const string MSG_051 = @"RecalcDeliveries Enter. service_id = {0}"; 
+        internal const string MSG_052 = @"RecalcDeliveries Exit. service_id = {0}, rc = {1}, shops = {2}, orders = {3}, elapsed_time = {4}"; 
+
+        internal const string MSG_053 = @"БД ExternalDb. Не удалось отправить команду отмены (rc = {0})"; 
+        internal const string MSG_054 = @"БД ExternalDb. Не удалось отправить команду отмены (rc = {0}). Exception: {0}"; 
+
+        internal const string MSG_055 = @"Не удалось построить команду c рекомендациями (rc = {0})"; 
+        internal const string MSG_056 = @"БД ExternalDb. Не удалось отправить команду c рекомендациями (rc = {0})"; 
+        internal const string MSG_057 = @"БД ExternalDb. Не удалось отправить команду c рекомендациями (rc = {0}). Exception: {0}"; 
     }
 }

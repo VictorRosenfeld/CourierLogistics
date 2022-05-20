@@ -3,9 +3,11 @@ namespace DeliveryBuilder.ExtraOrders
 {
     using DeliveryBuilder.Orders;
     using System;
-    using System.Collections.Generic;
-    using System.Text;
 
+    /// <summary>
+    /// Сферические расстояния между
+    /// точками на Земной поверхности
+    /// </summary>
     public class GeoDistance
     {
         /// <summary>

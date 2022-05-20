@@ -93,6 +93,50 @@ namespace DeliveryBuilder.Orders
         }
 
         /// <summary>
+        /// Выбрать все заказы требующие доставки
+        /// для заданных магазинов
+        /// </summary>
+        /// <param name="shopId">Id магазинов</param>
+        /// <returns>Выбранные заказы или null</returns>
+        public Order[] GetShopOrders(int[] shopId)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (!IsCreated)
+                    return null;
+                if (shopId == null || shopId.Length <= 0)
+                    return null;
+
+                // 3. Выбираем заказы магазина требующие доставки
+                Order[] result = new Order[orders.Count];
+                int count = 0;
+
+                Array.Sort(shopId);
+
+                foreach (var order in orders.Values)
+                {
+                    if (!order.Completed &&  
+                        (order.Status == OrderStatus.Receipted || order.Status == OrderStatus.Assembled))
+                    {
+                        if (Array.BinarySearch(shopId, order.ShopId) >= 0)
+                            result[count++] = order;
+                    }
+                }
+
+                if (count < result.Length)
+                { Array.Resize(ref result, count); }
+
+                // 4. Выход - Ok
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Выбрать все заказы магазина требующие доставки
         /// с учетом времени расчетов
         /// </summary>
@@ -311,7 +355,7 @@ namespace DeliveryBuilder.Orders
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllOrdersEx)}.{nameof(this.Update)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllOrdersEx)}.{nameof(this.Update)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -381,6 +425,20 @@ namespace DeliveryBuilder.Orders
             {
                 return new int[0];
             }
+        }
+
+        /// <summary>
+        /// Установка свойства Completed заказа
+        /// </summary>
+        /// <param name="orderId">ID заказа</param>
+        /// <param name="value">Значение</param>
+        public void SetCompleted(int orderId, bool value)
+        {
+            if (!IsCreated || orders == null)
+                return;
+            Order order;
+            if (orders.TryGetValue(orderId, out order))
+                order.Completed = value;
         }
     }
 }

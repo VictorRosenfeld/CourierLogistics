@@ -211,7 +211,7 @@ namespace DeliveryBuilder.Couriers
                     int yandexTypeIndex = Array.BinarySearch(yandexTypeName, vehicleRecord.Parameters.Mapper.Yandex.Value);
                     if (yandexTypeIndex < 0)
                     {
-                        Logger.WriteToLog(14, MsessageSeverity.Error, string.Format(Messages.MSG_014, vehicleRecord.VehicleId, vehicleRecord.Parameters.Mapper.Yandex.Value));
+                        Logger.WriteToLog(14, MessageSeverity.Error, string.Format(Messages.MSG_014, vehicleRecord.VehicleId, vehicleRecord.Parameters.Mapper.Yandex.Value));
                         return rc;
                     }
                     vehicleRecord.Parameters.Mapper.Yandex.Id = yandexTypeId[yandexTypeIndex];
@@ -226,7 +226,7 @@ namespace DeliveryBuilder.Couriers
                     CourierTypeRecord record = ConvertVehiclesRecord(vehicleRecord);
                     if (record == null)
                     {
-                        Logger.WriteToLog(14, MsessageSeverity.Error, string.Format(Messages.MSG_014, vehicleRecord.VehicleId, vehicleRecord.Parameters.Mapper.Yandex.Value));
+                        Logger.WriteToLog(14, MessageSeverity.Error, string.Format(Messages.MSG_014, vehicleRecord.VehicleId, vehicleRecord.Parameters.Mapper.Yandex.Value));
                         return rc;
                     }
 
@@ -240,7 +240,7 @@ namespace DeliveryBuilder.Couriers
                     int index = Array.BinarySearch(calculatorKeys, TimeAndCostCalculator.GetMethodName(record.CalcMethod).ToLower());
                     if (index < 0)
                     {
-                        Logger.WriteToLog(17, MsessageSeverity.Error, string.Format(Messages.MSG_017, vehicleRecord.VehicleId, record.CalcMethod));
+                        Logger.WriteToLog(17, MessageSeverity.Error, string.Format(Messages.MSG_017, vehicleRecord.VehicleId, record.CalcMethod));
                         return rc;
 
                     }
@@ -291,7 +291,7 @@ namespace DeliveryBuilder.Couriers
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllCouriersEx)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllCouriersEx)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -312,7 +312,7 @@ namespace DeliveryBuilder.Couriers
                     return null;
                 if(record.Parameters == null || !record.Parameters.IsCreated)
                 {
-                    Logger.WriteToLog(16, MsessageSeverity.Error, string.Format(Messages.MSG_016, record.VehicleId));
+                    Logger.WriteToLog(16, MessageSeverity.Error, string.Format(Messages.MSG_016, record.VehicleId));
                     return null;
                 }
 
@@ -322,56 +322,56 @@ namespace DeliveryBuilder.Couriers
                 double getOrderTime = parameters.GetDoubleParameterValue(parameterGetOrderTime);
                 if (double.IsNaN(getOrderTime) || getOrderTime < 0)
                 {
-                    Logger.WriteToLog(15, MsessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterGetOrderTime));
+                    Logger.WriteToLog(15, MessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterGetOrderTime));
                     return null;
                 }
 
                 double handinTime = parameters.GetDoubleParameterValue(parameterHandinTime);
                 if (double.IsNaN(handinTime) || handinTime < 0)
                 {
-                    Logger.WriteToLog(15, MsessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterHandinTime));
+                    Logger.WriteToLog(15, MessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterHandinTime));
                     return null;
                 }
 
                 double maxОrderWeight = parameters.GetDoubleParameterValue(parameterMaxОrderWeight);
                 if (double.IsNaN(maxОrderWeight) || maxОrderWeight <= 0)
                 {
-                    Logger.WriteToLog(15, MsessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterMaxОrderWeight));
+                    Logger.WriteToLog(15, MessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterMaxОrderWeight));
                     return null;
                 }
 
                 double maxWeight = parameters.GetDoubleParameterValue(parameterMaxWeight);
                 if (double.IsNaN(maxWeight) || maxWeight <= 0 || maxWeight < maxОrderWeight)
                 {
-                    Logger.WriteToLog(15, MsessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterMaxWeight));
+                    Logger.WriteToLog(15, MessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterMaxWeight));
                     return null;
                 }
 
                 double maxDistance = parameters.GetDoubleParameterValue(parameterMaxDistance);
                 if (double.IsNaN(maxDistance) || maxDistance <= 0)
                 {
-                    Logger.WriteToLog(15, MsessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterMaxDistance));
+                    Logger.WriteToLog(15, MessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterMaxDistance));
                     return null;
                 }
 
                 double startDelay = parameters.GetDoubleParameterValue(parameterStartDelay);
                 if (double.IsNaN(startDelay) || startDelay < 0)
                 {
-                    Logger.WriteToLog(15, MsessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterStartDelay));
+                    Logger.WriteToLog(15, MessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterStartDelay));
                     return null;
                 }
 
                 int maxOrders = parameters.GetIntParameterValue(parameterMaxOrders);
                 if (maxOrders <= 0)
                 {
-                    Logger.WriteToLog(15, MsessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterMaxOrders));
+                    Logger.WriteToLog(15, MessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterMaxOrders));
                     return null;
                 }
 
                 string calcMethod = parameters.GetStringParameterValue(parameterCalcMethod);
                 if (string.IsNullOrWhiteSpace(calcMethod))
                 {
-                    Logger.WriteToLog(15, MsessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterCalcMethod));
+                    Logger.WriteToLog(15, MessageSeverity.Error, string.Format(Messages.MSG_015, record.VehicleId, parameterCalcMethod));
                     return null;
                 }
 
@@ -393,7 +393,7 @@ namespace DeliveryBuilder.Couriers
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllCouriersEx)}.{nameof(AllCouriersEx.ConvertVehiclesRecord)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllCouriersEx)}.{nameof(AllCouriersEx.ConvertVehiclesRecord)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return null;
             }
         }
@@ -576,7 +576,7 @@ namespace DeliveryBuilder.Couriers
                     int vehicleId = VehicleIdFromCourierType(courierUpdates.CourierType);
                     if (vehicleId == int.MinValue)
                     {
-                        Logger.WriteToLog(18, MsessageSeverity.Warn, string.Format(Messages.MSG_018, courierUpdates.CourierId, courierUpdates.CourierType));
+                        Logger.WriteToLog(18, MessageSeverity.Warn, string.Format(Messages.MSG_018, courierUpdates.CourierId, courierUpdates.CourierType));
                         continue;
                     }
 
@@ -604,7 +604,7 @@ namespace DeliveryBuilder.Couriers
                         int baseTypeIndex = Array.BinarySearch(baseKeys, vehicleId);
                         if (baseTypeIndex < 0)
                         {
-                            Logger.WriteToLog(19, MsessageSeverity.Warn, string.Format(Messages.MSG_019, courierUpdates.CourierId, courierUpdates.CourierType, vehicleId));
+                            Logger.WriteToLog(19, MessageSeverity.Warn, string.Format(Messages.MSG_019, courierUpdates.CourierId, courierUpdates.CourierType, vehicleId));
                             continue;
                         }
                         CourierBase baseType = baseTypes[baseTypeIndex];
@@ -636,7 +636,7 @@ namespace DeliveryBuilder.Couriers
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllCouriersEx)}.{nameof(this.Update)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllCouriersEx)}.{nameof(this.Update)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }

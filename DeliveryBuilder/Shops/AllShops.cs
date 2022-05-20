@@ -121,9 +121,31 @@ namespace DeliveryBuilder.Shops
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllShops)}.{nameof(this.Update)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllShops)}.{nameof(this.Update)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
+        }
+
+        /// <summary>
+        /// Выбор магазинов, требующих обновления
+        /// </summary>
+        /// <returns>Магазины требующие обновления</returns>
+        public Shop[] GetUpdated()
+        {
+            if (shops == null || shops.Count <= 0)
+                return new Shop[0];
+
+            Shop[] result = new Shop[shops.Count];
+            int count = 0;
+            foreach (var shop in shops.Values)
+            {
+                result[count++] = shop;
+            }
+
+            if (count < result.Length)
+            { Array.Resize(ref result, count); }
+
+            return result;
         }
     }
 }

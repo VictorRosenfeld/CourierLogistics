@@ -170,19 +170,19 @@ namespace DeliveryBuilder.Geo
 
                 if (walkingIndex < 0)
                 {
-                    Logger.WriteToLog(10, MsessageSeverity.Error, Messages.MSG_010);
+                    Logger.WriteToLog(10, MessageSeverity.Error, Messages.MSG_010);
                     return rc;
                 }
 
                 if (cyclingIndex < 0)
                 {
-                    Logger.WriteToLog(11, MsessageSeverity.Error, Messages.MSG_011);
+                    Logger.WriteToLog(11, MessageSeverity.Error, Messages.MSG_011);
                     return rc;
                 }
 
                 if (drivingIndex < 0)
                 {
-                    Logger.WriteToLog(12, MsessageSeverity.Error, Messages.MSG_012);
+                    Logger.WriteToLog(12, MessageSeverity.Error, Messages.MSG_012);
                     return rc;
                 }
 
@@ -208,7 +208,7 @@ namespace DeliveryBuilder.Geo
             catch (Exception ex)
             {
                 LastException = ex;
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoData)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoData)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -239,7 +239,7 @@ namespace DeliveryBuilder.Geo
                 int yandexTypeIndex = Array.BinarySearch(yandexTypeIds, yandexTypeId);
                 if (yandexTypeIndex < 0)
                 {
-                    Logger.WriteToLog(13, MsessageSeverity.Warn, string.Format(Messages.MSG_013, yandexTypeId));
+                    Logger.WriteToLog(13, MessageSeverity.Warn, string.Format(Messages.MSG_013, yandexTypeId));
                     return rc;
                 }
 
@@ -518,7 +518,7 @@ namespace DeliveryBuilder.Geo
             catch (Exception ex)
             {
                 LastException = ex;
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoData)}.{nameof(this.GetData)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoData)}.{nameof(this.GetData)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -549,7 +549,7 @@ namespace DeliveryBuilder.Geo
                 int yandexTypeIndex = Array.BinarySearch(yandexTypeIds, yandexTypeId);
                 if (yandexTypeIndex < 0)
                 {
-                    Logger.WriteToLog(13, MsessageSeverity.Warn, string.Format(Messages.MSG_013, yandexTypeId));
+                    Logger.WriteToLog(13, MessageSeverity.Warn, string.Format(Messages.MSG_013, yandexTypeId));
                     return rc;
                 }
 
@@ -641,7 +641,7 @@ namespace DeliveryBuilder.Geo
             catch (Exception ex)
             {
                 LastException = ex;
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoData)}.{nameof(this.GetData)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoData)}.{nameof(this.GetData)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -687,7 +687,7 @@ namespace DeliveryBuilder.Geo
             catch (Exception ex)
             {
                 LastException = ex;
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoData)}.{nameof(this.Select)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoData)}.{nameof(this.Select)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }

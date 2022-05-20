@@ -1,7 +1,7 @@
 ﻿
 namespace DeliveryBuilder.Queue
 {
-    using DeliveryBuilder.Deliveries;
+    using DeliveryBuilder.Recalc;
     using System;
 
     /// <summary>

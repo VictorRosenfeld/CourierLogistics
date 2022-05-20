@@ -518,5 +518,86 @@ namespace DeliveryBuilder.Db
                 return rc;
             }
         }
+
+        /// <summary>
+        /// Отправка команды
+        /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="messageType">Тип сообщения</param>
+        /// <param name="xmlCmd">Xml текст команды</param>
+        /// <param name="errorMessage">Сообщение</param>
+        /// <returns>0 - сообщение оправлено; иначе - сообщение не отправлено</returns>
+        public int SendXmlCmd(int serviceId, string messageType, string xmlCmd, out string errorMessage)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            LastException = null;
+            errorMessage = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsOpen())
+                    return rc;
+                if (string.IsNullOrWhiteSpace(messageType))
+                    return rc;
+                if (string.IsNullOrWhiteSpace(xmlCmd))
+                    return rc;
+
+                // 3. Отправляем команду
+                rc = 3;
+                using (MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(xmlCmd)))
+                {
+                    using (SqlCommand cmd = new SqlCommand(string.Format(sqlSendCmdEx, connection)))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // @service_id
+                        var parameter = cmd.Parameters.Add("@service_id", SqlDbType.Int);
+                        parameter.Direction = ParameterDirection.Input;
+                        parameter.Value = serviceId;
+
+                        // @message_type
+                        parameter = cmd.Parameters.Add("@message_type", SqlDbType.NVarChar, 256);
+                        parameter.Direction = ParameterDirection.Input;
+                        parameter.Value = messageType;
+
+                        // @error_message
+                        var errorParamreter = cmd.Parameters.Add("@error_message", SqlDbType.NVarChar, 4000);
+                        errorParamreter.Direction = ParameterDirection.Output;
+
+                        // @xml_cmd
+                        parameter = cmd.Parameters.Add("@xml_cmd", SqlDbType.Xml);
+                        parameter.Direction = ParameterDirection.Input;
+                        parameter.Value = new SqlXml(ms);
+
+                        // return code
+                        var returnParameter = cmd.Parameters.Add("@ReturnCode", SqlDbType.Int);
+                        returnParameter.Direction = ParameterDirection.ReturnValue;
+
+                        cmd.ExecuteNonQuery();
+
+                        errorMessage = errorParamreter.Value as string;
+
+                        var retCode = returnParameter.Value;
+                        if (!(retCode is int))
+                            return rc;
+                        int rc1 = (int)retCode;
+                        if (rc1 != 0)
+                            return rc = 10 * rc + rc1;
+                    }
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                LastException = ex;
+                return rc;
+            }
+        }
     }
 }

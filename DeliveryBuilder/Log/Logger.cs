@@ -178,7 +178,7 @@ namespace DeliveryBuilder.Log
         /// Запись в лог
         /// </summary>
         /// <param name="message"></param>
-        public static void WriteToLog(int msgNo, MsessageSeverity severity, string message)
+        public static void WriteToLog(int msgNo, MessageSeverity severity, string message)
         {
             try
             {
@@ -192,13 +192,13 @@ namespace DeliveryBuilder.Log
                 GlobalContext.Properties[MESSAGE_NUMBER_PROPERTY] = msgNo;
                 switch (severity)
                 {
-                    case MsessageSeverity.Info:
+                    case MessageSeverity.Info:
                         log.Info(message);
                         break;
-                    case MsessageSeverity.Warn:
+                    case MessageSeverity.Warn:
                         log.Warn(message);
                         break;
-                    case MsessageSeverity.Error:
+                    case MessageSeverity.Error:
                         log.Error(message);
                         break;
                     default:
@@ -240,7 +240,7 @@ namespace DeliveryBuilder.Log
     /// <summary>
     /// Типы сообщений
     /// </summary>
-    public enum MsessageSeverity
+    public enum MessageSeverity
     {
         Info = 1,
 

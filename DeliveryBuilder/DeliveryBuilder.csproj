@@ -114,6 +114,14 @@
     <Compile Include="Queue\DeliveryQueue.cs" />
     <Compile Include="Queue\QueueItem.cs" />
     <Compile Include="Queue\QueueItemType.cs" />
+    <Compile Include="Recalc\Calcs.cs" />
+    <Compile Include="Recalc\CalcThreadContext.cs" />
+    <Compile Include="Recalc\CourierDeliveryInfo.cs" />
+    <Compile Include="Recalc\DilateRoutesContext.cs" />
+    <Compile Include="Recalc\Permutations.cs" />
+    <Compile Include="Recalc\RouteBuilder.cs" />
+    <Compile Include="Recalc\ThreadContext.cs" />
+    <Compile Include="Recalc\ThreadContextEx.cs" />
     <Compile Include="SalesmanProblemLevels\SalesmanLevels.cs" />
     <Compile Include="Shops\AllShops.cs" />
     <Compile Include="Shops\Shop.cs" />

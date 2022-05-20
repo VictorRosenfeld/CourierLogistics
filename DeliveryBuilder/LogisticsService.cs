@@ -6,16 +6,21 @@ namespace DeliveryBuilder
     using DeliveryBuilder.Cmds;
     using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Db;
+    using DeliveryBuilder.DeliveryCover;
+    //using DeliveryBuilder.Deliveries;
     using DeliveryBuilder.Geo;
     using DeliveryBuilder.Log;
     using DeliveryBuilder.Orders;
     using DeliveryBuilder.Queue;
+    using DeliveryBuilder.Recalc;
     using DeliveryBuilder.SalesmanProblemLevels;
     using DeliveryBuilder.Shops;
     using System;
     using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
     using System.Reflection;
+    using System.Text;
     using System.Threading;
     using System.Timers;
     using System.Xml.Serialization;
@@ -214,13 +219,13 @@ namespace DeliveryBuilder
 
                 // 3. Выводим сообщение о начале работы
                 rc = 3;
-                Logger.WriteToLog(1, MsessageSeverity.Info, string.Format(Messages.MSG_001, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
+                Logger.WriteToLog(1, MessageSeverity.Info, string.Format(Messages.MSG_001, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
 
                 // 4. Проверяем исходные данные
                 rc = 4;
                 if (string.IsNullOrWhiteSpace(conectionString))
                 {
-                    Logger.WriteToLog(20, MsessageSeverity.Error, Messages.MSG_020);
+                    Logger.WriteToLog(20, MessageSeverity.Error, Messages.MSG_020);
                     return rc;
                 }
 
@@ -232,9 +237,9 @@ namespace DeliveryBuilder
                 {
                     string exceptionMessage = lsDataDb.GetLastErrorMessage();
                     if (string.IsNullOrEmpty(exceptionMessage))
-                    { Logger.WriteToLog(21, MsessageSeverity.Error, Messages.MSG_021); }
+                    { Logger.WriteToLog(21, MessageSeverity.Error, Messages.MSG_021); }
                     else
-                    { Logger.WriteToLog(22, MsessageSeverity.Error, string.Format(Messages.MSG_022, exceptionMessage)); }
+                    { Logger.WriteToLog(22, MessageSeverity.Error, string.Format(Messages.MSG_022, exceptionMessage)); }
                     return rc;
                 }
 
@@ -245,9 +250,9 @@ namespace DeliveryBuilder
                 {
                     string exceptionMessage = lsDataDb.GetLastErrorMessage();
                     if (string.IsNullOrEmpty(exceptionMessage))
-                    { Logger.WriteToLog(23, MsessageSeverity.Error, Messages.MSG_023); }
+                    { Logger.WriteToLog(23, MessageSeverity.Error, Messages.MSG_023); }
                     else
-                    { Logger.WriteToLog(24, MsessageSeverity.Error, string.Format(Messages.MSG_024, exceptionMessage)); }
+                    { Logger.WriteToLog(24, MessageSeverity.Error, string.Format(Messages.MSG_024, exceptionMessage)); }
                     return rc;
                 }
 
@@ -255,7 +260,7 @@ namespace DeliveryBuilder
                 rc = 7;
                 if (!TestBuilderConfig(config))
                 {
-                    Logger.WriteToLog(25, MsessageSeverity.Error, Messages.MSG_025);
+                    Logger.WriteToLog(25, MessageSeverity.Error, Messages.MSG_025);
                     return rc;
                 }
 
@@ -265,7 +270,7 @@ namespace DeliveryBuilder
                 int rc1 = geoData.Create(config);
                 if (rc1 != 0)
                 {
-                    Logger.WriteToLog(26, MsessageSeverity.Error, string.Format(Messages.MSG_026, rc1));
+                    Logger.WriteToLog(26, MessageSeverity.Error, string.Format(Messages.MSG_026, rc1));
                     return rc = 10000 * rc + rc1;
                 }
 
@@ -277,9 +282,9 @@ namespace DeliveryBuilder
                 {
                     string exceptionMessage = lsDataDb.GetLastErrorMessage();
                     if (string.IsNullOrEmpty(exceptionMessage))
-                    { Logger.WriteToLog(27, MsessageSeverity.Error, Messages.MSG_027); }
+                    { Logger.WriteToLog(27, MessageSeverity.Error, Messages.MSG_027); }
                     else
-                    { Logger.WriteToLog(28, MsessageSeverity.Error, string.Format(Messages.MSG_028, exceptionMessage)); }
+                    { Logger.WriteToLog(28, MessageSeverity.Error, string.Format(Messages.MSG_028, exceptionMessage)); }
                     return rc = 10000 * rc + rc1;
                 }
 
@@ -287,7 +292,7 @@ namespace DeliveryBuilder
                 rc1 = thresholds.Create(records);
                 if (rc1 != 0)
                 {
-                    Logger.WriteToLog(29, MsessageSeverity.Error, string.Format(Messages.MSG_029, rc1));
+                    Logger.WriteToLog(29, MessageSeverity.Error, string.Format(Messages.MSG_029, rc1));
                     return rc = 10000 * rc + rc1;
                 }
 
@@ -299,9 +304,9 @@ namespace DeliveryBuilder
                 {
                     string exceptionMessage = lsDataDb.GetLastErrorMessage();
                     if (string.IsNullOrEmpty(exceptionMessage))
-                    { Logger.WriteToLog(27, MsessageSeverity.Error, Messages.MSG_030); }
+                    { Logger.WriteToLog(27, MessageSeverity.Error, Messages.MSG_030); }
                     else
-                    { Logger.WriteToLog(28, MsessageSeverity.Error, string.Format(Messages.MSG_031, exceptionMessage)); }
+                    { Logger.WriteToLog(28, MessageSeverity.Error, string.Format(Messages.MSG_031, exceptionMessage)); }
                     return rc = 10000 * rc + rc1;
                 }
 
@@ -311,7 +316,7 @@ namespace DeliveryBuilder
                 rc1 = couriers.Create(vehiclesRecords, config.Parameters.GeoYandex.TypeNames, thresholds);
                 if (rc1 != 0)
                 {
-                    Logger.WriteToLog(32, MsessageSeverity.Error, string.Format(Messages.MSG_032, rc1));
+                    Logger.WriteToLog(32, MessageSeverity.Error, string.Format(Messages.MSG_032, rc1));
                     return rc = 10000 * rc + rc1;
                 }
 
@@ -325,7 +330,7 @@ namespace DeliveryBuilder
                 rc1 = orders.Create();
                 if (rc1 != 0)
                 {
-                    Logger.WriteToLog(33, MsessageSeverity.Error, string.Format(Messages.MSG_033, rc1));
+                    Logger.WriteToLog(33, MessageSeverity.Error, string.Format(Messages.MSG_033, rc1));
                     return rc = 10000 * rc + rc1;
                 }
 
@@ -335,7 +340,7 @@ namespace DeliveryBuilder
                 rc1 = limitations.Create(config.SalesmanLevels);
                 if (rc1 != 0)
                 {
-                    Logger.WriteToLog(34, MsessageSeverity.Error, string.Format(Messages.MSG_034, rc1));
+                    Logger.WriteToLog(34, MessageSeverity.Error, string.Format(Messages.MSG_034, rc1));
                     return rc = 10000 * rc + rc1;
                 }
 
@@ -367,7 +372,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
             }
@@ -384,7 +389,7 @@ namespace DeliveryBuilder
         public void Close()
         {
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-            Logger.WriteToLog(1, MsessageSeverity.Info, string.Format(Messages.MSG_002, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
+            Logger.WriteToLog(1, MessageSeverity.Info, string.Format(Messages.MSG_002, Path.GetFileNameWithoutExtension(fileVersionInfo.FileName), fileVersionInfo.ProductVersion, serviceId));
             Dispose(true);
         }
 
@@ -402,86 +407,86 @@ namespace DeliveryBuilder
                 // 2. Проверяем исходные данные
                 if (config == null)
                 {
-                    Logger.WriteToLog(3, MsessageSeverity.Error, Messages.MSG_003);
+                    Logger.WriteToLog(3, MessageSeverity.Error, Messages.MSG_003);
                     return false;
                 }
 
                 // 3. Проверка Fuctional Parameters
                 bool passed = false;
                 if (config.Parameters == null)
-                { Logger.WriteToLog(4, MsessageSeverity.Error, Messages.MSG_004); }
+                { Logger.WriteToLog(4, MessageSeverity.Error, Messages.MSG_004); }
                 else if (config.Parameters.CourierDeliveryMargin < 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.CourierDeliveryMargin))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.CourierDeliveryMargin))); }
                 else if (config.Parameters.TaxiDeliveryMargin < 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.TaxiDeliveryMargin))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.TaxiDeliveryMargin))); }
                 else if (config.Parameters.СheckingMargin < 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.СheckingMargin))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.СheckingMargin))); }
                 else if (config.Parameters.TickInterval < 50)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.TickInterval))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.TickInterval))); }
                 else if (config.Parameters.HeartbeatInterval <= 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.HeartbeatInterval))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.HeartbeatInterval))); }
                 else if (config.Parameters.RecalcInterval <= 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.RecalcInterval))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.RecalcInterval))); }
                 else if (config.Parameters.QueueInterval <= 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.QueueInterval))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.QueueInterval))); }
                 else if (config.Parameters.QueueCatchingInterval < 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.QueueCatchingInterval))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.QueueCatchingInterval))); }
                 else if (config.Parameters.GeoCache == null)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache))); }
                 else if (config.Parameters.GeoCache.Capacity < 100)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache.Capacity))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache.Capacity))); }
                 else if (config.Parameters.GeoCache.SavingInterval < 10)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache.SavingInterval))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache.SavingInterval))); }
                 else if (config.Parameters.GeoCache.CheckInterval <= 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache.CheckInterval))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoCache.CheckInterval))); }
                 else if (config.Parameters.GeoYandex == null)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.GeoYandex.ApiKey))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.ApiKey))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.ApiKey))); }
                 else if (config.Parameters.GeoYandex.CyclingRatio <= 0 || config.Parameters.GeoYandex.CyclingRatio > 1)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.CyclingRatio))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.CyclingRatio))); }
                 else if (config.Parameters.GeoYandex.Timeout <= 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.Timeout))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.Timeout))); }
                 else if (config.Parameters.GeoYandex.TypeNames == null || config.Parameters.GeoYandex.TypeNames.Length <= 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.TypeNames))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.TypeNames))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.GeoYandex.Url))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.Url))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.Url))); }
                 else if (config.Parameters.GeoYandex.PairLimit <= 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.PairLimit))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.GeoYandex.PairLimit))); }
                 else if (config.Parameters.StartCondition == null)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.StartCondition))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.StartCondition))); }
                 else if (config.Parameters.ExternalDb == null)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.СonnectionString))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.СonnectionString))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.СonnectionString))); }
                 else if (config.Parameters.ExternalDb.ConnectionTimeout <= 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.ConnectionTimeout))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.ConnectionTimeout))); }
                 else if (config.Parameters.ExternalDb.CmdService == null)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.Cmd1MessageType))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Cmd1MessageType))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Cmd1MessageType))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.Cmd2MessageType))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Cmd2MessageType))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Cmd2MessageType))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.Cmd3MessageType))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Cmd3MessageType))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Cmd3MessageType))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.DataMessageType))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.DataMessageType))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.DataMessageType))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.HeartbeatMessageType))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.HeartbeatMessageType))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.HeartbeatMessageType))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.CmdService.Name))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Name))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.CmdService.Name))); }
                 else if (config.Parameters.ExternalDb.DataService == null)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.DataService.CourierMesageType))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.CourierMesageType))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.CourierMesageType))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.DataService.OrderMesageType))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.OrderMesageType))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.OrderMesageType))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.DataService.QueueName))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.QueueName))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.QueueName))); }
                 else if (string.IsNullOrWhiteSpace(config.Parameters.ExternalDb.DataService.ShopMesageType))
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.ShopMesageType))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.ShopMesageType))); }
                 else if (config.Parameters.ExternalDb.DataService.ReceiveTimeout <= 0)
-                { Logger.WriteToLog(5, MsessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.ReceiveTimeout))); }
+                { Logger.WriteToLog(5, MessageSeverity.Error, string.Format(Messages.MSG_005, nameof(config.Parameters.ExternalDb.DataService.ReceiveTimeout))); }
                 else
                 { passed = true; }
 
@@ -493,7 +498,7 @@ namespace DeliveryBuilder
 
                 if (config.SalesmanLevels == null || config.SalesmanLevels.Length <= 0)
                 {
-                    Logger.WriteToLog(6, MsessageSeverity.Error, Messages.MSG_006);
+                    Logger.WriteToLog(6, MessageSeverity.Error, Messages.MSG_006);
                     passed = false;
                 }
                 else
@@ -502,7 +507,7 @@ namespace DeliveryBuilder
                     {
                         if (slevel.Level <= 0 || slevel.Orders <= 0)
                         {
-                            Logger.WriteToLog(6, MsessageSeverity.Error, Messages.MSG_006);
+                            Logger.WriteToLog(6, MessageSeverity.Error, Messages.MSG_006);
                             passed = false;
                         }
                     }
@@ -515,21 +520,21 @@ namespace DeliveryBuilder
                 passed = false;
 
                 if (config.Cloud == null)
-                { Logger.WriteToLog(7, MsessageSeverity.Error, Messages.MSG_007);}
+                { Logger.WriteToLog(7, MessageSeverity.Error, Messages.MSG_007);}
                 else if (config.Cloud.Delta < 0)
-                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Delta))); }
+                { Logger.WriteToLog(8, MessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Delta))); }
                 else if (config.Cloud.Radius <= 0)
-                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Radius))); }
+                { Logger.WriteToLog(8, MessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Radius))); }
                 else if (config.Cloud.Size5 <= 0)
-                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size5))); }
+                { Logger.WriteToLog(8, MessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size5))); }
                 else if (config.Cloud.Size6 <= 0)
-                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size6))); }
+                { Logger.WriteToLog(8, MessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size6))); }
                 else if (config.Cloud.Size7 <= 0)
-                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size7))); }
+                { Logger.WriteToLog(8, MessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size7))); }
                 else if (config.Cloud.Size8 <= 0)
-                { Logger.WriteToLog(8, MsessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size8))); }
+                { Logger.WriteToLog(8, MessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size8))); }
                 else if (string.IsNullOrWhiteSpace(config.GroupId))
-                { Logger.WriteToLog(9, MsessageSeverity.Error, string.Format(Messages.MSG_009, nameof(config.GroupId))); }
+                { Logger.WriteToLog(9, MessageSeverity.Error, string.Format(Messages.MSG_009, nameof(config.GroupId))); }
                 else
                 { passed = true; }
 
@@ -538,7 +543,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, nameof(this.TestBuilderConfig),(ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, nameof(this.TestBuilderConfig),(ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return false;
             }
@@ -572,9 +577,9 @@ namespace DeliveryBuilder
                 {
                     string exceptionMessage = lsDataDb.GetLastErrorMessage();
                     if (string.IsNullOrEmpty(exceptionMessage))
-                    { Logger.WriteToLog(35, MsessageSeverity.Error, Messages.MSG_035); }
+                    { Logger.WriteToLog(35, MessageSeverity.Error, Messages.MSG_035); }
                     else
-                    { Logger.WriteToLog(36, MsessageSeverity.Error, string.Format(Messages.MSG_036, exceptionMessage)); }
+                    { Logger.WriteToLog(36, MessageSeverity.Error, string.Format(Messages.MSG_036, exceptionMessage)); }
                     db.Close();
                     connectionFailed = false;
                     return;
@@ -617,19 +622,19 @@ namespace DeliveryBuilder
                     { UpdateData(dataRecords); }
 
                     // 7. Пересчиываем отгрузки
-                    RecalcDeliveries();
+                    RecalcDeliveries(db);
                 }
 
                 // 8. Диспетчируем очередь
                 if (queueTickCount <= 0)
                 {
-                    Queue_Elapsed();
+                    DispatchQueue(db);
                     queueTickCount = config.Parameters.QueueInterval;
                 }
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Timer_Elapsed)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Timer_Elapsed)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
             }
             finally
@@ -655,7 +660,7 @@ namespace DeliveryBuilder
         /// Диспетчеризация очереди 
         /// </summary>
         /// <returns></returns>
-        private int Queue_Elapsed(ExternalDb db)
+        private int DispatchQueue(ExternalDb db)
         {
             // 1. Инициализация
             int rc = 1;
@@ -674,13 +679,51 @@ namespace DeliveryBuilder
                 if (queueItems == null || queueItems.Length <= 0)
                     return rc = 0;
 
-                // 4. Отправляем отгрузки
+                // 4. Строим команду на отгрузку
                 rc = 4;
+                string xmlCmd;
+                CourierDeliveryInfo[] deliveries = new CourierDeliveryInfo[queueItems.Length];
+                for (int i = 0; i < queueItems.Length; i++)
+                { deliveries[i] = queueItems[i].Delivery; }
 
+                int rc1 = CreateDeliveryCmd(deliveries, 1, serviceId, couriers, out xmlCmd);
+                if (rc1 != 0)
+                {
+                    Logger.WriteToLog(48, MessageSeverity.Error, string.Format(Messages.MSG_048, rc1));
+                    return rc = 100 * rc + rc1;
+                }
+
+                // 5. Отправляем команду
+                rc = 5;
+                string errorMessage;
+                rc1 = db.SendXmlCmd(serviceId, config.Parameters.ExternalDb.CmdService.Cmd2MessageType, xmlCmd, out errorMessage);
+                if (rc1 != 0)
+                {
+                    if (string.IsNullOrWhiteSpace(errorMessage))
+                    { Logger.WriteToLog(49, MessageSeverity.Warn, string.Format(Messages.MSG_049, rc1)); }
+                    else
+                    { Logger.WriteToLog(50, MessageSeverity.Warn, string.Format(Messages.MSG_050, rc1, errorMessage)); }
+                    return rc = 1000 * rc + rc1;
+                }
+
+                // 6. Помечаем отгрузки в очереди и заказы в них, как отгруженные
+                rc = 6;
+                for (int i = 0; i < queueItems.Length; i++)
+                {
+                    queueItems[i].ItemType = QueueItemType.Completed;
+                    foreach (var order in queueItems[i].Delivery.Orders)
+                    { order.Completed = false; }
+                }
+
+                queue.Clear();
+
+                // 7. Выход - Ok
+                rc = 0;
+                return rc;
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Queue_Elapsed)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.DispatchQueue)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
             }
@@ -716,9 +759,9 @@ namespace DeliveryBuilder
                 if (rc1 != 0)
                 {
                     if (string.IsNullOrWhiteSpace(errorMessage))
-                    { Logger.WriteToLog(37, MsessageSeverity.Warn, string.Format(Messages.MSG_037, rc1)); }
+                    { Logger.WriteToLog(37, MessageSeverity.Warn, string.Format(Messages.MSG_037, rc1)); }
                     else
-                    { Logger.WriteToLog(38, MsessageSeverity.Warn, string.Format(Messages.MSG_038, rc1, errorMessage)); }
+                    { Logger.WriteToLog(38, MessageSeverity.Warn, string.Format(Messages.MSG_038, rc1, errorMessage)); }
                     return rc = 1000 * rc + rc1;
                 }
 
@@ -728,7 +771,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(38, MsessageSeverity.Error, string.Format(Messages.MSG_038, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(38, MessageSeverity.Error, string.Format(Messages.MSG_038, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -764,9 +807,9 @@ namespace DeliveryBuilder
                 if (rc1 != 0)
                 {
                     if (string.IsNullOrWhiteSpace(errorMessage))
-                    { Logger.WriteToLog(39, MsessageSeverity.Warn, string.Format(Messages.MSG_039, rc1)); }
+                    { Logger.WriteToLog(39, MessageSeverity.Warn, string.Format(Messages.MSG_039, rc1)); }
                     else
-                    { Logger.WriteToLog(40, MsessageSeverity.Warn, string.Format(Messages.MSG_040, rc1, errorMessage)); }
+                    { Logger.WriteToLog(40, MessageSeverity.Warn, string.Format(Messages.MSG_040, rc1, errorMessage)); }
                     return rc = 1000 * rc + rc1;
                 }
 
@@ -776,7 +819,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(38, MsessageSeverity.Error, string.Format(Messages.MSG_040, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(38, MessageSeverity.Error, string.Format(Messages.MSG_040, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -810,9 +853,9 @@ namespace DeliveryBuilder
                 {
                     string errorMessage = db.GetLastErrorMessage();
                     if (string.IsNullOrWhiteSpace(errorMessage))
-                    { Logger.WriteToLog(41, MsessageSeverity.Warn, string.Format(Messages.MSG_041, rc1)); }
+                    { Logger.WriteToLog(41, MessageSeverity.Warn, string.Format(Messages.MSG_041, rc1)); }
                     else
-                    { Logger.WriteToLog(42, MsessageSeverity.Warn, string.Format(Messages.MSG_042, rc1, errorMessage)); }
+                    { Logger.WriteToLog(42, MessageSeverity.Warn, string.Format(Messages.MSG_042, rc1, errorMessage)); }
                     return rc = 1000 * rc + rc1;
                 }
 
@@ -822,7 +865,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(38, MsessageSeverity.Error, string.Format(Messages.MSG_042, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(38, MessageSeverity.Error, string.Format(Messages.MSG_042, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -884,13 +927,13 @@ namespace DeliveryBuilder
                             int rc1 = orders.Update(ordersUpdates, shops, couriers);
                             if (rc1 != 0)
                             {
-                                Logger.WriteToLog(45, MsessageSeverity.Warn, string.Format(Messages.MSG_045, rc, dr.MessageBody));
+                                Logger.WriteToLog(45, MessageSeverity.Warn, string.Format(Messages.MSG_045, rc, dr.MessageBody));
                             }
                         }
                         catch (Exception ex)
                         {
-                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, dr.MessageBody));
-                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                            Logger.WriteToLog(44, MessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, dr.MessageBody));
+                            Logger.WriteToLog(44, MessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                         }
                     }
                     else if (dr.MessageTypeName.Equals(courierMessageType, StringComparison.CurrentCultureIgnoreCase))
@@ -906,13 +949,13 @@ namespace DeliveryBuilder
                             int rc1 = couriers.Update(couriersUpdates, thresholds, shops);
                             if (rc1 != 0)
                             {
-                                Logger.WriteToLog(46, MsessageSeverity.Warn, string.Format(Messages.MSG_046, rc, dr.MessageBody));
+                                Logger.WriteToLog(46, MessageSeverity.Warn, string.Format(Messages.MSG_046, rc, dr.MessageBody));
                             }
                         }
                         catch (Exception ex)
                         {
-                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, dr.MessageBody));
-                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                            Logger.WriteToLog(44, MessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, dr.MessageBody));
+                            Logger.WriteToLog(44, MessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                         }
                     }
                     else if (dr.MessageTypeName.Equals(shopMessageType, StringComparison.CurrentCultureIgnoreCase))
@@ -928,18 +971,18 @@ namespace DeliveryBuilder
                             int rc1 = shops.Update(shopsUpdates);
                             if (rc1 != 0)
                             {
-                                Logger.WriteToLog(47, MsessageSeverity.Warn, string.Format(Messages.MSG_047, rc, dr.MessageBody));
+                                Logger.WriteToLog(47, MessageSeverity.Warn, string.Format(Messages.MSG_047, rc, dr.MessageBody));
                             }
                         }
                         catch (Exception ex)
                         {
-                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, dr.MessageBody));
-                            Logger.WriteToLog(44, MsessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                            Logger.WriteToLog(44, MessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, dr.MessageBody));
+                            Logger.WriteToLog(44, MessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                         }
                     }
                     else
                     {
-                        Logger.WriteToLog(43, MsessageSeverity.Warn, string.Format(Messages.MSG_043, dr.MessageTypeName));
+                        Logger.WriteToLog(43, MessageSeverity.Warn, string.Format(Messages.MSG_043, dr.MessageTypeName));
                     }
                 }
 
@@ -949,7 +992,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.UpdateData)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.UpdateData)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
             }
@@ -967,6 +1010,815 @@ namespace DeliveryBuilder
                 return -1;
             if (record1.QueuingOrder > record2.QueuingOrder)
                 return -1;
+            return 0;
+        }
+
+        /// <summary>
+        /// Пострение команд на отгрузку или рекомендаций
+        /// </summary>
+        /// <param name="deliveries">Отгрузки</param>
+        /// <param name="cmdType">Тип команды: 0 - рекомендации; 1 - команды на отгрузку</param>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="allCouriers">Данные о курьерах</param>
+        /// <param name="xmlCmd">Построенные команды</param>
+        /// <returns>0 - команды успешно переданы; иначе - команды не переданы</returns>
+        private static int CreateDeliveryCmd(Recalc.CourierDeliveryInfo[] deliveries, int cmdType, int serviceId, AllCouriersEx allCouriers, out string xmlCmd)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            xmlCmd = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (deliveries == null || deliveries.Length <= 0)
+                    return rc;
+                if (!(cmdType == 0 || cmdType == 1))
+                    return rc;
+                if (allCouriers == null || !allCouriers.IsCreated)
+                    return rc;
+
+                // 3. Строим текст команды
+                rc = 3;
+                StringBuilder cmd = new StringBuilder(1200 * deliveries.Length);
+                CourierBase[] baseTypes = allCouriers.BaseTypes;
+                int[] baseKeys = allCouriers.BaseKeys;
+                int[] baseTypeCount = new int[baseKeys.Length];
+                int[] deliveryDserviceId = new int[baseKeys.Length];
+
+                cmd.Append($@"<deliveries service_id=""{serviceId}"">");
+
+                for (int i = 0; i < deliveries.Length; i++)
+                {
+                    // 4.0 Извлекаем отгрузку
+                    rc = 40;
+                    CourierDeliveryInfo delivery = deliveries[i];
+                    if (delivery.OrderCount <= 0)
+                        continue;
+                    Order[] deliveryOrders = delivery.Orders;
+
+                    // 4.1 <delivery ... >
+                    rc = 41;
+
+                    cmd.Append($@"<delivery guid=""{Guid.NewGuid()}"" status=""{cmdType}"" shop_id=""{delivery.FromShop.Id}"" cause=""{delivery.Cause}"" delivery_service_id=""{delivery.DeliveryCourier.DServiceType}"" courier_id=""{delivery.DeliveryCourier.Id}"" date_target=""{delivery.StartDeliveryInterval:yyyy-MM-ddTHH:mm:ss.fff}"" date_target_end=""{delivery.EndDeliveryInterval:yyyy-MM-ddTHH:mm:ss.fff}"" priority=""{delivery.Priority}"">");
+
+                    // 4.2 <orders>...</orders>
+                    rc = 42;
+                    cmd.Append("<orders>");
+                    int courierVehicleId = delivery.DeliveryCourier.VehicleID;
+                    Array.Clear(baseTypeCount, 0, baseTypeCount.Length);
+                    baseTypeCount[Array.BinarySearch(baseKeys, courierVehicleId)] = int.MinValue;
+                    int orderCount = delivery.OrderCount;
+
+                    for (int j = 0; j < orderCount; j++)
+                    {
+                        Order order = deliveryOrders[j];
+                        cmd.Append($@"<order status=""{(int)order.Status}"" order_id=""{order.Id}""/>");
+                        int[] orderVehicleId = order.VehicleTypes;
+
+                        if (orderVehicleId != null && orderVehicleId.Length > 0)
+                        {
+                            for (int k = 0; k < orderVehicleId.Length; k++)
+                            {
+                                int index = Array.BinarySearch(baseKeys, orderVehicleId[k]);
+                                if (index >= 0)
+                                    baseTypeCount[index]++;
+                            }
+                        }
+                    }
+
+                    cmd.Append("</orders>");
+
+                    // 4.3 <alternative_delivery_service>...</alternative_delivery_service>
+                    rc = 43;
+                    int count = 0;
+
+                    for (int j = 0; j < baseTypeCount.Length; j++)
+                    {
+                        if (baseTypeCount[j] >= orderCount)
+                            deliveryDserviceId[count++] = baseTypes[j].DServiceType;
+                    }
+
+                    if (count <= 0)
+                    {
+                        cmd.Append("<alternative_delivery_service/>");
+                    }
+                    else
+                    {
+                        cmd.Append("<alternative_delivery_service>");
+
+                        for (int j = 0; j < count; j++)
+                        {
+                            cmd.Append($@"<service id=""{deliveryDserviceId[j]}""/>");
+                        }
+
+                        cmd.Append("</alternative_delivery_service>");
+                    }
+
+                    // 4.4 <node_info ... >
+                    rc = 44;
+                    string cost = string.Format(CultureInfo.InvariantCulture, "{0:0.0#########}", delivery.Cost);
+                    string weight = string.Format(CultureInfo.InvariantCulture, "{0:0.0#########}", delivery.Weight);
+                    string reserveTime = string.Format(CultureInfo.InvariantCulture, "{0:0.0#}", delivery.ReserveTime.TotalMinutes);
+                    string deliveryTime = string.Format(CultureInfo.InvariantCulture, "{0:0.0#}", delivery.DeliveryTime);
+                    string executionTime = string.Format(CultureInfo.InvariantCulture, "{0:0.0#}", delivery.ExecutionTime);
+
+                    cmd.Append($@"<node_info calc_time=""{delivery.CalculationTime:yyyy-MM-ddTHH:mm:ss.fff}"" cost=""{cost}"" weight=""{weight}"" is_loop=""{delivery.IsLoop}"" start_delivery_interval=""{delivery.StartDeliveryInterval:yyyy-MM-ddTHH:mm:ss.fff}"" end_delivery_interval=""{delivery.EndDeliveryInterval:yyyy-MM-ddTHH:mm:ss.fff}"" reserve_time=""{reserveTime}"" delivery_time=""{deliveryTime}"" execution_time=""{executionTime}"">");
+
+                    // 4.5 <node ... />
+                    rc = 45;
+                    Point[] nodeInfo = delivery.NodeInfo;
+
+                    for (int j = 0; j < nodeInfo.Length; j++)
+                    {
+                        cmd.Append($@"<node distance=""{nodeInfo[j].X}"" duration=""{nodeInfo[j].Y}""/>");
+                    }
+
+                    // 4.6 </node_info>
+                    rc = 46;
+                    cmd.Append("</node_info>");
+
+                    // 4.7 <node_delivery_time>
+                    rc = 47;
+                    cmd.Append("<node_delivery_time>");
+
+                    // 4.8 <node ... />
+                    rc = 48;
+
+                    double[] nodeDeliveryTime = delivery.NodeDeliveryTime;
+
+                    for (int j = 0; j < nodeDeliveryTime.Length; j++)
+                    {
+                        deliveryTime = string.Format(CultureInfo.InvariantCulture, "{0:0.0#}", nodeDeliveryTime[j]);
+                        cmd.Append($@"<node delivery_time=""{deliveryTime}""/>");
+                    }
+
+                    // 4.9 </node_delivery_time>
+                    rc = 47;
+                    cmd.Append("</node_delivery_time>");
+
+                    // 4.10 </delivery>
+                    rc = 410;
+                    cmd.Append("</delivery>");
+                }
+
+                // 4.11
+                rc = 411;
+                cmd.Append("</deliveries>");
+
+                xmlCmd = cmd.ToString();
+
+                // 5. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(LogisticsService.CreateDeliveryCmd)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                return rc;
+            }
+        }
+
+        private int RecalcDeliveries(ExternalDb db)
+        {
+            // 1. Иициализация
+            int rc = 1;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            LastException = null;
+            DateTime calc_time = DateTime.Now;
+            int recalcShopCount = 0;
+            int recalcOrderCount = 0;
+            Shop[] recalcShops = null;
+
+            try
+            {
+                // 2. Сообщение о начале пересчета
+                rc = 2;
+                Logger.WriteToLog(51, MessageSeverity.Info, string.Format(Messages.MSG_051, serviceId));
+
+                // 3. Выбираем магазины требующие пересчета
+                rc = 3;
+                recalcShops = shops.GetUpdated();
+                if (recalcShops == null || recalcShops.Length <= 0)
+                    return rc = 0;
+
+                recalcShopCount = recalcShops.Length;
+
+                // 4. Выбираем заказы требующие пересчета
+                rc = 4;
+                int[] recalcShopId = new int[recalcShopCount];
+                for (int i = 0; i < recalcShopCount; i++)
+                { recalcShopId[i] = recalcShops[i].Id; }
+
+                Order[] recalcOrders = orders.GetShopOrders(recalcShopId);
+                if (recalcOrders == null || recalcOrders.Length <= 0)
+                {
+                    queue.Update(recalcShopId, null);
+                    return rc = 0;
+                }
+
+                recalcOrderCount = recalcOrders.Length;
+
+                // 5. Выбираем способы доставки заказов
+                rc = 5;
+                //int[] recalcOrderId = new int[recalcOrderCount];
+                //for (int i = 0; i < recalcOrderCount; i++)
+                //{ recalcOrderId[i] = recalcOrders[i].Id; }
+                int[] requiredVehicleTypes = AllOrdersEx.GetOrderVehicleTypes(recalcOrders);
+
+                // 6. Определяем число потоков для расчетов
+                rc = 6;
+                int threadCount = 2 * Environment.ProcessorCount;
+                if (threadCount < 8)
+                {
+                    threadCount = 8;
+                }
+                else if (threadCount > 16)
+                {
+                    threadCount = 16;
+                }
+
+                // 7. Строим порции расчетов (ThreadContext), выполняемые в одном потоке
+                //    (порция - это все заказы для одного способа доставки (курьера) в одном магазине)
+                rc = 7;
+                Recalc.CalcThreadContext[] context = Calcs.GetCalcThreadContext(serviceId, calc_time, recalcShops, orders, couriers, geoData, limitations);
+                if (context == null || context.Length <= 0)
+                {
+#if debug
+                    Logger.WriteToLog(24, $"CreateCovers. service_id = {service_id}. rc = {rc}. Thread context is not created", 1);
+#endif
+                }
+
+                if (context.Length < threadCount)
+                    threadCount = context.Length;
+
+                for (int i = 0; i < context.Length; i++)
+                { context[i].Config = config; }
+
+                // 8. Сортируем контексты по убыванию числа заказов
+                rc = 8;
+                Array.Sort(context, CompareCalcContextByOrderCount);
+
+                // 9. Создаём объекты синхронизации
+                rc = 9;
+                ManualResetEvent[] syncEvents = new ManualResetEvent[threadCount];
+                int[] contextIndex = new int[threadCount];
+
+                // 10. Запускаем первые threadCount- потоков
+                rc = 10;
+                int errorCount = 0;
+                CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[500000];
+                int deliveryCount = 0;
+#if debug
+                    Logger.WriteToLog(26, $"CreateCovers. service_id = {service_id}. Thread context count: {context.Length}", 0);
+                    int workerThreads, completionPortThreads;
+                    ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
+                    Logger.WriteToLog(261, $"CreateCovers. AvailableThreads: workerThreads = {workerThreads}, completionPortThreads = {completionPortThreads}", 0);
+                    ThreadPool.GetMaxThreads(out workerThreads, out completionPortThreads);
+                    Logger.WriteToLog(262, $"CreateCovers. GetMaxThreads: workerThreads = {workerThreads}, completionPortThreads = {completionPortThreads}", 0);
+#endif
+
+                //Thread.BeginThreadAffinity();
+                for (int i = 0; i < threadCount; i++)
+                {
+                    int m = i;
+                    contextIndex[m] = i;
+                    Recalc.CalcThreadContext threadContext = context[m];
+                    syncEvents[m] = new ManualResetEvent(false);
+                    threadContext.SyncEvent = syncEvents[m];
+                    ThreadPool.QueueUserWorkItem(Calcs.CalcThreadEs, threadContext);
+                }
+
+                // 13. Запускаем последующие потоки
+                //     после завершения очередного
+                rc = 13;
+
+                for (int i = threadCount; i < context.Length; i++)
+                {
+                    int threadIndex = WaitHandle.WaitAny(syncEvents);
+
+                    Recalc.CalcThreadContext executedThreadContext = context[contextIndex[threadIndex]];
+
+                    contextIndex[threadIndex] = i;
+                    int m = i;
+                    Recalc.CalcThreadContext threadContext = context[m];
+                    threadContext.SyncEvent = syncEvents[threadIndex];
+                    threadContext.SyncEvent.Reset();
+                    ThreadPool.QueueUserWorkItem(Calcs.CalcThreadEs, threadContext);
+
+                    // Обработка завершившегося потока
+                    if (executedThreadContext.ExitCode != 0)
+                    {
+                        errorCount++;
+                    }
+                    else
+                    {
+                        int contextDeliveryCount = executedThreadContext.DeliveryCount;
+                        if (contextDeliveryCount > 0)
+                        {
+                            if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
+                            {
+                                int size = allDeliveries.Length / 2;
+                                if (size < contextDeliveryCount)
+                                    size = contextDeliveryCount;
+                                Array.Resize(ref allDeliveries, allDeliveries.Length + size);
+                            }
+
+                            executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
+                            deliveryCount += contextDeliveryCount;
+                        }
+                    }
+                }
+
+                //WaitHandle.WaitAll(syncEvents);
+
+                for (int i = 0; i < syncEvents.Length; i++)
+                {
+                    syncEvents[i].WaitOne();
+                }
+
+                //Thread.EndThreadAffinity();
+                for (int i = 0; i < threadCount; i++)
+                {
+                    syncEvents[i].Dispose();
+
+                    // Обработка последних завершившихся потоков
+                    Recalc.CalcThreadContext executedThreadContext = context[contextIndex[i]];
+                    int contextDeliveryCount = executedThreadContext.DeliveryCount;
+                    if (contextDeliveryCount > 0)
+                    {
+                        if (deliveryCount + contextDeliveryCount > allDeliveries.Length)
+                        {
+                            int size = allDeliveries.Length / 2;
+                            if (size < contextDeliveryCount)
+                                size = contextDeliveryCount;
+                            Array.Resize(ref allDeliveries, allDeliveries.Length + size);
+                        }
+
+                        executedThreadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
+                        deliveryCount += contextDeliveryCount;
+                    }
+                }
+
+                if (deliveryCount <= 0)
+                {
+#if debug
+                        Logger.WriteToLog(261, $"CreateCovers. service_id = {service_id}. Exit rc = {rc}", 0);
+#endif
+
+                    return rc = 0;
+                }
+
+                if (deliveryCount < allDeliveries.Length)
+                {
+                    Array.Resize(ref allDeliveries, deliveryCount);
+                }
+
+                // 14. Строим покрытия
+                rc = 14;
+                CourierDeliveryInfo[] recomendations;
+                CourierDeliveryInfo[] covers;
+                OrderRejectionCause[] rejectedOrders;
+
+#if debug
+                    System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                    sw.Start();
+#endif
+
+                int rc1 = CreateCover.Create(allDeliveries, orders, couriers, geoData, out recomendations, out covers, out rejectedOrders);
+#if debug
+                    sw.Stop();
+                    Logger.WriteToLog(292, $"CreateCover.Create.rc = {rc1}. Elapsed Time = {sw.ElapsedMilliseconds}, recomendations = {(recomendations == null ? 0 : recomendations.Length)}, covers = {(covers == null ? 0 : covers.Length)}, rejectedOrders = {(rejectedOrders == null ? 0 : rejectedOrders.Length)}", 0);
+#endif
+
+                if (rc1 != 0)
+                    return rc = 1000000 * rc + rc1;
+
+
+                // 14.1 Отменяем заказы
+                rc = 141;
+                if (rejectedOrders != null && rejectedOrders.Length > 0)
+                {
+                    RejectOrders(rejectedOrders, serviceId, config.Parameters.ExternalDb.CmdService.Cmd3MessageType, orders, db);
+                }
+
+                // 14.2 Объединяем отгрузки для сохранения
+                rc = 142;
+                //int recomendationCount = (recomendations == null ? 0 : recomendations.Length);
+                //CourierDeliveryInfo[] savedDeliveries = null;
+
+//                if (recomendationCount > 0 && coverCount > 0)
+//                {
+//                    savedDeliveries = new CourierDeliveryInfo[recomendationCount + coverCount];
+//                    recomendations.CopyTo(savedDeliveries, 0);
+//                    covers.CopyTo(savedDeliveries, recomendationCount);
+//                }
+//                else if (recomendationCount > 0 && coverCount <= 0)
+//                {
+//                    savedDeliveries = recomendations;
+//                }
+//                else if (recomendationCount <= 0 && coverCount > 0)
+//                {
+//                    savedDeliveries = covers;
+//                }
+
+//                // 14.3 Очищаем отгрузки
+//                rc = 143;
+//                rc1 = ClearDeliveries(connection);
+//                if (rc1 != 0)
+//                {
+//#if debug
+//                        Logger.WriteToLog(28, $"CreateCovers. service_id = {service_id}. rc = {rc}. rc1 = {rc1}. Clear deliveries failed", 1);
+//#endif
+//                    return rc = 1000000 * rc + rc1;
+//                }
+
+//                // 14.4 Сохраняем отгрузки
+//                rc = 144;
+//                if (savedDeliveries != null)
+//                {
+//#if debug
+//                        Logger.WriteToLog(290, $"CreateCovers. service_id = {service_id}. Deliveries saving({savedDeliveries.Length})...", 0);
+//#endif
+
+//                    rc1 = SaveDeliveriesEx(savedDeliveries, serverName, dbName);
+//                    if (rc1 != 0)
+//                    {
+//#if debug
+//                            Logger.WriteToLog(28, $"CreateCovers. service_id = {service_id}. rc = {rc}. rc1 = {rc1}. deliveries is not saved", 1);
+//#endif
+//                        //return rc = 1000000 * rc + rc1;
+//                    }
+//                    else
+//                    {
+//#if debug
+//                            Logger.WriteToLog(291, $"CreateCovers. service_id = {service_id}. Deliveries saved", 0);
+//#endif
+//                    }
+//                }
+
+                // 14.5 Отправляем рекомендации
+                rc = 145;
+                if (recomendations != null && recomendations.Length > 0)
+                {
+                    string xmlCmd;
+                    rc1 = CreateDeliveryCmd(recomendations, 0, serviceId, couriers, out xmlCmd);
+                    if (rc1 == 0)
+                    {
+                        string errorMessage;
+                        rc1 = db.SendXmlCmd(serviceId, config.Parameters.ExternalDb.CmdService.Cmd1MessageType, xmlCmd, out errorMessage);
+                        if (rc1 != 0)
+                        {
+                            if (string.IsNullOrWhiteSpace(errorMessage))
+                            { Logger.WriteToLog(56, MessageSeverity.Warn, string.Format(Messages.MSG_056, rc1)); }
+                            else
+                            { Logger.WriteToLog(57, MessageSeverity.Warn, string.Format(Messages.MSG_057, rc1, errorMessage)); }
+                        }
+                    }
+                    else
+                    {
+                        Logger.WriteToLog(55, MessageSeverity.Warn, string.Format(Messages.MSG_055, rc1));
+                    }
+                }
+
+                // 14.6 Добавляем отгрузки в очередь
+                rc = 146;
+                if (covers != null && covers.Length > 0)
+                {
+                    rc1 = CreateQueue(serviceId, covers, config, couriers, db);
+#if debug
+                        if (rc1 != 0)
+                            Logger.WriteToLog(293, $"CreateCovers. service_id = {service_id}. CreateQueue.rc = {rc1}", 1);
+#endif
+                }
+
+                // 14.7 Удаляем из очереди отгрузки магазинов, для которых покрытие пусто и сбрасываем для магазинов shpUpdated
+                rc = 147;
+                int[] coverShopId = GetShopsFromDeliveries(covers);
+                int[] notCoveredShopId;
+
+                notCoveredShopId = new int[shops.Length];
+                if (coverShopId == null || coverShopId.Length <= 0)
+                {
+                    for (int i = 0; i < shops.Length; i++)
+                    {
+                        notCoveredShopId[i] = shops[i].Id;
+                    }
+                }
+                else
+                {
+                    int cnt = 0;
+                    for (int i = 0; i < shops.Length; i++)
+                    {
+                        if (Array.BinarySearch(coverShopId, shops[i].Id) < 0)
+                            notCoveredShopId[cnt++] = shops[i].Id;
+                    }
+
+                    if (cnt < notCoveredShopId.Length)
+                    {
+                        Array.Resize(ref notCoveredShopId, cnt);
+                    }
+                }
+
+                ClearQueueDeliveries(notCoveredShopId, connection);
+                SetShopUpdated(false, notCoveredShopId, connection);
+
+                //// 14.8 Закрываем соединение
+                //rc = 148;
+                //connection.Close();
+
+
+                // 15. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.RecalcDeliveries)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                LastException = ex;
+                //recalcShops = null;
+                return rc;
+            }
+            finally
+            {
+                //if (recalcShops != null && recalcShops.Length > 0)
+                //{
+                //    for (int i = 0; i < recalcShops.Length; i++)
+                //    { recalcShops[i].Updated = false; }
+                //}
+
+                sw.Stop();
+                MessageSeverity severity = (rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn);
+                Logger.WriteToLog(52, severity, string.Format(Messages.MSG_052, serviceId, rc, recalcShopCount, recalcOrderCount, sw.ElapsedMilliseconds));
+            }
+
+        }
+
+        /// <summary>
+        /// Сравнение двух контекстов по количеству заказов
+        /// </summary>
+        /// <param name="context1">Контекст 1</param>
+        /// <param name="context2">Контекст 2</param>
+        /// <returns>- 1  - Контекст1 больше Контекст2; 0 - Контекст1 = Контекст2; 1 - Контекст1 меньше Контекст2</returns>
+        private static int CompareCalcContextByOrderCount(Recalc.CalcThreadContext context1, Recalc.CalcThreadContext context2)
+        {
+            if (context1.OrderCount > context2.OrderCount)
+                return -1;
+            if (context1.OrderCount < context2.OrderCount)
+                return 1;
+            return 0;
+        }
+
+        /// <summary>
+        /// Отказ в доставке заказов
+        /// </summary>
+        /// <param name="rejectedOrders">Отвергнутые заказы</param>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="messageType">Тип сообщения</param>
+        /// <param name="orders">Все заказы</param>
+        /// <param name="db">Exteral DB</param>
+        /// <returns>0 - отказы переданы; иначе - отказы не переданы</returns>
+        private static int RejectOrders(OrderRejectionCause[] rejectedOrders, int serviceId, string messageType, AllOrdersEx orders, ExternalDb db)
+        {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (rejectedOrders == null || rejectedOrders.Length <= 0)
+                    return rc;
+                if (db == null || !db.IsOpen())
+                    return rc;
+                if (orders == null || !orders.IsCreated)
+                    return rc;
+
+                // 3. Создаём xml-аргумент для процедуры lsvSendRejectedOrders
+                rc = 3;
+                StringBuilder sb = new StringBuilder(75 * (rejectedOrders.Length + 2));
+                //sb.AppendLine(@"<?xml version=""1.0"" encoding=""utf-8""?>");
+
+                sb.AppendLine($@"<rejections service_id=""{serviceId}"">");
+                int count = 0;
+
+                for (int i = 0; i < rejectedOrders.Length; i++)
+                {
+                    // 3.1 Пропукаем заказы, для которых нет доступного курьера
+                    rc = 31;
+                    OrderRejectionCause rejectedOrder = rejectedOrders[i];
+                    if (rejectedOrder.Reason == OrderRejectionReason.CourierNA)
+                        continue;
+                    sb.AppendLine($@"<rejection id=""{rejectedOrder.OrderId}"" type_id=""{rejectedOrder.VehicleId}"" reason=""{rejectedOrder.Reason}"" error_code=""{rejectedOrder.ErrorCode}""/>");
+                    count++;
+                }
+#if debug
+                Logger.WriteToLog(513, $"RejectOrders. count = {count}", 0);
+#endif
+
+                if (count <= 0)
+                    return rc = 0;
+                sb.AppendLine("</rejections>");
+
+                // 4. Вызываем процедуру для отправки отмены
+                rc = 4;
+                string errorMessage;
+                int rc1 = db.SendXmlCmd(serviceId, messageType, sb.ToString(), out errorMessage);
+                if (rc1 != 0)
+                {
+                    if (string.IsNullOrWhiteSpace(errorMessage))
+                    { Logger.WriteToLog(53, MessageSeverity.Warn, string.Format(Messages.MSG_053, rc1)); }
+                    else
+                    { Logger.WriteToLog(54, MessageSeverity.Warn, string.Format(Messages.MSG_054, rc1, errorMessage)); }
+                    return rc = 1000 * rc + rc1;
+                }
+
+                // 5. У отмененных заказов устанавливаем completed = 1 и код причины отказа
+                rc = 5;
+                for (int i = 0; i < rejectedOrders.Length; i++)
+                {
+                    // 3.1 Пропукаем заказы, для которых нет доступного курьера
+                    rc = 31;
+                    OrderRejectionCause rejectedOrder = rejectedOrders[i];
+                    if (rejectedOrder.Reason != OrderRejectionReason.CourierNA)
+                    {
+                        orders.SetCompleted(rejectedOrder.OrderId, true);
+                    }
+                }
+
+
+                // 6. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+#if debug
+                Logger.WriteToLog(503, $"RejectOrders. service_id = {serviceId}. rc = {rc}. Exception {ex.Message}", 2);
+#endif
+                return rc;
+            }
+            finally
+            {
+#if debug
+                Logger.WriteToLog(502, $"RejectOrders exit. service_id = {serviceId}. rc = {rc}", 0);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Обработка построенного покрытия
+        /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="deliveries">Отгрузки, образующие покрытия</param>
+        /// <param name="allCouriers">Все курьеры</param>
+        /// <param name="courierCostThresholds">Пороги для средней стоимости доставки одного заказа</param>
+        /// <param name="connection">Открытое соединение</param>
+        /// <returns>0 - покрытия успешно обработаны; покрытие не обработано</returns>
+        private static int CreateQueue(int serviceId, CourierDeliveryInfo[] deliveries, BuilderConfig config, AllCouriersEx allCouriers, ExternalDb db)
+        {
+            // 1. Инициализация
+            int rc1 = 1;
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (deliveries == null || deliveries.Length <= 0)
+                    return rc;
+                if (allCouriers == null || !allCouriers.IsCreated)
+                    return rc;
+                if (config == null)
+                    return rc;
+                if (db == null || !db.IsOpen())
+                    return rc;
+
+                // 3. Извлекаем параметры построения очереди
+                rc = 3;
+                bool averageCost = config.Parameters.StartCondition.AverageCost;
+                bool shipmentTrigger = config.Parameters.StartCondition.ShipmentTrigger;
+                int taxiMargin = config.Parameters.TaxiDeliveryMargin;
+                int courierMargin = config.Parameters.CourierDeliveryMargin;
+
+                // 4. Сортируем отгрузки по Shop.Id
+                rc = 4;
+                Array.Sort(deliveries, CompareDeliveryByShopId);
+
+                // 5. Делим отгрузки на две группы:
+                //   1) со стартом прямо сейчас
+                //   2) для размещения в очереди
+                rc = 5;
+                DateTime thresholdTime = DateTime.Now.AddSeconds(30);
+                CourierDeliveryInfo[] startNowDelivery = new CourierDeliveryInfo[deliveries.Length];
+                CourierDeliveryInfo[] queueDelivery = new CourierDeliveryInfo[deliveries.Length];
+
+                int startNowCount = 0;
+                int queueCount = 0;
+
+                for (int i = 0; i < deliveries.Length; i++)
+                {
+                    // 5.1 Выбираем отгрузку
+                    rc = 51;
+                    CourierDeliveryInfo delivery = deliveries[i];
+                    Courier courier = delivery.DeliveryCourier;
+
+                    // 5.2 Извлекаем порог
+                    rc = 52;
+                    double costThreshold = courier.AverageOrderCost;
+
+                    // 5.3 Определяем время отгрузки
+                    rc = 53;
+                    DateTime eventTime = delivery.EndDeliveryInterval;
+                    int cause = 0;
+
+                    if (shipmentTrigger && delivery.OrderCount >= courier.MaxOrderCount)
+                    {
+                        eventTime = delivery.StartDeliveryInterval;
+                        cause = 1;
+                    }
+                    else if (averageCost && !courier.IsTaxi && delivery.OrderCost <= costThreshold)
+                    {
+                        eventTime = delivery.StartDeliveryInterval;
+                        cause = 2;
+                    }
+                    else if (courier.IsTaxi)
+                    {
+                        eventTime = delivery.EndDeliveryInterval.AddMinutes(-taxiMargin);
+                        if (eventTime < delivery.StartDeliveryInterval)
+                            eventTime = delivery.StartDeliveryInterval;
+                        cause = 4;
+                    }
+                    else // (!courier.IsTaxi) 
+                    {
+                        eventTime = delivery.EndDeliveryInterval.AddMinutes(-courierMargin);
+                        if (eventTime < delivery.StartDeliveryInterval)
+                            eventTime = delivery.StartDeliveryInterval;
+                        cause = 5;
+                    }
+
+                    if (eventTime <= thresholdTime)
+                    {
+                        delivery.Cause = cause;
+                        startNowDelivery[startNowCount++] = delivery;
+                    }
+                    else
+                    {
+                        delivery.EventTime = eventTime;
+                        queueDelivery[queueCount++] = delivery;
+                    }
+                }
+
+                // 7. Отправляем отгрузки со стартом прямо сейчас
+                rc = 7;
+                if (startNowCount > 0)
+                {
+                    if (startNowCount < startNowDelivery.Length)
+                    {
+                        Array.Resize(ref startNowDelivery, startNowCount);
+                    }
+
+                    rc1 = SendDeliveries(startNowDelivery, 1, serviceId, allCouriers, connection);
+                    if (rc1 == 0)
+                    {
+                        SetOrderCompleted(startNowDelivery, connection);
+                    }
+
+                    int[] startNowShopId = GetShopsFromDeliveries(startNowDelivery);
+                    ClearQueueDeliveries(startNowShopId, connection);
+                    SetShopUpdated(false, startNowShopId, connection);
+                }
+
+                // 8. Создаём очередь
+                rc = 8;
+
+                if (queueCount > 0)
+                {
+                    if (queueCount < queueDelivery.Length)
+                    {
+                        Array.Resize(ref queueDelivery, queueCount);
+                    }
+                    rc1 = AddToDeliveryQueue(queueDelivery, connection);
+                }
+
+                // 9. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        private static int CompareDeliveryByShopId(CourierDeliveryInfo d1, CourierDeliveryInfo d2)
+        {
+            if (d1.FromShop.Id < d2.FromShop.Id)
+                return -1;
+            if (d1.FromShop.Id > d2.FromShop.Id)
+                return 1;
             return 0;
         }
 

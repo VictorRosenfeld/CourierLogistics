@@ -2,6 +2,7 @@
 
 namespace DeliveryBuilder.Queue
 {
+    using DeliveryBuilder.Recalc;
     using System;
 
     /// <summary>
@@ -91,13 +92,64 @@ namespace DeliveryBuilder.Queue
             }
         }
 
+        ///// <summary>
+        ///// Обновление элеметов очереди заданных магазинов
+        ///// </summary>
+        ///// <param name="shopId">ID обновляемых магазинов</param>
+        ///// <param name="shopItems">Элементы очереди заданных магазинов</param>
+        ///// <returns>0 - Обновление очереди выполнено; иначе - обвление очереди не выполнено</returns>
+        //public int Update(int[] shopId, QueueItem[] shopItems)
+        //{
+        //    // 1. Иициализация
+        //    int rc = 1;
+
+        //    try
+        //    {
+        //        // 2. Удаляем все элементы заданых маазинов
+        //        rc = 2;
+        //        if (itemCount > 0 && shopId != null && shopId.Length > 0)
+        //        {
+        //            Array.Sort(shopId);
+        //            int count = 0;
+
+        //            for (int i = 0; i < itemCount; i++)
+        //            {
+        //                if (Array.BinarySearch(shopId, items[i].Delivery.FromShop.Id) < 0)
+        //                { items[count++] = items[i]; }
+        //            }
+
+        //            itemCount = count;
+        //        }
+
+        //        // 3. Добавляем новые элементы
+        //        rc = 3;
+        //        if (shopItems != null && shopItems.Length > 0)
+        //        {
+        //            int count = itemCount + shopItems.Length;
+        //            if (count > items.Length)
+        //            { Array.Resize(ref items, count); }
+
+        //            for (int i = 0; i < shopItems.Length; i++)
+        //            { items[itemCount++] = shopItems[i]; }
+        //        }
+
+        //        // 4. Выход - Ok
+        //        rc = 0;
+        //        return rc;
+        //    }
+        //    catch
+        //    {
+        //        return rc;
+        //    }
+        //}
+
         /// <summary>
         /// Обновление элеметов очереди заданных магазинов
         /// </summary>
         /// <param name="shopId">ID обновляемых магазинов</param>
-        /// <param name="shopItems">Элементы очереди заданных магазинов</param>
+        /// <param name="deliveries">Элементы очереди заданных магазинов</param>
         /// <returns>0 - Обновление очереди выполнено; иначе - обвление очереди не выполнено</returns>
-        public int Update(int[] shopId, QueueItem[] shopItems)
+        public int Update(int[] shopId, CourierDeliveryInfo[] deliveries)
         {
             // 1. Иициализация
             int rc = 1;
@@ -122,14 +174,14 @@ namespace DeliveryBuilder.Queue
 
                 // 3. Добавляем новые элементы
                 rc = 3;
-                if (shopItems != null && shopItems.Length > 0)
+                if (deliveries != null && deliveries.Length > 0)
                 {
-                    int count = itemCount + shopItems.Length;
+                    int count = itemCount + deliveries.Length;
                     if (count > items.Length)
                     { Array.Resize(ref items, count); }
 
-                    for (int i = 0; i < shopItems.Length; i++)
-                    { items[itemCount++] = shopItems[i]; }
+                    for (int i = 0; i < deliveries.Length; i++)
+                    { items[itemCount++] = new QueueItem(deliveries[i].EventTime, QueueItemType.Active, deliveries[i]); }
                 }
 
                 // 4. Выход - Ok

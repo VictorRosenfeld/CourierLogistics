@@ -139,7 +139,7 @@ namespace DeliveryBuilder.Geo.Yandex
             catch (Exception ex)
             {
                 LastException = ex;
-                Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoYandex)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoYandex)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
