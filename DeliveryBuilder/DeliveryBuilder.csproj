@@ -55,7 +55,6 @@
     <Compile Include="Couriers\CouriersUpdates.cs" />
     <Compile Include="Db\AverageDeliveryCostRecord.cs" />
     <Compile Include="BuilderParameters\BuilderConfig.cs" />
-    <Compile Include="Couriers\AllCouriers.cs" />
     <Compile Include="Couriers\Courier.cs" />
     <Compile Include="Couriers\CourierBase.cs" />
     <Compile Include="Couriers\CourierRecord.cs" />
@@ -69,18 +68,6 @@
     <Compile Include="Db\ExternalDb.cs" />
     <Compile Include="Db\LSData.cs" />
     <Compile Include="Db\VehiclesRecord.cs" />
-    <Compile Include="Deliveries\CalcConfig.cs" />
-    <Compile Include="Deliveries\CalcThreadContext.cs" />
-    <Compile Include="Deliveries\CourierDeliveryInfo.cs" />
-    <Compile Include="Deliveries\CreateDeliveries.cs" />
-    <Compile Include="Deliveries\DilateRoutesContext.cs" />
-    <Compile Include="Deliveries\GeoData.cs" />
-    <Compile Include="Deliveries\GeoDataResponse.cs" />
-    <Compile Include="Deliveries\Permutations.cs" />
-    <Compile Include="Deliveries\Point.cs" />
-    <Compile Include="Deliveries\RouteBuilder.cs" />
-    <Compile Include="Deliveries\ThreadContext.cs" />
-    <Compile Include="Deliveries\ThreadContextEx.cs" />
     <Compile Include="DeliveryCover\CourierRepository.cs" />
     <Compile Include="DeliveryCover\CreateCover.cs" />
     <Compile Include="DeliveryCover\OrderRejectionCause.cs" />
@@ -102,9 +89,6 @@
     <Compile Include="Geo\Cache\GeoCache.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Log\Messages.cs" />
-    <Compile Include="MaxOrdersOfRoute\MaxOrdersOfRouteRecord.cs" />
-    <Compile Include="MaxOrdersOfRoute\RouteLimitations.cs" />
-    <Compile Include="Orders\AllOrders.cs" />
     <Compile Include="Orders\AllOrdersEx.cs" />
     <Compile Include="Orders\Order.cs" />
     <Compile Include="Orders\OrderRejectionReason.cs" />

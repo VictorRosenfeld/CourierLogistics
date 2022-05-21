@@ -77,6 +77,15 @@ namespace DeliveryBuilder.Log
 
         internal const string MSG_055 = @"Не удалось построить команду c рекомендациями (rc = {0})"; 
         internal const string MSG_056 = @"БД ExternalDb. Не удалось отправить команду c рекомендациями (rc = {0})"; 
-        internal const string MSG_057 = @"БД ExternalDb. Не удалось отправить команду c рекомендациями (rc = {0}). Exception: {0}"; 
+        internal const string MSG_057 = @"БД ExternalDb. Не удалось отправить команду c рекомендациями (rc = {0}). Error: {0}"; 
+        internal const string MSG_058 = @"Не удалось построить команду c отгрузками (rc = {0})"; 
+        internal const string MSG_059 = @"БД ExternalDb. Не удалось отправить команду c отрузками (rc = {0})"; 
+        internal const string MSG_060 = @"БД ExternalDb. Не удалось отправить команду c отгузками (rc = {0}). Error: {0}"; 
+        internal const string MSG_061 = @"БД ExternalDb. Не отправленная команда: {0}"; 
+        internal const string MSG_062 = @"Не удалось отправить команду на отгрузку из очереди (rc = {0})"; 
+        internal const string MSG_063 = @"Не удалось обработать покрытие (rc = {0})"; 
+
+        internal const string MSG_064 = @"Не удалось построить CalcThreadContext (shops = {0}, orders = {1})"; 
+        internal const string MSG_065 = @"Не удалось построить покрытие (rc = {0}, shops = {1}, orders = {2})"; 
     }
 }

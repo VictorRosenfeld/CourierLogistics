@@ -1,7 +1,6 @@
 ﻿
 namespace DeliveryBuilder.Couriers
 {
-    using DeliveryBuilder.Recalc;
     using DeliveryBuilder.Geo;
 
     /// <summary>

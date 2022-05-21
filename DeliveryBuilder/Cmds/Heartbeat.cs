@@ -1,4 +1,5 @@
-﻿namespace DeliveryBuilder.Cmds
+﻿
+namespace DeliveryBuilder.Cmds
 {
     using System;
     using System.ComponentModel;

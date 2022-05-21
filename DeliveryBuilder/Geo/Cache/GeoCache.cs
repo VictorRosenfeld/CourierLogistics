@@ -67,7 +67,7 @@ namespace DeliveryBuilder.Geo.Cache
         public Dictionary<ulong, GeoCacheItem>[] VehicleGeoData => vehicleGeoData;
 
         /// <summary>
-        /// Кличество элементов в гео-кэше
+        /// Количество элементов в гео-кэше
         /// </summary>
         public int Count
         {
@@ -277,94 +277,6 @@ namespace DeliveryBuilder.Geo.Cache
             }
         }
 
-        ///// <summary>
-        ///// Запрос попарных расстояний и времени движения между точками
-        ///// в прямом и обратном направлениях
-        ///// </summary>
-        ///// <param name="points">Координаты точек</param>
-        ///// <param name="vehicleTypeIndex">Идекс способа передвижения</param>
-        ///// <param name="dataTable">Таблица результата</param>
-        ///// <returns>0 - таблица построена; иначе - таблица не построена</returns>
-        //public int GetPointsDataTable(GeoPoint[] points, int vehicleTypeIndex, out Point[,] dataTable)
-        //{
-        //    // 1. Инициализация
-        //    int rc = 1;
-        //    dataTable = null;
-
-        //    try
-        //    {
-        //        // 2. Проверяем исходные данные
-        //        rc = 2;
-        //        if (!IsCreated)
-        //            return rc;
-        //        if (vehicleTypeIndex < 0 || vehicleTypeIndex >= vehicleGeoData.Length)
-        //            return rc;
-        //        if (points == null || points.Length <= 1)
-        //            return rc;
-
-        //        // 3. Строим hash для координат
-        //        rc = 3;
-        //        int n = points.Length;
-        //        uint[] pointHash = new uint[n];
-
-        //        for (int i = 0; i < n; i++)
-        //        {
-        //            pointHash[i] = GetCoordinateHash(points[i].Latitude, points[i].Longitude);
-        //        }
-
-        //        // 4. Заполняем таблицу результата
-        //        rc = 4;
-        //        dataTable = new Point[n, n];
-        //        Dictionary<ulong, GeoCacheItem> vehicleData = vehicleGeoData[vehicleTypeIndex];
-
-        //        for (int i = 0; i < n; i++)
-        //        {
-        //            uint hash1 = pointHash[i];
-
-        //            for (int j = i + 1; j < n; j++)
-        //            {
-        //                uint hash2 = pointHash[j];
-
-        //                if (hash1 != hash2)
-        //                {
-        //                    GeoCacheItem item;
-        //                    if (vehicleData.TryGetValue(GetKey(hash1, hash2), out item))
-        //                    {
-        //                        dataTable[i, j].X = item.Distance;
-        //                        dataTable[i, j].Y = item.Duration;
-        //                    }
-        //                    else
-        //                    {
-        //                        dataTable[i, j].X = int.MinValue;
-        //                        dataTable[i, j].Y = int.MinValue;
-        //                    }
-
-        //                    if (vehicleData.TryGetValue(GetKey(hash2, hash1), out item))
-        //                    {
-        //                        dataTable[j, i].X = item.Distance;
-        //                        dataTable[j, i].Y = item.Duration;
-        //                    }
-        //                    else
-        //                    {
-        //                        dataTable[j, i].X = int.MinValue;
-        //                        dataTable[j, i].Y = int.MinValue;
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //        // 5. Выход - Ok
-        //        rc = 0;
-        //        return rc;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LastException = ex;
-        //        Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoCache)}.{nameof(this.GetPointsDataTable)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-        //        return rc;
-        //    }
-        //}
-
         /// <summary>
         /// Запрос попарных расстояний и времени движения между точками
         /// в прямом и обратном направлениях
@@ -446,102 +358,6 @@ namespace DeliveryBuilder.Geo.Cache
                 }
             }
         }
-
-        ///// <summary>
-        ///// Сохранение данных в гео-кэше
-        ///// </summary>
-        ///// <param name="timeReceived">Временная ометка</param>
-        ///// <param name="points">Координаты точек</param>
-        ///// <param name="vehicleTypeIndex">Идекс способа передвижения</param>
-        ///// <param name="dataTable">Таблица с гео-данными</param>
-        ///// <returns>0 - данные сохранены; иначе - данные не сохранены</returns>
-        //public int PutPointsDataTable(DateTime timeReceived, GeoPoint[] points, int vehicleTypeIndex, Point[,] dataTable)
-        //{
-        //    // 1. Инициализация
-        //    int rc = 1;
-
-        //    try
-        //    {
-        //        // 2. Проверяем исходные данные
-        //        rc = 2;
-        //        if (!IsCreated)
-        //            return rc;
-        //        if (vehicleTypeIndex < 0 || vehicleTypeIndex >= vehicleGeoData.Length)
-        //            return rc;
-        //        if (points == null || points.Length <= 1)
-        //            return rc;
-        //        if (dataTable == null ||
-        //            dataTable.GetLength(0) != points.Length ||
-        //            dataTable.GetLength(1) != points.Length)
-        //            return rc;
-
-        //        // 3. Строим hash для координат
-        //        rc = 3;
-        //        int n = points.Length;
-        //        uint[] pointHash = new uint[n];
-
-        //        for (int i = 0; i < n; i++)
-        //        {
-        //            pointHash[i] = GetCoordinateHash(points[i].Latitude, points[i].Longitude);
-        //        }
-
-        //        // 4. Сохраняем переданные данные
-        //        rc = 4;
-        //        Dictionary<ulong, GeoCacheItem> vehicleData = vehicleGeoData[vehicleTypeIndex];
-
-        //        for (int i = 0; i < n; i++)
-        //        {
-        //            uint hash1 = pointHash[i];
-
-        //            for (int j = i + 1; j < n; j++)
-        //            {
-        //                uint hash2 = pointHash[j];
-        //                if (hash1 != hash2)
-        //                {
-        //                    Point pt = dataTable[i, j];
-        //                    if (pt.X >= 0)
-        //                    {
-        //                        GeoCacheItem item;
-        //                        ulong key = GetKey(hash1, hash2);
-        //                        if (vehicleData.TryGetValue(key, out item))
-        //                        {
-        //                            item.SetData(timeReceived, pt.X, pt.Y);
-        //                        }
-        //                        else
-        //                        {
-        //                            vehicleData.Add(key, new GeoCacheItem(timeReceived, pt.X, pt.Y));
-        //                        }
-        //                    }
-
-        //                    pt = dataTable[j, i];
-        //                    if (pt.X >= 0)
-        //                    {
-        //                        GeoCacheItem item;
-        //                        ulong key = GetKey(hash2, hash1);
-        //                        if (vehicleData.TryGetValue(key, out item))
-        //                        {
-        //                            item.SetData(timeReceived, pt.X, pt.Y);
-        //                        }
-        //                        else
-        //                        {
-        //                            vehicleData.Add(key, new GeoCacheItem(timeReceived, pt.X, pt.Y));
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //        // 5. Выход - Ok
-        //        rc = 0;
-        //        return rc;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LastException = ex;
-        //        Logger.WriteToLog(666, MsessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoCache)}.{nameof(this.PutPointsDataTable)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-        //        return rc;
-        //    }
-        //}
 
         /// <summary>
         /// Сохранение данных в гео-кэше
@@ -646,17 +462,14 @@ namespace DeliveryBuilder.Geo.Cache
         public static uint[] GetPointHashes(GeoPoint[] points)
         {
             // 1. Инициализация
-            int rc = 1;
 
             try
             {
                 // 2. Проверяем исходные данные
-                rc = 2;
                 if (points == null || points.Length <= 0)
                     return new uint[0];
 
                 // 3. Строим hash для координат
-                rc = 3;
                 uint[] pointHashes = new uint[points.Length];
 
                 for (int i = 0; i < points.Length; i++)

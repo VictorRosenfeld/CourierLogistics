@@ -3,6 +3,7 @@ namespace DeliveryBuilder.DeliveryCover
 {
     using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Geo;
+    using DeliveryBuilder.Log;
     using DeliveryBuilder.Orders;
     using DeliveryBuilder.Recalc;
     using DeliveryBuilder.Shops;
@@ -48,13 +49,6 @@ namespace DeliveryBuilder.DeliveryCover
                     return rc;
                 if (geoMng == null || !geoMng.IsCreated)
                     return rc;
-//#if debug
-//                for (int i = 0; i < deliveries.Length; i++)
-//                {
-//                    if (deliveries[i].OrderCount == 1 && (deliveries[i].Orders[0].Id == 31341925 || deliveries[i].Orders[0].Id == 31360428))
-//                        Logger.WriteToLog(671, $"CreateCover.Create i= {i}, delivery order = {deliveries[i].Orders[0].Id}", 0);
-//                }
-//#endif
 
                 // 3. Сортируем отгрузки по магазину
                 rc = 3;
@@ -225,8 +219,132 @@ namespace DeliveryBuilder.DeliveryCover
                 rc = 0;
                 return rc;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(CreateCover)}.{nameof(CreateCover.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Выяснение причины отказа заказов
+        /// </summary>
+        /// <param name="calcTime">Время расчетов</param>
+        /// <param name="orders">Заказы</param>
+        /// <param name="shops">Магазины</param>
+        /// <param name="allCouriers">Все курьеры и такси</param>
+        /// <param name="geoMng">Объект для работы с гео-данными</param>
+        /// <param name="rejectedOrders">Причины отказов в доставке заказов</param>
+        /// <returns>0 - покрытия построены; иначе - покрытия не построены</returns>
+        public static int TestNotCoveredOrders(DateTime calcTime, Order[] orders, AllShops shops, AllCouriersEx allCouriers, GeoData geoMng, out OrderRejectionCause[] rejectedOrders)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            int rc1 = 1;
+            rejectedOrders = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (orders == null || orders.Length <= 0)
+                    return rc;
+                if (shops == null)
+                    return rc;
+                if (allCouriers == null || !allCouriers.IsCreated)
+                    return rc;
+                if (geoMng == null || !geoMng.IsCreated)
+                    return rc;
+
+                // 3. Сортируем заказы по магазину
+                rc = 3;
+                Array.Sort(orders, CompareOrdersByShopId);
+
+                // 4. Обрабатываем заказы каждого магазина по отдельности
+                rc = 4;
+                Shop shop;
+                Order[] shopOrders;
+                OrderRejectionCause[] rejectionCauses;
+                int startIndex = 0;
+                int endIndex = 0;
+                int currentShopId = orders[0].ShopId;
+
+                rejectedOrders = new OrderRejectionCause[orders.Length * allCouriers.BaseKeys.Length];
+                int rejectedCount = 0;
+
+                for (int i = 1; i < orders.Length; i++)
+                {
+                    if (orders[i].ShopId == currentShopId)
+                    {
+                        endIndex = i;
+                    }
+                    else
+                    {
+                        // 4.1 Создаём репозиторий курьеров магазина
+                        rc = 41;
+                        Courier[] shopCouriers = allCouriers.GetShopCouriers(currentShopId);
+                        CourierRepository courierRepository = new CourierRepository();
+                        rc1 = courierRepository.Create(shopCouriers);
+
+                        // 4.2 Анализируем причины отказов
+                        rc = 42;
+                        shop = shops.Shops[currentShopId];
+                        shopOrders = new Order[endIndex - startIndex + 1];
+                        Array.Copy(orders, startIndex, shopOrders, 0, shopOrders.Length);
+                        
+
+                        rc1 = ShopOrderRejectionAnalyzer(calcTime, shop, shopOrders, courierRepository, geoMng, out rejectionCauses);
+                        if (rc1 == 0)
+                        {
+                            if (rejectionCauses != null && rejectionCauses.Length > 0)
+                            {
+                                rejectionCauses.CopyTo(rejectedOrders, rejectedCount);
+                                rejectedCount += rejectionCauses.Length;
+                            }
+                        }
+
+                        // 4.3 Переходим к следующему магазину
+                        rc = 43;
+                        startIndex = i;
+                        endIndex = i;
+                        currentShopId = orders[i].ShopId;
+                    }
+                }
+
+                // 4.4 Создаём репозиторий курьеров последнего магазина
+                rc = 44;
+                Courier[] lastShopCouriers = allCouriers.GetShopCouriers(currentShopId);
+                CourierRepository lastCourierRepository = new CourierRepository();
+                rc1 = lastCourierRepository.Create(lastShopCouriers);
+
+                // 4.5 Анализируем причины отказов в последнем магазине
+                rc = 45;
+                shop = shops.Shops[currentShopId];
+                shopOrders = new Order[endIndex - startIndex + 1];
+                Array.Copy(orders, startIndex, shopOrders, 0, shopOrders.Length);
+
+                rc1 = ShopOrderRejectionAnalyzer(calcTime, shop, shopOrders, lastCourierRepository, geoMng, out rejectionCauses);
+                if (rc1 == 0)
+                {
+                    if (rejectionCauses != null && rejectionCauses.Length > 0)
+                    {
+                        rejectionCauses.CopyTo(rejectedOrders, rejectedCount);
+                        rejectedCount += rejectionCauses.Length;
+                    }
+                }
+
+                if (rejectedCount < rejectedOrders.Length)
+                {
+                    Array.Resize(ref rejectedOrders, rejectedCount);
+                }
+
+                // 5. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(CreateCover)}.{nameof(CreateCover.TestNotCoveredOrders)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -246,7 +364,6 @@ namespace DeliveryBuilder.DeliveryCover
         {
             // 1. Инициализация
             int rc = 1;
-            int rc1 = 1;
             recomendations = null;
             cover = null;
             rejectedOrders = null;
@@ -331,13 +448,6 @@ namespace DeliveryBuilder.DeliveryCover
                 // 5. Сортировка всех отгрузок магазина в порядке убывания приоритета и возрастания стоимости
                 rc = 5;
                 Array.Sort(shopDeliveries, CompareDeliveriesByPriorityAndOrderCost);
-//#if debug
-//                 for (int i = 0; i < shopDeliveries.Length; i++)
-//                 {
-//                    if (shopDeliveries[i].OrderCount == 1 && (shopDeliveries[i].Orders[0].Id == 31341925 || shopDeliveries[i].Orders[0].Id == 31360428))
-//                        Logger.WriteToLog(671, $"CreateShopCover. i= {i}, delivery order = {shopDeliveries[i].Orders[0].Id}", 0);
-//                 }
-//#endif
 
                 // 6. Создаём рекомендации (покрытие 1)
                 rc = 6;
@@ -394,13 +504,6 @@ namespace DeliveryBuilder.DeliveryCover
 
                 if (allAssembledOrderCount > 0)
                 {
-                    //// 7.1 Создаём репозиторий доступных курьеров и такси
-                    //rc = 71;
-                    //CourierRepository courierRepository = new CourierRepository();
-                    //rc1 = courierRepository.Create(shopCouriers);
-                    //if (rc1 != 0)
-                    //    return rc = 1000 * rc + rc1;
-
                     // 7.1 Цикл построения покрытия
                     rc = 71;
                     cover = new CourierDeliveryInfo[shopOrders.Length];
@@ -448,13 +551,6 @@ namespace DeliveryBuilder.DeliveryCover
                                 break;
                             }
                         }
-//                        else
-//                        {
-//#if debug
-//                            Logger.WriteToLog(601, $"CreateShopCover. i= {i}, vehicle_id = {delivery.DeliveryCourier.VehicleID}", 0);
-//#endif
-
-//                        }
 
                         NextDelivery2:;
                     }
@@ -479,9 +575,6 @@ namespace DeliveryBuilder.DeliveryCover
                     {
                         if (shopOrders[i].Status == OrderStatus.Assembled)
                         {
-                    #if debug
-                            Logger.WriteToLog(625, $"CreateShopCover. rejected order = {shopOrders[i].Id}", 0);
-                    #endif
                             rejectedOrders[rejectedOrderCount++] = shopOrders[i];
                         }
                         else if (!flags1[i])
@@ -495,16 +588,14 @@ namespace DeliveryBuilder.DeliveryCover
                 {
                     Array.Resize(ref rejectedOrders, rejectedOrderCount);
                 }
-                    #if debug
-                            Logger.WriteToLog(622, $"CreateShopCover. rejectedOrderCount = {rejectedOrderCount}", 0);
-                    #endif
 
                 // 9. Выход - Ok
                 rc = 0;
                 return rc;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(CreateCover)}.{nameof(CreateCover.CreateShopCover)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -520,6 +611,21 @@ namespace DeliveryBuilder.DeliveryCover
             if (d1.FromShop.Id < d2.FromShop.Id)
                 return -1;
             if (d1.FromShop.Id > d2.FromShop.Id)
+                return 1;
+            return 0;
+        }
+
+        /// <summary>
+        /// Сравнение заказов по ShopId
+        /// </summary>
+        /// <param name="order1">Заказ 1</param>
+        /// <param name="order2">Заказ 2</param>
+        /// <returns>-1 - order1 меньше order2; 0 - order1 = order2; 1 - order1 больше orderr2</returns>
+        private static int CompareOrdersByShopId(Order order1, Order order2)
+        {
+            if (order1.ShopId < order2.ShopId)
+                return -1;
+            if (order1.ShopId > order2.ShopId)
                 return 1;
             return 0;
         }
@@ -752,8 +858,9 @@ namespace DeliveryBuilder.DeliveryCover
                 rc = 0;
                 return rc;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(CreateCover)}.{nameof(CreateCover.ShopOrderRejectionAnalyzer)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }

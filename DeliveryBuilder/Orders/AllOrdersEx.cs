@@ -18,6 +18,11 @@ namespace DeliveryBuilder.Orders
         private Dictionary<int, Order> orders;
 
         /// <summary>
+        /// Коллекция заказов
+        /// </summary>
+        public Dictionary<int, Order> Orders => orders;
+
+        /// <summary>
         /// Флаг: true - класс создан; false - класс не создан
         /// </summary>
         public bool IsCreated { get; private set; }

@@ -74,9 +74,11 @@ namespace DeliveryBuilder.Queue
                 for (int i = 0; i < itemCount; i++)
                 {
                     QueueItem item = items[i];
-                    if (item.ItemType == QueueItemType.Active &&
-                        item.EventTime <= toDate)
-                    { result[count++] = item; }
+                    if (item != null)
+                    {
+                        if (item.ItemType == QueueItemType.Active && item.EventTime <= toDate)
+                        { result[count++] = item; }
+                    }
                 }
 
                 if (count < result.Length)
@@ -156,7 +158,7 @@ namespace DeliveryBuilder.Queue
 
             try
             {
-                // 2. Удаляем все элементы заданых маазинов
+                // 2. Удаляем все элементы заданых магазинов
                 rc = 2;
                 if (itemCount > 0 && shopId != null && shopId.Length > 0)
                 {
@@ -167,6 +169,8 @@ namespace DeliveryBuilder.Queue
                     {
                         if (Array.BinarySearch(shopId, items[i].Delivery.FromShop.Id) < 0)
                         { items[count++] = items[i]; }
+                        else
+                        { items[i] = null; }
                     }
 
                     itemCount = count;
@@ -204,11 +208,57 @@ namespace DeliveryBuilder.Queue
                 int count = 0;
                 for (int i = 0; i < itemCount; i++)
                 {
-                    if (items[i].ItemType == QueueItemType.Active)
+                    if (items[i] != null && items[i].ItemType == QueueItemType.Active)
                     { items[count++] = items[i]; }
+                    else
+                    { items[i] = null; }
                 }
 
                 itemCount = count;
+            }
+        }
+
+        /// <summary>
+        /// Выборка ID всех заказов, требующих отгрузки
+        /// </summary>
+        /// <returns></returns>
+        public int[] GetOrderIds()
+        {
+            // 1. Инициализация
+            
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (itemCount <= 0)
+                { return new int[0]; }
+
+                // 3. Выбираем ID всех заказов, требующих отгрузки
+                int[] orderIds = new int[8 * itemCount];
+                int count = 0;
+
+                for (int i = 0; i < itemCount; i++)
+                {
+                    QueueItem item = items[i];
+                    if (item != null && item.ItemType == QueueItemType.Active && item.Delivery != null)
+                    {
+                        foreach (var order in item.Delivery.Orders)
+                        {
+                            if (count >= orderIds.Length)
+                            { Array.Resize(ref orderIds, orderIds.Length + Math.Max(100, item.Delivery.Orders.Length)); }
+                            orderIds[count++] = order.Id;
+                        }
+                    }
+                }
+
+                if (count < orderIds.Length)
+                { Array.Resize(ref orderIds, count); }
+
+                // 4. Выход - Ok;
+                return orderIds;
+            }
+            catch
+            {
+                return null;
             }
         }
     }

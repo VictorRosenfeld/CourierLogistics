@@ -248,7 +248,6 @@ namespace SQLCLRex.DeliveryCover
         {
             // 1. Инициализация
             int rc = 1;
-            int rc1 = 1;
             recomendations = null;
             cover = null;
             rejectedOrders = null;

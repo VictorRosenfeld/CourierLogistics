@@ -5,6 +5,7 @@ namespace DeliveryBuilder.Recalc
     //using DeliveryBuilder.Deliveries;
     using DeliveryBuilder.ExtraOrders;
     using DeliveryBuilder.Geo;
+    using DeliveryBuilder.Log;
     using DeliveryBuilder.Orders;
     using DeliveryBuilder.SalesmanProblemLevels;
     using DeliveryBuilder.Shops;
@@ -168,9 +169,9 @@ namespace DeliveryBuilder.Recalc
                             }
                             else
                             {
-#if debug
-                            Logger.WriteToLog(204, $"GetCalcThreadContext. service_id = {serviceId}. shop_id = {shop.Id}. orderVehicleType = {orderVehicleTypes[j]}", 0);
-#endif
+//#if debug
+//                            Logger.WriteToLog(204, $"GetCalcThreadContext. service_id = {serviceId}. shop_id = {shop.Id}. orderVehicleType = {orderVehicleTypes[j]}", 0);
+//#endif
                             }
                         }
                     }
@@ -182,18 +183,16 @@ namespace DeliveryBuilder.Recalc
                 }
                 rc = 0;
 
-#if debug
-            Logger.WriteToLog(202, $"GetCalcThreadContext. service_id = {serviceId}. Exit. context count = {contextCount}", 0);
-#endif
+//#if debug
+//            Logger.WriteToLog(202, $"GetCalcThreadContext. service_id = {serviceId}. Exit. context count = {contextCount}", 0);
+//#endif
 
                 // 4. Выход - Ok
                 return context;
             }
             catch (Exception ex)
             {
-#if debug
-            Logger.WriteToLog(203, $"GetCalcThreadContext. service_id = {serviceId}. rc = {rc}. Exception = {ex.Message}", 0);
-#endif
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.GetCalcThreadContext)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return null;
             }
         }
@@ -476,9 +475,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-#if debug
-                Logger.WriteToLog(303, $"CalcThreadEs. service_id = {calcContext.ServiceId}. rc = {rc}. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id} Exception = {ex.Message}", 2);
-#endif
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.CalcThreadEs)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
             }
             finally
             {
@@ -486,9 +483,9 @@ namespace DeliveryBuilder.Recalc
 
                 if (calcContext != null)
                 {
-#if debug
-                    Logger.WriteToLog(302, $"CalcThreadEs exit rc = {rc}. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id}", 0);
-#endif
+//#if debug
+//                    Logger.WriteToLog(302, $"CalcThreadEs exit rc = {rc}. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id}", 0);
+//#endif
                     calcContext.ExitCode = rc;
 
                     if (calcContext.SyncEvent != null)
@@ -593,9 +590,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-#if debug
-                Logger.WriteToLog(303, $"CalcThreadFullEx exception. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-#endif
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.CalcThreadFullEx)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
             }
             finally
             {
@@ -784,17 +779,16 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-#if debug
-                Logger.WriteToLog(303, $"CalcThread exception. service_id = {context.ServiceId}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-#endif
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.CalcThread)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+
             }
             finally
             {
                 if (context != null)
                 {
-#if debug
-                    Logger.WriteToLog(302, $"CalcThread exit rc = {rc}. service_id = {context.ServiceId}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
-#endif
+//#if debug
+//                    Logger.WriteToLog(302, $"CalcThread exit rc = {rc}. service_id = {context.ServiceId}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+//#endif
                     context.ExitCode = rc;
 
                     if (allCountextEx != null && allCountextEx.Length > 0)
@@ -1069,10 +1063,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-#if debug
-                Logger.WriteToLog(806, $"DilateRoutesMultuthread.rc = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}, Exception = {ex.ToString()}", 2);
-#endif
-
+                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.DilateRoutesMultuthread)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
             finally

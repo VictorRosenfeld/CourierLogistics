@@ -260,7 +260,7 @@ namespace DeliveryBuilder.Geo.Yandex
         /// <param name="pairLimit">Максимальное количество пар в одном запросе</param>
         /// <param name="geoContext">Результат - контексты запросов</param>
         /// <returns>0 - контексты построены; контексты не построены</returns>
-        public static int GetGeoContext(GeoYandexRequest requestArgs, int pairLimit, out GeoYandexRequestData[] geoContext)
+        private static int GetGeoContext(GeoYandexRequest requestArgs, int pairLimit, out GeoYandexRequestData[] geoContext)
         {
             // 1. Инициализация
             int rc = 1;

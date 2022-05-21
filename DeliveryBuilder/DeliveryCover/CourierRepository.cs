@@ -2,9 +2,7 @@
 namespace DeliveryBuilder.DeliveryCover
 {
     using DeliveryBuilder.Couriers;
-    using DeliveryBuilder.Recalc;
     using DeliveryBuilder.Geo;
-    using DeliveryBuilder.Log;
     using System;
 
     /// <summary>
