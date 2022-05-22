@@ -36,6 +36,16 @@ namespace DeliveryBuilder
         private int serviceId;
 
         /// <summary>
+        /// ID сервиса логистики из Create-аргумента
+        /// </summary>
+        public int ServiceId => serviceId;
+
+        /// <summary>
+        /// Путь к файлу лога
+        /// </summary>
+        public string LogFile => Logger.File;
+
+        /// <summary>
         /// Объект для работы с БД LSData
         /// </summary>
         private LSData lsDataDb;
