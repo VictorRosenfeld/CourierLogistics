@@ -221,7 +221,7 @@ namespace DeliveryBuilder.DeliveryCover
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(CreateCover)}.{nameof(CreateCover.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(CreateCover)}.{nameof(CreateCover.Create)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -344,7 +344,7 @@ namespace DeliveryBuilder.DeliveryCover
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(CreateCover)}.{nameof(CreateCover.TestNotCoveredOrders)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(CreateCover)}.{nameof(CreateCover.TestNotCoveredOrders)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -595,7 +595,7 @@ namespace DeliveryBuilder.DeliveryCover
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(CreateCover)}.{nameof(CreateCover.CreateShopCover)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(CreateCover)}.{nameof(CreateCover.CreateShopCover)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -860,7 +860,7 @@ namespace DeliveryBuilder.DeliveryCover
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(CreateCover)}.{nameof(CreateCover.ShopOrderRejectionAnalyzer)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(CreateCover)}.{nameof(CreateCover.ShopOrderRejectionAnalyzer)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }

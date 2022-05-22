@@ -138,7 +138,7 @@ namespace DeliveryBuilder.Geo.Cache
                 catch (Exception ex)
                 {
                     LastException = ex;
-                    Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoCache)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                    Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoCache)}.{nameof(this.Create)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                     return rc;
                 }
             }
@@ -271,7 +271,7 @@ namespace DeliveryBuilder.Geo.Cache
                 catch (Exception ex)
                 {
                     LastException = ex;
-                    Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoCache)}.{nameof(this.Refresh)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                    Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoCache)}.{nameof(this.Refresh)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                     return rc;
                 }
             }
@@ -353,7 +353,7 @@ namespace DeliveryBuilder.Geo.Cache
                 catch (Exception ex)
                 {
                     LastException = ex;
-                    Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoCache)}.{nameof(this.GetPointsDataTable)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                    Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoCache)}.{nameof(this.GetPointsDataTable)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                     return rc;
                 }
             }
@@ -448,7 +448,7 @@ namespace DeliveryBuilder.Geo.Cache
                 catch (Exception ex)
                 {
                     LastException = ex;
-                    Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(GeoCache)}.{nameof(this.PutGeoData)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                    Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoCache)}.{nameof(this.PutGeoData)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                     return rc;
                 }
             }

@@ -327,6 +327,5 @@ namespace DeliveryBuilder.Db
         }
 
         #endregion tblVehicles
-
     }
 }

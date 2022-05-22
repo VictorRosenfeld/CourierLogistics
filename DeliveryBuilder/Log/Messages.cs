@@ -1,14 +1,19 @@
 ﻿
 namespace DeliveryBuilder.Log
 {
+    /// <summary>
+    /// Тексты/Шаблоны сообщений
+    /// </summary>
     internal class Messages
     {
         internal const string MSG_001 = "---> {0} Ver. {1} Service ID = {2}";
         internal const string MSG_002 = "<--- {0} Ver. {1} Service ID = {2}";
 
-        internal const string MSG_666 = "Method {0}. {1}";
-        internal const string MSG_667 = "Method {0}. rc = {1}";
-        internal const string MSG_668 = "{0}({1})";
+        //internal const string MSG_666 = "Method {0}. {1}";
+        //internal const string MSG_667 = "Method {0}. rc = {1}";
+        //internal const string MSG_668 = "{0}({1})";
+        internal const string MSG_669 = "Method {0} rc = {1}. Exception = {2}";
+        internal const string MSG_670 = "Method {0}. Exception = {1}";
 
         internal const string MSG_003 = "Config = null";
         internal const string MSG_004 = "Тэг functional_parameters не задан";
@@ -86,6 +91,11 @@ namespace DeliveryBuilder.Log
         internal const string MSG_063 = @"Не удалось обработать покрытие (rc = {0})"; 
 
         internal const string MSG_064 = @"Не удалось построить CalcThreadContext (shops = {0}, orders = {1})"; 
-        internal const string MSG_065 = @"Не удалось построить покрытие (rc = {0}, shops = {1}, orders = {2})"; 
+        internal const string MSG_065 = @"Не удалось построить покрытие (rc = {0}, shops = {1}, orders = {2})";
+        //                Logger.WriteToLog(301, $"CalcThread enter. service_id = {context.ServiceId}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+
+        internal const string MSG_066 = @"CalcThread enter. service_id = {0}, shop_id = {1}, orders = {2}, level = {3}, courier_id = {4}, vehicle_id = {5}"; 
+        internal const string MSG_067 = @"CalcThread exit rc = {0}, elapsed_time = {1}, threads = {2}. service_id = {3}, shop_id = {4}, orders = {5}, level = {6}, courier_id = {7}, vehicle_id = {8}"; 
+
     }
 }

@@ -174,7 +174,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx2)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx2)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return;
             }
             finally
@@ -465,10 +465,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx3)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-//#if debug
-//                Logger.WriteToLog(373, $"BuildEx3. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-//#endif
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx3)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return;
             }
             finally
@@ -1334,13 +1331,10 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx4)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-//#if debug
-//                Logger.WriteToLog(373, $"BuildEx4. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-//#endif
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx4)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return;
             }
-            finally
+            finally 
             {
                 if (context != null)
                 {
@@ -2297,10 +2291,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx5)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-//#if debug
-//                Logger.WriteToLog(373, $"BuildEx5. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-//#endif
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx5)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return;
             }
             finally
@@ -2555,10 +2546,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx7)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-//#if debug
-//                Logger.WriteToLog(373, $"BuildEx6. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-//#endif
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx6)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return;
             }
             finally
@@ -2838,7 +2826,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx7)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx7)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return;
             }
             finally
@@ -3142,10 +3130,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx8)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-//#if debug
-//                Logger.WriteToLog(373, $"BuildEx8. startIndex = {context.StartOrderIndex}. rc = {rc}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength} Exception = {ex.Message}", 2);
-//#endif
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.BuildEx8)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return;
             }
             finally

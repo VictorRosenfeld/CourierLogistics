@@ -374,7 +374,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(this.Create)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
             }
@@ -400,7 +400,7 @@ namespace DeliveryBuilder
         /// </summary>
         /// <param name="config">Конфиг</param>
         /// <returns>true - конфиг проверен; false - конфиг содержит ошибки</returns>
-        private bool TestBuilderConfig(BuilderConfig config)
+        private static bool TestBuilderConfig(BuilderConfig config)
         {
             // 1. Инициализация
              
@@ -545,8 +545,8 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, nameof(this.TestBuilderConfig),(ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-                LastException = ex;
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(LogisticsService.TestBuilderConfig)}", false, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                //LastException = ex;
                 return false;
             }
         }
@@ -640,7 +640,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.Timer_Elapsed)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(670, MessageSeverity.Error, string.Format(Messages.MSG_670, $"{nameof(LogisticsService)}.{nameof(this.Timer_Elapsed)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
             }
             finally
@@ -717,7 +717,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.DispatchQueue)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(this.DispatchQueue)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
             }
@@ -883,7 +883,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(LogisticsService.SendDeliveries)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(LogisticsService.SendDeliveries)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -971,7 +971,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(LogisticsService.RejectOrders)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(LogisticsService.RejectOrders)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
 //            finally
@@ -1150,7 +1150,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.UpdateData)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(this.UpdateData)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
             }
@@ -1333,7 +1333,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(LogisticsService.CreateDeliveryCmd)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(LogisticsService.CreateDeliveryCmd)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -1569,9 +1569,8 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(this.RecalcDeliveries)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(this.RecalcDeliveries)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
-                //recalcShops = null;
                 return rc;
             }
             finally
@@ -1829,7 +1828,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(LogisticsService)}.{nameof(LogisticsService.UpdateQueue)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(LogisticsService.UpdateQueue)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }

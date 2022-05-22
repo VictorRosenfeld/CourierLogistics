@@ -2,7 +2,6 @@
 namespace DeliveryBuilder.Recalc
 {
     using DeliveryBuilder.Couriers;
-    //using DeliveryBuilder.Deliveries;
     using DeliveryBuilder.ExtraOrders;
     using DeliveryBuilder.Geo;
     using DeliveryBuilder.Log;
@@ -14,9 +13,11 @@ namespace DeliveryBuilder.Recalc
     using System.Text;
     using System.Threading;
 
+    /// <summary>
+    /// Организация многопоточных вычислений
+    /// </summary>
     public class Calcs
     {
-
         /// <summary>
         /// Число проверяемых отгрузок на поток
         /// </summary>
@@ -25,9 +26,7 @@ namespace DeliveryBuilder.Recalc
         /// <summary>
         /// Максимальное число потоков для построителя отгрузок из ThreadContext
         /// </summary>
-        private const int MAX_DELIVERY_THREADS = 8;
-
-
+        private const int MAX_DELIVERY_THREADS = 16;
 
         /// <summary>
         /// Построение всех расчетных контекстов
@@ -192,7 +191,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.GetCalcThreadContext)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.GetCalcThreadContext)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return null;
             }
         }
@@ -475,12 +474,10 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.CalcThreadEs)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.CalcThreadEs)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
             }
             finally
             {
-                //Thread.EndThreadAffinity();
-
                 if (calcContext != null)
                 {
 //#if debug
@@ -493,7 +490,6 @@ namespace DeliveryBuilder.Recalc
                 }
             }
         }
-
 
         /// <summary>
         /// Фильтрация заказов по максимально возможному весу
@@ -590,7 +586,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.CalcThreadFullEx)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.CalcThreadFullEx)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
             }
             finally
             {
@@ -606,6 +602,210 @@ namespace DeliveryBuilder.Recalc
             }
         }
 
+//        /// <summary>
+//        /// Контекст-построитель отгрузок
+//        /// полным перебором в отдельном потоке
+//        /// </summary>
+//        /// <param name="callback">Метод построения отгрузок</param>
+//        /// <param name="status">Контекст потока</param>
+//        private static void CalcThread_old(WaitCallback callback, object status)
+//        {
+//            // 1. Инициализация
+//            int rc = 1;
+//            ThreadContext context = status as ThreadContext;
+//            ThreadContextEx[] allCountextEx = null;
+
+//            try
+//            {
+//                // 2. Проверяем исходные данные
+//                rc = 2;
+//                if (context == null ||
+//                    context.OrderCount <= 0 ||
+//                    context.ShopCourier == null ||
+//                    context.ShopFrom == null ||
+//                    context.Orders == null || context.Orders.Length <= 0 ||
+//                    context.MaxRouteLength < 1 || context.MaxRouteLength > 8)
+//                    return;
+
+//#if debug
+//                Logger.WriteToLog(301, $"CalcThread enter. service_id = {context.ServiceId}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+//#endif
+
+//                // 3. Вычисляем число потоков для построения отгрузок из ThreadContext
+//                rc = 3;
+//                int level = context.MaxRouteLength;
+//                int orderCount = context.Orders.Length;
+//                long size = orderCount;
+//                if (orderCount >= 2 && level >= 2)
+//                { size += (orderCount - 1) * orderCount; }
+//                if (orderCount >= 3 && level >= 3)
+//                { size += (orderCount - 2) * (orderCount - 1) * orderCount; }
+//                if (orderCount >= 4 && level >= 4)
+//                { size += (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+//                if (orderCount >= 5 && level >= 5)
+//                { size += (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+//                if (orderCount >= 6 && level >= 6)
+//                { size += (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+//                if (orderCount >= 7 && level >= 7)
+//                { size += (orderCount - 6) * (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+//                if (orderCount >= 8 && level >= 8)
+//                { size += (orderCount - 7) * (orderCount - 6) * (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+
+//                int threadCount = (int)(size + DELIVERIES_PER_THREAD - 1) / DELIVERIES_PER_THREAD;
+//                if (threadCount > MAX_DELIVERY_THREADS)
+//                    threadCount = MAX_DELIVERY_THREADS;
+
+//                // 4. Требуется всего один поток
+//                rc = 4;
+//                if (threadCount <= 1)
+//                {
+//                    ThreadContextEx contextEx = new ThreadContextEx(context, null, null, 0, 1);
+//                    allCountextEx = new ThreadContextEx[] { contextEx };
+//                    callback(contextEx);
+//                }
+//                else
+//                {
+//                    // 5. Требуется несколько потоков
+//                    rc = 5;
+//                    allCountextEx = new ThreadContextEx[threadCount];
+//                    for (int i = 0; i < threadCount; i++)
+//                    {
+//                        ManualResetEvent syncEvent = new ManualResetEvent(false);
+//                        int k = i;
+//                        ThreadContextEx contextEx = new ThreadContextEx(context, syncEvent, null, k, threadCount);
+//                        allCountextEx[k] = contextEx;
+//                        //ThreadPool.QueueUserWorkItem(callback, contextEx);
+//                        Thread th;
+//                        switch (level)
+//                        {
+//                            case 1:
+//                            case 2:
+//                                th = new Thread(RouteBuilder.BuildEx2);
+//                                break;
+//                            case 3:
+//                                th = new Thread(RouteBuilder.BuildEx3);
+//                                break;
+//                            case 4:
+//                                th = new Thread(RouteBuilder.BuildEx4);
+//                                break;
+//                            case 5:
+//                                th = new Thread(RouteBuilder.BuildEx5);
+//                                break;
+//                            case 6:
+//                                th = new Thread(RouteBuilder.BuildEx6);
+//                                break;
+//                            case 7:
+//                                th = new Thread(RouteBuilder.BuildEx7);
+//                                break;
+//                            //case 8:
+//                            default:
+//                                th = new Thread(RouteBuilder.BuildEx8);
+//                                break;
+//                        }
+//                        th.Start(contextEx);
+//                    }
+
+//                    for (int i = 0; i < threadCount; i++)
+//                    {
+//                        allCountextEx[i].SyncEvent.WaitOne();
+//                        allCountextEx[i].SyncEvent.Dispose();
+//                        allCountextEx[i].SyncEvent = null;
+//                    }
+//                }
+
+//                // 6. Строим общий результат
+//                rc = 6;
+//                CourierDeliveryInfo[] deliveries = null;
+//                int rc1 = 0;
+
+//                if (threadCount <= 1)
+//                {
+//                    deliveries = allCountextEx[0].Deliveries;
+//                    rc1 = allCountextEx[0].ExitCode;
+//                }
+//                else
+//                {
+//                    // 6.1 Подсчитываем число отгрузок
+//                    rc = 61;
+//                    size = 0;
+//                    for (int i = 0; i < threadCount; i++)
+//                    {
+//                        var contextEx = allCountextEx[i];
+//                        if (contextEx.ExitCode != 0)
+//                        {
+//                            rc1 = contextEx.ExitCode;
+//                        }
+//                        else
+//                        {
+//                            size += contextEx.DeliveryCount;
+//                        }
+//                    }
+
+//                    // 6.2 Объединяем все отгрузки
+//                    rc = 62;
+
+//                    if (size > 0)
+//                    {
+//                        deliveries = new CourierDeliveryInfo[size];
+//                        size = 0;
+
+//                        for (int i = 0; i < threadCount; i++)
+//                        {
+//                            var contextEx = allCountextEx[i];
+//                            if (contextEx.ExitCode == 0 && contextEx.DeliveryCount > 0)
+//                            {
+//                                contextEx.Deliveries.CopyTo(deliveries, size);
+//                                size += contextEx.DeliveryCount;
+//                            }
+//                        }
+//                    }
+//                }
+
+//                context.Deliveries = deliveries;
+//                allCountextEx = null;
+
+//                if (rc1 != 0)
+//                {
+//                    rc = 100000 * rc + rc1;
+//                    return;
+//                }
+
+//                // 7. Выход - Ok
+//                rc = 0;
+//            }
+//            catch (Exception ex)
+//            {
+//                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.CalcThread)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+//            }
+//            finally
+//            {
+//                if (context != null)
+//                {
+////#if debug
+////                    Logger.WriteToLog(302, $"CalcThread exit rc = {rc}. service_id = {context.ServiceId}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
+////#endif
+//                    context.ExitCode = rc;
+
+//                    if (allCountextEx != null && allCountextEx.Length > 0)
+//                    {
+//                        for (int i = 0; i < allCountextEx.Length; i++)
+//                        {
+//                            ThreadContextEx contextEx = allCountextEx[i];
+//                            ManualResetEvent syncEvent = contextEx.SyncEvent;
+//                            if (syncEvent != null)
+//                            {
+//                                syncEvent.Dispose();
+//                                contextEx.SyncEvent = null;
+//                            }
+//                        }
+//                    }
+
+//                    if (context.SyncEvent != null)
+//                        context.SyncEvent.Set();
+//                }
+//            }
+//        }
+
         /// <summary>
         /// Контекст-построитель отгрузок
         /// полным перебором в отдельном потоке
@@ -616,8 +816,10 @@ namespace DeliveryBuilder.Recalc
         {
             // 1. Инициализация
             int rc = 1;
+            DateTime startTime = DateTime.Now;
             ThreadContext context = status as ThreadContext;
             ThreadContextEx[] allCountextEx = null;
+            int threadCount = 0;
 
             try
             {
@@ -630,32 +832,29 @@ namespace DeliveryBuilder.Recalc
                     context.Orders == null || context.Orders.Length <= 0 ||
                     context.MaxRouteLength < 1 || context.MaxRouteLength > 8)
                     return;
-
-#if debug
-                Logger.WriteToLog(301, $"CalcThread enter. service_id = {context.ServiceId}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
-#endif
+                Logger.WriteToLog(66, MessageSeverity.Info, string.Format(Messages.MSG_066, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
 
                 // 3. Вычисляем число потоков для построения отгрузок из ThreadContext
                 rc = 3;
                 int level = context.MaxRouteLength;
                 int orderCount = context.Orders.Length;
                 long size = orderCount;
-                if (orderCount >= 2 && level >= 2)
-                { size += (orderCount - 1) * orderCount; }
-                if (orderCount >= 3 && level >= 3)
-                { size += (orderCount - 2) * (orderCount - 1) * orderCount; }
-                if (orderCount >= 4 && level >= 4)
-                { size += (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
-                if (orderCount >= 5 && level >= 5)
-                { size += (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
-                if (orderCount >= 6 && level >= 6)
-                { size += (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
-                if (orderCount >= 7 && level >= 7)
-                { size += (orderCount - 6) * (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
                 if (orderCount >= 8 && level >= 8)
                 { size += (orderCount - 7) * (orderCount - 6) * (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                else if (orderCount >= 7 && level >= 7)
+                { size += (orderCount - 6) * (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                else if (orderCount >= 6 && level >= 6)
+                { size += (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                else if (orderCount >= 5 && level >= 5)
+                { size += (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                else if (orderCount >= 4 && level >= 4)
+                { size += (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                else if (orderCount >= 3 && level >= 3)
+                { size += (orderCount - 2) * (orderCount - 1) * orderCount; }
+                else if (orderCount >= 2 && level >= 2)
+                { size += (orderCount - 1) * orderCount; }
 
-                int threadCount = (int)(size + DELIVERIES_PER_THREAD - 1) / DELIVERIES_PER_THREAD;
+                threadCount = (int)(size + DELIVERIES_PER_THREAD - 1) / DELIVERIES_PER_THREAD;
                 if (threadCount > MAX_DELIVERY_THREADS)
                     threadCount = MAX_DELIVERY_THREADS;
 
@@ -672,41 +871,14 @@ namespace DeliveryBuilder.Recalc
                     // 5. Требуется несколько потоков
                     rc = 5;
                     allCountextEx = new ThreadContextEx[threadCount];
+
                     for (int i = 0; i < threadCount; i++)
                     {
                         ManualResetEvent syncEvent = new ManualResetEvent(false);
                         int k = i;
                         ThreadContextEx contextEx = new ThreadContextEx(context, syncEvent, null, k, threadCount);
                         allCountextEx[k] = contextEx;
-                        //ThreadPool.QueueUserWorkItem(callback, contextEx);
-                        Thread th;
-                        switch (level)
-                        {
-                            case 1:
-                            case 2:
-                                th = new Thread(RouteBuilder.BuildEx2);
-                                break;
-                            case 3:
-                                th = new Thread(RouteBuilder.BuildEx3);
-                                break;
-                            case 4:
-                                th = new Thread(RouteBuilder.BuildEx4);
-                                break;
-                            case 5:
-                                th = new Thread(RouteBuilder.BuildEx5);
-                                break;
-                            case 6:
-                                th = new Thread(RouteBuilder.BuildEx6);
-                                break;
-                            case 7:
-                                th = new Thread(RouteBuilder.BuildEx7);
-                                break;
-                            //case 8:
-                            default:
-                                th = new Thread(RouteBuilder.BuildEx8);
-                                break;
-                        }
-                        th.Start(contextEx);
+                        ThreadPool.QueueUserWorkItem(callback, contextEx);
                     }
 
                     for (int i = 0; i < threadCount; i++)
@@ -779,16 +951,12 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.CalcThread)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.CalcThread)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
             }
             finally
             {
                 if (context != null)
                 {
-//#if debug
-//                    Logger.WriteToLog(302, $"CalcThread exit rc = {rc}. service_id = {context.ServiceId}. order_count = {context.OrderCount}, shop_id = {context.ShopFrom.Id}, courier_id = {context.ShopCourier.Id}, level = {context.MaxRouteLength}", 0);
-//#endif
                     context.ExitCode = rc;
 
                     if (allCountextEx != null && allCountextEx.Length > 0)
@@ -807,6 +975,7 @@ namespace DeliveryBuilder.Recalc
 
                     if (context.SyncEvent != null)
                         context.SyncEvent.Set();
+                    Logger.WriteToLog(67,rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_067, rc, threadCount, (DateTime.Now -startTime).TotalMilliseconds, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
                 }
             }
         }
@@ -1063,7 +1232,7 @@ namespace DeliveryBuilder.Recalc
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(Calcs)}.{nameof(Calcs.DilateRoutesMultuthread)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.DilateRoutesMultuthread)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
             finally
@@ -1435,7 +1604,5 @@ namespace DeliveryBuilder.Recalc
                 }
             }
         }
-
-
     }
 }

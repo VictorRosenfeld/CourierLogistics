@@ -1,9 +1,9 @@
 ﻿
 namespace DeliveryBuilder.Orders
 {
+    using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Log;
     using DeliveryBuilder.Shops;
-    using DeliveryBuilder.Couriers;
     using System;
     using System.Collections.Generic;
 
@@ -360,7 +360,7 @@ namespace DeliveryBuilder.Orders
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllOrdersEx)}.{nameof(this.Update)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(AllOrdersEx)}.{nameof(this.Update)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }

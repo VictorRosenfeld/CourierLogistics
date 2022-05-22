@@ -3,7 +3,6 @@ namespace DeliveryBuilder.Recalc
 {
     using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Geo;
-    //using DeliveryBuilder.MaxOrdersOfRoute;
     using DeliveryBuilder.Orders;
     using DeliveryBuilder.SalesmanProblemLevels;
     using DeliveryBuilder.Shops;

@@ -49,7 +49,4 @@ namespace DeliveryBuilder.Geo.Yandex
         /// </summary>
         public Point[,,] Result { get; set; }
     }
-
-
-
 }

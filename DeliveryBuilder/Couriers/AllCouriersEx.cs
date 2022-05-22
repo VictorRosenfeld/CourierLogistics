@@ -291,7 +291,7 @@ namespace DeliveryBuilder.Couriers
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllCouriersEx)}.{nameof(this.Create)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(AllCouriersEx)}.{nameof(this.Create)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -393,7 +393,7 @@ namespace DeliveryBuilder.Couriers
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllCouriersEx)}.{nameof(AllCouriersEx.ConvertVehiclesRecord)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(670, MessageSeverity.Error, string.Format(Messages.MSG_670, $"{nameof(AllCouriersEx)}.{nameof(AllCouriersEx.ConvertVehiclesRecord)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return null;
             }
         }
@@ -636,7 +636,7 @@ namespace DeliveryBuilder.Couriers
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(666, MessageSeverity.Error, string.Format(Messages.MSG_666, $"{nameof(AllCouriersEx)}.{nameof(this.Update)}", (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(AllCouriersEx)}.{nameof(this.Update)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
