@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.label1 = new System.Windows.Forms.Label();
             this.txtServiceId = new System.Windows.Forms.TextBox();
@@ -36,6 +37,14 @@
             this.butShowLog = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.txtConnectionString = new System.Windows.Forms.TextBox();
+            this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.trayContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.trayContextMenu_Open = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.trayContextMenu_Log = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.trayContextMenu_Exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.trayContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -103,6 +112,57 @@
             this.txtConnectionString.Size = new System.Drawing.Size(566, 22);
             this.txtConnectionString.TabIndex = 0;
             // 
+            // trayIcon
+            // 
+            this.trayIcon.ContextMenuStrip = this.trayContextMenu;
+            this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
+            this.trayIcon.Text = "Logistics Service";
+            this.trayIcon.Visible = true;
+            this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.trayIcon_MouseDoubleClick);
+            // 
+            // trayContextMenu
+            // 
+            this.trayContextMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.trayContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.trayContextMenu_Open,
+            this.toolStripSeparator2,
+            this.trayContextMenu_Log,
+            this.toolStripSeparator4,
+            this.trayContextMenu_Exit});
+            this.trayContextMenu.Name = "trayContextMenu";
+            this.trayContextMenu.Size = new System.Drawing.Size(146, 88);
+            // 
+            // trayContextMenu_Open
+            // 
+            this.trayContextMenu_Open.Name = "trayContextMenu_Open";
+            this.trayContextMenu_Open.Size = new System.Drawing.Size(145, 24);
+            this.trayContextMenu_Open.Text = "Открыть...";
+            this.trayContextMenu_Open.Click += new System.EventHandler(this.trayContextMenu_Open_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(142, 6);
+            // 
+            // trayContextMenu_Log
+            // 
+            this.trayContextMenu_Log.Name = "trayContextMenu_Log";
+            this.trayContextMenu_Log.Size = new System.Drawing.Size(145, 24);
+            this.trayContextMenu_Log.Text = "Лог...";
+            this.trayContextMenu_Log.Click += new System.EventHandler(this.trayContextMenu_Log_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(142, 6);
+            // 
+            // trayContextMenu_Exit
+            // 
+            this.trayContextMenu_Exit.Name = "trayContextMenu_Exit";
+            this.trayContextMenu_Exit.Size = new System.Drawing.Size(145, 24);
+            this.trayContextMenu_Exit.Text = "Выход";
+            this.trayContextMenu_Exit.Click += new System.EventHandler(this.trayContextMenu_Exit_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -120,8 +180,10 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Logistics Service";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.trayContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -136,6 +198,13 @@
         private System.Windows.Forms.Button butShowLog;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtConnectionString;
+        private System.Windows.Forms.NotifyIcon trayIcon;
+        private System.Windows.Forms.ContextMenuStrip trayContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem trayContextMenu_Open;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem trayContextMenu_Log;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem trayContextMenu_Exit;
     }
 }
 

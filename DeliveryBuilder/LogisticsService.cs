@@ -545,8 +545,8 @@ namespace DeliveryBuilder
                 { Logger.WriteToLog(8, MessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size7))); }
                 else if (config.Cloud.Size8 <= 0)
                 { Logger.WriteToLog(8, MessageSeverity.Error, string.Format(Messages.MSG_008, nameof(config.Cloud.Size8))); }
-                else if (string.IsNullOrWhiteSpace(config.GroupId))
-                { Logger.WriteToLog(9, MessageSeverity.Error, string.Format(Messages.MSG_009, nameof(config.GroupId))); }
+                //else if (string.IsNullOrWhiteSpace(config.GroupId))
+                //{ Logger.WriteToLog(9, MessageSeverity.Error, string.Format(Messages.MSG_009, nameof(config.GroupId))); }
                 else
                 { passed = true; }
 
@@ -1104,7 +1104,7 @@ namespace DeliveryBuilder
                             Logger.WriteToLog(44, MessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                         }
                     }
-                    else if (dr.MessageTypeName.Equals(courierMessageType, StringComparison.CurrentCultureIgnoreCase))
+                    if (dr.MessageTypeName.Equals(courierMessageType, StringComparison.CurrentCultureIgnoreCase))
                     {
                         try
                         {
@@ -1126,7 +1126,7 @@ namespace DeliveryBuilder
                             Logger.WriteToLog(44, MessageSeverity.Warn, string.Format(Messages.MSG_044, dr.MessageTypeName, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                         }
                     }
-                    else if (dr.MessageTypeName.Equals(shopMessageType, StringComparison.CurrentCultureIgnoreCase))
+                    if (dr.MessageTypeName.Equals(shopMessageType, StringComparison.CurrentCultureIgnoreCase))
                     {
                         try
                         {

@@ -14,7 +14,9 @@ namespace DeliveryBuilderStarter
             InitializeComponent();
         }
 
-        LogisticsService[] startedLs;
+        LogisticsService[] startedLs = null;
+
+        bool isExitRequest = false;
 
         /// <summary>
         /// Событие открытия формы
@@ -25,6 +27,20 @@ namespace DeliveryBuilderStarter
         {
             txtServiceId.Text = Properties.Settings.Default.ServiceID.ToString();
             txtConnectionString.Text = Properties.Settings.Default.ConnectionString;
+        }
+
+        /// <summary>
+        /// Событие 'Закрытие формы'
+        /// </summary>
+        /// <param name="sender">Форма</param>
+        /// <param name="e">Аргументы события</param>
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing && !isExitRequest)
+            {
+                e.Cancel = true;
+                this.Visible = false;
+            }
         }
 
         /// <summary>
@@ -92,6 +108,9 @@ namespace DeliveryBuilderStarter
                     ls.Close();
                     return;
                 }
+
+                this.Text = $"Logistics Service {serviceId}";
+                trayIcon.Text = this.Text;
 
                 // 4. Сохраняем сервис логистики
                 if (startedLs == null)
@@ -270,5 +289,60 @@ namespace DeliveryBuilderStarter
             catch
             { }
         }
+
+        #region Tray icon context menu
+
+        /// <summary>
+        /// Пункт "Открыть" контекстного меню Tray Icon
+        /// </summary>
+        /// <param name="sender">Control</param>
+        /// <param name="e">Аргументы события</param>
+        private void trayContextMenu_Open_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Visible = true;
+                if (this.WindowState == FormWindowState.Minimized)
+                {
+                    this.WindowState = FormWindowState.Normal;
+                }
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Пункт "Лог..." контекстного меню Tray Icon
+        /// </summary>
+        /// <param name="sender">Control</param>
+        /// <param name="e">Аргументы события</param>
+        private void trayContextMenu_Log_Click(object sender, EventArgs e)
+        { butShowLog_Click(null, null); }
+
+        /// <summary>
+        /// Пункт Exit Tray-меню 
+        /// </summary>
+        /// <param name="sender">MenuItem</param>
+        /// <param name="e">Аргументы события</param>
+        private void trayContextMenu_Exit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                isExitRequest = true;
+                this.Close();
+            }
+            catch
+            { }
+        }
+
+        #endregion Tray icon context menu
+
+        /// <summary>
+        /// Двойной клик по Tray Icon
+        /// </summary>
+        /// <param name="sender">Control</param>
+        /// <param name="e">Аргументы события</param>
+        private void trayIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        { trayContextMenu_Open_Click(null, null); }
     }
 }

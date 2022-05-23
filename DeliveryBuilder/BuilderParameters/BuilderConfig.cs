@@ -52,12 +52,12 @@ namespace DeliveryBuilder.BuilderParameters
         [XmlAttribute("name")]
         public string Name { get; set; }
 
-        /// <summary>
-        /// Параметр Conversation_group_id в
-        /// T-SQL инструкции Begin Dialog
-        /// </summary>
-        [XmlAttribute("group_id")]
-        public string GroupId { get; set; }
+        ///// <summary>
+        ///// Параметр Conversation_group_id в
+        ///// T-SQL инструкции Begin Dialog
+        ///// </summary>
+        //[XmlAttribute("group_id")]
+        //public string GroupId { get; set; }
 
         /// <summary>
         /// Описание
