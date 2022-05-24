@@ -14,16 +14,6 @@ namespace DeliveryBuilder.Db
         public long QueuingOrder { get; private set; }
 
         /// <summary>
-        /// Handle диалога
-        /// </summary>
-        public Guid ConversationHandle { get; private set; }
-
-        /// <summary>
-        /// Порядковый номер сообщения в диалоге
-        /// </summary>
-        public long MessageSequenceNumber { get; private set; }
-
-        /// <summary>
         /// Message Type сообщения
         /// </summary>
         public string MessageTypeName { get; private set; }
@@ -37,15 +27,11 @@ namespace DeliveryBuilder.Db
         /// Параметрический конструктор класса DataRecord
         /// </summary>
         /// <param name="queuingOrder">Порядковый номер сообщения в очереди</param>
-        /// <param name="conversationHandle">Handle диалога</param>
-        /// <param name="messageSequenceNumber">Порядковый номер сообщения в диалоге</param>
         /// <param name="messageTypeName">Message Type сообщения</param>
         /// <param name="messageBody">Message Body</param>
-        public DataRecord(long queuingOrder, Guid conversationHandle, long messageSequenceNumber, string messageTypeName, string messageBody)
+        public DataRecord(long queuingOrder, string messageTypeName, string messageBody)
         {
             QueuingOrder = queuingOrder;
-            ConversationHandle = conversationHandle;
-            MessageSequenceNumber = messageSequenceNumber;
             MessageTypeName = messageTypeName;
             MessageBody = messageBody;
         }

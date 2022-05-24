@@ -97,5 +97,11 @@ namespace DeliveryBuilder.Log
         internal const string MSG_066 = @"CalcThread enter. service_id = {0}, shop_id = {1}, orders = {2}, level = {3}, courier_id = {4}, vehicle_id = {5}"; 
         internal const string MSG_067 = @"CalcThread exit rc = {0}, elapsed_time = {1}, threads = {2}. service_id = {3}, shop_id = {4}, orders = {5}, level = {6}, courier_id = {7}, vehicle_id = {8}"; 
 
-    }
+        internal const string MSG_068 = @"ReceiveData. queuing_order = {0}, message_type = {1}, message_body = {2}"; 
+        internal const string MSG_069 = @"SendDeliveries. cmd_type = {0}, message_type = {1}, сmd = {2}"; 
+        internal const string MSG_070 = @"RejectOrders. cmd_type = {0}, message_type = {1}, сmd = {2}"; 
+        internal const string MSG_071 = @"SendDataRequest. service_id = {0}, allData = {1}, message_type = {2}"; 
+        internal const string MSG_072 = @"SendHeartbeat. service_id = {0}, message_type = {1}"; 
+        internal const string MSG_073 = @"Timer_Elapsed. heartbeat_count = {0}, geo_count = {1}, recalc_count = {2}, queue_count = {3}"; 
+   }
 }

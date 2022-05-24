@@ -375,9 +375,9 @@ namespace DeliveryBuilder
                 timer.Interval = config.Parameters.TickInterval;
                 timer.AutoReset = true;
                 timer.Elapsed += Timer_Elapsed;
-                //timer.Start();
-                //ThreadPool.QueueUserWorkItem(TimerTick);
-                
+                timer.Start();
+                ThreadPool.QueueUserWorkItem(TimerTick);
+
                 // 18. Выход - Ok
                 rc = 0;
                 IsCreated = true;
@@ -585,6 +585,7 @@ namespace DeliveryBuilder
             geoTickCount--;
             recalcTickCount--;
             queueTickCount--;
+            Logger.WriteToLog(73, MessageSeverity.Info, string.Format(Messages.MSG_073, hearbeatTickCount, geoTickCount, recalcTickCount, queueTickCount));
 
             try
             {
@@ -643,6 +644,8 @@ namespace DeliveryBuilder
                     // 6. Обновляем данные
                     recalcTickCount = config.Parameters.RecalcInterval;
                     DataRecord[] dataRecords;
+                    if (sender == null)
+                    { Thread.Sleep(1000); }
                     int rc1 = ReceiveData(serviceId, db, out dataRecords);
                     if (rc1 == 0 && dataRecords != null && dataRecords.Length > 0)
                     { UpdateData(dataRecords); }
@@ -769,6 +772,9 @@ namespace DeliveryBuilder
                 Heartbeat heartbeat = new Heartbeat();
                 heartbeat.ServiceId = serviceId;
                 string errorMessage;
+
+                Logger.WriteToLog(72, MessageSeverity.Info, string.Format(Messages.MSG_072, serviceId, messageType));
+
                 int rc1 = db.SendXmlCmd(serviceId, messageType, heartbeat, out errorMessage);
                 if (rc1 != 0)
                 {
@@ -820,6 +826,9 @@ namespace DeliveryBuilder
                 { request.All = 1; }
                 else
                 { request.All = 0;}
+
+                Logger.WriteToLog(71, MessageSeverity.Info, string.Format(Messages.MSG_071, serviceId, allData, messageType));
+
                 string errorMessage;
                 int rc1 = db.SendXmlCmd(serviceId, messageType, request, out errorMessage);
                 if (rc1 != 0)
@@ -881,6 +890,8 @@ namespace DeliveryBuilder
                     Logger.WriteToLog(cmdType == 0 ? 55 : 58, MessageSeverity.Warn, string.Format(cmdType == 0 ? Messages.MSG_055 : Messages.MSG_058, rc1));
                     return rc = 1000 * rc + rc1;
                 }
+
+                Logger.WriteToLog(69, MessageSeverity.Info, string.Format(Messages.MSG_069, cmdType, messageTypeName, xmlCmd));
 
                 // 4. Отправляем xml-команду
                 rc = 4;
@@ -959,6 +970,8 @@ namespace DeliveryBuilder
                     return rc = 0;
                 sb.AppendLine("</rejections>");
 
+                Logger.WriteToLog(70, MessageSeverity.Info, string.Format(Messages.MSG_070, 3, messageType, sb.ToString()));
+
                 // 4. Вызываем процедуру для отправки отмены
                 rc = 4;
                 string errorMessage;
@@ -1034,6 +1047,8 @@ namespace DeliveryBuilder
                     return rc = 1000 * rc + rc1;
                 }
 
+                PrintDataRecords(records);
+
                 // 4. Выход - Ok
                 rc = 0;
                 return rc;
@@ -1043,6 +1058,29 @@ namespace DeliveryBuilder
                 Logger.WriteToLog(42, MessageSeverity.Error, string.Format(Messages.MSG_042, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
+        }
+
+        /// <summary>
+        /// Вывод полученых данных в лог
+        /// </summary>
+        /// <param name="records">Записи даных</param>
+        private static void PrintDataRecords(DataRecord[] records)
+        {
+            try
+            {
+                // 2. Провеяем исхдные данные
+                if (records == null || records.Length <= 0)
+                    return;
+
+                // 3. Выводим даные в лог
+                for (int i = 0; i < records.Length; i++)
+                {
+                    DataRecord record = records[i];
+                    Logger.WriteToLog(68, MessageSeverity.Info, string.Format(Messages.MSG_068, record.QueuingOrder, record.MessageTypeName, record.MessageBody));
+                }
+            }
+            catch
+            { }
         }
 
         /// <summary>

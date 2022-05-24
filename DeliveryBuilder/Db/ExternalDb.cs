@@ -197,9 +197,7 @@ namespace DeliveryBuilder.Db
                         // 3.1 Выбираем индексы колонок в выборке
                         rc = 31;
                         int iQueuingOrder = reader.GetOrdinal("queuing_order");
-                        int iConversationHandle = reader.GetOrdinal("conversation_handle");
-                        int iMessageSequenceNumber = reader.GetOrdinal("message_sequence_number");
-                        int iMessageTypeName = reader.GetOrdinal("message_type_name");
+                        int iMessageTypeName = reader.GetOrdinal("message_type");
                         int iMessageBody = reader.GetOrdinal("messageBody");
 
                         while (reader.Read())
@@ -211,8 +209,6 @@ namespace DeliveryBuilder.Db
 
                             records[count++] =
                                 new DataRecord(reader.GetInt64(iQueuingOrder),
-                                               reader.GetGuid(iConversationHandle),
-                                               reader.GetInt64(iMessageSequenceNumber),
                                                reader.GetString(iMessageTypeName),
                                                reader.GetString(iMessageBody));
                         }
@@ -290,7 +286,7 @@ namespace DeliveryBuilder.Db
                         // 3.1 Выбираем индексы колонок в выборке
                         rc = 31;
                         int iQueuingOrder = reader.GetOrdinal("queuing_order");
-                        int iMessageTypeName = reader.GetOrdinal("message_type");
+                        int iMessageType = reader.GetOrdinal("message_type");
                         int iMessageBody = reader.GetOrdinal("message_body");
 
                         while (reader.Read())
@@ -302,9 +298,7 @@ namespace DeliveryBuilder.Db
 
                             records[count++] =
                                 new DataRecord(reader.GetInt64(iQueuingOrder),
-                                               Guid.Empty,
-                                               0,
-                                               reader.GetString(iMessageTypeName),
+                                               reader.GetString(iMessageType),
                                                reader.GetSqlXml(iMessageBody).Value);
                         }
                     }
