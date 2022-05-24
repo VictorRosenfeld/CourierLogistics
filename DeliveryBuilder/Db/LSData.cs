@@ -188,7 +188,7 @@ namespace DeliveryBuilder.Db
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         int iShopId = reader.GetOrdinal("adcShopID");
-                        int iVehicleId = reader.GetOrdinal("adcVehicleTypeID");
+                        int iVehicleId = reader.GetOrdinal("adcVehicleID");
                         int iCost = reader.GetOrdinal("adcCost");
 
                         while (reader.Read())

@@ -149,14 +149,14 @@ namespace DeliveryBuilder.Db
         /// Sql-процедура для отправки команды
         /// (Execute @rc = SendCmd @servive_id, @message_type, @xml_cmd, @error_message OUTPUT
         /// </summary>
-        private const string sqlSendCmdEx = "dbo.SendCmd";
+        private const string sqlSendCmdEx = "dbo.RoutingSendCmd";
 
 
         /// <summary>
         /// Sql-процедура для плучения данных
         /// (Execute @rc = SendCmd @servive_id, @message_type, @xml_cmd, @error_message OUTPUT
         /// </summary>
-        private const string sqlReceiveData = "dbo.ReceiveData";
+        private const string sqlReceiveData = "dbo.RoutingReceive";
 
         /// <summary>
         /// Получение данных из очереди вешнего сервиса
@@ -242,13 +242,15 @@ namespace DeliveryBuilder.Db
         /// </summary>
         /// <param name="serviceId">ID сервиса логистики</param>
         /// <param name="dataRecords">Считанные записи с сообщениями</param>
+        /// <param name="errorMessage">Текст сообщения об ошибке</param>
         /// <returns>0 - данные получены; иначе - данные не получены</returns>
-        public int ReceiveData(int serviceId, out DataRecord[] dataRecords)
+        public int ReceiveData(int serviceId, out DataRecord[] dataRecords, out string errorMessage)
         {
             // 1. Инициализация
             int rc = 1;
             dataRecords = null;
             LastException = null;
+            errorMessage = null;
 
             try
             {
@@ -267,17 +269,28 @@ namespace DeliveryBuilder.Db
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     // @service_id
-                    var parameter = cmd.Parameters.Add("@service_id", SqlDbType.Int);
+                    var parameter = cmd.Parameters.Add("@routing_service_id", SqlDbType.Int);
                     parameter.Direction = ParameterDirection.Input;
                     parameter.Value = serviceId;
-                    
+
+                    // @error_message
+                    var errorParamreter = cmd.Parameters.Add("@error_message", SqlDbType.NVarChar, 4000);
+                    errorParamreter.Direction = ParameterDirection.Output;
+
+                    // return code
+                    var returnParameter = cmd.Parameters.Add("@ReturnCode", SqlDbType.Int);
+                    returnParameter.Direction = ParameterDirection.ReturnValue;
+
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
+                        // 3.0 Сохраняем сообщение
+                        rc = 30;
+                        errorMessage = errorParamreter.Value as string;
+
                         // 3.1 Выбираем индексы колонок в выборке
                         rc = 31;
                         int iQueuingOrder = reader.GetOrdinal("queuing_order");
-                        int iMessageTypeName = reader.GetOrdinal("message_type_name");
-                        //int iMessageTypeName = reader.GetOrdinal("message_type");
+                        int iMessageTypeName = reader.GetOrdinal("message_type");
                         int iMessageBody = reader.GetOrdinal("message_body");
 
                         while (reader.Read())
@@ -312,6 +325,11 @@ namespace DeliveryBuilder.Db
             {
                 LastException = ex;
                 return rc;
+            }
+            finally
+            {
+                if (string.IsNullOrWhiteSpace(errorMessage) && LastException != null)
+                    errorMessage = GetLastErrorMessage();
             }
         }
 
@@ -472,7 +490,7 @@ namespace DeliveryBuilder.Db
                             cmd.CommandType = CommandType.StoredProcedure;
 
                             // @service_id
-                            var parameter = cmd.Parameters.Add("@service_id", SqlDbType.Int);
+                            var parameter = cmd.Parameters.Add("@routing_service_id", SqlDbType.Int);
                             parameter.Direction = ParameterDirection.Input;
                             parameter.Value = serviceId;
 
@@ -554,7 +572,7 @@ namespace DeliveryBuilder.Db
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         // @service_id
-                        var parameter = cmd.Parameters.Add("@service_id", SqlDbType.Int);
+                        var parameter = cmd.Parameters.Add("@routing_service_id", SqlDbType.Int);
                         parameter.Direction = ParameterDirection.Input;
                         parameter.Value = serviceId;
 

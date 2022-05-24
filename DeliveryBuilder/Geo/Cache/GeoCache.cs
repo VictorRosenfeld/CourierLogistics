@@ -90,9 +90,9 @@ namespace DeliveryBuilder.Geo.Cache
         /// Создание экземпляра гео-кэша
         /// </summary>
         /// <param name="parameters">Параметры кэша</param>
-        /// <param name="vehicleTypeCount">Количество способов передвижения в гео-кэше</param>
+        /// <param name="vehicleTypes">Количество способов передвижения в гео-кэше</param>
         /// <returns></returns>
-        public int Create(GeoCacheParameters parameters, int vehicleTypeCount)
+        public int Create(GeoCacheParameters parameters, int vehicleTypes)
         {
             lock (syncRoot)
             {
@@ -102,29 +102,30 @@ namespace DeliveryBuilder.Geo.Cache
                 LastException = null;
                 capacity = 0;
                 savingInterval = 0;
-                vehicleTypeCount = 0;
+                this.vehicleTypeCount = 0;
                 vehicleGeoData = null;
 
                 try
                 {
                     // 2. Проверяем исходные данные
                     rc = 2;
+                    //Logger.WriteToLog(111, MessageSeverity.Warn, $"capacity = {parameters.Capacity}, saving_interval = {parameters.SavingInterval}, vehicleTypeCount = {vehicleTypeCount}");
                     if (parameters == null ||
                         parameters.Capacity <= 0 || parameters.SavingInterval <= 0)
                         return rc;
-                    if (vehicleTypeCount <= 0)
+                    if (vehicleTypes <= 0)
                         return rc;
 
                     // 3. Сохраяем параметры гео-кэша
                     rc = 3;
                     capacity = parameters.Capacity;
                     savingInterval = parameters.SavingInterval;
-                    this.vehicleTypeCount = vehicleTypeCount;
+                    this.vehicleTypeCount = vehicleTypes;
 
                     // 4. Создаём коллекции хранимых элементов для всех способов доставки
                     rc = 4;
-                    vehicleGeoData = new Dictionary<ulong, GeoCacheItem>[vehicleTypeCount];
-                    int collectionCapacity = capacity / vehicleTypeCount;
+                    vehicleGeoData = new Dictionary<ulong, GeoCacheItem>[vehicleTypes];
+                    int collectionCapacity = capacity / vehicleTypes;
                     if (collectionCapacity < 16)
                         collectionCapacity = 16;
 

@@ -84,7 +84,7 @@ namespace DeliveryBuilder
         /// Мьютекс для синхронизации получения
         /// новых данных и их обработки
         /// </summary>
-        private Mutex syncMutex = new Mutex();
+        private Mutex syncMutex;
 
         /// <summary>
         /// Объект для работы с гео-данными
@@ -375,7 +375,8 @@ namespace DeliveryBuilder
                 timer.Interval = config.Parameters.TickInterval;
                 timer.AutoReset = true;
                 timer.Elapsed += Timer_Elapsed;
-                timer.Start();
+                //timer.Start();
+                //ThreadPool.QueueUserWorkItem(TimerTick);
                 
                 // 18. Выход - Ok
                 rc = 0;
@@ -393,6 +394,15 @@ namespace DeliveryBuilder
                 if (lsDataDb != null)
                 { lsDataDb.Close(); }              
             }
+        }
+
+        /// <summary>
+        /// Запуск обработчика события таймера
+        /// </summary>
+        /// <param name="status"></param>
+        private void TimerTick(object status)
+        {
+            Timer_Elapsed(null, null);
         }
 
         /// <summary>
@@ -633,7 +643,7 @@ namespace DeliveryBuilder
                     // 6. Обновляем данные
                     recalcTickCount = config.Parameters.RecalcInterval;
                     DataRecord[] dataRecords;
-                    int rc1 = db.ReceiveData(serviceId, out dataRecords);
+                    int rc1 = ReceiveData(serviceId, db, out dataRecords);
                     if (rc1 == 0 && dataRecords != null && dataRecords.Length > 0)
                     { UpdateData(dataRecords); }
 
@@ -1013,13 +1023,10 @@ namespace DeliveryBuilder
 
                 // 3. Отправляем запрос данных
                 rc = 3;
-                DataRequest request = new DataRequest();
-                request.ServiceId = serviceId;
-                request.All = 1;
-                int rc1 = db.ReceiveData(serviceId, out records);
+                string errorMessage;
+                int rc1 = db.ReceiveData(serviceId, out records, out errorMessage);
                 if (rc1 != 0)
                 {
-                    string errorMessage = db.GetLastErrorMessage();
                     if (string.IsNullOrWhiteSpace(errorMessage))
                     { Logger.WriteToLog(41, MessageSeverity.Warn, string.Format(Messages.MSG_041, rc1)); }
                     else
@@ -1033,7 +1040,7 @@ namespace DeliveryBuilder
             }
             catch (Exception ex)
             {
-                Logger.WriteToLog(38, MessageSeverity.Error, string.Format(Messages.MSG_042, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                Logger.WriteToLog(42, MessageSeverity.Error, string.Format(Messages.MSG_042, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -1862,7 +1869,7 @@ namespace DeliveryBuilder
             {
                 if (disposing)
                 {
-                    FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+                    //FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
                     //Logger.WriteToLog(string.Format(MessagePatterns.STOP_SERVICE, "FixedServiceEz", fileVersionInfo.ProductVersion));
 
                     if (timer != null)
