@@ -81,7 +81,7 @@ namespace DeliveryBuilder.Shops
                 // 2. Проверяем исходные данные
                 rc = 2;
                 if (updates == null || updates.Updates == null || updates.Updates.Length <= 0)
-                    return rc;
+                    return rc = 0;
 
                 // 3. Отрабатываем изменения данных магазинов
                 rc = 3;

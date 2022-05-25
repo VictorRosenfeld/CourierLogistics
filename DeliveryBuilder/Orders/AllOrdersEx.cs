@@ -268,7 +268,7 @@ namespace DeliveryBuilder.Orders
                 // 2. Проверяем исходные данные
                 rc = 2;
                 if (updates == null || updates.Updates == null || updates.Updates.Length <= 0)
-                    return rc;
+                    return rc = 0;
                 if (shops == null)
                     return rc;
                 if (couriers == null || !couriers.IsCreated)

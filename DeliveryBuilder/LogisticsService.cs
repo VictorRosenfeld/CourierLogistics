@@ -1138,7 +1138,7 @@ namespace DeliveryBuilder
                             int rc1 = orders.Update(ordersUpdates, shops, couriers);
                             if (rc1 != 0)
                             {
-                                Logger.WriteToLog(45, MessageSeverity.Warn, string.Format(Messages.MSG_045, rc, dr.MessageBody));
+                                Logger.WriteToLog(45, MessageSeverity.Warn, string.Format(Messages.MSG_045, rc1, dr.MessageBody));
                             }
                         }
                         catch (Exception ex)
@@ -1160,7 +1160,7 @@ namespace DeliveryBuilder
                             int rc1 = couriers.Update(couriersUpdates, thresholds, shops);
                             if (rc1 != 0)
                             {
-                                Logger.WriteToLog(46, MessageSeverity.Warn, string.Format(Messages.MSG_046, rc, dr.MessageBody));
+                                Logger.WriteToLog(46, MessageSeverity.Warn, string.Format(Messages.MSG_046, rc1, dr.MessageBody));
                             }
                         }
                         catch (Exception ex)
@@ -1182,7 +1182,7 @@ namespace DeliveryBuilder
                             int rc1 = shops.Update(shopsUpdates);
                             if (rc1 != 0)
                             {
-                                Logger.WriteToLog(47, MessageSeverity.Warn, string.Format(Messages.MSG_047, rc, dr.MessageBody));
+                                Logger.WriteToLog(47, MessageSeverity.Warn, string.Format(Messages.MSG_047, rc1, dr.MessageBody));
                             }
                         }
                         catch (Exception ex)

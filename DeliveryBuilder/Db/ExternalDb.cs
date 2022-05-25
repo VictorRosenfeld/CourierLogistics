@@ -1,6 +1,7 @@
 ﻿
 namespace DeliveryBuilder.Db
 {
+    using DeliveryBuilder.Log;
     using System;
     using System.Data;
     using System.Data.SqlClient;
@@ -561,7 +562,7 @@ namespace DeliveryBuilder.Db
                 rc = 3;
                 using (MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(xmlCmd)))
                 {
-                    using (SqlCommand cmd = new SqlCommand(string.Format(sqlSendCmdEx, connection)))
+                    using (SqlCommand cmd = new SqlCommand(sqlSendCmdEx, connection))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
@@ -588,7 +589,9 @@ namespace DeliveryBuilder.Db
                         var returnParameter = cmd.Parameters.Add("@ReturnCode", SqlDbType.Int);
                         returnParameter.Direction = ParameterDirection.ReturnValue;
 
+                        //Logger.WriteToLog(554, MessageSeverity.Info,"before ExecuteNonQuery");
                         cmd.ExecuteNonQuery();
+                        //Logger.WriteToLog(555, MessageSeverity.Info, $@"SendXmlCmd. error_message = {errorParamreter.Value}, ret_code = {returnParameter.Value}");
 
                         errorMessage = errorParamreter.Value as string;
 
@@ -607,9 +610,18 @@ namespace DeliveryBuilder.Db
             }
             catch (Exception ex)
             {
+                //Logger.WriteToLog(554, MessageSeverity.Error, ex.Message);
+                //if (ex.InnerException != null)
+                //Logger.WriteToLog(556, MessageSeverity.Error, ex.InnerException.Message);
+
                 LastException = ex;
                 return rc;
             }
+            //finally
+            //{
+            //    if (string.IsNullOrWhiteSpace(errorMessage) && LastException != null)
+            //        errorMessage = LastException.Message;
+            //}
         }
     }
 }

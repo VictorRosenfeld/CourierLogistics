@@ -17,7 +17,7 @@ namespace DeliveryBuilder.Orders
         /// <summary>
         /// Обновления заказов
         /// </summary>
-        [XmlArray("orders", IsNullable = false)]
+        [XmlArray("orders", IsNullable = true)]
         [XmlArrayItem("order", IsNullable = false)]
         public OrderUpdates[] Updates { get; set; }
 

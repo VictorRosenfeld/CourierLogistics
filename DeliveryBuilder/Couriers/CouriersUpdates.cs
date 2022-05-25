@@ -17,7 +17,7 @@ namespace DeliveryBuilder.Couriers
         /// <summary>
         /// Обновления курьеров
         /// </summary>
-        [XmlArray("couriers", IsNullable = false)]
+        [XmlArray("couriers", IsNullable = true)]
         [XmlArrayItem("courier", IsNullable = false)]
         public CourierUpdates[] Updates { get; set; }
 

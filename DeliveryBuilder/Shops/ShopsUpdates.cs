@@ -17,7 +17,7 @@ namespace DeliveryBuilder.Shops
         /// <summary>
         /// Обновления магазинв
         /// </summary>
-        [XmlArray("shops", IsNullable = false)]
+        [XmlArray("shops", IsNullable = true)]
         [XmlArrayItem("shop", IsNullable = false)]
         public ShopUpdates[] Updates { get; set; }
 

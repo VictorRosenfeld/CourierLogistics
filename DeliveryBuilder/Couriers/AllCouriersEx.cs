@@ -560,7 +560,7 @@ namespace DeliveryBuilder.Couriers
                 // 2. Проверяем исходные данные
                 rc = 2;
                 if (updates == null || updates.Updates == null || updates.Updates.Length <= 0)
-                    return rc;
+                    return rc = 0;
                 if (costThresholds == null || !costThresholds.IsCreated)
                     return rc;
                 if (shops == null)
