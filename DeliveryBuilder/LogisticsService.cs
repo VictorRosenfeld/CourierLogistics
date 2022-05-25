@@ -3,7 +3,6 @@ namespace DeliveryBuilder
 {
     using DeliveryBuilder.AverageDeliveryCost;
     using DeliveryBuilder.BuilderParameters;
-    using DeliveryBuilder.Cmds;
     using DeliveryBuilder.Couriers;
     using DeliveryBuilder.Db;
     using DeliveryBuilder.DeliveryCover;
@@ -143,7 +142,7 @@ namespace DeliveryBuilder
         private SalesmanLevels limitations;
 
         /// <summary>
-        /// Ограничения а число заказов в зависимости
+        /// Ограничения на число заказов в зависимости
         /// от глубины при полном переборе
         /// </summary>
         public SalesmanLevels Limitations => limitations;
@@ -693,6 +692,7 @@ namespace DeliveryBuilder
         {
             // 1. Инициализация
             int rc = 1;
+            int saveCount = queue.Count;
 
             try
             {
@@ -744,6 +744,10 @@ namespace DeliveryBuilder
                 LastException = ex;
                 return rc;
             }
+            finally
+            {
+                Logger.WriteToLog(74, MessageSeverity.Info, string.Format(Messages.MSG_074, saveCount, queue.Count));
+            }
         }
 
         /// <summary>
@@ -769,11 +773,10 @@ namespace DeliveryBuilder
 
                 // 3. Отправляем сердцебиение
                 rc = 3;
-                Heartbeat heartbeat = new Heartbeat();
-                heartbeat.ServiceId = serviceId;
+                string heartbeat = $@"<heartbeat service_id=""{serviceId}"" />";
                 string errorMessage;
 
-                Logger.WriteToLog(72, MessageSeverity.Info, string.Format(Messages.MSG_072, serviceId, messageType));
+                Logger.WriteToLog(72, MessageSeverity.Info, string.Format(Messages.MSG_072, messageType, heartbeat));
 
                 int rc1 = db.SendXmlCmd(serviceId, messageType, heartbeat, out errorMessage);
                 if (rc1 != 0)
@@ -820,14 +823,9 @@ namespace DeliveryBuilder
 
                 // 3. Отправляем запрос данных
                 rc = 3;
-                DataRequest request = new DataRequest();
-                request.ServiceId = serviceId;
-                if (allData)
-                { request.All = 1; }
-                else
-                { request.All = 0;}
+                string request = $@"<data service_id=""{serviceId}"" all=""{(allData ? 1 : 0)}""/>";
 
-                Logger.WriteToLog(71, MessageSeverity.Info, string.Format(Messages.MSG_071, serviceId, allData, messageType));
+                Logger.WriteToLog(71, MessageSeverity.Info, string.Format(Messages.MSG_071, messageType, request));
 
                 string errorMessage;
                 int rc1 = db.SendXmlCmd(serviceId, messageType, request, out errorMessage);

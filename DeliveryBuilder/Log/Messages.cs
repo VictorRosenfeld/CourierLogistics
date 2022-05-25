@@ -100,8 +100,10 @@ namespace DeliveryBuilder.Log
         internal const string MSG_068 = @"ReceiveData. queuing_order = {0}, message_type = {1}, message_body = {2}"; 
         internal const string MSG_069 = @"SendDeliveries. cmd_type = {0}, message_type = {1}, сmd = {2}"; 
         internal const string MSG_070 = @"RejectOrders. cmd_type = {0}, message_type = {1}, сmd = {2}"; 
-        internal const string MSG_071 = @"SendDataRequest. service_id = {0}, allData = {1}, message_type = {2}"; 
-        internal const string MSG_072 = @"SendHeartbeat. service_id = {0}, message_type = {1}"; 
+        internal const string MSG_071 = @"SendDataRequest. message_type = {0}, request = {1}"; 
+        internal const string MSG_072 = @"SendHeartbeat. message_type = {0}, message = {1}"; 
         internal const string MSG_073 = @"Timer_Elapsed. heartbeat_count = {0}, geo_count = {1}, recalc_count = {2}, queue_count = {3}"; 
+        internal const string MSG_074 = @"DispatchQueue. item_count = {0} -> {1}"; 
+        internal const string MSG_075 = @"GeoCache.Refresh. count = {0} -> {1}"; 
    }
 }

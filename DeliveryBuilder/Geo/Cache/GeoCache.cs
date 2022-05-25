@@ -188,6 +188,7 @@ namespace DeliveryBuilder.Geo.Cache
                 // 1. Инициализация
                 int rc = 1;
                 LastException = null;
+                int saveCount = Count;
 
                 try
                 {
@@ -274,6 +275,10 @@ namespace DeliveryBuilder.Geo.Cache
                     LastException = ex;
                     Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoCache)}.{nameof(this.Refresh)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                     return rc;
+                }
+                finally
+                {
+                    Logger.WriteToLog(75, MessageSeverity.Info, string.Format(Messages.MSG_075, saveCount, Count));
                 }
             }
         }
