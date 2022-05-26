@@ -21,5 +21,7 @@ namespace DeliveryBuilder.Queue
         /// которое следует удалить из очереди
         /// </summary>
         Completed = 2,
+
+        //Rejected = 3,
     }
 }

@@ -603,7 +603,7 @@ namespace DeliveryBuilder
                     else
                     { Logger.WriteToLog(36, MessageSeverity.Error, string.Format(Messages.MSG_036, exceptionMessage)); }
                     db.Close();
-                    connectionFailed = false;
+                    connectionFailed = true;
                     return;
                 }
 
@@ -1135,6 +1135,8 @@ namespace DeliveryBuilder
                                 ordersUpdates = (OrdersUpdates)ordersSerializer.Deserialize(sr);
                             }
 
+                            PrintOrders(ordersUpdates);
+
                             int rc1 = orders.Update(ordersUpdates, shops, couriers);
                             if (rc1 != 0)
                             {
@@ -1206,6 +1208,67 @@ namespace DeliveryBuilder
                 Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(this.UpdateData)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 LastException = ex;
                 return rc;
+            }
+        }
+
+        /// <summary>
+        /// Вывод принятых заказов в лог
+        /// </summary>
+        /// <param name="ordersUpdates">Принятые заказы</param>
+        private static void PrintOrders(OrdersUpdates ordersUpdates)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (ordersUpdates == null || ordersUpdates.Updates == null || ordersUpdates.Updates.Length <= 0)
+                    return;
+
+                // 3. Выводим иформацию  заказаx
+                foreach (var orderUpdates in ordersUpdates.Updates)
+                {
+                    Logger.WriteToLog(87, MessageSeverity.Info,
+                        string.Format(Messages.MSG_087,
+                                      ordersUpdates.ServiceId, // {0}
+                                      orderUpdates.ShopId,     // {1}
+                                      orderUpdates.OrderId,    // {2}
+                                      orderUpdates.Status,     // {3}
+                                      (orderUpdates.TimeCheckDisabled ? "-" : "+"),  // {4}
+                                      orderUpdates.TimeFrom,   // {5}
+                                      orderUpdates.TimeTo,     // {6}
+                                      orderUpdates.Weight,     // {7}
+                                      FormatDServices(orderUpdates.DServices)   // {8}
+                        ));
+                }
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Форматирвание массива DService для вывода в лог
+        /// </summary>
+        /// <param name="dsrvices">Массив DService</param>
+        /// <returns></returns>
+        private static string FormatDServices(DService[] dservices)
+        {
+            try
+            {
+                if (dservices == null || dservices.Length <= 0)
+                    return "none";
+                StringBuilder sb = new StringBuilder(22 * dservices.Length);
+                sb.Append($"{dservices[0].ShopId}-{dservices[0].DServiceId}");
+
+                for (int i = 1; i < dservices.Length; i++)
+                {
+                    sb.Append(',');
+                    sb.Append($"{dservices[i].ShopId}-{dservices[i].DServiceId}");
+                }
+
+                return sb.ToString();
+            }
+            catch
+            {
+                return "?";
             }
         }
 
@@ -1459,7 +1522,14 @@ namespace DeliveryBuilder
                 if (context == null || context.Length <= 0)
                 {
                     Logger.WriteToLog(64, MessageSeverity.Warn, string.Format(Messages.MSG_064, recalcShopCount, recalcOrderCount));
-                    return rc;
+                    OrderRejectionCause[] rOrders;
+                    CreateCover.TestNotCoveredOrders(calcTime, recalcOrders, shops, couriers, geoData, out rOrders);
+                    if (rOrders != null && rOrders.Length > 0)
+                    {
+                        RejectOrders(rOrders, serviceId, config.Parameters.ExternalDb.CmdService.Cmd3MessageType, orders, db);
+                    }
+
+                    return rc = 0;
                 }
 
                 if (context.Length < threadCount)

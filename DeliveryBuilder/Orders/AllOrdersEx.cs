@@ -163,7 +163,7 @@ namespace DeliveryBuilder.Orders
                 foreach (var order in orders.Values)
                 {
                     if (!order.Completed && order.ShopId == shopId &&
-                        order.DeliveryTimeTo > calcTime &&
+                        order.DeliveryTimeTo > calcTime && !order.Completed &&
                         (order.Status == OrderStatus.Receipted || order.Status == OrderStatus.Assembled))
                     { result[count++] = order; }
                 }
