@@ -141,6 +141,6 @@ namespace DeliveryBuilder.Orders
         /// ID DService
         /// </summary>
         [XmlAttribute("dservice_id")]
-        public byte DServiceId { get; set; }
+        public int DServiceId { get; set; }
     }
 }

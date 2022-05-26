@@ -105,5 +105,18 @@ namespace DeliveryBuilder.Log
         internal const string MSG_073 = @"Timer_Elapsed. heartbeat_count = {0}, geo_count = {1}, recalc_count = {2}, queue_count = {3}"; 
         internal const string MSG_074 = @"DispatchQueue. item_count = {0} -> {1}"; 
         internal const string MSG_075 = @"GeoCache.Refresh. count = {0} -> {1}"; 
+
+        internal const string MSG_076 = @"Calcs.GetCalcThreadContext enter. service_id = {0}"; 
+        internal const string MSG_077 = @"Calcs.GetCalcThreadContext. service_id = {0}, after 2."; 
+        internal const string MSG_078 = @"Calcs.GetCalcThreadContext. service_id = {0}, shop_id = {1}"; 
+        internal const string MSG_079 = @"Calcs.GetCalcThreadContext. service_id = {0}, shop_id = {1}, shop_orders = {2}"; 
+        internal const string MSG_080 = @"Calcs.GetCalcThreadContext. service_id = {0}, shop_id = {1}, shop_couriers = {2}"; 
+        internal const string MSG_081 = @"Calcs.GetCalcThreadContext. service_id = {0}, shop_id = {1}, courier_vehicles = {2}"; 
+        internal const string MSG_082 = @"Calcs.GetCalcThreadContext. service_id = {0}, shop_id = {1}, order_vehicles = {2}"; 
+        internal const string MSG_083 = @"Calcs.GetCalcThreadContext. service_id = {0}, shop_id = {1}, enabled_vehicles = {2}"; 
+        internal const string MSG_084 = @"Calcs.GetCalcThreadContext. service_id = {0}, shop_id = {1}. Способ доставки VehicleID = {2} не доступен"; 
+        internal const string MSG_085 = @"Calcs.GetCalcThreadContext. service_id = {0}, context_count = {1}"; 
+        internal const string MSG_086 = @"Calcs.GetCalcThreadContext exit rc = {0}. service_id = {1}, context_count = {2}"; 
+
    }
 }

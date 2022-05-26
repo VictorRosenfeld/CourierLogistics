@@ -43,13 +43,15 @@ namespace DeliveryBuilder.Recalc
         {
             // 1. Инициализация
             int rc = 1;
+            Logger.WriteToLog(76, MessageSeverity.Info, string.Format(Messages.MSG_076,serviceId));
+            int contextCount = 0;
 
             try
             {
                 // 2. Проверяем исходные данные
                 rc = 2;
                 if (shops == null || shops.Length <= 0)
-                    return null;
+                    //return null;
                 if (allOrders == null || !allOrders.IsCreated)
                     return null;
                 if (allCouriers == null || !allCouriers.IsCreated)
@@ -59,21 +61,19 @@ namespace DeliveryBuilder.Recalc
                 if (limitations == null || !limitations.IsCreated)
                     return null;
 
-#if debug
-            Logger.WriteToLog(201, $"GetCalcThreadContext. service_id = {serviceId}. Enter...", 0);
-#endif
+                Logger.WriteToLog(77, MessageSeverity.Info, string.Format(Messages.MSG_077,serviceId));
 
                 // 3. Строим контексты всех потоков
                 rc = 3;
                 int size = shops.Length * allCouriers.BaseKeys.Length;
-                Recalc.CalcThreadContext[] context = new Recalc.CalcThreadContext[size];
-                int contextCount = 0;
-
+                CalcThreadContext[] context = new CalcThreadContext[size];
+                
                 for (int i = 0; i < shops.Length; i++)
                 {
                     // 3.1 Извлекаем магазин
                     rc = 31;
                     Shop shop = shops[i];
+                    Logger.WriteToLog(78, MessageSeverity.Info, string.Format(Messages.MSG_078,serviceId, shop.Id));
 
                     // 3.2 Извлекаем заказы магазина
                     rc = 32;
@@ -81,22 +81,26 @@ namespace DeliveryBuilder.Recalc
                     Order[] shopOrders = allOrders.GetShopOrders(shop.Id, calcTime);
                     if (shopOrders == null || shopOrders.Length <= 0)
                         continue;
+                    Logger.WriteToLog(79, MessageSeverity.Info, string.Format(Messages.MSG_079,serviceId, shop.Id, shopOrders.Length));
 
                     // 3.3 Извлекаем курьеров магазина
                     rc = 33;
                     Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id, true);
                     if (shopCouriers == null || shopCouriers.Length <= 0)
                         continue;
+                    Logger.WriteToLog(80, MessageSeverity.Info, string.Format(Messages.MSG_080,serviceId, shop.Id, shopCouriers.Length));
 
                     // 3.4 Выбираем возможные способы доставки
                     rc = 34;
                     int[] courierVehicleTypes = AllCouriersEx.GetCourierVehicleTypes(shopCouriers);
                     if (courierVehicleTypes == null || courierVehicleTypes.Length <= 0)
                         continue;
+                    Logger.WriteToLog(81, MessageSeverity.Info, string.Format(Messages.MSG_081,serviceId, shop.Id, courierVehicleTypes.Length));
 
                     int[] orderVehicleTypes = AllOrdersEx.GetOrderVehicleTypes(shopOrders);
                     if (orderVehicleTypes == null || orderVehicleTypes.Length <= 0)
                         continue;
+                    Logger.WriteToLog(82, MessageSeverity.Info, string.Format(Messages.MSG_082,serviceId, shop.Id, courierVehicleTypes.Length));
 
                     Array.Sort(courierVehicleTypes);
                     int vehicleTypeCount = 0;
@@ -109,6 +113,7 @@ namespace DeliveryBuilder.Recalc
 
                     if (vehicleTypeCount <= 0)
                         continue;
+                    Logger.WriteToLog(83, MessageSeverity.Info, string.Format(Messages.MSG_083, serviceId, shop.Id, vehicleTypeCount));
 
                     // 3.5 Раскладываем заказы по способам доставки
                     //     отбрасывая заказы, для которых нет доступного курьера
@@ -168,23 +173,19 @@ namespace DeliveryBuilder.Recalc
                             }
                             else
                             {
-//#if debug
-//                            Logger.WriteToLog(204, $"GetCalcThreadContext. service_id = {serviceId}. shop_id = {shop.Id}. orderVehicleType = {orderVehicleTypes[j]}", 0);
-//#endif
+                                Logger.WriteToLog(84, MessageSeverity.Warn, string.Format(Messages.MSG_084, serviceId, shop.Id, orderVehicleTypes[j]));
                             }
                         }
                     }
                 }
+
+                Logger.WriteToLog(85, MessageSeverity.Info, string.Format(Messages.MSG_085, serviceId, contextCount));
 
                 if (contextCount < context.Length)
                 {
                     Array.Resize(ref context, contextCount);
                 }
                 rc = 0;
-
-//#if debug
-//            Logger.WriteToLog(202, $"GetCalcThreadContext. service_id = {serviceId}. Exit. context count = {contextCount}", 0);
-//#endif
 
                 // 4. Выход - Ok
                 return context;
@@ -193,6 +194,10 @@ namespace DeliveryBuilder.Recalc
             {
                 Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.GetCalcThreadContext)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return null;
+            }
+            finally
+            {
+                Logger.WriteToLog(86, MessageSeverity.Info, string.Format(Messages.MSG_086, rc, serviceId, contextCount));
             }
         }
 
