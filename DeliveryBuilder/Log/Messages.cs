@@ -119,5 +119,7 @@ namespace DeliveryBuilder.Log
         internal const string MSG_086 = @"Calcs.GetCalcThreadContext exit rc = {0}. service_id = {1}, context_count = {2}"; 
 
         internal const string MSG_087 = @"Received orders. service_id = {0}, shop_id = {1}, order_id = {2}({3}), interval({4}) = ({5} - {6}), weight = {7}, dservices = [{8}]"; 
-   }
+        internal const string MSG_088 = @"Received shops. service_id = {0}, shop_id = {1}, lat_lon = ({2}; {3}), work_interval = ({4} - {5})"; 
+        internal const string MSG_089 = @"Received couriers. service_id = {0}, shop_id = {1}, courier_id = {2}({3}), type = {4} work_interval = ({5} - {6})"; 
+  }
 }

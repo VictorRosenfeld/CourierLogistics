@@ -1159,6 +1159,8 @@ namespace DeliveryBuilder
                                 couriersUpdates = (CouriersUpdates) couriersSerializer.Deserialize(sr);
                             }
 
+                            PrintCouriers(couriersUpdates);
+
                             int rc1 = couriers.Update(couriersUpdates, thresholds, shops);
                             if (rc1 != 0)
                             {
@@ -1180,6 +1182,8 @@ namespace DeliveryBuilder
                             {
                                 shopsUpdates = (ShopsUpdates) shopsSerializer.Deserialize(sr);
                             }
+
+                            PrintShops(shopsUpdates);
 
                             int rc1 = shops.Update(shopsUpdates);
                             if (rc1 != 0)
@@ -1237,6 +1241,67 @@ namespace DeliveryBuilder
                                       orderUpdates.TimeTo,     // {6}
                                       orderUpdates.Weight,     // {7}
                                       FormatDServices(orderUpdates.DServices)   // {8}
+                        ));
+                }
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Вывод принятых магазинов в лог
+        /// </summary>
+        /// <param name="shopsUpdates">Принятые магазины</param>
+        private static void PrintShops(ShopsUpdates shopsUpdates)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (shopsUpdates == null || shopsUpdates.Updates == null || shopsUpdates.Updates.Length <= 0)
+                    return;
+
+                // 3. Выводим иформацию  магазинах
+                foreach (var shopUpdates in shopsUpdates.Updates)
+                {
+                    Logger.WriteToLog(88, MessageSeverity.Info,
+                        string.Format(Messages.MSG_088,
+                                      shopsUpdates.ServiceId, // {0}
+                                      shopUpdates.ShopId,     // {1}
+                                      shopUpdates.Latitude,   // {2}
+                                      shopUpdates.Longitude,  // {3}
+                                      shopUpdates.WorkStart,  // {4}
+                                      shopUpdates.WorkEnd     // {5}
+                        ));
+                }
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Вывод принятых курьеров в лог
+        /// </summary>
+        /// <param name="couriersUpdates">Принятые курьеры</param>
+        private static void PrintCouriers(CouriersUpdates couriersUpdates)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (couriersUpdates == null || couriersUpdates.Updates == null || couriersUpdates.Updates.Length <= 0)
+                    return;
+
+                // 3. Выводим иформацию о курьерах
+                foreach (var courierUpdates in couriersUpdates.Updates)
+                {
+                    Logger.WriteToLog(89, MessageSeverity.Info,
+                        string.Format(Messages.MSG_089,
+                                      couriersUpdates.ServiceId,  // {0}
+                                      courierUpdates.ShopId,      // {1}
+                                      courierUpdates.CourierId,   // {2}
+                                      courierUpdates.Status,      // {3}
+                                      courierUpdates.CourierType, // {4}
+                                      courierUpdates.WorkStart,   // {5}
+                                      courierUpdates.WorkEnd      // {6}
                         ));
                 }
             }
