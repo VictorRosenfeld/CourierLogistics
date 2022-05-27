@@ -144,6 +144,7 @@ namespace DeliveryBuilder.Recalc
                     for (int j = 0; j < vehicleTypeCount; j++)
                     {
                         int count = vehicleTypeOrderCount[j];
+                        Logger.WriteToLog(110, MessageSeverity.Info, $"count = {count}");
                         if (count > 0)
                         {
                             Order[] contextOrders = new Order[count];
@@ -158,9 +159,11 @@ namespace DeliveryBuilder.Recalc
                             Courier courier = allCouriers.FindFirstShopCourierByType(shop.Id, orderVehicleTypes[j]);
                             if (courier != null)
                             {
+                                Logger.WriteToLog(111, MessageSeverity.Info, $"courier_id = {courier.Id}, max_order_weight = {courier.MaxOrderWeight}, count = {count}");
                                 contextOrders = FilterOrdersOnMaxWeight(courier.MaxOrderWeight, contextOrders);
                                 if (contextOrders != null && contextOrders.Length > 0)
                                 {
+                                    Logger.WriteToLog(112, MessageSeverity.Info, $"courier_id = {courier.Id}, max_order_weight = {courier.MaxOrderWeight}, count = {count}");
                                     //if (courier.MaxOrderCount < maxRouteLength)
                                     //    maxRouteLength = courier.MaxOrderCount;
                                     Point[,] geoData;

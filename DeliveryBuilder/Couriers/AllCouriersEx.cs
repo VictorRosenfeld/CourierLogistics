@@ -34,7 +34,7 @@ namespace DeliveryBuilder.Couriers
         /// <summary>
         /// Максимальный вес одного заказа, кг
         /// </summary>
-        private const string parameterMaxОrderWeight = "max_order_weight";
+        private const string parameterMaxОrderWeight = "max_order_weight";                                                       
 
         /// <summary>
         /// Максимальный общий вес всех заказов, кг
@@ -463,8 +463,13 @@ namespace DeliveryBuilder.Couriers
                 for (int i = 0; i < crs.Length; i++)
                 {
                     Courier courier = crs[i];
-                    if (courier.ShopId == shopId && courier.VehicleID == vehicleId)
-                    { return courier; }
+                    //if (courier.ShopId == shopId && courier.VehicleID == vehicleId)
+                    //{ return courier; }
+                    if (courier.VehicleID == vehicleId)
+                    {
+                        if (courier.IsTaxi || courier.ShopId == shopId)
+                            return courier;
+                    }
                 }
 
                 return null;

@@ -134,6 +134,7 @@ namespace DeliveryBuilder.Geo.Cache
 
                     // 5. Выход - Ok
                     rc = 0;
+                    IsCreated = true;
                     return rc;
                 }
                 catch (Exception ex)

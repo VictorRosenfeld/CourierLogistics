@@ -773,7 +773,7 @@ namespace DeliveryBuilder.DeliveryCover
                             rc1 = geoMng.GetData(courier.YandexType, pt1, pt2, out Point geoData12, out Point geoData21);
                             if (rc1 != 0)
                             {
-                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.GeoDataNA);
+                                orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.GeoDataNA, rc1);
                                 continue;
                             }
 

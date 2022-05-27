@@ -669,16 +669,12 @@ namespace DeliveryBuilder
             {
                 if (isCatched)
                 {
-                    try
-                    { syncMutex.ReleaseMutex(); }
-                    catch { }
+                    try { syncMutex.ReleaseMutex(); } catch { }
                     isCatched = false;
                 }
                 if (db != null)
                 {
-                    try
-                    { db.Close(); }
-                    catch { }
+                    try { db.Close(); } catch { }
                     db = null;
                 }
             }

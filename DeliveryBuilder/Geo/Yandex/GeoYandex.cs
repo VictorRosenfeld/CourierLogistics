@@ -134,6 +134,7 @@ namespace DeliveryBuilder.Geo.Yandex
 
                 // 4. Выход - Ok
                 rc = 0;
+                IsCreated = true;
                 return rc;
             }
             catch (Exception ex)
@@ -950,7 +951,7 @@ namespace DeliveryBuilder.Geo.Yandex
                     {
                         string url = string.Format(getUrl, apiKey, originsArg, destinationsArg, modes[m]);
                         //#if debug
-                        //                    Logger.WriteToLog(1008, $"YandexGeoRequest -> GeoThread url = {url}", 0);
+                        Logger.WriteToLog(1008, MessageSeverity.Info, $"YandexGeoRequest -> GeoThread url = {url}");
                         //#endif
 
                         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
@@ -1039,8 +1040,9 @@ namespace DeliveryBuilder.Geo.Yandex
                 // 4. Выход - Ok
                 rc = 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoYandex)}.{nameof(GeoYandex.GeoThread)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
 
             }
             finally

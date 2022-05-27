@@ -231,7 +231,7 @@ namespace DeliveryBuilder.Geo
             {
                 // 2. Проверяем исходные данные
                 rc = 2;
-                if (IsCreated)
+                if (!IsCreated)
                     return rc;
                 if (points == null || points.Length <= 1)
                     return rc;
@@ -543,7 +543,7 @@ namespace DeliveryBuilder.Geo
             {
                 // 2. Проверяем исходные данные
                 rc = 2;
-                if (IsCreated)
+                if (!IsCreated)
                     return rc;
 
                 int yandexTypeIndex = Array.BinarySearch(yandexTypeIds, yandexTypeId);
@@ -666,6 +666,8 @@ namespace DeliveryBuilder.Geo
             {
                 // 2. Проверяем исходные данные
                 rc = 2;
+                if (!IsCreated)
+                    return rc;
                 if (shop == null || shop.Latitude == 0 || shop.Longitude == 0)
                     return rc;
                 if (orders == null || orders.Length <= 0)
