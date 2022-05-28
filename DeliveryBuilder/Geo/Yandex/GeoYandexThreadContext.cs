@@ -39,6 +39,11 @@ namespace DeliveryBuilder.Geo.Yandex
         public ManualResetEvent SyncEvent { get; set; }
 
         /// <summary>
+        /// Timeout для отклика, мсек
+        /// </summary>
+        public int ResponseTimeout { get; private set; }
+
+        /// <summary>
         /// Код возврата
         /// </summary>
         public int ExitCode { get; set; }
@@ -52,7 +57,8 @@ namespace DeliveryBuilder.Geo.Yandex
         /// <param name="startIndex">Индекс первого обрбатываемого запроса</param>
         /// <param name="step"> Шаг обработки запросов</param>
         /// <param name="syncEvent">Объект синхронизации</param>
-        public GeoYandexThreadContext(string getUrl, string apiKey, GeoYandexRequestData[] requestData, int startIndex, int step, ManualResetEvent syncEvent)
+        /// <param name="responseTimeout">Timeout для отклика, мсек</param>
+        public GeoYandexThreadContext(string getUrl, string apiKey, GeoYandexRequestData[] requestData, int startIndex, int step, ManualResetEvent syncEvent, int responseTimeout)
         {
             GetUrl = getUrl;
             ApiKey = apiKey;
@@ -60,6 +66,7 @@ namespace DeliveryBuilder.Geo.Yandex
             StartIndex = startIndex;
             Step = step;
             SyncEvent = syncEvent;
+            ResponseTimeout = responseTimeout;
             ExitCode = -1;
         }
     }

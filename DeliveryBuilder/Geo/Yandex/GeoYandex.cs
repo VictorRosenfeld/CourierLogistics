@@ -193,7 +193,7 @@ namespace DeliveryBuilder.Geo.Yandex
                 rc = 6;
                 if (threadCount <= 1)
                 {
-                    GeoYandexThreadContext context = new GeoYandexThreadContext(url, apiKey, requestData, 0, 1, null);
+                    GeoYandexThreadContext context = new GeoYandexThreadContext(url, apiKey, requestData, 0, 1, null, responseTimeout);
                     GeoThread(context);
                     rc1 = context.ExitCode;
                 }
@@ -204,7 +204,7 @@ namespace DeliveryBuilder.Geo.Yandex
                     for (int i = 0; i < threadCount; i++)
                     {
                         int m = i;
-                        contexts[m] = new GeoYandexThreadContext(url, apiKey, requestData, i, threadCount, new ManualResetEvent(false));
+                        contexts[m] = new GeoYandexThreadContext(url, apiKey, requestData, i, threadCount, new ManualResetEvent(false), responseTimeout);
                         ThreadPool.QueueUserWorkItem(GeoThread, contexts[m]);
                     }
 
@@ -959,7 +959,8 @@ namespace DeliveryBuilder.Geo.Yandex
                         request.UserAgent = USER_AGENT;
                         request.Accept = "application/json";
                         request.ContentType = "application/json";
-                        request.Timeout = 10000;
+                        //request.Timeout = 10000;
+                        request.Timeout = context.ResponseTimeout;
 
                         // 3.5.1 Отправляем запрос
                         rc = 351;
