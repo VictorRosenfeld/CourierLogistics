@@ -61,7 +61,7 @@ namespace DeliveryBuilder.Recalc
                 if (limitations == null || !limitations.IsCreated)
                     return null;
 
-                Logger.WriteToLog(77, MessageSeverity.Info, string.Format(Messages.MSG_077,serviceId));
+                //Logger.WriteToLog(77, MessageSeverity.Info, string.Format(Messages.MSG_077,serviceId));
 
                 // 3. Строим контексты всех потоков
                 rc = 3;
@@ -73,7 +73,7 @@ namespace DeliveryBuilder.Recalc
                     // 3.1 Извлекаем магазин
                     rc = 31;
                     Shop shop = shops[i];
-                    Logger.WriteToLog(78, MessageSeverity.Info, string.Format(Messages.MSG_078,serviceId, shop.Id));
+                    //Logger.WriteToLog(78, MessageSeverity.Info, string.Format(Messages.MSG_078,serviceId, shop.Id));
 
                     // 3.2 Извлекаем заказы магазина
                     rc = 32;
@@ -81,26 +81,26 @@ namespace DeliveryBuilder.Recalc
                     Order[] shopOrders = allOrders.GetShopOrders(shop.Id, calcTime);
                     if (shopOrders == null || shopOrders.Length <= 0)
                         continue;
-                    Logger.WriteToLog(79, MessageSeverity.Info, string.Format(Messages.MSG_079,serviceId, shop.Id, shopOrders.Length));
+                    //Logger.WriteToLog(79, MessageSeverity.Info, string.Format(Messages.MSG_079,serviceId, shop.Id, shopOrders.Length));
 
                     // 3.3 Извлекаем курьеров магазина
                     rc = 33;
                     Courier[] shopCouriers = allCouriers.GetShopCouriers(shop.Id, true);
                     if (shopCouriers == null || shopCouriers.Length <= 0)
                         continue;
-                    Logger.WriteToLog(80, MessageSeverity.Info, string.Format(Messages.MSG_080,serviceId, shop.Id, shopCouriers.Length));
+                    //Logger.WriteToLog(80, MessageSeverity.Info, string.Format(Messages.MSG_080,serviceId, shop.Id, shopCouriers.Length));
 
                     // 3.4 Выбираем возможные способы доставки
                     rc = 34;
                     int[] courierVehicleTypes = AllCouriersEx.GetCourierVehicleTypes(shopCouriers);
                     if (courierVehicleTypes == null || courierVehicleTypes.Length <= 0)
                         continue;
-                    Logger.WriteToLog(81, MessageSeverity.Info, string.Format(Messages.MSG_081,serviceId, shop.Id, courierVehicleTypes.Length));
+                    //Logger.WriteToLog(81, MessageSeverity.Info, string.Format(Messages.MSG_081,serviceId, shop.Id, courierVehicleTypes.Length));
 
                     int[] orderVehicleTypes = AllOrdersEx.GetOrderVehicleTypes(shopOrders);
                     if (orderVehicleTypes == null || orderVehicleTypes.Length <= 0)
                         continue;
-                    Logger.WriteToLog(82, MessageSeverity.Info, string.Format(Messages.MSG_082,serviceId, shop.Id, courierVehicleTypes.Length));
+                    //Logger.WriteToLog(82, MessageSeverity.Info, string.Format(Messages.MSG_082,serviceId, shop.Id, courierVehicleTypes.Length));
 
                     Array.Sort(courierVehicleTypes);
                     int vehicleTypeCount = 0;
@@ -159,13 +159,9 @@ namespace DeliveryBuilder.Recalc
                             Courier courier = allCouriers.FindFirstShopCourierByType(shop.Id, orderVehicleTypes[j]);
                             if (courier != null)
                             {
-                                Logger.WriteToLog(111, MessageSeverity.Info, $"courier_id = {courier.Id}, max_order_weight = {courier.MaxOrderWeight}, count = {count}");
                                 contextOrders = FilterOrdersOnMaxWeight(courier.MaxOrderWeight, contextOrders);
                                 if (contextOrders != null && contextOrders.Length > 0)
                                 {
-                                    Logger.WriteToLog(112, MessageSeverity.Info, $"courier_id = {courier.Id}, max_order_weight = {courier.MaxOrderWeight}, count = {count}");
-                                    //if (courier.MaxOrderCount < maxRouteLength)
-                                    //    maxRouteLength = courier.MaxOrderCount;
                                     Point[,] geoData;
                                     int rc1 = geoMng.Select(courier.YandexType, shop, contextOrders, out geoData);
                                     if (rc1 == 0)
@@ -182,15 +178,15 @@ namespace DeliveryBuilder.Recalc
                     }
                 }
 
-                Logger.WriteToLog(85, MessageSeverity.Info, string.Format(Messages.MSG_085, serviceId, contextCount));
+                //Logger.WriteToLog(85, MessageSeverity.Info, string.Format(Messages.MSG_085, serviceId, contextCount));
 
                 if (contextCount < context.Length)
                 {
                     Array.Resize(ref context, contextCount);
                 }
-                rc = 0;
 
                 // 4. Выход - Ok
+                rc = 0;
                 return context;
             }
             catch (Exception ex)
@@ -198,10 +194,10 @@ namespace DeliveryBuilder.Recalc
                 Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.GetCalcThreadContext)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return null;
             }
-            finally
-            {
-                Logger.WriteToLog(86, MessageSeverity.Info, string.Format(Messages.MSG_086, rc, serviceId, contextCount));
-            }
+            //finally
+            //{
+            //    Logger.WriteToLog(86, MessageSeverity.Info, string.Format(Messages.MSG_086, rc, serviceId, contextCount));
+            //}
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ namespace DeliveryBuilder.Geo.Yandex
     /// <summary>
     /// Исходные данные и результат запроса гео-данных Yandex
     /// </summary>
-    public struct GeoYandexRequest
+    public class GeoYandexRequest
     {
         /// <summary>
         /// Способы передвижения

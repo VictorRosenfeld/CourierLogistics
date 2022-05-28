@@ -204,7 +204,7 @@ namespace DeliveryBuilder.Geo.Yandex
                     for (int i = 0; i < threadCount; i++)
                     {
                         int m = i;
-                        contexts[m] = new GeoYandexThreadContext(url, apiKey, requestData, i, threadCount, new ManualResetEvent(false), responseTimeout);
+                        contexts[m] = new GeoYandexThreadContext(url, apiKey, requestData, m, threadCount, new ManualResetEvent(false), responseTimeout);
                         ThreadPool.QueueUserWorkItem(GeoThread, contexts[m]);
                     }
 
@@ -226,15 +226,15 @@ namespace DeliveryBuilder.Geo.Yandex
                 rc = 7;
                 if (rc1 != 0)
                     return rc = 1000000 * rc + rc1;
-
                 request.Result = geoData;
 
                 // 8. Выход - Ok
                 rc = 0;
                 return rc;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoYandex)}.{nameof(this.Request)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
             finally
@@ -759,6 +759,15 @@ namespace DeliveryBuilder.Geo.Yandex
             }
         }
 
+        /// <summary>
+        /// Для заданного целого n нахождение всех пар n1 и n2,
+        /// таких, что
+        ///            n1 ≤ n2
+        ///            0 ≤ n - n1 * n2 ≤ limit;
+        /// </summary>
+        /// <param name="number">Заданное число n</param>
+        /// <param name="differenceLim">limit</param>
+        /// <returns>Найденные пары</returns>
         private static Point[] GetMultiplierPairs(int number, int differenceLim = 1)
         {
             // 1. Инициализация
@@ -951,7 +960,7 @@ namespace DeliveryBuilder.Geo.Yandex
                     {
                         string url = string.Format(getUrl, apiKey, originsArg, destinationsArg, modes[m]);
                         //#if debug
-                        Logger.WriteToLog(1008, MessageSeverity.Info, $"YandexGeoRequest -> GeoThread url = {url}");
+                        //Logger.WriteToLog(1008, MessageSeverity.Info, $"YandexGeoRequest -> GeoThread url = {url}");
                         //#endif
 
                         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
@@ -1003,7 +1012,7 @@ namespace DeliveryBuilder.Geo.Yandex
                                         return;
                                     }
 
-                                    // 3.5.6 Проверяем число полученных жлементов данных
+                                    // 3.5.6 Проверяем число полученных элементов данных
                                     rc = 356;
                                     if (items.Length != originLength * destinationLength)
                                     {
@@ -1044,7 +1053,6 @@ namespace DeliveryBuilder.Geo.Yandex
             catch (Exception ex)
             {
                 Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoYandex)}.{nameof(GeoYandex.GeoThread)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
-
             }
             finally
             {
