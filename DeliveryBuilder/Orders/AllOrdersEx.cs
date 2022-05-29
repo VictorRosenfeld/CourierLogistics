@@ -6,6 +6,7 @@ namespace DeliveryBuilder.Orders
     using DeliveryBuilder.Shops;
     using System;
     using System.Collections.Generic;
+    using System.IO;
 
     /// <summary>
     /// Работа с заказами
@@ -444,6 +445,47 @@ namespace DeliveryBuilder.Orders
             Order order;
             if (orders.TryGetValue(orderId, out order))
                 order.Completed = value;
+        }
+
+        /// <summary>
+        /// Сохранение заказов в файле
+        /// </summary>
+        /// <param name="filename">Файл результата</param>
+        /// <returns>0 - заказы сохранены; заказы не сохранены</returns>
+        public int Save(string filename)
+        {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsCreated)
+                    return rc;
+                if (string.IsNullOrWhiteSpace(filename))
+                    return rc;
+
+                // 3. Выводим заказы в csv-формате
+                rc = 3;
+                using (StreamWriter sw = new StreamWriter(filename))
+                {
+                    sw.WriteLine("order_id; shop_id; status; completed; time_check_disabled; received; assembled; rejection_reason; delivery_from; delivery_to; weight; latitude; longitude");
+
+                    foreach (var order in orders.Values)
+                    {
+                        sw.WriteLine($"{order.Id}; {order.ShopId}; {order.Status}; {order.Completed}; {order.TimeCheckDisabled}; {order.ReceiptedDate}; {order.AssembledDate}; {order.RejectionReason}; {order.DeliveryTimeFrom}; {order.DeliveryTimeTo}; {order.Weight}; {order.Latitude}; {order.Longitude}");
+                    }
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
         }
     }
 }

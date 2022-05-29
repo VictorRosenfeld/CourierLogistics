@@ -34,23 +34,23 @@ namespace DeliveryBuilder.Geo.Cache
             SetData(timeReceived, distance, duration);
         }
 
-        /// <summary>
-        /// Проверка, что элемент данных не заполнен
-        /// </summary>
-        /// <param name="index">Индекс элемента данных</param>
-        /// <returns>true - элемент данных не заполнен; false - элемент данных заполнен</returns>
-        public bool IsEmpty(int index)
-        {
-            return Duration == int.MinValue;
-        }
+        ///// <summary>
+        ///// Проверка, что элемент данных не заполнен
+        ///// </summary>
+        ///// <param name="index">Индекс элемента данных</param>
+        ///// <returns>true - элемент данных не заполнен; false - элемент данных заполнен</returns>
+        //public bool IsEmpty(int index)
+        //{
+        //    return Duration == int.MinValue;
+        //}
 
-        /// <summary>
-        /// Помечаем экземпляр, как пустой
-        /// </summary>
-        public void SetEmpty()
-        {
-            Duration = int.MinValue;
-        }
+        ///// <summary>
+        ///// Помечаем экземпляр, как пустой
+        ///// </summary>
+        //public void SetEmpty()
+        //{
+        //    Duration = int.MinValue;
+        //}
 
         /// <summary>
         /// Установка значений свойств экземпляра

@@ -5,6 +5,7 @@ namespace DeliveryBuilder.Geo.Cache
     using DeliveryBuilder.Log;
     using System;
     using System.Collections.Generic;
+    using System.IO;
 
     /// <summary>
     /// Гео-кэш
@@ -489,6 +490,51 @@ namespace DeliveryBuilder.Geo.Cache
             }
             catch
             { return new uint[0]; }
+        }
+
+        /// <summary>
+        /// Сохранение гео-кэша
+        /// </summary>
+        /// <param name="filename">Файл результата</param>
+        /// <returns>0 - заказы сохранены; заказы не сохранены</returns>
+        public int Save(string filename)
+        {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsCreated)
+                    return rc;
+                if (string.IsNullOrWhiteSpace(filename))
+                    return rc;
+
+                // 3. Выводим заказы в csv-формате
+                rc = 3;
+                using (StreamWriter sw = new StreamWriter(filename))
+                {
+                    sw.WriteLine("type_index; key; received; distance; duration");
+
+                    for (int i = 0; i < VehicleGeoData.Length; i++)
+                    {
+                        var data = VehicleGeoData[i];
+                        foreach (KeyValuePair<ulong, GeoCacheItem> kvp in data)
+                        {
+                            sw.WriteLine($"{i}; {kvp.Key}; {kvp.Value.TimeReceived}; {kvp.Value.Distance}; {kvp.Value.Duration}");
+                        }
+                    }
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
         }
     }
 }

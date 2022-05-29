@@ -7,6 +7,7 @@ namespace DeliveryBuilder
     using DeliveryBuilder.Db;
     using DeliveryBuilder.DeliveryCover;
     using DeliveryBuilder.Geo;
+    using DeliveryBuilder.Geo.Cache;
     using DeliveryBuilder.Log;
     using DeliveryBuilder.Orders;
     using DeliveryBuilder.Queue;
@@ -636,6 +637,7 @@ namespace DeliveryBuilder
                 {
                     geoData.Cache.Refresh();
                     geoTickCount = config.Parameters.GeoCache.CheckInterval;
+                    SaveGeoCache(serviceId, geoData.Cache);
                 }
 
                 if (recalcTickCount <= 0)
@@ -651,6 +653,7 @@ namespace DeliveryBuilder
 
                     // 7. Пересчиываем отгрузки
                     RecalcDeliveries(db);
+                    SaveGeoCache(serviceId, geoData.Cache);
                 }
 
                 // 8. Диспетчируем очередь
@@ -677,6 +680,7 @@ namespace DeliveryBuilder
                     try { db.Close(); } catch { }
                     db = null;
                 }
+                SaveOrders(serviceId, orders);
             }
         }
 
@@ -1329,6 +1333,66 @@ namespace DeliveryBuilder
             }
             catch
             { }
+        }
+
+        /// <summary>
+        ///Схранение заказов
+        /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="allOrders">Все заказы</param>
+        private static void SaveOrders(int serviceId, AllOrdersEx allOrders)
+        {
+            // 1. Инициализация
+            
+            try
+            {
+                // 2. Поверяем исходные данные
+                if (allOrders == null || !allOrders.IsCreated)
+                    return;
+
+                // 3. Извлекаем папку файла результата
+                string folder = Path.GetDirectoryName(Logger.File);
+                if (string.IsNullOrWhiteSpace(folder))
+                    return;
+
+                // 4. Строим имя файла
+                string filename = Path.Combine(folder, $"DeliveryBuilderOrders({serviceId})_{DateTime.Now:dd-MM-yy}.csv");
+                allOrders.Save(filename);
+
+                // 5. Выход
+            }
+            catch
+            {  }
+        }
+
+        /// <summary>
+        ///Схранение гео-кэш
+        /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="allOrders">Гео-кэш</param>
+        private static void SaveGeoCache(int serviceId, GeoCache geoCahche)
+        {
+            // 1. Инициализация
+            
+            try
+            {
+                // 2. Поверяем исходные данные
+                if (geoCahche == null || !geoCahche.IsCreated)
+                    return;
+
+                // 3. Извлекаем папку файла результата
+                string folder = Path.GetDirectoryName(Logger.File);
+                if (string.IsNullOrWhiteSpace(folder))
+                    return;
+
+                // 4. Строим имя файла
+                string filename = Path.Combine(folder, $"DeliveryBuilderGeoCache({serviceId})_{DateTime.Now:dd-MM-yy}.csv");
+                geoCahche.Save(filename);
+
+                // 5. Выход
+            }
+            catch
+            {  }
         }
 
         /// <summary>
