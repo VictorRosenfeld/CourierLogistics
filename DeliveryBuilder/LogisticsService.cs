@@ -57,7 +57,7 @@ namespace DeliveryBuilder
         /// <summary>
         /// Флаг потери связи с ExternalDb 
         /// </summary>
-        private bool connectionFailed;
+        private int connectionBrokenCount;
 
         /// <summary>
         /// Объект для работы с БД LSData
@@ -368,7 +368,7 @@ namespace DeliveryBuilder
 
                 // 17. Создаём и включаем таймер
                 rc = 17;
-                connectionFailed = true;
+                connectionBrokenCount = 1;
                 syncMutex = new Mutex();
                 timer = new System.Timers.Timer();
                 timer.Interval = config.Parameters.TickInterval;
@@ -597,26 +597,26 @@ namespace DeliveryBuilder
                 db.Open();
                 if (!db.IsOpen())
                 {
+                    connectionBrokenCount++;
                     string exceptionMessage = lsDataDb.GetLastErrorMessage();
                     if (string.IsNullOrEmpty(exceptionMessage))
-                    { Logger.WriteToLog(35, MessageSeverity.Error, Messages.MSG_035); }
+                    { Logger.WriteToLog(35, MessageSeverity.Error, string.Format(Messages.MSG_035, connectionBrokenCount)); }
                     else
-                    { Logger.WriteToLog(36, MessageSeverity.Error, string.Format(Messages.MSG_036, exceptionMessage)); }
+                    { Logger.WriteToLog(36, MessageSeverity.Error, string.Format(Messages.MSG_036, connectionBrokenCount, exceptionMessage)); }
                     db.Close();
-                    connectionFailed = true;
                     return;
                 }
 
                 // 2. Провеяем восстановление связи и делаем запрос данных
-                if (connectionFailed)
+                if (connectionBrokenCount != 0)
                 {
-                    SendDataReqest(serviceId, config.Parameters.ExternalDb.CmdService.DataMessageType, true, db);
+                    SendDataRequest(serviceId, config.Parameters.ExternalDb.CmdService.DataMessageType, true, db);
                     shops.SetAllShopUpdated();
-                    connectionFailed = false;
+                    connectionBrokenCount = 0;
                 }
                 else
                 {
-                    SendDataReqest(serviceId, config.Parameters.ExternalDb.CmdService.DataMessageType, false, db);
+                    SendDataRequest(serviceId, config.Parameters.ExternalDb.CmdService.DataMessageType, false, db);
                 }
 
                 // 3. Отправляем Hearbeat
@@ -756,6 +756,8 @@ namespace DeliveryBuilder
         private static int SendHeartbeat(int serviceId, string messageType, ExternalDb db)
         {
             // 1. Иициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
 
             try
@@ -772,7 +774,7 @@ namespace DeliveryBuilder
                 string heartbeat = $@"<heartbeat service_id=""{serviceId}"" />";
                 string errorMessage;
 
-                Logger.WriteToLog(72, MessageSeverity.Info, string.Format(Messages.MSG_072, messageType, heartbeat));
+                //Logger.WriteToLog(72, MessageSeverity.Info, string.Format(Messages.MSG_072, messageType, heartbeat));
 
                 int rc1 = db.SendXmlCmd(serviceId, messageType, heartbeat, out errorMessage);
                 if (rc1 != 0)
@@ -793,6 +795,11 @@ namespace DeliveryBuilder
                 Logger.WriteToLog(38, MessageSeverity.Error, string.Format(Messages.MSG_038, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
+            finally
+            {
+                sw.Stop();
+                Logger.WriteToLog(90, MessageSeverity.Info, string.Format(Messages.MSG_090, rc, serviceId, sw.ElapsedMilliseconds));
+            }
         }
 
         /// <summary>
@@ -803,9 +810,11 @@ namespace DeliveryBuilder
         /// <param name="allData">Флаг: true - все сообщения; false - только новые</param>
         /// <param name="db">БД ExteralDb</param>
         /// <returns>0 - запрос отправлен; иначе - запрос не оправлен</returns>
-        private static int SendDataReqest(int serviceId, string messageType, bool allData, ExternalDb db)
+        private static int SendDataRequest(int serviceId, string messageType, bool allData, ExternalDb db)
         {
             // 1. Иициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
 
             try
@@ -821,7 +830,7 @@ namespace DeliveryBuilder
                 rc = 3;
                 string request = $@"<data service_id=""{serviceId}"" all=""{(allData ? 1 : 0)}""/>";
 
-                Logger.WriteToLog(71, MessageSeverity.Info, string.Format(Messages.MSG_071, messageType, request));
+                //Logger.WriteToLog(71, MessageSeverity.Info, string.Format(Messages.MSG_071, messageType, request));
 
                 string errorMessage;
                 int rc1 = db.SendXmlCmd(serviceId, messageType, request, out errorMessage);
@@ -843,6 +852,11 @@ namespace DeliveryBuilder
                 Logger.WriteToLog(38, MessageSeverity.Error, string.Format(Messages.MSG_040, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
+            finally
+            {
+                sw.Stop();
+                Logger.WriteToLog(91, MessageSeverity.Info, string.Format(Messages.MSG_091, rc, serviceId, allData, sw.ElapsedMilliseconds));
+            }
         }
 
         /// <summary>
@@ -858,6 +872,8 @@ namespace DeliveryBuilder
         private static int SendDeliveries(int serviceId, CourierDeliveryInfo[] deliveries, int cmdType, string messageTypeName, AllCouriersEx couriers, ExternalDb db)
         {
             // 1. Иициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
 
             try
@@ -911,6 +927,11 @@ namespace DeliveryBuilder
                 Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(LogisticsService.SendDeliveries)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
+            finally
+            {
+                sw.Stop();
+                Logger.WriteToLog(94, MessageSeverity.Info, string.Format(Messages.MSG_094, rc, serviceId, (deliveries == null ? 0 : deliveries.Length), sw.ElapsedMilliseconds));
+            }
         }
 
         /// <summary>
@@ -925,6 +946,8 @@ namespace DeliveryBuilder
         private static int RejectOrders(OrderRejectionCause[] rejectedOrders, int serviceId, string messageType, AllOrdersEx orders, ExternalDb db)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
 
             try
@@ -956,9 +979,6 @@ namespace DeliveryBuilder
                     sb.AppendLine($@"<rejection id=""{rejectedOrder.OrderId}"" type_id=""{rejectedOrder.VehicleId}"" reason=""{rejectedOrder.Reason}"" error_code=""{rejectedOrder.ErrorCode}""/>");
                     count++;
                 }
-#if debug
-                Logger.WriteToLog(513, $"RejectOrders. count = {count}", 0);
-#endif
 
                 if (count <= 0)
                     return rc = 0;
@@ -1001,12 +1021,11 @@ namespace DeliveryBuilder
                 Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(LogisticsService.RejectOrders)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
-//            finally
-//            {
-//#if debug
-//                Logger.WriteToLog(502, $"RejectOrders exit. service_id = {serviceId}. rc = {rc}", 0);
-//#endif
-//            }
+            finally
+            {
+                sw.Stop();
+                Logger.WriteToLog(93, MessageSeverity.Info, string.Format(Messages.MSG_093, rc, serviceId, (rejectedOrders == null ? 0 : rejectedOrders.Length), sw.ElapsedMilliseconds));
+            }
         }
 
         /// <summary>
@@ -1018,6 +1037,8 @@ namespace DeliveryBuilder
         private static int ReceiveData(int serviceId, ExternalDb db, out DataRecord[] records)
         {
             // 1. Иициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             records = null;
 
@@ -1051,6 +1072,11 @@ namespace DeliveryBuilder
             {
                 Logger.WriteToLog(42, MessageSeverity.Error, string.Format(Messages.MSG_042, rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
+            }
+            finally
+            {
+                sw.Stop();
+                Logger.WriteToLog(92, MessageSeverity.Info, string.Format(Messages.MSG_092, rc, serviceId, (records == null ? 0 : records.Length), sw.ElapsedMilliseconds));
             }
         }
 
@@ -2076,7 +2102,7 @@ namespace DeliveryBuilder
                     queueTickCount = 0;
                     recalcTickCount = 0;
                     geoTickCount = 0;
-                    connectionFailed = false;
+                    connectionBrokenCount = 0;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

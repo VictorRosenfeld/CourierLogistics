@@ -52,8 +52,8 @@ namespace DeliveryBuilder.Log
         internal const string MSG_033 = @"Объект для работы с заказами не создан (rc = {0})"; 
         internal const string MSG_034 = @"Объект c пределами на число заказов при полном переборе не создан (rc = {0})"; 
 
-        internal const string MSG_035 = @"БД ExternalDb. Не удалось установить соединение"; 
-        internal const string MSG_036 = @"БД ExternalDb. Не удалось установить соединение. Exception: {0}"; 
+        internal const string MSG_035 = @"БД ExternalDb broken_count = {0}. Не удалось установить соединение"; 
+        internal const string MSG_036 = @"БД ExternalDb broken_count = {0}. Не удалось установить соединение. Exception: {0}"; 
 
         internal const string MSG_037 = @"БД ExternalDb. Не удалось отправить сердцебиение (rc = {0})"; 
         internal const string MSG_038 = @"БД ExternalDb. Не удалось отправить сердцебиение (rc = {0}). Exception: {0}"; 
@@ -120,5 +120,12 @@ namespace DeliveryBuilder.Log
         internal const string MSG_087 = @"Received orders. service_id = {0}, shop_id = {1}, order_id = {2}({3}), interval({4}) = ({5} - {6}), weight = {7}, dservices = [{8}]"; 
         internal const string MSG_088 = @"Received shops. service_id = {0}, shop_id = {1}, lat_lon = ({2}; {3}), work_interval = ({4} - {5})"; 
         internal const string MSG_089 = @"Received couriers. service_id = {0}, shop_id = {1}, courier_id = {2}({3}), type = {4} work_interval = ({5} - {6})"; 
+
+        internal const string MSG_090 = @"Send Heartbeat rc = {0}. service_id = {1}, elapsed_time = {2}"; 
+        internal const string MSG_091 = @"Send DataRequest rc = {0}. service_id = {1}, all = {2}, elapsed_time = {3}"; 
+        internal const string MSG_092 = @"Send ReceiveData rc = {0}. service_id = {1}, record_count = {2}, elapsed_time = {3}"; 
+        internal const string MSG_093 = @"Send RejectOrders rc = {0}. service_id = {1}, rejection_count = {2}, elapsed_time = {3}"; 
+        internal const string MSG_094 = @"Send Deliveries rc = {0}. service_id = {1}, delivery_count = {2}, elapsed_time = {3}"; 
+
   }
 }
