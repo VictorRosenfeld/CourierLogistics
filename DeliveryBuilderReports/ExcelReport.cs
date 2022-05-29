@@ -261,5 +261,209 @@
                 return rc;
             }
         }
+
+        /// <summary>
+        /// Форматирование листа Recalcs
+        /// </summary>
+        /// <param name="sheet">Лист Recalcs</param>
+        private static void FormatRecalcs(IXLWorksheet sheet)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (sheet == null)
+                    return;
+
+                // 3. Форматируем лист
+                sheet.Cell(1, 1).Value = "Time";
+                sheet.Cell(1, 2).Value = "Elapsed Time";
+                sheet.Cell(1, 3).Value = "Orders";
+                sheet.Cell(1, 4).Value = "Shops";
+                sheet.Range(1, 1, 1, 4).Style.Font.Bold = true;
+                sheet.Range(1, 1, 1, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                sheet.Range(1, 1, 1, 4).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                sheet.Column(1).Width = 14.44;
+                sheet.Column(2).Width = 15.67;
+                sheet.Column(3).Width = 10.22;
+                sheet.Column(4).Width = 9.78;
+                sheet.Range(1, 1, 1, 4).SetAutoFilter();
+                sheet.SheetView.FreezeRows(1);
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Форматирование листа Deliveries Summary
+        /// </summary>
+        /// <param name="sheet">Лист Deliveries Summary</param>
+        private static void FormatDeliveriesSummary(IXLWorksheet sheet)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (sheet == null)
+                    return;
+
+                // 3. Форматируем лист
+                sheet.Cell(1, 1).Value = "Time";
+                sheet.Cell(1, 2).Value = "Level";
+                sheet.Cell(1, 3).Value = "Count";
+                sheet.Cell(1, 4).Value = "Cost";
+                sheet.Cell(1, 5).Value = "Orders";
+                sheet.Cell(1, 6).Value = "Avg Cost";
+                sheet.Cell(1, 7).Value = "Orders, %";
+                sheet.Cell(1, 8).Value = "Cost, %";
+                sheet.Range(1, 1, 1, 8).Style.Font.Bold = true;
+                sheet.Range(1, 1, 1, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                sheet.Range(1, 1, 1, 8).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                sheet.Column(1).Width = 14.44;
+                sheet.Column(2).Width = 9.00;
+                sheet.Column(3).Width = 9.78;
+                sheet.Column(4).Width = 9.78;
+                sheet.Column(5).Width = 10.22;
+                sheet.Column(6).Width = 12.00;
+                sheet.Column(7).Width = 12.67;
+                sheet.Column(8).Width = 10.78;
+                sheet.Range(1, 1, 1, 8).SetAutoFilter();
+                sheet.SheetView.FreezeRows(1);
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Форматирование листа Orders Summary
+        /// </summary>
+        /// <param name="sheet">Лист Orders Summary</param>
+        private static void FormatOrdersSummary(IXLWorksheet sheet)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (sheet == null)
+                    return;
+
+                // 3. Форматируем лист
+                sheet.Cell(1, 1).Value = "Messages";
+                sheet.Cell(1, 2).Value = "Orders";
+                sheet.Cell(1, 3).Value = "Rejected";
+                sheet.Cell(1, 4).Value = "Delivered";
+                sheet.Range(1, 1, 1, 4).Style.Font.Bold = true;
+                sheet.Range(1, 1, 1, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                sheet.Range(1, 1, 1, 4).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                sheet.Column(1).Width = 9.22;
+                sheet.Column(2).Width = 8.11;
+                sheet.Column(3).Width = 8.11;
+                sheet.Column(4).Width = 8.11;
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Форматирование листа Errors
+        /// </summary>
+        /// <param name="sheet">Лист Errors</param>
+        private static void FormatErrors(IXLWorksheet sheet)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (sheet == null)
+                    return;
+
+                // 3. Форматируем лист
+                sheet.Cell(1, 1).Value = "Time";
+                sheet.Cell(1, 2).Value = "Msg No.";
+                sheet.Cell(1, 3).Value = "Severity";
+                sheet.Cell(1, 4).Value = "Message";
+                sheet.Range(1, 1, 1, 4).Style.Font.Bold = true;
+                sheet.Range(1, 1, 1, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                sheet.Range(1, 1, 1, 4).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                sheet.Column(1).Width = 14.44;
+                sheet.Column(2).Width = 11.67;
+                sheet.Column(3).Width = 11.44;
+                sheet.Column(4).Width = 62.56;
+                sheet.Range(1, 1, 1, 4).SetAutoFilter();
+                sheet.SheetView.FreezeRows(1);
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Форматирование листа Broken Connection
+        /// </summary>
+        /// <param name="sheet">Лист Broken Connection</param>
+        private static void FormatBrokenConnection(IXLWorksheet sheet)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (sheet == null)
+                    return;
+
+                // 3. Форматируем лист
+                sheet.Cell(1, 1).Value = "Time";
+                sheet.Cell(1, 2).Value = "Count";
+                sheet.Range(1, 1, 1, 2).Style.Font.Bold = true;
+                sheet.Range(1, 1, 1, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                sheet.Range(1, 1, 1, 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                sheet.Column(1).Width = 14.44;
+                sheet.Column(2).Width = 9.78;
+                sheet.Range(1, 1, 1, 2).SetAutoFilter();
+                sheet.SheetView.FreezeRows(1);
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Форматирование листа Deliveries
+        /// </summary>
+        /// <param name="sheet">Лист Deliveries</param>
+        private static void FormatDeliveries(IXLWorksheet sheet)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (sheet == null)
+                    return;
+
+                // 3. Форматируем лист
+                sheet.Cell(1, 1).Value = "Time";
+                sheet.Cell(1, 2).Value = "Shop";
+                sheet.Cell(1, 3).Value = "DServiceID";
+                sheet.Cell(1, 4).Value = "Courier";
+                sheet.Cell(1, 5).Value = "Taxi";
+                sheet.Cell(1, 6).Value = "Level";
+                sheet.Cell(1, 7).Value = "Cost";
+                sheet.Cell(1, 8).Value = "SDI";
+                sheet.Cell(1, 9).Value = "EDI";
+                sheet.Cell(1, 10).Value = "Cause";
+                sheet.Cell(1, 11).Value = "Execution Time";
+                sheet.Cell(1, 12).Value = "Orders";
+                sheet.Range(1, 1, 1, 12).Style.Font.Bold = true;
+                sheet.Range(1, 1, 1, 12).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                sheet.Range(1, 1, 1, 12).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                sheet.Column(1).Width = 14.44;
+                sheet.Column(2).Width = 9.00;
+                sheet.Column(3).Width = 13.67;
+                sheet.Column(4).Width = 10.78;
+                sheet.Column(5).Width = 8.00;
+                sheet.Column(6).Width = 9.00;
+                sheet.Column(7).Width = 8.67;
+                sheet.Column(8).Width = 14.44;
+                sheet.Column(9).Width = 14.44;
+                sheet.Column(10).Width = 9.67;
+                sheet.Column(11).Width = 17.56;
+                sheet.Column(12).Width = 41.67;
+                sheet.Range(1, 1, 1, 12).SetAutoFilter();
+                sheet.SheetView.FreezeRows(1);
+            }
+            catch
+            { }
+        }
     }
 }
