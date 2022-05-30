@@ -922,6 +922,9 @@ namespace DeliveryBuilder
                     return rc = 10 * rc + rc1;
                 }
 
+                if (cmdType == 1)
+                    PrintDeliveries(serviceId, cmdType, deliveries);
+
                 // 5. Выход - Ok
                 rc = 0;
                 return rc;
@@ -1336,6 +1339,44 @@ namespace DeliveryBuilder
         }
 
         /// <summary>
+        /// Печать отгрузок в лог
+        /// </summary>
+        /// <param name="deliveries">Отгрузки</param>
+        private static void PrintDeliveries(int serviceId, int cmdType, CourierDeliveryInfo[] deliveries)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (deliveries == null || deliveries.Length <= 0)
+                    return;
+
+                // 3. Выводим иформацию  заказаx
+                foreach (var delivery in deliveries)
+                {
+                    Logger.WriteToLog(95, MessageSeverity.Info,
+                        string.Format(Messages.MSG_095,
+                                      serviceId,           // {0}
+                                      delivery.EventTime,  // {1}
+                                      delivery.FromShop.Id,// {2}
+                                      cmdType,             // {3}
+                                      delivery.DeliveryCourier.DServiceType,  // {4}
+                                      delivery.DeliveryCourier.Id,  // {5}
+                                      delivery.DeliveryCourier.IsTaxi,  // {6}
+                                      delivery.OrderCount,  // {7}
+                                      delivery.Cost,  // {8}
+                                      delivery.StartDeliveryInterval,   // {9}
+                                      delivery.EndDeliveryInterval,   // {10}
+                                      delivery.Cause,     // {11}
+                                      delivery.ExecutionTime,     // {12}
+                                      FormatDeliveryOrders(delivery.Orders)   // {13}
+                        ));
+                }
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
         ///Схранение заказов
         /// </summary>
         /// <param name="serviceId">ID сервиса логистики</param>
@@ -1420,6 +1461,34 @@ namespace DeliveryBuilder
             catch
             {
                 return "?";
+            }
+        }
+
+        /// <summary>
+        /// Форматирвание списка заказв
+        /// </summary>
+        /// <param name="dsrvices">Массив заказов</param>
+        /// <returns></returns>
+        private static string FormatDeliveryOrders(Order[] orders)
+        {
+            try
+            {
+                if (orders == null || orders.Length <= 0)
+                    return "";
+                StringBuilder sb = new StringBuilder(12 * orders.Length);
+                sb.Append(orders[0].Id);
+
+                for (int i = 1; i < orders.Length; i++)
+                {
+                    sb.Append(';');
+                    sb.Append(orders[i].Id);
+                }
+
+                return sb.ToString();
+            }
+            catch
+            {
+                return "";
             }
         }
 
