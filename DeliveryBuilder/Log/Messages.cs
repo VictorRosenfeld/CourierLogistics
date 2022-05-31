@@ -127,6 +127,6 @@ namespace DeliveryBuilder.Log
         internal const string MSG_093 = @"Send RejectOrders rc = {0}. service_id = {1}, rejection_count = {2}, elapsed_time = {3}"; 
         internal const string MSG_094 = @"Send Deliveries rc = {0}. service_id = {1}, delivery_count = {2}, elapsed_time = {3}"; 
 
-        internal const string MSG_095 = @"Send Deliveries. service_id = {0}, time = {1}, shop_id = {2}, type = {3}, dservice_id = {4}, courier_id = {5}, taxi = {6}, level = {7}, cost = {8}, interval = ({9} - {10}), cause = {11}, duration = {12}, [{13}]"; 
+        internal const string MSG_095 = @"Send Deliveries. service_id = {0}, time = {1}, shop_id = {2}, type = {3}, dservice_id = {4}, courier_id = {5}, taxi = {6}, level = {7}, cost = {8}, interval = ({9} - {10}), cause = {11}, duration = {12}, orders = [{13}]"; 
   }
 }
