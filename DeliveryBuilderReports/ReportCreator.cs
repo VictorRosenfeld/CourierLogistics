@@ -39,12 +39,11 @@ namespace DeliveryBuilderReports
                 // 4. Читаем и разбиаем файл лога
                 rc = 4;
                 string line;
-                DateTime dateTime;
+                DateTime dateTime = default(DateTime);
                 int message_no;
                 string severity = "";
                 string message = "";
-                Dictionary<int, DeliveriesSummaryRecord> deliveriesSummary = new Dictionary<int, DeliveriesSummaryRecord>(1500);
-
+                Dictionary<int, DeliveriesSummaryRecord> deliveriesSummary = new Dictionary<int, DeliveriesSummaryRecord>(32);
 
                 using (StreamReader reader = new StreamReader(logFile))
                 {
@@ -136,12 +135,236 @@ namespace DeliveryBuilderReports
 
                                 AddDeliveriesSummary(deliveriesSummary, level, cost);
                                 break;
+                            case 52: // RecalcDeliveries Exit. service_id = {0}, rc = {1}, shops = {2}, orders = {3}, elapsed_time = {4}
+                                int rcCode = GetIntParameterValue(message, "rc");
+                                if (rcCode == int.MinValue)
+                                    rcCode = -1;
+
+                                int shopCount = GetIntParameterValue(message, "shops");
+                                if (shopCount == int.MinValue)
+                                    shopCount = 0;
+
+                                int orderCount = GetIntParameterValue(message, "orders");
+                                if (orderCount == int.MinValue)
+                                    orderCount = 0;
+
+                                int elapsedTime = GetIntParameterValue(message, "elapsed_time");
+                                if (elapsedTime == int.MinValue)
+                                    elapsedTime = 0;
+
+                                report.AddRecalcsRecord(dateTime, elapsedTime, orderCount, shopCount);
+                                break;
+                            case 35: // БД ExternalDb broken_count = {0}. Не удалось установить соединение
+                            case 36: // БД ExternalDb broken_count = {0}. Не удалось установить соединение. Exception: {0}                                
+                                int brokenCount = GetIntParameterValue(message, "broken_count", '=', '.');
+                                if (brokenCount == int.MinValue)
+                                    brokenCount = 0;
+
+                                report.AddBrokenConnectionRecord(dateTime, brokenCount);
+                                break;
+                            case 90: // Send Heartbeat rc = {0}. service_id = {1}, elapsed_time = {2}
+                                rcCode = GetIntParameterValue(message, "rc");
+                                if (rcCode == int.MinValue)
+                                    rcCode = -1;
+
+                                elapsedTime = GetIntParameterValue(message, "elapsed_time");
+                                if (elapsedTime == int.MinValue)
+                                    elapsedTime = 0;
+
+                                report.AddHeartbeatRecord(dateTime, rcCode, elapsedTime);
+                                break;
+                            case 91: // Send DataRequest rc = {0}. service_id = {1}, all = {2}, elapsed_time = {3}
+                                rcCode = GetIntParameterValue(message, "rc");
+                                if (rcCode == int.MinValue)
+                                    rcCode = -1;
+
+                                bool all = GetBoolParameterValue(message, "all");
+
+                                elapsedTime = GetIntParameterValue(message, "elapsed_time");
+                                if (elapsedTime == int.MinValue)
+                                    elapsedTime = 0;
+
+                                report.AddDataRequestRecord(dateTime, all, rcCode, elapsedTime);
+                                break;
+                            case 92: // Send ReceiveData rc = {0}. service_id = {1}, record_count = {2}, elapsed_time = {3}
+                                rcCode = GetIntParameterValue(message, "rc");
+                                if (rcCode == int.MinValue)
+                                    rcCode = -1;
+
+                                int recordCount = GetIntParameterValue(message, "record_count");
+                                if (recordCount == int.MinValue)
+                                    recordCount = 0;
+
+                                elapsedTime = GetIntParameterValue(message, "elapsed_time");
+                                if (elapsedTime == int.MinValue)
+                                    elapsedTime = 0;
+
+                                report.AddReceiveDataRecord(dateTime, recordCount, rcCode, elapsedTime);
+                                break;
+                            case 93: // Send RejectOrders rc = {0}. service_id = {1}, rejection_count = {2}, elapsed_time = {3}
+                                rcCode = GetIntParameterValue(message, "rc");
+                                if (rcCode == int.MinValue)
+                                    rcCode = -1;
+
+                                int rejectionCount = GetIntParameterValue(message, "rejection_count");
+                                if (rejectionCount == int.MinValue)
+                                    rejectionCount = 0;
+
+                                elapsedTime = GetIntParameterValue(message, "elapsed_time");
+                                if (elapsedTime == int.MinValue)
+                                    elapsedTime = 0;
+
+                                report.AddRejectOrderRecord(dateTime, rejectionCount, rcCode, elapsedTime);
+                                break;
+                            case 94: // Send Deliveries rc = {0}. service_id = {1}, delivery_count = {2}, elapsed_time = {3}
+                                rcCode = GetIntParameterValue(message, "rc");
+                                if (rcCode == int.MinValue)
+                                    rcCode = -1;
+
+                                int deliveryCount = GetIntParameterValue(message, "delivery_count");
+                                if (deliveryCount == int.MinValue)
+                                    deliveryCount = 0;
+
+                                elapsedTime = GetIntParameterValue(message, "elapsed_time");
+                                if (elapsedTime == int.MinValue)
+                                    elapsedTime = 0;
+
+                                report.AddSendDeliveriesRecord(dateTime, deliveryCount, rcCode, elapsedTime);
+                                break;
+
                         }
-
                     }
-
                 }
 
+                // 5. Deliveries Summary
+                rc = 5;
+                int ordersTotal = 0;
+                double costTotal = 0;
+
+                foreach (var record in deliveriesSummary.Values)
+                {
+                    ordersTotal += record.OrderCount;
+                    costTotal += record.Cost;
+                }
+
+                int[] levels = new int[deliveriesSummary.Count];
+                DeliveriesSummaryRecord[] records = new DeliveriesSummaryRecord[deliveriesSummary.Count];
+                deliveriesSummary.Keys.CopyTo(levels, 0);
+                deliveriesSummary.Values.CopyTo(records, 0);
+                Array.Sort(levels, records);
+
+                for (int i = 0; i < records.Length; i++)
+                {
+                    DeliveriesSummaryRecord record = records[i];
+                    report.AddDeliverySummaryRecord(DateTime.Now.Date, record.Level, record.Count, record.Cost, record.OrderCount, record.AvgCost, 
+                        (double)record.OrderCount / ordersTotal, record.Cost / costTotal);
+                }
+
+                // 6. Orders & Orders Summary
+                rc = 6;
+                int receivedOrders = 0;
+                int rejectedOrders = 0;
+                DateTime doi = dateTime.Date;
+                //     0          1       2        3              4                5         6               7               8             9         10       11         12
+                // ("order_id; shop_id; status; completed; time_check_disabled; received; assembled; rejection_reason; delivery_from; delivery_to; weight; latitude; longitude");
+
+                using (StreamReader reader = new StreamReader(ordersFile))
+                {
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        // 6.1 Извлекаем поля записи
+                        rc = 61;
+                        if (string.IsNullOrWhiteSpace(line))
+                            continue;
+                        string[] fields = line.Split(';');
+                        if (fields == null || fields.Length != 13)
+                            continue;
+
+                        // 6.2 Получаем значения полей
+                        rc = 62;
+                        int orderId;
+                        if (!int.TryParse(fields[0], out orderId))
+                            continue;
+
+                        int shopId;
+                        if (!int.TryParse(fields[1], out shopId))
+                            continue;
+
+                        if (string.IsNullOrWhiteSpace(fields[2]))
+                            continue;
+                        string status = fields[2].Trim();
+
+                        bool completed;
+                        if (!bool.TryParse(fields[3], out completed))
+                            completed = false;
+
+                        bool timeCheckDisabled;
+                        if (!bool.TryParse(fields[4], out timeCheckDisabled))
+                            timeCheckDisabled = false;
+
+                        DateTime received;
+                        if (!DateTime.TryParse(fields[5], out received))
+                            received = new DateTime(2000, 1, 1);
+
+                        DateTime assembled;
+                        if (!DateTime.TryParse(fields[6], out assembled))
+                            assembled = new DateTime(2000, 1, 1);
+
+                        string rejectionReason = (string.IsNullOrWhiteSpace(fields[7]) ? null : fields[7].Trim());
+
+                        DateTime deliveryFrom;
+                        if (!DateTime.TryParse(fields[8], out deliveryFrom))
+                            deliveryFrom = new DateTime(2000, 1, 1);
+
+                        DateTime deliveryTo;
+                        if (!DateTime.TryParse(fields[9], out deliveryTo))
+                            deliveryTo = new DateTime(2000, 1, 1);
+
+                        double weight;
+                        if (!double.TryParse(fields[10], out weight))
+                            weight = 0;
+
+                        double latitude;
+                        if (!double.TryParse(fields[11], out latitude))
+                            latitude = 0;
+
+                        double longitude;
+                        if (!double.TryParse(fields[12], out longitude))
+                            longitude = 0;
+
+                        // 6.3 Фильтруем по дате
+                        rc = 63;
+                        if (deliveryTo.Date != doi)
+                            continue;
+
+                        // 6.4 Выводим запись в Orders
+                        rc = 64;
+                        report.AddOrdersRecord(orderId, shopId, status, completed, timeCheckDisabled, received, assembled,
+                            rejectionReason, deliveryFrom, deliveryTo, weight, latitude, longitude);
+
+                        // 6.5 Подсчитываем Orders Summary
+                        rc = 65;
+                        receivedOrders++;
+                        if (rejectionReason != null 
+                            && !"None".Equals(rejectionReason, StringComparison.CurrentCultureIgnoreCase))
+                        { rejectedOrders++; }
+                    }
+                }
+
+                // 6.6. Выводим запись в Orders Summary
+                rc = 66;
+                report.AddOrdersSummaryRecord(0, receivedOrders, rejectedOrders, ordersTotal);
+
+                // 7. Сохраняем отчет
+                rc = 7;
+                report.Save();
+
+                // 8. Открываем отчет
+                rc = 8;
+                report.Show();
+
+                // 9. Выход - Ok
+                rc = 0;
                 return rc;
             }
             catch

@@ -26,9 +26,9 @@ namespace DeliveryBuilder.Orders
         /// </summary>
         Cancelled = 3,
 
-        /// <summary>
-        /// Отгружен
-        /// </summary>
-        Completed = 4,
+        ///// <summary>
+        ///// Отгружен
+        ///// </summary>
+        //Completed = 4,
     }
 }

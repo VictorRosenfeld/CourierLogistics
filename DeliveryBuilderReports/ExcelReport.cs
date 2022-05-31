@@ -2,6 +2,7 @@
 {
     using ClosedXML.Excel;
     using System;
+    using System.Diagnostics;
 
     /// <summary>
     /// Книга Excel с отчетами
@@ -1014,7 +1015,7 @@
         /// <param name="rcCode">Код возврата</param>
         /// <param name="elapsedTime">Длительность выполнения запроса</param>
         /// <returns>0 - запись добавлена; иначе - запись не добавлена</returns>
-        public int AddReceiveDataRecord(DateTime time, bool messageCount, int rcCode, int elapsedTime)
+        public int AddReceiveDataRecord(DateTime time, int messageCount, int rcCode, int elapsedTime)
         {
             // 1. Иициализация
             int rc = 1;
@@ -1143,6 +1144,70 @@
                 SendDeliveries.Cell(row, 3).SetValue(rcCode);
                 SendDeliveries.Cell(row, 4).SetValue(elapsedTime);
                 sendDeliveryRow = row;
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            { return rc; }
+        }
+
+        /// <summary>
+        /// Сохранение книги
+        /// </summary>
+        /// <returns>0 - книга сохранена; иначе - книга не сохранена</returns>
+        public int Save()
+        {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsCreated)
+                    return rc;
+                if (Workbook == null)
+                    return rc;
+
+                // 3. Сохраняем книгу
+                rc = 3;
+                Workbook.SaveAs(Filename);
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            { return rc; }
+        }
+
+        /// <summary>
+        /// Открытие книги
+        /// </summary>
+        /// <returns>0 - книга открыта; иначе - книга не открыта</returns>
+        public int Show()
+        {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsCreated)
+                    return rc;
+                if (string.IsNullOrWhiteSpace(Filename))
+                    return rc;
+
+                // 3. Сохраняем книгу
+                rc = 3;
+                Process excel = new Process();
+                excel.StartInfo.FileName = Filename;
+                excel.StartInfo.UseShellExecute = true;
+                excel.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+                excel.Start();
 
                 // 4. Выход - Ok
                 rc = 0;

@@ -31,15 +31,15 @@ namespace DeliveryBuilderReports
         /// </summary>
         public double AvgCost => Cost / OrderCount;
 
-        /// <summary>
-        /// Удельный вес стоимости всех отгрузок уровня Level по отношению к стоимости всех отгрузок
-        /// </summary>
-        public double CostPercent { get; set; }
+        ///// <summary>
+        ///// Удельный вес стоимости всех отгрузок уровня Level по отношению к стоимости всех отгрузок
+        ///// </summary>
+        //public double CostPercent { get; set; }
 
-        /// <summary>
-        /// Удельный вес общего числа заказов в отгрузках уровня Level по отношению к общему числу заказов во всех отгрузках
-        /// </summary>
-        public double OrdersPercent { get; set; }
+        ///// <summary>
+        ///// Удельный вес общего числа заказов в отгрузках уровня Level по отношению к общему числу заказов во всех отгрузках
+        ///// </summary>
+        //public double OrdersPercent { get; set; }
 
         /// <summary>
         /// Параметрический конструктор класса DeliveriesSummaryRecord
