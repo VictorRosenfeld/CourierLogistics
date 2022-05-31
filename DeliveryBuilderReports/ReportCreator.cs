@@ -24,8 +24,8 @@ namespace DeliveryBuilderReports
                 rc = 2;
                 if (string.IsNullOrWhiteSpace(logFile) || !File.Exists(logFile))
                     return rc;
-                if (string.IsNullOrWhiteSpace(ordersFile) || !File.Exists(ordersFile))
-                    return rc;
+                //if (string.IsNullOrWhiteSpace(ordersFile) || !File.Exists(ordersFile))
+                //    return rc;
                 if (string.IsNullOrWhiteSpace(resultFile))
                     return rc;
 
@@ -262,98 +262,103 @@ namespace DeliveryBuilderReports
 
                 // 6. Orders & Orders Summary
                 rc = 6;
-                int receivedOrders = 0;
-                int rejectedOrders = 0;
-                DateTime doi = dateTime.Date;
-                //     0          1       2        3              4                5         6               7               8             9         10       11         12
-                // ("order_id; shop_id; status; completed; time_check_disabled; received; assembled; rejection_reason; delivery_from; delivery_to; weight; latitude; longitude");
 
-                using (StreamReader reader = new StreamReader(ordersFile))
+                if (!string.IsNullOrWhiteSpace(ordersFile) || File.Exists(ordersFile))
                 {
-                    while ((line = reader.ReadLine()) != null)
+
+                    int receivedOrders = 0;
+                    int rejectedOrders = 0;
+                    DateTime doi = dateTime.Date;
+                    //     0          1       2        3              4                5         6               7               8             9         10       11         12
+                    // ("order_id; shop_id; status; completed; time_check_disabled; received; assembled; rejection_reason; delivery_from; delivery_to; weight; latitude; longitude");
+
+                    using (StreamReader reader = new StreamReader(ordersFile))
                     {
-                        // 6.1 Извлекаем поля записи
-                        rc = 61;
-                        if (string.IsNullOrWhiteSpace(line))
-                            continue;
-                        string[] fields = line.Split(';');
-                        if (fields == null || fields.Length != 13)
-                            continue;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            // 6.1 Извлекаем поля записи
+                            rc = 61;
+                            if (string.IsNullOrWhiteSpace(line))
+                                continue;
+                            string[] fields = line.Split(';');
+                            if (fields == null || fields.Length != 13)
+                                continue;
 
-                        // 6.2 Получаем значения полей
-                        rc = 62;
-                        int orderId;
-                        if (!int.TryParse(fields[0], out orderId))
-                            continue;
+                            // 6.2 Получаем значения полей
+                            rc = 62;
+                            int orderId;
+                            if (!int.TryParse(fields[0], out orderId))
+                                continue;
 
-                        int shopId;
-                        if (!int.TryParse(fields[1], out shopId))
-                            continue;
+                            int shopId;
+                            if (!int.TryParse(fields[1], out shopId))
+                                continue;
 
-                        if (string.IsNullOrWhiteSpace(fields[2]))
-                            continue;
-                        string status = fields[2].Trim();
+                            if (string.IsNullOrWhiteSpace(fields[2]))
+                                continue;
+                            string status = fields[2].Trim();
 
-                        bool completed;
-                        if (!bool.TryParse(fields[3], out completed))
-                            completed = false;
+                            bool completed;
+                            if (!bool.TryParse(fields[3], out completed))
+                                completed = false;
 
-                        bool timeCheckDisabled;
-                        if (!bool.TryParse(fields[4], out timeCheckDisabled))
-                            timeCheckDisabled = false;
+                            bool timeCheckDisabled;
+                            if (!bool.TryParse(fields[4], out timeCheckDisabled))
+                                timeCheckDisabled = false;
 
-                        DateTime received;
-                        if (!DateTime.TryParse(fields[5], out received))
-                            received = new DateTime(2000, 1, 1);
+                            DateTime received;
+                            if (!DateTime.TryParse(fields[5], out received))
+                                received = new DateTime(2000, 1, 1);
 
-                        DateTime assembled;
-                        if (!DateTime.TryParse(fields[6], out assembled))
-                            assembled = new DateTime(2000, 1, 1);
+                            DateTime assembled;
+                            if (!DateTime.TryParse(fields[6], out assembled))
+                                assembled = new DateTime(2000, 1, 1);
 
-                        string rejectionReason = (string.IsNullOrWhiteSpace(fields[7]) ? null : fields[7].Trim());
+                            string rejectionReason = (string.IsNullOrWhiteSpace(fields[7]) ? null : fields[7].Trim());
 
-                        DateTime deliveryFrom;
-                        if (!DateTime.TryParse(fields[8], out deliveryFrom))
-                            deliveryFrom = new DateTime(2000, 1, 1);
+                            DateTime deliveryFrom;
+                            if (!DateTime.TryParse(fields[8], out deliveryFrom))
+                                deliveryFrom = new DateTime(2000, 1, 1);
 
-                        DateTime deliveryTo;
-                        if (!DateTime.TryParse(fields[9], out deliveryTo))
-                            deliveryTo = new DateTime(2000, 1, 1);
+                            DateTime deliveryTo;
+                            if (!DateTime.TryParse(fields[9], out deliveryTo))
+                                deliveryTo = new DateTime(2000, 1, 1);
 
-                        double weight;
-                        if (!double.TryParse(fields[10], out weight))
-                            weight = 0;
+                            double weight;
+                            if (!double.TryParse(fields[10], out weight))
+                                weight = 0;
 
-                        double latitude;
-                        if (!double.TryParse(fields[11], out latitude))
-                            latitude = 0;
+                            double latitude;
+                            if (!double.TryParse(fields[11], out latitude))
+                                latitude = 0;
 
-                        double longitude;
-                        if (!double.TryParse(fields[12], out longitude))
-                            longitude = 0;
+                            double longitude;
+                            if (!double.TryParse(fields[12], out longitude))
+                                longitude = 0;
 
-                        // 6.3 Фильтруем по дате
-                        rc = 63;
-                        if (deliveryTo.Date != doi)
-                            continue;
+                            // 6.3 Фильтруем по дате
+                            rc = 63;
+                            if (deliveryTo.Date != doi)
+                                continue;
 
-                        // 6.4 Выводим запись в Orders
-                        rc = 64;
-                        report.AddOrdersRecord(orderId, shopId, status, completed, timeCheckDisabled, received, assembled,
-                            rejectionReason, deliveryFrom, deliveryTo, weight, latitude, longitude);
+                            // 6.4 Выводим запись в Orders
+                            rc = 64;
+                            report.AddOrdersRecord(orderId, shopId, status, completed, timeCheckDisabled, received, assembled,
+                                rejectionReason, deliveryFrom, deliveryTo, weight, latitude, longitude);
 
-                        // 6.5 Подсчитываем Orders Summary
-                        rc = 65;
-                        receivedOrders++;
-                        if (rejectionReason != null 
-                            && !"None".Equals(rejectionReason, StringComparison.CurrentCultureIgnoreCase))
-                        { rejectedOrders++; }
+                            // 6.5 Подсчитываем Orders Summary
+                            rc = 65;
+                            receivedOrders++;
+                            if (rejectionReason != null
+                                && !"None".Equals(rejectionReason, StringComparison.CurrentCultureIgnoreCase))
+                            { rejectedOrders++; }
+                        }
                     }
-                }
 
-                // 6.6. Выводим запись в Orders Summary
-                rc = 66;
-                report.AddOrdersSummaryRecord(0, receivedOrders, rejectedOrders, ordersTotal);
+                    // 6.6. Выводим запись в Orders Summary
+                    rc = 66;
+                    report.AddOrdersSummaryRecord(0, receivedOrders, rejectedOrders, ordersTotal);
+                }
 
                 // 7. Сохраняем отчет
                 rc = 7;
