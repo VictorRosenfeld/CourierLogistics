@@ -208,7 +208,7 @@
 
                 // 7. Создаём лист Errors
                 rc = 7;
-                OrdersSummary = Workbook.Worksheets.Add("Errors");
+                Errors = Workbook.Worksheets.Add("Errors");
                 FormatErrors(Errors);
 
                 // 8. Создаём лист Broken Connection
