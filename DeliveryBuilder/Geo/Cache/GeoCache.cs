@@ -28,6 +28,16 @@ namespace DeliveryBuilder.Geo.Cache
         public Exception LastException { get; private set; }
 
         /// <summary>
+        /// ID сервиса логистики
+        /// </summary>
+        private int serviceId;
+
+        /// <summary>
+        /// Флаг восстановления гео-кэша при создании
+        /// </summary>
+        public bool Restored { get; private set; }
+
+        /// <summary>
         /// Емкость гео-кэша
         /// </summary>
         private int capacity;
@@ -90,10 +100,11 @@ namespace DeliveryBuilder.Geo.Cache
         /// <summary>
         /// Создание экземпляра гео-кэша
         /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
         /// <param name="parameters">Параметры кэша</param>
         /// <param name="vehicleTypes">Количество способов передвижения в гео-кэше</param>
         /// <returns></returns>
-        public int Create(GeoCacheParameters parameters, int vehicleTypes)
+        public int Create(int serviceId, GeoCacheParameters parameters, int vehicleTypes)
         {
             lock (syncRoot)
             {
@@ -101,6 +112,7 @@ namespace DeliveryBuilder.Geo.Cache
                 int rc = 1;
                 IsCreated = false;
                 LastException = null;
+                this.serviceId = serviceId;
                 capacity = 0;
                 savingInterval = 0;
                 this.vehicleTypeCount = 0;
@@ -133,7 +145,12 @@ namespace DeliveryBuilder.Geo.Cache
                     for (int i = 0; i < vehicleGeoData.Length; i++)
                     { vehicleGeoData[i] = new Dictionary<ulong, GeoCacheItem>(collectionCapacity); }
 
-                    // 5. Выход - Ok
+                    // 5. Всстановление гео-кэша
+                    rc = 5;
+                    if (Restored)
+                        Restore();
+
+                    // 6. Выход - Ok
                     rc = 0;
                     IsCreated = true;
                     return rc;
@@ -495,9 +512,8 @@ namespace DeliveryBuilder.Geo.Cache
         /// <summary>
         /// Сохранение гео-кэша
         /// </summary>
-        /// <param name="filename">Файл результата</param>
-        /// <returns>0 - заказы сохранены; заказы не сохранены</returns>
-        public int Save(string filename)
+        /// <returns>0 - гео-кэш сохранен; иначе - гео-кэш не сохранен</returns>
+        public int Save()
         {
             // 1. Инициализация
             int rc = 1;
@@ -508,8 +524,10 @@ namespace DeliveryBuilder.Geo.Cache
                 rc = 2;
                 if (!IsCreated)
                     return rc;
-                if (string.IsNullOrWhiteSpace(filename))
-                    return rc;
+                //if (string.IsNullOrWhiteSpace(filename))
+                //    return rc;
+
+                string filename = GetCacheFilename(serviceId);
 
                 // 3. Выводим заказы в csv-формате
                 rc = 3;
@@ -535,6 +553,111 @@ namespace DeliveryBuilder.Geo.Cache
             {
                 return rc;
             }
+        }
+
+        /// <summary>
+        /// Восстановление кэша из файла
+        /// </summary>
+        /// <returns></returns>
+        private int Restore()
+        {
+            // 1. Инициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsCreated)
+                    return rc;
+
+                string filename = GetCacheFilename(serviceId);
+                if (!File.Exists(filename))
+                    return rc;
+
+                // 3. Цикл восстановления кэша
+                rc = 3;
+                DateTime timeReceivedThreshold = DateTime.Now.AddMinutes(-savingInterval);
+                using (StreamReader reader = new StreamReader(filename))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        // 3.1 Извлекаем поля записи
+                        rc = 31;
+                        string[] fields = line.Split(';');
+                        if (fields == null || fields.Length != 5)
+                            continue;
+
+                        // 3.2 Выделяем vehicleTypeIndex
+                        rc = 32;
+                        int vehicleTypeIndex;
+                        if (!int.TryParse(fields[0], out vehicleTypeIndex))
+                            continue;
+                        if (vehicleTypeIndex < 0 || vehicleTypeIndex >= vehicleTypeCount)
+                            continue;
+
+                        // 3.3 Выделяем receivedTime
+                        rc = 33;
+                        DateTime timeReceived;
+                        if (!DateTime.TryParse(fields[2], out timeReceived))
+                            continue;
+                        if (timeReceived <= timeReceivedThreshold)
+                            continue;
+
+                        // 3.4 Выделяем key
+                        rc = 34;
+                        ulong key;
+                        if (!ulong.TryParse(fields[1], out key))
+                            continue;
+
+                        // 3.5 Выделяем distance
+                        rc = 35;
+                        int distance;
+                        if (!int.TryParse(fields[3], out distance))
+                            continue;
+                        if (distance < 0)
+                            continue;
+
+                        // 3.6 Выделяем duration
+                        rc = 36;
+                        int duration;
+                        if (!int.TryParse(fields[4], out duration))
+                            continue;
+                        if (duration < 0)
+                            continue;
+
+                        // 3.7 Добавляем элемент кэша в коллекцию
+                        rc = 37;
+                        GeoCacheItem item = new GeoCacheItem(timeReceived, distance, duration);
+                        vehicleGeoData[vehicleTypeIndex].Add(key, item);
+                    }
+                }
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Построение пути к файлу гео-кэша
+        /// </summary>
+        /// <param name="serviceId"></param>
+        /// <returns></returns>
+        private static string GetCacheFilename(int serviceId)
+        {
+            // 1. Извлекаем папку файла
+            string folder = Path.GetDirectoryName(Logger.File);
+            if (string.IsNullOrWhiteSpace(folder))
+                folder = Directory.GetCurrentDirectory();
+
+            // 2. Возвращаем имя файла
+            return Path.Combine(folder, $"DeliveryBuilderGeoCache({serviceId}).csv");
         }
     }
 }

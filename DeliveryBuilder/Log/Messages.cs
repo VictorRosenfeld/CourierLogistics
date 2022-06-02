@@ -53,16 +53,16 @@ namespace DeliveryBuilder.Log
         internal const string MSG_034 = @"Объект c пределами на число заказов при полном переборе не создан (rc = {0})"; 
 
         internal const string MSG_035 = @"БД ExternalDb broken_count = {0}. Не удалось установить соединение"; 
-        internal const string MSG_036 = @"БД ExternalDb broken_count = {0}. Не удалось установить соединение. Exception: {0}"; 
+        internal const string MSG_036 = @"БД ExternalDb broken_count = {0}. Не удалось установить соединение. Exception: {1}"; 
 
         internal const string MSG_037 = @"БД ExternalDb. Не удалось отправить сердцебиение (rc = {0})"; 
-        internal const string MSG_038 = @"БД ExternalDb. Не удалось отправить сердцебиение (rc = {0}). Exception: {0}"; 
+        internal const string MSG_038 = @"БД ExternalDb. Не удалось отправить сердцебиение (rc = {0}). Exception: {1}"; 
 
         internal const string MSG_039 = @"БД ExternalDb. Не удалось отправить запрос данных (rc = {0})"; 
-        internal const string MSG_040 = @"БД ExternalDb. Не удалось отправить запрос данных (rc = {0}). Exception: {0}"; 
+        internal const string MSG_040 = @"БД ExternalDb. Не удалось отправить запрос данных (rc = {0}). Exception: {1}"; 
 
         internal const string MSG_041 = @"БД ExternalDb. Не удалось получить данные (rc = {0})"; 
-        internal const string MSG_042 = @"БД ExternalDb. Не удалось получить данные (rc = {0}). Exception: {0}"; 
+        internal const string MSG_042 = @"БД ExternalDb. Не удалось получить данные (rc = {0}). Exception: {1}"; 
 
         internal const string MSG_043 = @"Данные с неизвестным типом сообщения '{0}'"; 
         internal const string MSG_044 = @"Не удалось десериализовать сообщение типа {0}: {1}"; 
@@ -72,20 +72,20 @@ namespace DeliveryBuilder.Log
 
         internal const string MSG_048 = @"Не удалось построить команду на отгрузку из очереди (rc = {0})"; 
         internal const string MSG_049 = @"БД ExternalDb. Не удалось отправить команду на отгрузку из очереди (rc = {0})"; 
-        internal const string MSG_050 = @"БД ExternalDb. Не удалось отправить команду на отгрузку из очереди (rc = {0}). Exception: {0}"; 
+        internal const string MSG_050 = @"БД ExternalDb. Не удалось отправить команду на отгрузку из очереди (rc = {0}). Exception: {1}"; 
 
         internal const string MSG_051 = @"RecalcDeliveries Enter. service_id = {0}"; 
         internal const string MSG_052 = @"RecalcDeliveries Exit. service_id = {0}, rc = {1}, shops = {2}, orders = {3}, elapsed_time = {4}"; 
 
         internal const string MSG_053 = @"БД ExternalDb. Не удалось отправить команду отмены (rc = {0})"; 
-        internal const string MSG_054 = @"БД ExternalDb. Не удалось отправить команду отмены (rc = {0}). Exception: {0}"; 
+        internal const string MSG_054 = @"БД ExternalDb. Не удалось отправить команду отмены (rc = {0}). Exception: {1}"; 
 
         internal const string MSG_055 = @"Не удалось построить команду c рекомендациями (rc = {0})"; 
         internal const string MSG_056 = @"БД ExternalDb. Не удалось отправить команду c рекомендациями (rc = {0})"; 
-        internal const string MSG_057 = @"БД ExternalDb. Не удалось отправить команду c рекомендациями (rc = {0}). Error: {0}"; 
+        internal const string MSG_057 = @"БД ExternalDb. Не удалось отправить команду c рекомендациями (rc = {0}). Error: {1}"; 
         internal const string MSG_058 = @"Не удалось построить команду c отгрузками (rc = {0})"; 
         internal const string MSG_059 = @"БД ExternalDb. Не удалось отправить команду c отрузками (rc = {0})"; 
-        internal const string MSG_060 = @"БД ExternalDb. Не удалось отправить команду c отгузками (rc = {0}). Error: {0}"; 
+        internal const string MSG_060 = @"БД ExternalDb. Не удалось отправить команду c отгузками (rc = {0}). Error: {1}"; 
         internal const string MSG_061 = @"БД ExternalDb. Не отправленная команда: {0}"; 
         internal const string MSG_062 = @"Не удалось отправить команду на отгрузку из очереди (rc = {0})"; 
         internal const string MSG_063 = @"Не удалось обработать покрытие (rc = {0})"; 

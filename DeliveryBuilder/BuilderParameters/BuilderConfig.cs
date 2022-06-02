@@ -196,6 +196,13 @@ namespace DeliveryBuilder.BuilderParameters
         public int Capacity { get; set; }
 
         /// <summary>
+        /// Флаг восстановления гео-кэша из
+        /// ранее сохраненного файла
+        /// </summary>
+        [XmlAttribute("restored")]
+        public bool Restored { get; set; }
+
+        /// <summary>
         /// Интервал актуальности даных
         /// в гео-кэше, мин
         /// </summary>

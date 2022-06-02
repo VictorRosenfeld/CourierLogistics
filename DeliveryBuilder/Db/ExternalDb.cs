@@ -1,7 +1,6 @@
 ﻿
 namespace DeliveryBuilder.Db
 {
-    using DeliveryBuilder.Log;
     using System;
     using System.Data;
     using System.Data.SqlClient;
@@ -103,7 +102,6 @@ namespace DeliveryBuilder.Db
 
             return LastException.InnerException.Message;
         }
-        //use s1service
 
         /// <summary>
         /// Sql-процедура для приёма сообщений
@@ -150,14 +148,13 @@ namespace DeliveryBuilder.Db
         /// Sql-процедура для отправки команды
         /// (Execute @rc = SendCmd @servive_id, @message_type, @xml_cmd, @error_message OUTPUT
         /// </summary>
-        private const string sqlSendCmdEx = "dbo.RoutingSendCmd";
-
+        private const string sqlSendCmdEx = "api.RoutingSendCmd";
 
         /// <summary>
         /// Sql-процедура для плучения данных
         /// (Execute @rc = SendCmd @servive_id, @message_type, @xml_cmd, @error_message OUTPUT
         /// </summary>
-        private const string sqlReceiveData = "dbo.RoutingReceive";
+        private const string sqlReceiveData = "api.RoutingReceive";
 
         /// <summary>
         /// Получение данных из очереди вешнего сервиса

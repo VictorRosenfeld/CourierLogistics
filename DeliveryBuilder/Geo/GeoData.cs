@@ -189,7 +189,7 @@ namespace DeliveryBuilder.Geo
                 // 4. Создаём Geo Cache
                 rc = 4;
                 cache = new GeoCache();
-                int rc1 = cache.Create(config.Parameters.GeoCache, yandexTypeNames.Length);
+                int rc1 = cache.Create(config.Id, config.Parameters.GeoCache, yandexTypeNames.Length);
                 if (rc1 != 0)
                     return rc = 1000 * rc + rc1;
 

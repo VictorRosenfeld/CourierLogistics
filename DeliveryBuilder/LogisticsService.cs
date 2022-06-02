@@ -608,7 +608,7 @@ namespace DeliveryBuilder
                     return;
                 }
 
-                // 2. Провеяем восстановление связи и делаем запрос данных
+                // 2. Проверяем восстановление связи и делаем запрос данных
                 if (connectionBrokenCount != 0)
                 {
                     SendDataRequest(serviceId, config.Parameters.ExternalDb.CmdService.DataMessageType, true, db);
@@ -1421,14 +1421,15 @@ namespace DeliveryBuilder
                 if (geoCahche == null || !geoCahche.IsCreated)
                     return;
 
-                // 3. Извлекаем папку файла результата
-                string folder = Path.GetDirectoryName(Logger.File);
-                if (string.IsNullOrWhiteSpace(folder))
-                    return;
+                //// 3. Извлекаем папку файла результата
+                //string folder = Path.GetDirectoryName(Logger.File);
+                //if (string.IsNullOrWhiteSpace(folder))
+                //    return;
 
-                // 4. Строим имя файла
-                string filename = Path.Combine(folder, $"DeliveryBuilderGeoCache({serviceId})_{DateTime.Now:dd-MM-yy}.csv");
-                geoCahche.Save(filename);
+                //// 4. Строим имя файла
+                //string filename = Path.Combine(folder, $"DeliveryBuilderGeoCache({serviceId})_{DateTime.Now:dd-MM-yy}.csv");
+                //geoCahche.Save(filename);
+                geoCahche.Save();
 
                 // 5. Выход
             }
