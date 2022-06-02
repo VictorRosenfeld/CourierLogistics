@@ -712,7 +712,10 @@ namespace DeliveryBuilder
                 rc = 4;
                 CourierDeliveryInfo[] deliveries = new CourierDeliveryInfo[queueItems.Length];
                 for (int i = 0; i < queueItems.Length; i++)
-                { deliveries[i] = queueItems[i].Delivery; }
+                {
+                    deliveries[i] = queueItems[i].Delivery;
+                    deliveries[i].Cause = 3;
+                }
 
                 int rc1 = SendDeliveries(serviceId, deliveries, 1, config.Parameters.ExternalDb.CmdService.Cmd2MessageType, couriers, db);
                 if (rc1 != 0)
@@ -1905,6 +1908,10 @@ namespace DeliveryBuilder
                     {
                         Logger.WriteToLog(63, MessageSeverity.Warn, string.Format(Messages.MSG_063, rc1));
                     }
+                }
+                else
+                {
+                    queue.Update(recalcShopId, null);
                 }
 
                 // 16. Выход - Ok
