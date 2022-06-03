@@ -298,7 +298,7 @@ namespace DeliveryBuilder.Geo.Yandex
                 string[] modes = requestArgs.Modes;
                 int originCount = origins.Length;
                 int destinationCount = destinations.Length;
-                int modeCount = destinations.Length;
+                int modeCount = modes.Length;
                 Point[,,] geoData = new Point[originCount, destinationCount, modeCount];
 
                 // 6. Два частных случая - один или два запроса и два частных случая pairLimit = 1, 2

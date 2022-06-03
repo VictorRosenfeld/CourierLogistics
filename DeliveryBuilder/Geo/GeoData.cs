@@ -229,7 +229,7 @@ namespace DeliveryBuilder.Geo
             sw.Start();
             LastException = null;
             geoData = null;
-            Logger.WriteToLog(96, MessageSeverity.Info, string.Format(Messages.MSG_096, rc, yandexTypeId, (points == null ? 0 : points.Length)));
+            Logger.WriteToLog(96, MessageSeverity.Info, string.Format(Messages.MSG_096, yandexTypeId, (points == null ? 0 : points.Length)));
 
             try
             {
