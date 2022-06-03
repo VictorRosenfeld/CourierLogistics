@@ -5,6 +5,7 @@ namespace DeliveryBuilder.Geo.Cache
     using DeliveryBuilder.Log;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
 
     /// <summary>
@@ -312,11 +313,16 @@ namespace DeliveryBuilder.Geo.Cache
         /// <returns>0 - таблица построена; иначе - таблица не построена</returns>
         public int GetPointsDataTable(uint[] pointHashes, int yandexTypeIndex, out Point[,] dataTable)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            Logger.WriteToLog(100, MessageSeverity.Info, string.Format(Messages.MSG_100, yandexTypeIndex,(pointHashes == null ? 0 : pointHashes.Length)));
+
             lock (syncRoot)
             {
                 // 1. Инициализация
                 int rc = 1;
                 dataTable = null;
+                int count = 0;
 
                 try
                 {
@@ -350,6 +356,7 @@ namespace DeliveryBuilder.Geo.Cache
                                 {
                                     dataTable[i, j].X = item.Distance;
                                     dataTable[i, j].Y = item.Duration;
+                                    count++;
                                 }
                                 else
                                 {
@@ -361,6 +368,7 @@ namespace DeliveryBuilder.Geo.Cache
                                 {
                                     dataTable[j, i].X = item.Distance;
                                     dataTable[j, i].Y = item.Duration;
+                                    count++;
                                 }
                                 else
                                 {
@@ -381,6 +389,10 @@ namespace DeliveryBuilder.Geo.Cache
                     Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoCache)}.{nameof(this.GetPointsDataTable)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                     return rc;
                 }
+                finally
+                {
+                    Logger.WriteToLog(101, MessageSeverity.Info, string.Format(Messages.MSG_101, rc, yandexTypeIndex, (pointHashes == null ? 0 : pointHashes.Length), count, sw.ElapsedMilliseconds));
+                }
             }
         }
 
@@ -395,10 +407,16 @@ namespace DeliveryBuilder.Geo.Cache
         /// <returns>0 - данные сохранены; иначе - данные не сохранены</returns>
         public int PutGeoData(DateTime timeReceived, GeoPoint[] origins, GeoPoint[] destinations, int yandexTypeIndex, Point[,,] dataTable)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            Logger.WriteToLog(102, MessageSeverity.Info, string.Format(Messages.MSG_102, yandexTypeIndex, (origins == null ? 0 : origins.Length),
+                                    (destinations == null ? 0 : destinations.Length)));
+
             lock (syncRoot)
             {
                 // 1. Инициализация
                 int rc = 1;
+                int count = 0;
 
                 try
                 {
@@ -451,6 +469,7 @@ namespace DeliveryBuilder.Geo.Cache
                                 Point pt = dataTable[i, j, 0];
                                 if (pt.X >= 0)
                                 {
+                                    count++;
                                     GeoCacheItem item;
                                     ulong key = GetKey(hash1, hash2);
                                     if (vehicleData.TryGetValue(key, out item))
@@ -475,6 +494,11 @@ namespace DeliveryBuilder.Geo.Cache
                     LastException = ex;
                     Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoCache)}.{nameof(this.PutGeoData)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                     return rc;
+                }
+                finally
+                {
+                    Logger.WriteToLog(103, MessageSeverity.Info, string.Format(Messages.MSG_103, rc, yandexTypeIndex, (origins == null ? 0 : origins.Length),
+                                            (destinations == null ? 0 : destinations.Length), count, sw.ElapsedMilliseconds));
                 }
             }
         }

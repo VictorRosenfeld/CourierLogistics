@@ -163,7 +163,7 @@ namespace DeliveryBuilderReports
                                 report.AddBrokenConnectionRecord(dateTime, brokenCount);
                                 break;
                             case 90: // Send Heartbeat rc = {0}. service_id = {1}, elapsed_time = {2}
-                                rcCode = GetIntParameterValue(message, "rc");
+                                rcCode = GetIntParameterValue(message, "rc", '=', '.');
                                 if (rcCode == int.MinValue)
                                     rcCode = -1;
 
@@ -174,7 +174,7 @@ namespace DeliveryBuilderReports
                                 report.AddHeartbeatRecord(dateTime, rcCode, elapsedTime);
                                 break;
                             case 91: // Send DataRequest rc = {0}. service_id = {1}, all = {2}, elapsed_time = {3}
-                                rcCode = GetIntParameterValue(message, "rc");
+                                rcCode = GetIntParameterValue(message, "rc", '=', '.');
                                 if (rcCode == int.MinValue)
                                     rcCode = -1;
 
@@ -187,7 +187,7 @@ namespace DeliveryBuilderReports
                                 report.AddDataRequestRecord(dateTime, all, rcCode, elapsedTime);
                                 break;
                             case 92: // Send ReceiveData rc = {0}. service_id = {1}, record_count = {2}, elapsed_time = {3}
-                                rcCode = GetIntParameterValue(message, "rc");
+                                rcCode = GetIntParameterValue(message, "rc", '=', '.');
                                 if (rcCode == int.MinValue)
                                     rcCode = -1;
 
@@ -202,7 +202,7 @@ namespace DeliveryBuilderReports
                                 report.AddReceiveDataRecord(dateTime, recordCount, rcCode, elapsedTime);
                                 break;
                             case 93: // Send RejectOrders rc = {0}. service_id = {1}, rejection_count = {2}, elapsed_time = {3}
-                                rcCode = GetIntParameterValue(message, "rc");
+                                rcCode = GetIntParameterValue(message, "rc", '=', '.');
                                 if (rcCode == int.MinValue)
                                     rcCode = -1;
 
@@ -217,7 +217,7 @@ namespace DeliveryBuilderReports
                                 report.AddRejectOrderRecord(dateTime, rejectionCount, rcCode, elapsedTime);
                                 break;
                             case 94: // Send Deliveries rc = {0}. service_id = {1}, delivery_count = {2}, elapsed_time = {3}
-                                rcCode = GetIntParameterValue(message, "rc");
+                                rcCode = GetIntParameterValue(message, "rc", '=', '.');
                                 if (rcCode == int.MinValue)
                                     rcCode = -1;
 

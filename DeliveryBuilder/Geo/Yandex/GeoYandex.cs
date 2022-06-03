@@ -4,6 +4,7 @@ namespace DeliveryBuilder.Geo.Yandex
     using DeliveryBuilder.BuilderParameters;
     using DeliveryBuilder.Log;
     using System;
+    using System.Diagnostics;
     using System.Globalization;
     using System.IO;
     using System.Net;
@@ -153,6 +154,8 @@ namespace DeliveryBuilder.Geo.Yandex
         public int Request(GeoYandexRequest request)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             int rc1 = 1;
             request.Result = null;
@@ -170,6 +173,8 @@ namespace DeliveryBuilder.Geo.Yandex
                     return rc;
                 if (request.Destinations == null || request.Destinations.Length <= 0)
                     return rc;
+
+                Logger.WriteToLog(98, MessageSeverity.Info, string.Format(Messages.MSG_098, request.Modes.Length, request.Origins.Length, request.Destinations.Length));
 
                 // 4. Строим контексты запросов
                 rc = 4;
@@ -251,6 +256,12 @@ namespace DeliveryBuilder.Geo.Yandex
                         }
                     }
                 }
+                Logger.WriteToLog(99, MessageSeverity.Info, string.Format(Messages.MSG_099, rc, 
+                    (request == null || request.Modes == null ? 0 : request.Modes.Length), 
+                    (request == null || request.Origins == null ? 0 : request.Origins.Length), 
+                    (request == null || request.Destinations == null ? 0 : request.Destinations.Length), 
+                    sw.ElapsedMilliseconds));
+
             }
         }
 

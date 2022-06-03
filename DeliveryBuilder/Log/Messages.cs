@@ -127,6 +127,30 @@ namespace DeliveryBuilder.Log
         internal const string MSG_093 = @"Send RejectOrders rc = {0}. service_id = {1}, rejection_count = {2}, elapsed_time = {3}"; 
         internal const string MSG_094 = @"Send Deliveries rc = {0}. service_id = {1}, delivery_count = {2}, elapsed_time = {3}"; 
 
-        internal const string MSG_095 = @"Send Deliveries. service_id = {0}, time = {1}, shop_id = {2}, type = {3}, dservice_id = {4}, courier_id = {5}, taxi = {6}, level = {7}, cost = {8}, interval = ({9} - {10}), cause = {11}, duration = {12}, orders = [{13}]"; 
-  }
+        internal const string MSG_095 = @"Send Deliveries. service_id = {0}, time = {1}, shop_id = {2}, type = {3}, dservice_id = {4}, courier_id = {5}, taxi = {6}, level = {7}, cost = {8}, interval = ({9} - {10}), cause = {11}, duration = {12}, orders = [{13}]";
+
+        internal const string MSG_096 = @"GeoData.GetData enter. yandex_type_id = {0}, points = {1}";
+        internal const string MSG_097 = @"GeoData.GetData Exit rc = {0}. yandex_type_id = {1}, points = {2}, elapsed_time = {3}";
+        internal const string MSG_098 = @"GeoYandex.Request Enter. modes = {0}, origins = {1}, destinations = {2}";
+        internal const string MSG_099 = @"GeoYandex.Request Exit rc = {0}. modes = {1}, origins = {2}, destinations = {3}, elapsed_time = {4}";
+        internal const string MSG_100 = @"GeoCache.GetPointsDataTable Enter. yandex_type_index = {0}, points = {1}";
+        internal const string MSG_101 = @"GeoCache.GetPointsDataTable Exit rc = {0}. yandex_type_index = {1}, points = {2}, extracted = {3}, elapsed_time = {4}";
+        internal const string MSG_102 = @"GeoCache.PutGeoData Enter. yandex_type_index = {0}, origins = {1}, destinations = {2}";
+        internal const string MSG_103 = @"GeoCache.PutGeoData Exit rc = {0}. yandex_type_index = {1}, origins = {2}, destinations = {3}, saved = {4}, elapsed_time = {5}";
+        internal const string MSG_104 = @"RouteBuilder.BuildEx5 Enter. vehicle_id = {0}, order_count = {1}, level = {2}, start_index = {3}, step = {4}";
+        internal const string MSG_105 = @"RouteBuilder.BuildEx5 Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, start_index = {4}, step = {5}, elapsed_time = {6}, delivery_count = {7}";
+        internal const string MSG_106 = @"RouteBuilder.BuildEx4 Enter. vehicle_id = {0}, order_count = {1}, level = {2}, start_index = {3}, step = {4}";
+        internal const string MSG_107 = @"RouteBuilder.BuildEx4 Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, start_index = {4}, step = {5}, elapsed_time = {6}, delivery_count = {7}";
+        internal const string MSG_108 = @"RouteBuilder.BuildEx3 Enter. vehicle_id = {0}, order_count = {1}, level = {2}, start_index = {3}, step = {4}";
+        internal const string MSG_109 = @"RouteBuilder.BuildEx3 Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, start_index = {4}, step = {5}, elapsed_time = {6}, delivery_count = {7}";
+        internal const string MSG_110 = @"RouteBuilder.BuildEx2 Enter. vehicle_id = {0}, order_count = {1}, level = {2}, start_index = {3}, step = {4}";
+        internal const string MSG_111 = @"RouteBuilder.BuildEx2 Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, start_index = {4}, step = {5}, elapsed_time = {6}, delivery_count = {7}";
+        internal const string MSG_112 = @"RouteBuilder.BuildEx6 Enter. vehicle_id = {0}, order_count = {1}, level = {2}, start_index = {3}, step = {4}";
+        internal const string MSG_113 = @"RouteBuilder.BuildEx6 Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, start_index = {4}, step = {5}, elapsed_time = {6}, delivery_count = {7}";
+        internal const string MSG_114 = @"RouteBuilder.BuildEx7 Enter. vehicle_id = {0}, order_count = {1}, level = {2}, start_index = {3}, step = {4}";
+        internal const string MSG_115 = @"RouteBuilder.BuildEx7 Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, start_index = {4}, step = {5}, elapsed_time = {6}, delivery_count = {7}";
+        internal const string MSG_116 = @"RouteBuilder.BuildEx8 Enter. vehicle_id = {0}, order_count = {1}, level = {2}, start_index = {3}, step = {4}";
+        internal const string MSG_117 = @"RouteBuilder.BuildEx8 Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, start_index = {4}, step = {5}, elapsed_time = {6}, delivery_count = {7}";
+
+    }
 }

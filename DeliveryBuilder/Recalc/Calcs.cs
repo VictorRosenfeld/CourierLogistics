@@ -144,7 +144,7 @@ namespace DeliveryBuilder.Recalc
                     for (int j = 0; j < vehicleTypeCount; j++)
                     {
                         int count = vehicleTypeOrderCount[j];
-                        Logger.WriteToLog(110, MessageSeverity.Info, $"count = {count}");
+                        //Logger.WriteToLog(110, MessageSeverity.Info, $"count = {count}");
                         if (count > 0)
                         {
                             Order[] contextOrders = new Order[count];
@@ -979,7 +979,7 @@ namespace DeliveryBuilder.Recalc
 
                     if (context.SyncEvent != null)
                         context.SyncEvent.Set();
-                    Logger.WriteToLog(67,rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_067, rc, threadCount, (DateTime.Now -startTime).TotalMilliseconds, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
+                    Logger.WriteToLog(67,rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_067, rc, (int) (DateTime.Now -startTime).TotalMilliseconds, threadCount, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
                 }
             }
         }

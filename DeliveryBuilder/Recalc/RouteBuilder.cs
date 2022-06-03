@@ -8,6 +8,7 @@ namespace DeliveryBuilder.Recalc
     using DeliveryBuilder.Shops;
     using System;
     using System.Threading;
+    using System.Diagnostics;
 
     /// <summary>
     /// Построитель отгрузок
@@ -45,8 +46,11 @@ namespace DeliveryBuilder.Recalc
         public static void BuildEx2(object status)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             ThreadContextEx context = status as ThreadContextEx;
+            int count = 0;
 
             try
             {
@@ -58,10 +62,8 @@ namespace DeliveryBuilder.Recalc
                 Point[,] geoData = context.GeoData;
                 if (geoData == null)
                     return;
-//#if (debug)
-//                //Thread.Sleep(context.ShopCourier.VehicleID * 100 + 10 * context.StartOrderIndex);
-//                Logger.WriteToLog(309, $"BuildEx2 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
+                Logger.WriteToLog(114, MessageSeverity.Info, string.Format(Messages.MSG_114, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep));
+
                 // 3. Извлекаем и проверяем данные из контекста
                 rc = 3;
                 int level = context.MaxRouteLength;
@@ -95,7 +97,6 @@ namespace DeliveryBuilder.Recalc
                 {
                     deliveries = new CourierDeliveryInfo[1];
                 }
-                int count = 0;
 
                 // 4. Цикл выбора допустимых маршрутов
                 rc = 4;
@@ -181,15 +182,13 @@ namespace DeliveryBuilder.Recalc
             {
                 if (context != null)
                 {
-//#if debug
-//                    Logger.WriteToLog(3090, $"BuildEx2 exit. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
                     context.ExitCode = rc;
                     ManualResetEvent syncEvent = context.SyncEvent;
                     if (syncEvent != null)
                     {
                         syncEvent.Set();
                     }
+                    Logger.WriteToLog(111, MessageSeverity.Info, string.Format(Messages.MSG_111, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
                 }
             }
         }
@@ -203,8 +202,11 @@ namespace DeliveryBuilder.Recalc
         public static void BuildEx3(object status)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             ThreadContextEx context = status as ThreadContextEx;
+            int count = 0;
 
             try
             {
@@ -216,10 +218,8 @@ namespace DeliveryBuilder.Recalc
                 Point[,] geoData = context.GeoData;
                 if (geoData == null)
                     return;
-//#if (debug)
-//                //Thread.Sleep(context.ShopCourier.VehicleID * 100 + 10 * context.StartOrderIndex);
-//                Logger.WriteToLog(309, $"BuildEx3 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
+                Logger.WriteToLog(108, MessageSeverity.Info, string.Format(Messages.MSG_108, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep));
+
                 // 3. Извлекаем и проверяем данные из контекста
                 rc = 3;
                 int level = context.MaxRouteLength;
@@ -263,7 +263,6 @@ namespace DeliveryBuilder.Recalc
                 {
                     deliveries = new CourierDeliveryInfo[1];
                 }
-                int count = 0;
 
                 // 4. Цикл выбора допустимых маршрутов
                 rc = 4;
@@ -472,15 +471,14 @@ namespace DeliveryBuilder.Recalc
             {
                 if (context != null)
                 {
-//#if debug
-//                    Logger.WriteToLog(3090, $"BuildEx3 exit. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
                     context.ExitCode = rc;
                     ManualResetEvent syncEvent = context.SyncEvent;
                     if (syncEvent != null)
                     {
                         syncEvent.Set();
                     }
+
+                    Logger.WriteToLog(109, MessageSeverity.Info, string.Format(Messages.MSG_105, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
                 }
             }
         }
@@ -494,8 +492,11 @@ namespace DeliveryBuilder.Recalc
         public static void BuildEx4(object status)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             ThreadContextEx context = status as ThreadContextEx;
+            int count = 0;
 
             try
             {
@@ -507,9 +508,8 @@ namespace DeliveryBuilder.Recalc
                 Point[,] geoData = context.GeoData;
                 if (geoData == null)
                     return;
-//#if (debug)
-//                Logger.WriteToLog(309, $"BuildEx4 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
+                Logger.WriteToLog(106, MessageSeverity.Info, string.Format(Messages.MSG_106, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep));
+
                 // 3. Извлекаем и проверяем данные из контекста
                 rc = 3;
                 int level = context.MaxRouteLength;
@@ -562,7 +562,6 @@ namespace DeliveryBuilder.Recalc
                     deliveries = new CourierDeliveryInfo[1];
                 }
 
-                int count = 0;
 
                 // 4. Цикл выбора допустимых маршрутов
                 rc = 4;
@@ -1338,15 +1337,14 @@ namespace DeliveryBuilder.Recalc
             {
                 if (context != null)
                 {
-//#if debug
-//                    Logger.WriteToLog(3090, $"BuildEx4 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
                     context.ExitCode = rc;
                     ManualResetEvent syncEvent = context.SyncEvent;
                     if (syncEvent != null)
                     {
                         syncEvent.Set();
                     }
+
+                    Logger.WriteToLog(107, MessageSeverity.Info, string.Format(Messages.MSG_107, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
                 }
             }
         }
@@ -1360,8 +1358,11 @@ namespace DeliveryBuilder.Recalc
         public static void BuildEx5(object status)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             ThreadContextEx context = status as ThreadContextEx;
+            int count = 0;
 
             try
             {
@@ -1373,9 +1374,8 @@ namespace DeliveryBuilder.Recalc
                 Point[,] geoData = context.GeoData;
                 if (geoData == null)
                     return;
-//#if (debug)
-//                Logger.WriteToLog(309, $"BuildEx5 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
+                Logger.WriteToLog(104, MessageSeverity.Info, string.Format(Messages.MSG_104, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep));
+
                 // 3. Извлекаем и проверяем данные из контекста
                 rc = 3;
                 int level = context.MaxRouteLength;
@@ -1437,7 +1437,6 @@ namespace DeliveryBuilder.Recalc
                     deliveries = new CourierDeliveryInfo[1];
                 }
 
-                int count = 0;
 
                 // 4. Цикл выбора допустимых маршрутов
                 rc = 4;
@@ -2298,15 +2297,14 @@ namespace DeliveryBuilder.Recalc
             {
                 if (context != null)
                 {
-//#if debug
-//                    Logger.WriteToLog(3090, $"BuildEx5 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
                     context.ExitCode = rc;
                     ManualResetEvent syncEvent = context.SyncEvent;
                     if (syncEvent != null)
                     {
                         syncEvent.Set();
                     }
+
+                    Logger.WriteToLog(105, MessageSeverity.Info, string.Format(Messages.MSG_105, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
                 }
             }
         }
@@ -2320,13 +2318,11 @@ namespace DeliveryBuilder.Recalc
         public static void BuildEx6(object status)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             ThreadContextEx context = status as ThreadContextEx;
-//#if (debug)
-//                        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-//                        sw.Start();
-//                        DateTime startTime = DateTime.Now;
-//#endif
+            int key = 0;
 
             try
             {
@@ -2338,9 +2334,8 @@ namespace DeliveryBuilder.Recalc
                 Point[,] geoData = context.GeoData;
                 if (geoData == null)
                     return;
-//#if (debug)
-//                Logger.WriteToLog(309, $"BuildEx6 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
+                Logger.WriteToLog(112, MessageSeverity.Info, string.Format(Messages.MSG_112, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep));
+
                 // 3. Извлекаем и проверяем данные из контекста
                 rc = 3;
                 int level = context.MaxRouteLength;
@@ -2382,7 +2377,6 @@ namespace DeliveryBuilder.Recalc
                 // 6. Цикл выбора допустимых маршрутов
                 rc = 6;
                 CourierDeliveryInfo delivery;
-                int key = 0;
                 bool[] alreadySelected = new bool[orderCount];
                 int k1;
                 int k2;
@@ -2553,16 +2547,13 @@ namespace DeliveryBuilder.Recalc
             {
                 if (context != null)
                 {
-//#if debug
-//                    //Logger.WriteToLog(3090, $"BuildEx8 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}, delivery_count = {context.ItemCount}", 0);
-//                    Logger.WriteToLog(3090, $"BuildEx6 exit ({startTime.ToString("yyyy-MM-dd HH:mm:ss.fff")} ET = {sw.ElapsedMilliseconds}). vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}. startIndex = {context.StartOrderIndex}. step = {context.OrderIndexStep}, delivery_count = {context.DeliveryCount}", 0);
-//#endif
                     context.ExitCode = rc;
                     ManualResetEvent syncEvent = context.SyncEvent;
                     if (syncEvent != null)
                     {
                         syncEvent.Set();
                     }
+                    Logger.WriteToLog(113, MessageSeverity.Info, string.Format(Messages.MSG_113, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, key));
                 }
             }
         }
@@ -2576,13 +2567,11 @@ namespace DeliveryBuilder.Recalc
         public static void BuildEx7(object status)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             ThreadContextEx context = status as ThreadContextEx;
-//#if (debug)
-//                        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-//                        sw.Start();
-//                        DateTime startTime = DateTime.Now;
-//#endif
+            int key = 0;
 
             try
             {
@@ -2594,9 +2583,8 @@ namespace DeliveryBuilder.Recalc
                 Point[,] geoData = context.GeoData;
                 if (geoData == null)
                     return;
-//#if (debug)
-//                Logger.WriteToLog(309, $"BuildEx7 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
+                Logger.WriteToLog(110, MessageSeverity.Info, string.Format(Messages.MSG_110, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep));
+                
                 // 3. Извлекаем и проверяем данные из контекста
                 rc = 3;
                 int level = context.MaxRouteLength;
@@ -2638,7 +2626,6 @@ namespace DeliveryBuilder.Recalc
                 // 6. Цикл выбора допустимых маршрутов
                 rc = 6;
                 CourierDeliveryInfo delivery;
-                int key = 0;
                 bool[] alreadySelected = new bool[orderCount];
                 int k1;
                 int k2;
@@ -2833,16 +2820,13 @@ namespace DeliveryBuilder.Recalc
             {
                 if (context != null)
                 {
-//#if debug
-//                    //Logger.WriteToLog(3090, $"BuildEx8 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}, delivery_count = {context.ItemCount}", 0);
-//                    Logger.WriteToLog(3090, $"BuildEx7 exit ({startTime.ToString("yyyy-MM-dd HH:mm:ss.fff")} ET = {sw.ElapsedMilliseconds}). vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}. startIndex = {context.StartOrderIndex}. step = {context.OrderIndexStep}, delivery_count = {context.DeliveryCount}", 0);
-//#endif
                     context.ExitCode = rc;
                     ManualResetEvent syncEvent = context.SyncEvent;
                     if (syncEvent != null)
                     {
                         syncEvent.Set();
                     }
+                    Logger.WriteToLog(115, MessageSeverity.Info, string.Format(Messages.MSG_115, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, key));
                 }
             }
         }
@@ -2856,13 +2840,11 @@ namespace DeliveryBuilder.Recalc
         public static void BuildEx8(object status)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             ThreadContextEx context = status as ThreadContextEx;
-//#if (debug)
-//                        System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-//                        sw.Start();
-//                        DateTime startTime = DateTime.Now;
-//#endif
+            int key = 0;
 
             try
             {
@@ -2874,9 +2856,8 @@ namespace DeliveryBuilder.Recalc
                 Point[,] geoData = context.GeoData;
                 if (geoData == null)
                     return;
-//#if (debug)
-//                Logger.WriteToLog(309, $"BuildEx8 enter. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}", 0);
-//#endif
+                Logger.WriteToLog(116, MessageSeverity.Info, string.Format(Messages.MSG_116, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep));
+                
                 // 3. Извлекаем и проверяем данные из контекста
                 rc = 3;
                 int level = context.MaxRouteLength;
@@ -2918,7 +2899,6 @@ namespace DeliveryBuilder.Recalc
                 // 6. Цикл выбора допустимых маршрутов
                 rc = 6;
                 CourierDeliveryInfo delivery;
-                int key = 0;
                 bool[] alreadySelected = new bool[orderCount];
                 int k1;
                 int k2;
@@ -3137,16 +3117,13 @@ namespace DeliveryBuilder.Recalc
             {
                 if (context != null)
                 {
-//#if debug
-//                    //Logger.WriteToLog(3090, $"BuildEx8 exit. rc = {rc}. vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}, level = {context.MaxRouteLength}, startIndex = {context.StartOrderIndex}, step = {context.OrderIndexStep}, delivery_count = {context.ItemCount}", 0);
-//                    Logger.WriteToLog(3090, $"BuildEx8 exit ({startTime.ToString("yyyy-MM-dd HH:mm:ss.fff")} ET = {sw.ElapsedMilliseconds}). vehicleID = {context.ShopCourier.VehicleID}. order_count = {context.OrderCount}. startIndex = {context.StartOrderIndex}. step = {context.OrderIndexStep}, delivery_count = {context.DeliveryCount}", 0);
-//#endif
                     context.ExitCode = rc;
                     ManualResetEvent syncEvent = context.SyncEvent;
                     if (syncEvent != null)
                     {
                         syncEvent.Set();
                     }
+                    Logger.WriteToLog(117, MessageSeverity.Info, string.Format(Messages.MSG_117, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, key));
                 }
             }
         }

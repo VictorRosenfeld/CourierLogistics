@@ -9,6 +9,7 @@ namespace DeliveryBuilder.Geo
     using DeliveryBuilder.Shops;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     /// <summary>
     /// Получение гео-данных
@@ -224,8 +225,11 @@ namespace DeliveryBuilder.Geo
         {
             // 1. Иициализация
             int rc = 1;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             LastException = null;
             geoData = null;
+            Logger.WriteToLog(96, MessageSeverity.Info, string.Format(Messages.MSG_096, rc, yandexTypeId, (points == null ? 0 : points.Length)));
 
             try
             {
@@ -520,6 +524,10 @@ namespace DeliveryBuilder.Geo
                 LastException = ex;
                 Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoData)}.{nameof(this.GetData)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
+            }
+            finally
+            {
+                Logger.WriteToLog(97, MessageSeverity.Info, string.Format(Messages.MSG_097, rc, yandexTypeId, (points == null ? 0 : points.Length), sw.ElapsedMilliseconds));
             }
         }
 
