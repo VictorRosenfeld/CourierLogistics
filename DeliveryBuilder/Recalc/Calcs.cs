@@ -10,6 +10,7 @@ namespace DeliveryBuilder.Recalc
     using DeliveryBuilder.Shops;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Text;
     using System.Threading;
 
@@ -208,6 +209,8 @@ namespace DeliveryBuilder.Recalc
         public static void CalcThreadEs(object status)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             int rc1 = 1;
             CalcThreadContext calcContext = status as CalcThreadContext;
@@ -225,9 +228,7 @@ namespace DeliveryBuilder.Recalc
                     calcContext.Limitations == null)
                     return;
 
-#if debug
-                Logger.WriteToLog(301, $"CalcThreadEs enter. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id}", 0);
-#endif
+                Logger.WriteToLog(118, MessageSeverity.Info, string.Format(Messages.MSG_118, calcContext.ShopFrom.Id, calcContext.OrderCount, calcContext.ShopCourier.VehicleID));
 
                 // 3. Анализируем состояние
                 rc = 3;
@@ -321,16 +322,12 @@ namespace DeliveryBuilder.Recalc
                         double[,] geoDist = GeoDistance.CalcDistance(iterationOrders);
                         //rc1 = OrdersCloud.FindCloud(iterationOrders, startOrderCount, 1300, 0.5, geoDist, out threadContextOrders);
                         rc1 = OrdersCloud.FindCloud(iterationOrders, startOrderCount, calcContext.Config.Cloud.Radius, calcContext.Config.Cloud.Delta, geoDist, out threadContextOrders);
-#if debug
-                        Logger.WriteToLog(305, $"CalcThreadEs while 5.1. iterationOrderCount = {iterationOrderCount}, FindCloud.rc = {rc1} Cloud.Orders = {(threadContextOrders == null ? 0 : threadContextOrders.Length)}", 0);
-#endif
+                        Logger.WriteToLog(120, MessageSeverity.Info, string.Format(Messages.MSG_120, rc1, iterationOrderCount, threadContextOrders == null ? 0 : threadContextOrders.Length));
+
                         if (rc1 != 0 || threadContextOrders == null || threadContextOrders.Length <= 0)
                         {
                             threadContextOrders = new Order[startOrderCount];
                             Array.Copy(iterationOrders, threadContextOrders, startOrderCount);
-#if debug
-                            Logger.WriteToLog(3051, $"CalcThreadEs while 5.1 FindCloud failed. iterationOrderCount = {iterationOrderCount}, FindCloud.rc = {rc1} Cloud.Orders = {(threadContextOrders == null ? 0 : threadContextOrders.Length)}", 2);
-#endif
                         }
                         else
                         {
@@ -484,13 +481,11 @@ namespace DeliveryBuilder.Recalc
             {
                 if (calcContext != null)
                 {
-//#if debug
-//                    Logger.WriteToLog(302, $"CalcThreadEs exit rc = {rc}. order_count = {calcContext.OrderCount}, shop_id = {calcContext.ShopFrom.Id}, courier_id = {calcContext.ShopCourier.Id}", 0);
-//#endif
                     calcContext.ExitCode = rc;
 
                     if (calcContext.SyncEvent != null)
                         calcContext.SyncEvent.Set();
+                    Logger.WriteToLog(119, MessageSeverity.Info, string.Format(Messages.MSG_119, rc, calcContext.ShopFrom.Id, calcContext.OrderCount, calcContext.ShopCourier.VehicleID, sw.ElapsedMilliseconds));
                 }
             }
         }
@@ -1059,8 +1054,9 @@ namespace DeliveryBuilder.Recalc
                 rc = 0;
                 return rc;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.RemoveDuplicateDeliveries)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -1078,6 +1074,8 @@ namespace DeliveryBuilder.Recalc
         private static int DilateRoutesMultuthread(ref CourierDeliveryInfo[] deliveries, int fromLevel, int toLevel, Order[] orders, Point[,] geoData)
         {
             // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int rc = 1;
             int rc1 = 1;
             ManualResetEvent[] syncEvents = null;
@@ -1097,9 +1095,8 @@ namespace DeliveryBuilder.Recalc
                 int orderCount = orders.Length;
                 if (geoData == null || geoData.GetLength(0) != orderCount + 1 || geoData.GetLength(1) != orderCount + 1)
                     return rc;
-#if debug
-                Logger.WriteToLog(804, $"DilateRoutesMultuthread enter. = {rc}. fromLevel = {fromLevel}, toLevel = {toLevel}, orders = {orders.Length}", 0);
-#endif
+                Logger.WriteToLog(121, MessageSeverity.Info, string.Format(Messages.MSG_121, fromLevel, toLevel, orders.Length));
+
 
                 // 3. Отбираем маршруты с исходным уровнем
                 rc = 3;
@@ -1252,6 +1249,7 @@ namespace DeliveryBuilder.Recalc
                         }
                     }
                 }
+                Logger.WriteToLog(122, MessageSeverity.Info, string.Format(Messages.MSG_122, rc, fromLevel, toLevel, orders.Length, sw.ElapsedMilliseconds));
             }
         }
 
@@ -1591,9 +1589,9 @@ namespace DeliveryBuilder.Recalc
                 //}
 
             }
-            catch
+            catch (Exception ex)
             {
-
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.DilateRoutesThread)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
             }
             finally
             {

@@ -292,7 +292,6 @@ namespace DeliveryBuilder.DeliveryCover
                         shopOrders = new Order[endIndex - startIndex + 1];
                         Array.Copy(orders, startIndex, shopOrders, 0, shopOrders.Length);
                         
-
                         rc1 = ShopOrderRejectionAnalyzer(calcTime, shop, shopOrders, courierRepository, geoMng, out rejectionCauses);
                         if (rc1 == 0)
                         {
@@ -706,6 +705,7 @@ namespace DeliveryBuilder.DeliveryCover
                         if (causeCount >= orderCause.Length)
                             Array.Resize(ref orderCause, orderCause.Length + 4);
                         orderCause[causeCount++] = new OrderRejectionCause(order.Id, -1, OrderRejectionReason.InvalidArgs);
+                        order.RejectionReason = OrderRejectionReason.InvalidArgs;
                         continue;
                     }
 
@@ -714,6 +714,7 @@ namespace DeliveryBuilder.DeliveryCover
                         if (causeCount >= orderCause.Length)
                             Array.Resize(ref orderCause, orderCause.Length + 4);
                         orderCause[causeCount++] = new OrderRejectionCause(order.Id, -1, OrderRejectionReason.TimeOver);
+                        order.RejectionReason = OrderRejectionReason.TimeOver;
                         continue;
                     }
 
@@ -738,6 +739,7 @@ namespace DeliveryBuilder.DeliveryCover
                         if (courier == null)
                         {
                             orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.CourierNA);
+                            order.RejectionReason = OrderRejectionReason.CourierNA;
                             continue;
                         }
 
@@ -746,6 +748,7 @@ namespace DeliveryBuilder.DeliveryCover
                         if (order.Weight > courier.MaxOrderWeight)
                         {
                             orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.WeightOver);
+                            order.RejectionReason = OrderRejectionReason.WeightOver;
                             continue;
                         }
 
@@ -774,6 +777,7 @@ namespace DeliveryBuilder.DeliveryCover
                             if (rc1 != 0)
                             {
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.GeoDataNA, rc1);
+                                order.RejectionReason = OrderRejectionReason.GeoDataNA;
                                 continue;
                             }
 
@@ -794,6 +798,7 @@ namespace DeliveryBuilder.DeliveryCover
                         if (d >  courier.MaxDistance)
                         {
                             orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.DistanceOver);
+                            order.RejectionReason = OrderRejectionReason.DistanceOver;
                             continue;
                         }
 
@@ -804,6 +809,7 @@ namespace DeliveryBuilder.DeliveryCover
                         if (t > order.DeliveryTimeTo)
                         {
                             orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.TimeOver);
+                            order.RejectionReason = OrderRejectionReason.TimeOver;
                             continue;
                         }
 
@@ -814,6 +820,7 @@ namespace DeliveryBuilder.DeliveryCover
                             if (!courierRepository.IstCourierEnabled(vehicleId))
                             {
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.CourierNA);
+                                order.RejectionReason = OrderRejectionReason.CourierNA;
                                 continue;
                             }
                         }
@@ -827,21 +834,27 @@ namespace DeliveryBuilder.DeliveryCover
                         {
                             case 0:  // Ok
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.None, rc1);
+                                order.RejectionReason = OrderRejectionReason.None;
                                 break;
                             case 2:  // неверные аргументы
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.InvalidArgs, rc1);
+                                order.RejectionReason = OrderRejectionReason.InvalidArgs;
                                 break;
                             case 3:  // общий вес
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.WeightOver, rc1);
+                                order.RejectionReason = OrderRejectionReason.WeightOver;
                                 break;
                             case 5:  // доставка вовремя
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.TimeOver, rc1);
+                                order.RejectionReason = OrderRejectionReason.TimeOver;
                                 break;
                             case 399:  // неизвестный calcMethod
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.UnknownCalcMethod, rc1);
+                                order.RejectionReason = OrderRejectionReason.UnknownCalcMethod;
                                 break;
                             default:  // время и стоимость отгрузки
                                 orderCause[causeCount++] = new OrderRejectionCause(order.Id, vehicleId, OrderRejectionReason.Unrecognized, rc1);
+                                order.RejectionReason = OrderRejectionReason.Unrecognized;
                                 break;
                         }
                     }

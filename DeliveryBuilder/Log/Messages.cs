@@ -152,5 +152,11 @@ namespace DeliveryBuilder.Log
         internal const string MSG_116 = @"RouteBuilder.BuildEx8 Enter. vehicle_id = {0}, order_count = {1}, level = {2}, start_index = {3}, step = {4}";
         internal const string MSG_117 = @"RouteBuilder.BuildEx8 Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, start_index = {4}, step = {5}, elapsed_time = {6}, delivery_count = {7}";
 
+        internal const string MSG_118 = @"Calcs.CalcThreadEs Enter. shop_id = {0}, order_count = {1}, vehicle_id = {2}, level = {3}";
+        internal const string MSG_119 = @"Calcs.CalcThreadEs Exit rc = {0}. shop_id = {1}, order_count = {2}, vehicle_id = {3}, level = {4}, elapsed_time = {5}";
+        internal const string MSG_120 = @"Calcs.CalcThreadEs 5.1 FindCloud rc = {0}. iterationOrderCount = {1}, cloud_order_count = {2}";
+        internal const string MSG_121 = @"Calcs.DilateRoutesMultuthread enter. fromLevel = {0}, toLevel = {1}, orders = {2}";
+        internal const string MSG_122 = @"Calcs.DilateRoutesMultuthread exit rc = {0}. fromLevel = {1}, toLevel = {2}, orders = {3}, elapsed_time = {4}";
+
     }
 }
