@@ -228,7 +228,7 @@ namespace DeliveryBuilder.Recalc
                     calcContext.Limitations == null)
                     return;
 
-                Logger.WriteToLog(118, MessageSeverity.Info, string.Format(Messages.MSG_118, calcContext.ShopFrom.Id, calcContext.OrderCount, calcContext.ShopCourier.VehicleID));
+                Logger.WriteToLog(118, MessageSeverity.Info, string.Format(Messages.MSG_118, calcContext.ShopFrom.Id, calcContext.OrderCount, calcContext.ShopCourier.VehicleID, calcContext.ShopCourier.MaxOrderCount));
 
                 // 3. Анализируем состояние
                 rc = 3;
@@ -485,7 +485,7 @@ namespace DeliveryBuilder.Recalc
 
                     if (calcContext.SyncEvent != null)
                         calcContext.SyncEvent.Set();
-                    Logger.WriteToLog(119, MessageSeverity.Info, string.Format(Messages.MSG_119, rc, calcContext.ShopFrom.Id, calcContext.OrderCount, calcContext.ShopCourier.VehicleID, sw.ElapsedMilliseconds));
+                    Logger.WriteToLog(119, MessageSeverity.Info, string.Format(Messages.MSG_119, rc, calcContext.ShopFrom.Id, calcContext.OrderCount, calcContext.ShopCourier.VehicleID, calcContext.ShopCourier.MaxOrderCount, sw.ElapsedMilliseconds));
                 }
             }
         }
