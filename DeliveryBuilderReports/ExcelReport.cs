@@ -187,6 +187,7 @@
             heartbeatRow = 1;
             rejectRow = 1;
             sendDeliveryRow = 1;
+            yandexRequestRow = 1;
 
             try
             {
@@ -894,10 +895,10 @@
                 // 3. Добавляем запись
                 rc = 3;
                 int row = yandexRequestRow + 1;
-                Errors.Cell(row, 1).SetValue(time);
-                Errors.Cell(row, 2).SetValue(mode);
-                Errors.Cell(row, 3).SetValue(origins);
-                Errors.Cell(row, 4).SetValue(destinations);
+                YandexRequests.Cell(row, 1).SetValue(time);
+                YandexRequests.Cell(row, 2).SetValue(mode);
+                YandexRequests.Cell(row, 3).SetValue(origins);
+                YandexRequests.Cell(row, 4).SetValue(destinations);
                 yandexRequestRow = row;
 
                 // 4. Выход - Ok
