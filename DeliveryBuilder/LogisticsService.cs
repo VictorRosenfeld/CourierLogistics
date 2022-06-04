@@ -377,6 +377,7 @@ namespace DeliveryBuilder
                 timer.Elapsed += Timer_Elapsed;
                 timer.Start();
                 ThreadPool.QueueUserWorkItem(TimerTick);
+                PrintThreadPoolInfo();
 
                 // 18. Выход - Ok
                 rc = 0;
@@ -1380,10 +1381,21 @@ namespace DeliveryBuilder
         }
 
         /// <summary>
-        ///Схранение заказов
+        /// Печать информации о ThreadPool
         /// </summary>
-        /// <param name="serviceId">ID сервиса логистики</param>
-        /// <param name="allOrders">Все заказы</param>
+        private static void PrintThreadPoolInfo()
+        {
+            ThreadPool.GetAvailableThreads(out int workerThreads, out int completionPortThreads);
+            ThreadPool.GetMinThreads(out int minworkerThreads, out int mincompletionPortThreads);
+            ThreadPool.GetMaxThreads(out int maxworkerThreads, out int maxcompletionPortThreads);
+            Logger.WriteToLog(125, MessageSeverity.Info, string.Format(Messages.MSG_125, workerThreads, completionPortThreads, minworkerThreads, maxworkerThreads, mincompletionPortThreads, maxcompletionPortThreads));
+        }
+
+        /// <summary>
+    ///Схранение заказов
+    /// </summary>
+    /// <param name="serviceId">ID сервиса логистики</param>
+    /// <param name="allOrders">Все заказы</param>
         private static void SaveOrders(int serviceId, AllOrdersEx allOrders)
         {
             // 1. Инициализация

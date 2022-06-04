@@ -877,7 +877,38 @@ namespace DeliveryBuilder.Recalc
                         int k = i;
                         ThreadContextEx contextEx = new ThreadContextEx(context, syncEvent, null, k, threadCount);
                         allCountextEx[k] = contextEx;
-                        ThreadPool.QueueUserWorkItem(callback, contextEx);
+                        //ThreadPool.QueueUserWorkItem(callback, contextEx);
+
+                        Thread th;
+
+                        switch (level)
+                        {
+                            case 1:
+                            case 2:
+                                th = new Thread(RouteBuilder.BuildEx2);
+                                break;
+                            case 3:
+                                th = new Thread(RouteBuilder.BuildEx3);
+                                break;
+                            case 4:
+                                th = new Thread(RouteBuilder.BuildEx4);
+                                break;
+                            case 5:
+                                th = new Thread(RouteBuilder.BuildEx5);
+                                break;
+                            case 6:
+                                th = new Thread(RouteBuilder.BuildEx6);
+                                break;
+                            case 7:
+                                th = new Thread(RouteBuilder.BuildEx7);
+                                break;
+                            //case 8:
+                            default:
+                                th = new Thread(RouteBuilder.BuildEx8);
+                                break;
+                        }
+                        th.Start(contextEx);
+
                     }
 
                     for (int i = 0; i < threadCount; i++)
@@ -966,7 +997,7 @@ namespace DeliveryBuilder.Recalc
                             ManualResetEvent syncEvent = contextEx.SyncEvent;
                             if (syncEvent != null)
                             {
-                                syncEvent.Dispose();
+                                try { syncEvent.Dispose(); } catch { }
                                 contextEx.SyncEvent = null;
                             }
                         }

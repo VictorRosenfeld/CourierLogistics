@@ -158,5 +158,8 @@ namespace DeliveryBuilder.Log
         internal const string MSG_121 = @"Calcs.DilateRoutesMultuthread enter. fromLevel = {0}, toLevel = {1}, orders = {2}";
         internal const string MSG_122 = @"Calcs.DilateRoutesMultuthread exit rc = {0}. fromLevel = {1}, toLevel = {2}, orders = {3}, elapsed_time = {4}";
 
+        internal const string MSG_123 = @"GeoYandex.GeoThread. origins = {0}, destinations = {1}, Url = {2}";
+        internal const string MSG_124 = @"GeoYandex.GeoThread. Yandex Http status = {0}, error_description = {1}";
+        internal const string MSG_125 = @"Thread Pool Info. available = ({0}, {1}), min_max_workers = ({2}, {3}), min_max_ports = ({4}, {5})";
     }
 }

@@ -938,11 +938,13 @@ namespace DeliveryBuilder.Geo.Yandex
                     sb.Length = 0;
 
                     sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, origins[originStartIndex].Latitude, origins[originStartIndex].Longitude);
+                    int originCount = 1;
 
                     for (int j = originStartIndex + 1; j < originStartIndex + originLength; j++)
                     {
                         sb.Append('|');
                         sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, origins[j].Latitude, origins[j].Longitude);
+                        originCount++;
                     }
 
                     originsArg = sb.ToString();
@@ -954,11 +956,13 @@ namespace DeliveryBuilder.Geo.Yandex
                     sb.Length = 0;
 
                     sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, destinations[destinationStartIndex].Latitude, destinations[destinationStartIndex].Longitude);
+                    int destinationCount = 1;
 
                     for (int j = destinationStartIndex + 1; j < destinationStartIndex + destinationLength; j++)
                     {
                         sb.Append('|');
                         sb.AppendFormat(CultureInfo.InvariantCulture, geoPointPattern, destinations[j].Latitude, destinations[j].Longitude);
+                        destinationCount++;
                     }
 
                     destinationsArg = sb.ToString();
@@ -970,9 +974,7 @@ namespace DeliveryBuilder.Geo.Yandex
                     for (int m = 0; m < modes.Length; m++)
                     {
                         string url = string.Format(getUrl, apiKey, originsArg, destinationsArg, modes[m]);
-                        //#if debug
-                        //Logger.WriteToLog(1008, MessageSeverity.Info, $"YandexGeoRequest -> GeoThread url = {url}");
-                        //#endif
+                        Logger.WriteToLog(123, MessageSeverity.Info, string.Format(Messages.MSG_123, originCount, destinationCount, url));
 
                         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                         request.Method = "GET";
@@ -993,6 +995,8 @@ namespace DeliveryBuilder.Geo.Yandex
                                 rc = 352;
                                 requestData.HttpStatusCode = -(int)response.StatusCode;
                                 requestData.ErrorMessage = response.StatusDescription;
+                                Logger.WriteToLog(124, MessageSeverity.Error, string.Format(Messages.MSG_124, response.StatusCode, response.StatusDescription));
+                                return;
                             }
                             else
                             {
@@ -1032,7 +1036,7 @@ namespace DeliveryBuilder.Geo.Yandex
                                     }
 
                                     // 3.5.7 Переносим данные в массив результата
-                                    rc = 356;
+                                    rc = 357;
                                     int k = 0;
 
                                     for (int i = originStartIndex; i < originStartIndex + originLength; i++)
