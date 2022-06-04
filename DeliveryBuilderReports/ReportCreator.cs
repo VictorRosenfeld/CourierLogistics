@@ -4,6 +4,7 @@ namespace DeliveryBuilderReports
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
 
     /// <summary>
     /// Построитель отчета
@@ -45,7 +46,7 @@ namespace DeliveryBuilderReports
                 string message = "";
                 Dictionary<int, DeliveriesSummaryRecord> deliveriesSummary = new Dictionary<int, DeliveriesSummaryRecord>(32);
 
-                using (StreamReader reader = new StreamReader(logFile))
+                using (StreamReader reader = new StreamReader(logFile, Encoding.GetEncoding(1251)))
                 {
                     while ((line = reader.ReadLine()) != null)
                     {

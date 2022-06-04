@@ -731,7 +731,7 @@ namespace DeliveryBuilder
                 {
                     queueItems[i].ItemType = QueueItemType.Completed;
                     foreach (var order in queueItems[i].Delivery.Orders)
-                    { order.Completed = false; }
+                    { order.Completed = true; }
                 }
 
                 // 6. Удаляем из очереди переданные отгрузки
