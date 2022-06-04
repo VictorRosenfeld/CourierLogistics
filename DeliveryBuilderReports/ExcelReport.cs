@@ -102,6 +102,16 @@
         private int orderRow;
 
         /// <summary>
+        /// Лист Yandex Requests
+        /// </summary>
+        public IXLWorksheet YandexRequests { get; private set; }
+
+        /// <summary>
+        /// Текущая строка Yandex Requests
+        /// </summary>
+        private int yandexRequestRow;
+
+        /// <summary>
         /// Лист Data Request
         /// </summary>
         public IXLWorksheet DataRequest { get; private set; }
@@ -225,6 +235,11 @@
                 rc = 10;
                 Orders = Workbook.Worksheets.Add("Orders");
                 FormatOrders(Orders);
+
+                // 10+ Создаём лист Orders
+                rc = 100;
+                YandexRequests = Workbook.Worksheets.Add("Yandex Requests");
+                FormatYandexRequests(YandexRequests);
 
                 // 11. Создаём лист Data Request
                 rc = 11;
@@ -386,6 +401,37 @@
                 sheet.Column(2).Width = 11.67;
                 sheet.Column(3).Width = 11.44;
                 sheet.Column(4).Width = 62.56;
+                sheet.Range(1, 1, 1, 4).SetAutoFilter();
+                sheet.SheetView.FreezeRows(1);
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Форматирование листа Yandex Requests
+        /// </summary>
+        /// <param name="sheet">Лист Errors</param>
+        private static void FormatYandexRequests(IXLWorksheet sheet)
+        {
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (sheet == null)
+                    return;
+
+                // 3. Форматируем лист
+                sheet.Cell(1, 1).Value = "Time";
+                sheet.Cell(1, 2).Value = "Mode";
+                sheet.Cell(1, 3).Value = "Origins";
+                sheet.Cell(1, 4).Value = "Destinations";
+                sheet.Range(1, 1, 1, 4).Style.Font.Bold = true;
+                sheet.Range(1, 1, 1, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                sheet.Range(1, 1, 1, 4).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                sheet.Column(1).Width = 14.44;
+                sheet.Column(2).Width = 9.67;
+                sheet.Column(3).Width = 10.44;
+                sheet.Column(4).Width = 15.00;
                 sheet.Range(1, 1, 1, 4).SetAutoFilter();
                 sheet.SheetView.FreezeRows(1);
             }
@@ -816,6 +862,43 @@
                 Errors.Cell(row, 3).SetValue(severity);
                 Errors.Cell(row, 4).SetValue(message);
                 errorsRow = row;
+
+                // 4. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            { return rc; }
+        }
+
+        /// <summary>
+        /// Добавление записи на лист Yandex Requests
+        /// </summary>
+        /// <param name="time">Время записи</param>
+        /// <param name="mode">Способ передвижения</param>
+        /// <param name="origins">Количество исходящих точек</param>
+        /// <param name="destinations">Количество вхдящих точек</param>
+        /// <returns>0 - запись добавлена; иначе - запись не добавлена</returns>
+        public int AddYandexRequestRecord(DateTime time, string mode, int origins, int destinations)
+        {
+            // 1. Иициализация
+            int rc = 1;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsCreated)
+                    return rc;
+
+                // 3. Добавляем запись
+                rc = 3;
+                int row = yandexRequestRow + 1;
+                Errors.Cell(row, 1).SetValue(time);
+                Errors.Cell(row, 2).SetValue(mode);
+                Errors.Cell(row, 3).SetValue(origins);
+                Errors.Cell(row, 4).SetValue(destinations);
+                yandexRequestRow = row;
 
                 // 4. Выход - Ok
                 rc = 0;

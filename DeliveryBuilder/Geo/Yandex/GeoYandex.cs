@@ -974,7 +974,7 @@ namespace DeliveryBuilder.Geo.Yandex
                     for (int m = 0; m < modes.Length; m++)
                     {
                         string url = string.Format(getUrl, apiKey, originsArg, destinationsArg, modes[m]);
-                        Logger.WriteToLog(123, MessageSeverity.Info, string.Format(Messages.MSG_123, originCount, destinationCount, url));
+                        Logger.WriteToLog(123, MessageSeverity.Info, string.Format(Messages.MSG_123, modes[m], originCount, destinationCount, url));
 
                         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                         request.Method = "GET";

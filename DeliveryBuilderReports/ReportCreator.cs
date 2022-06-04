@@ -232,7 +232,12 @@ namespace DeliveryBuilderReports
 
                                 report.AddSendDeliveriesRecord(dateTime, deliveryCount, rcCode, elapsedTime);
                                 break;
-
+                            case 123: // GeoYandex.GeoThread. mode = {0}, origins = {1}, destinations = {2}, Url = {3}
+                                string mode = GetParameterValue(message, "mode");
+                                int origins = GetIntParameterValue(message, "origins");
+                                int destinations = GetIntParameterValue(message, "destinations");
+                                report.AddYandexRequestRecord(dateTime, mode, origins, destinations);
+                                break;
                         }
                     }
                 }
@@ -308,21 +313,21 @@ namespace DeliveryBuilderReports
                                 timeCheckDisabled = false;
 
                             DateTime received;
-                            if (!DateTime.TryParse(fields[5], out received))
+                            if (!DateTime.TryParse(fields[5], out received) || received == DateTime.MinValue)
                                 received = new DateTime(2000, 1, 1);
 
                             DateTime assembled;
-                            if (!DateTime.TryParse(fields[6], out assembled))
+                            if (!DateTime.TryParse(fields[6], out assembled) || assembled == DateTime.MinValue)
                                 assembled = new DateTime(2000, 1, 1);
 
                             string rejectionReason = (string.IsNullOrWhiteSpace(fields[7]) ? null : fields[7].Trim());
 
                             DateTime deliveryFrom;
-                            if (!DateTime.TryParse(fields[8], out deliveryFrom))
+                            if (!DateTime.TryParse(fields[8], out deliveryFrom) || deliveryFrom == DateTime.MinValue)
                                 deliveryFrom = new DateTime(2000, 1, 1);
 
                             DateTime deliveryTo;
-                            if (!DateTime.TryParse(fields[9], out deliveryTo))
+                            if (!DateTime.TryParse(fields[9], out deliveryTo) || deliveryTo == DateTime.MinValue)
                                 deliveryTo = new DateTime(2000, 1, 1);
 
                             double weight;
