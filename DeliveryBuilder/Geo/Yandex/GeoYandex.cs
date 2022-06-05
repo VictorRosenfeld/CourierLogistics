@@ -310,35 +310,53 @@ namespace DeliveryBuilder.Geo.Yandex
                     geoContext = new GeoYandexRequestData[] { new GeoYandexRequestData(origins, 0, originCount, destinations, 0, destinationCount, modes, geoData) };
                     return rc = 0;
                 }
-                else if (originCount * destinationCount <= pairLimit2)
+                else if (originCount * destinationCount <= pairLimit2 && (originCount % 2) == 0)
                 {
-                    if ((originCount % 2) == 0)
-                    {
-                        int length = originCount / 2;
-                        geoContext = new GeoYandexRequestData[] {
+                    int length = originCount / 2;
+                    geoContext = new GeoYandexRequestData[] {
                         new GeoYandexRequestData(origins, 0, length, destinations, 0, destinationCount, modes, geoData),
                         new GeoYandexRequestData(origins, length, originCount - length, destinations, 0, destinationCount, modes, geoData)
                         };
-                    }
-                    else if ((destinationCount % 2) == 0)
-                    {
-                        int length = destinationCount / 2;
-                        geoContext = new GeoYandexRequestData[] {
+                    return rc = 0;
+                }
+                else if (originCount * destinationCount <= pairLimit2 && (destinationCount % 2) == 0)
+                {
+                    int length = destinationCount / 2;
+                    geoContext = new GeoYandexRequestData[] {
                         new GeoYandexRequestData(origins, 0, originCount, destinations, 0, length, modes, geoData),
                         new GeoYandexRequestData(origins, 0, originCount, destinations, length, destinationCount - length, modes, geoData)
                         };
-                    }
-                    else
-                    {
-                        int length = originCount / 2;
-                        geoContext = new GeoYandexRequestData[] {
-                        new GeoYandexRequestData(origins, 0, length, destinations, 0, destinationCount, modes, geoData),
-                        new GeoYandexRequestData(origins, length, originCount - length, destinations, 0, destinationCount, modes, geoData)
-                        };
-                    }
-
                     return rc = 0;
                 }
+                //else if (originCount * destinationCount <= pairLimit2)
+                //{
+                //    if ((originCount % 2) == 0)
+                //    {
+                //        int length = originCount / 2;
+                //        geoContext = new GeoYandexRequestData[] {
+                //        new GeoYandexRequestData(origins, 0, length, destinations, 0, destinationCount, modes, geoData),
+                //        new GeoYandexRequestData(origins, length, originCount - length, destinations, 0, destinationCount, modes, geoData)
+                //        };
+                //    }
+                //    else if ((destinationCount % 2) == 0)
+                //    {
+                //        int length = destinationCount / 2;
+                //        geoContext = new GeoYandexRequestData[] {
+                //        new GeoYandexRequestData(origins, 0, originCount, destinations, 0, length, modes, geoData),
+                //        new GeoYandexRequestData(origins, 0, originCount, destinations, length, destinationCount - length, modes, geoData)
+                //        };
+                //    }
+                //    else
+                //    {
+                //        int length = originCount / 2;
+                //        geoContext = new GeoYandexRequestData[] {
+                //        new GeoYandexRequestData(origins, 0, length, destinations, 0, destinationCount, modes, geoData),
+                //        new GeoYandexRequestData(origins, length, originCount - length, destinations, 0, destinationCount, modes, geoData)
+                //        };
+                //    }
+
+                //    return rc = 0;
+                //}
                 else if (pairLimit == 1)
                 {
                     geoContext = new GeoYandexRequestData[originCount * destinationCount];
