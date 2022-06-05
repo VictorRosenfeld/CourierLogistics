@@ -1637,5 +1637,163 @@ namespace DeliveryBuilder.Recalc
                 }
             }
         }
+
+        /// <summary>
+        /// Построение всех подмножеств размера не более level
+        /// из множества с числом элементов orderCount
+        ///       1 ≤ orderCount ≤ 256
+        ///       1 ≤ level ≤ 8
+        /// </summary>
+        /// <param name="orderCount">Число элементов в можестве</param>
+        /// <param name="level">Максималый размер выбираемых подмножеств</param>
+        /// <returns>Результат (по level байтов на подмножество)</returns>
+        private static byte[] CreateOrdersMap(int orderCount, int level)
+        {
+            // 1. Инициализация
+            
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (orderCount <= 0 || orderCount > 256)
+                    return null;
+                if (level <= 0 || level > 8)
+                    return null;
+
+                // 3. Подсчитываем число элементов в массиве результата
+                long size = orderCount;
+                if (orderCount >= 8 && level >= 8)
+                { size += ((orderCount - 7) * (orderCount - 6) * (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount) / 40320; }
+                if (orderCount >= 7 && level >= 7)
+                { size += ((orderCount - 6) * (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount) / 5040; }
+                if (orderCount >= 6 && level >= 6)
+                { size += ((orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount) / 720; }
+                if (orderCount >= 5 && level >= 5)
+                { size += ((orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount) / 120; }
+                if (orderCount >= 4 && level >= 4)
+                { size += ((orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount) / 24; }
+                if (orderCount >= 3 && level >= 3)
+                { size += ((orderCount - 2) * (orderCount - 1) * orderCount) / 6; }
+                if (orderCount >= 2 && level >= 2)
+                { size += ((orderCount - 1) * orderCount) / 2; }
+
+                size *= level;
+
+                // 4. Построение результата
+                byte[] result = new byte[size]; 
+                int ptr = 0;
+
+                for (int i1 = 0; i1 < orderCount; i1++)
+                {
+                    byte b1 = (byte) i1;
+                    result[ptr] = b1;
+                    ptr += level;
+
+                    if (level >= 2)
+                    {
+                        for (int i2 = i1 + 1; i2 < orderCount; i2++)
+                        {
+                            byte b2 = (byte) i2;
+                            result[ptr] = b1;
+                            result[ptr + 1] = b2;
+                            ptr += level;
+
+                            if (level >= 3)
+                            {
+                                for (int i3 = i2 + 1; i3 < orderCount; i3++)
+                                {
+                                    byte b3 = (byte)i3;
+                                    result[ptr] = b1;
+                                    result[ptr + 1] = b2;
+                                    result[ptr + 2] = b3;
+                                    ptr += level;
+
+                                    if (level >= 4)
+                                    {
+                                        for (int i4 = i3 + 1; i4 < orderCount; i4++)
+                                        {
+                                            byte b4 = (byte)i4;
+                                            result[ptr] = b1;
+                                            result[ptr + 1] = b2;
+                                            result[ptr + 2] = b3;
+                                            result[ptr + 3] = b4;
+                                            ptr += level;
+
+                                            if (level >= 5)
+                                            {
+                                                for (int i5 = i4 + 1; i5 < orderCount; i5++)
+                                                {
+                                                    byte b5 = (byte)i5;
+                                                    result[ptr] = b1;
+                                                    result[ptr + 1] = b2;
+                                                    result[ptr + 2] = b3;
+                                                    result[ptr + 3] = b4;
+                                                    result[ptr + 4] = b5;
+                                                    ptr += level;
+
+                                                    if (level >= 6)
+                                                    {
+                                                        for (int i6 = i5 + 1; i6 < orderCount; i6++)
+                                                        {
+                                                            byte b6 = (byte)i6;
+                                                            result[ptr] = b1;
+                                                            result[ptr + 1] = b2;
+                                                            result[ptr + 2] = b3;
+                                                            result[ptr + 3] = b4;
+                                                            result[ptr + 4] = b5;
+                                                            result[ptr + 5] = b6;
+                                                            ptr += level;
+
+                                                            if (level >= 7)
+                                                            {
+                                                                for (int i7 = i6 + 1; i7 < orderCount; i7++)
+                                                                {
+                                                                    byte b7 = (byte)i7;
+                                                                    result[ptr] = b1;
+                                                                    result[ptr + 1] = b2;
+                                                                    result[ptr + 2] = b3;
+                                                                    result[ptr + 3] = b4;
+                                                                    result[ptr + 4] = b5;
+                                                                    result[ptr + 5] = b6;
+                                                                    result[ptr + 6] = b7;
+                                                                    ptr += level;
+
+                                                                    if (level >= 8)
+                                                                    {
+                                                                        for (int i8 = i7 + 1; i8 < orderCount; i8++)
+                                                                        {
+                                                                            byte b8 = (byte)i8;
+                                                                            result[ptr] = b1;
+                                                                            result[ptr + 1] = b2;
+                                                                            result[ptr + 2] = b3;
+                                                                            result[ptr + 3] = b4;
+                                                                            result[ptr + 4] = b5;
+                                                                            result[ptr + 5] = b6;
+                                                                            result[ptr + 6] = b7;
+                                                                            result[ptr + 7] = b8;
+                                                                            ptr += level;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 5. Выход - Ok
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

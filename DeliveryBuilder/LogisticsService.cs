@@ -1412,7 +1412,7 @@ namespace DeliveryBuilder
                     return;
 
                 // 4. Строим имя файла
-                string filename = Path.Combine(folder, $"DeliveryBuilderOrders({serviceId})_{DateTime.Now:dd-MM-yy}.csv");
+                string filename = Path.Combine(folder, $"DeliveryBuilderOrders({serviceId})_{DateTime.Now:yy-MM-dd}.csv");
                 allOrders.Save(filename);
 
                 // 5. Выход
