@@ -811,7 +811,7 @@ namespace DeliveryBuilder.Recalc
         /// </summary>
         /// <param name="callback">Метод построения отгрузок</param>
         /// <param name="status">Контекст потока</param>
-        private static void CalcThread(WaitCallback callback, object status)
+        private static void CalcThread_old(WaitCallback callback, object status)
         {
             // 1. Инициализация
             int rc = 1;
@@ -1016,7 +1016,7 @@ namespace DeliveryBuilder.Recalc
         /// </summary>
         /// <param name="callback">Метод построения отгрузок</param>
         /// <param name="status">Контекст потока</param>
-        private static void CalcThreadEx(WaitCallback callback, object status)
+        private static void CalcThread(WaitCallback callback, object status)
         {
             // 1. Инициализация
             int rc = 1;
@@ -1073,7 +1073,21 @@ namespace DeliveryBuilder.Recalc
                 {
                     ThreadContextEx contextEx = new ThreadContextEx(context, null, subsets, 0, 1);
                     allCountextEx = new ThreadContextEx[] { contextEx };
-                    callback(contextEx);
+                    if (level <= 2)
+                    { RouteBuilder.Build2(contextEx); }
+                    else if (level == 3)
+                    { RouteBuilder.Build3(contextEx); }
+                    else if (level == 4)
+                    { RouteBuilder.Build4(contextEx); }
+                    else if (level == 5)
+                    { RouteBuilder.Build5(contextEx); }
+                    else if (level == 6)
+                    { RouteBuilder.Build6(contextEx); }
+                    else if (level == 7)
+                    { RouteBuilder.Build7(contextEx); }
+                    else if (level == 8)
+                    { RouteBuilder.Build8(contextEx); }
+                    //callback(contextEx);
                 }
                 else
                 {
@@ -1095,30 +1109,29 @@ namespace DeliveryBuilder.Recalc
                         {
                             case 1:
                             case 2:
-                                th = new Thread(RouteBuilder.BuildEx2);
+                                th = new Thread(RouteBuilder.Build2);
                                 break;
                             case 3:
-                                th = new Thread(RouteBuilder.BuildEx3);
+                                th = new Thread(RouteBuilder.Build3);
                                 break;
                             case 4:
-                                th = new Thread(RouteBuilder.BuildEx4);
+                                th = new Thread(RouteBuilder.Build4);
                                 break;
                             case 5:
-                                th = new Thread(RouteBuilder.BuildEx5);
+                                th = new Thread(RouteBuilder.Build5);
                                 break;
                             case 6:
-                                th = new Thread(RouteBuilder.BuildEx6);
+                                th = new Thread(RouteBuilder.Build6);
                                 break;
                             case 7:
-                                th = new Thread(RouteBuilder.BuildEx7);
+                                th = new Thread(RouteBuilder.Build7);
                                 break;
                             //case 8:
                             default:
-                                th = new Thread(RouteBuilder.BuildEx8);
+                                th = new Thread(RouteBuilder.Build8);
                                 break;
                         }
                         th.Start(contextEx);
-
                     }
 
                     for (int i = 0; i < threadCount; i++)
@@ -1215,7 +1228,7 @@ namespace DeliveryBuilder.Recalc
 
                     if (context.SyncEvent != null)
                         context.SyncEvent.Set();
-                    Logger.WriteToLog(67,rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_067, rc, (int) (DateTime.Now -startTime).TotalMilliseconds, threadCount, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
+                    Logger.WriteToLog(67, rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_067, rc, (int) (DateTime.Now -startTime).TotalMilliseconds, threadCount, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
                 }
             }
         }
