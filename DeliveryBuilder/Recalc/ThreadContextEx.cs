@@ -16,9 +16,9 @@ namespace DeliveryBuilder.Recalc
     public class ThreadContextEx : ThreadContext
     {
         /// <summary>
-        /// Отсортированные ключи всех возможных отгрузок
+        /// Подмножества из индексов заказов
         /// </summary>
-        public long[] DeliveryKeys { get; private set; }
+        public short[] OrderSubsets { get; private set; }
 
         /// <summary>
         /// Индекс первого обрабатываемого заказа
@@ -42,7 +42,7 @@ namespace DeliveryBuilder.Recalc
         /// <param name="courier">Курьер</param>
         /// <param name="geoData">Гео-данные</param>
         /// <param name="syncEvent">Объект синхронизации</param>
-        /// <param name="deliveryKeys">Отсортированные ключи всех возможных отгрузок</param>
+        /// <param name="orderSubsets">Подмножества из индексов заказов</param>
         /// <param name="startOrderIndex">Индекс первого обрабатываемого заказа в массиве orders</param>
         /// <param name="orderIndexStep">Шаг изменения индекса обрабатываемых заказов в массиве orders</param>
         public ThreadContextEx(int serviceId,
@@ -53,11 +53,11 @@ namespace DeliveryBuilder.Recalc
                                Courier courier,
                                Point[,] geoData,
                                ManualResetEvent syncEvent,
-                               long[] deliveryKeys,
+                               short[] orderSubsets,
                                int startOrderIndex,
                                int orderIndexStep) : base(serviceId, calcTime, maxRouteLength, shop, orders, courier, geoData, syncEvent)
         {
-            DeliveryKeys = deliveryKeys;
+            OrderSubsets = orderSubsets;
             StartOrderIndex = startOrderIndex;
             OrderIndexStep = orderIndexStep;
         }
@@ -67,16 +67,16 @@ namespace DeliveryBuilder.Recalc
         /// </summary>
         /// <param name="context">Контекст построителя отгрузок</param>
         /// <param name="syncEvent">Объект синхронизации</param>
-        /// <param name="deliveryKeys">Отсортированные ключи всех возможных отгрузок</param>
+        /// <param name="orderSubsets">Подмножества из индексов заказов</param>
         /// <param name="startOrderIndex">Индекс первого обрабатываемого заказа в массиве orders</param>
         /// <param name="orderIndexStep">Шаг изменения индекса обрабатываемых заказов в массиве orders</param>
         public ThreadContextEx(ThreadContext context,
                                ManualResetEvent syncEvent,
-                               long[] deliveryKeys,
+                               short[] orderSubsets,
                                int startOrderIndex,
                                int orderIndexStep) : base(context.ServiceId, context.CalcTime, context.MaxRouteLength, context.ShopFrom, context.Orders, context.ShopCourier, context.GeoData, syncEvent)
         {
-            DeliveryKeys = deliveryKeys;
+            OrderSubsets = orderSubsets;
             StartOrderIndex = startOrderIndex;
             OrderIndexStep = orderIndexStep;
         }

@@ -1392,10 +1392,10 @@ namespace DeliveryBuilder
         }
 
         /// <summary>
-    ///Схранение заказов
-    /// </summary>
-    /// <param name="serviceId">ID сервиса логистики</param>
-    /// <param name="allOrders">Все заказы</param>
+        /// Сохранение заказов
+        /// </summary>
+        /// <param name="serviceId">ID сервиса логистики</param>
+        /// <param name="allOrders">Все заказы</param>
         private static void SaveOrders(int serviceId, AllOrdersEx allOrders)
         {
             // 1. Инициализация
@@ -1422,7 +1422,7 @@ namespace DeliveryBuilder
         }
 
         /// <summary>
-        ///Схранение гео-кэш
+        /// Сохранение гео-кэш
         /// </summary>
         /// <param name="serviceId">ID сервиса логистики</param>
         /// <param name="allOrders">Гео-кэш</param>
@@ -1524,7 +1524,7 @@ namespace DeliveryBuilder
         }
 
         /// <summary>
-        /// Пострение команд на отгрузку или рекомендаций
+        /// Построение команд на отгрузку или рекомендаций
         /// </summary>
         /// <param name="deliveries">Отгрузки</param>
         /// <param name="cmdType">Тип команды: 0 - рекомендации; 1 - команды на отгрузку</param>
