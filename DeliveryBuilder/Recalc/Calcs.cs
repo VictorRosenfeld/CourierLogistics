@@ -2058,8 +2058,6 @@ namespace DeliveryBuilder.Recalc
                 { size += ((orderCount - 1) * orderCount) / 2; }
 
                 size *= level;
-                
-                int itemSize = sizeof(short) * level;
 
                 // 4. Построение результата
                 short[] result = new short[size]; 

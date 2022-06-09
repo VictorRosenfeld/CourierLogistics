@@ -272,7 +272,7 @@ namespace DeliveryBuilder.Geo.Yandex
         /// <param name="pairLimit">Максимальное количество пар в одном запросе</param>
         /// <param name="geoContext">Результат - контексты запросов</param>
         /// <returns>0 - контексты построены; контексты не построены</returns>
-        private static int GetGeoContext(GeoYandexRequest requestArgs, int pairLimit, out GeoYandexRequestData[] geoContext)
+        private static int GetGeoContext_old(GeoYandexRequest requestArgs, int pairLimit, out GeoYandexRequestData[] geoContext)
         {
             // 1. Инициализация
             int rc = 1;
@@ -787,6 +787,690 @@ namespace DeliveryBuilder.Geo.Yandex
                 return rc;
             }
         }
+
+        /// <summary>
+        /// Построение контекстов запросов к Yandex
+        /// </summary>
+        /// <param name="requestArgs">Данные для запросов</param>
+        /// <param name="pairLimit">Максимальное количество пар в одном запросе</param>
+        /// <param name="geoContext">Результат - контексты запросов</param>
+        /// <returns>0 - контексты построены; контексты не построены</returns>
+        private static int GetGeoContext(GeoYandexRequest requestArgs, int pairLimit, out GeoYandexRequestData[] geoContext)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            geoContext = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (pairLimit <= 0)
+                    return rc;
+                if (requestArgs.Origins == null || requestArgs.Origins.Length <= 0)
+                    return rc;
+                if (requestArgs.Destinations == null || requestArgs.Destinations.Length <= 0)
+                    return rc;
+                if (requestArgs.Modes == null || requestArgs.Modes.Length <= 0)
+                    return rc;
+
+                // 3. Два частных случая - разбиениие только origins или destinations
+                rc = 3;
+                int rc1 = GetGeoContextSpecialCase(requestArgs, pairLimit, out geoContext);
+                if (rc1 == 0)
+                    return rc = 0;
+
+                // 4. Выделяем память под результат
+                rc = 4;
+                GeoPoint[] origins = requestArgs.Origins;
+                GeoPoint[] destinations = requestArgs.Destinations;
+                string[] modes = requestArgs.Modes;
+                int originCount = origins.Length;
+                int destinationCount = destinations.Length;
+                int modeCount = modes.Length;
+                Point[,,] geoData = new Point[originCount, destinationCount, modeCount];
+
+                // 5. Ещё два частных случая - pairLimit = 1, 2
+                rc = 5;
+                int pairLimit2 = pairLimit + pairLimit;
+
+                if (pairLimit == 1)
+                {
+                    geoContext = new GeoYandexRequestData[originCount * destinationCount];
+                    int cnt = 0;
+
+                    for (int i = 0; i < originCount; i++)
+                    {
+                        for (int j = 0; j < destinationCount; j++)
+                        {
+                            geoContext[cnt++] = new GeoYandexRequestData(origins, i, 1, destinations, j, 1, modes, geoData);
+                        }
+                    }
+
+                    return rc = 0;
+                }
+                else if (pairLimit == 2)
+                {
+                    geoContext = new GeoYandexRequestData[(originCount * destinationCount + 1) / 2];
+                    int cnt = 0;
+
+                    for (int i = 0; i < originCount; i++)
+                    {
+                        for (int j = 0; j < destinationCount - 1; j += 2)
+                        {
+                            geoContext[cnt++] = new GeoYandexRequestData(origins, i, 1, destinations, j, 2, modes, geoData);
+                        }
+                    }
+
+                    if ((destinationCount % 2) != 0)
+                    {
+                        for (int i = 0; i < originCount - 1; i += 2)
+                        {
+                            geoContext[cnt++] = new GeoYandexRequestData(origins, i, 2, destinations, destinationCount - 1, 1, modes, geoData);
+                        }
+
+                        if ((originCount % 2) != 0)
+                        {
+                            geoContext[cnt++] = new GeoYandexRequestData(origins, originCount - 1, 1, destinations, destinationCount - 1, 1, modes, geoData);
+                        }
+                    }
+
+                    return rc = 0;
+                }
+
+                // 6. Выделяем память под результат
+                rc = 6;
+                int size = (originCount * destinationCount + pairLimit - 1) / pairLimit + 2;
+                GeoYandexRequestData[] result = new GeoYandexRequestData[size];
+                int count = 0;
+
+                // 7. Делим destination-точки на группы по pairLimit точек + остаток (от 0 до pairLimit - 1);
+                rc = 7;
+                int destinationGroupCount = destinationCount / pairLimit;
+                int destinationRemainder = destinationCount % pairLimit;
+                int destinationStartIndex = pairLimit * destinationGroupCount;
+
+                if (destinationGroupCount > 0)
+                {
+                    //                          [origins]
+                    //                              ↓
+                    // destinations = [{pairLimit} ... {pairLimit} {destinationRemainder}]     (destinationRemainder < pairLimit)
+                    //                                              ↑
+                    //                                    (destinationStartIndex)
+
+                    int lim = destinationGroupCount * pairLimit;
+                    for (int i = 0; i < originCount; i++)
+                    {
+                        for (int j = 0; j < lim; j += pairLimit)
+                        {
+                            result[count++] = new GeoYandexRequestData(origins, i, 1, destinations, j, pairLimit, modes, geoData);
+                        }
+                    }
+                }
+
+                if (destinationRemainder == 0)
+                    goto Fin;
+
+                //                          [origins]
+                //                              ↓
+                //                    [destinationRemainder]     (0 < destinationRemainder < pairLimit)
+                //                     ↑
+                //           (destinationStartIndex)
+
+                // 8. Делим origin-точки на группы по pairLimit точек + остаток (от 0 до pairLimit - 1);
+                rc = 8;
+                int originGroupCount = originCount / pairLimit;
+                int originRemainder = originCount % pairLimit;
+                int originStartIndex = pairLimit * originGroupCount;
+
+                if (originGroupCount > 0)
+                {
+                    // origins = [{pairLimit} ... {pairLimit} {originRemainder}]     (originRemainder < pairLimit)
+                    //                              ↓
+                    //      destinations = [destinationRemainder]                    (0 < destinationRemainder < pairLimit)
+                    //                      ↑
+                    //            (destinationStartIndex)
+
+                    int lim = originGroupCount * pairLimit;
+                    for (int i = destinationStartIndex; i < destinationCount; i++)
+                    {
+                        for (int j = 0; j < lim; j += pairLimit)
+                        {
+                            result[count++] = new GeoYandexRequestData(origins, j, pairLimit, destinations, i, 1, modes, geoData);
+                        }
+                    }
+                }
+
+                if (originRemainder == 0)
+                    goto Fin;
+
+                //                   (originStartIndex)
+                //                           ↓
+                //                          [originRemainder]        (0 < originRemainder < pairLimit)
+                //                                 ↓
+                //                       [destinationRemainder]     (0 < destinationRemainder < pairLimit)
+                //                        ↑
+                //              (destinationStartIndex)
+
+                // 9. Находим все пары множителей x, y такие, что
+                //     0 ≤ pairLimit - x * y ≤ 1 (y ≥ x > 0)
+                rc = 9;
+                Point[] multiplierPairs = GetMultiplierPairs(pairLimit, 1);
+                if (multiplierPairs == null || multiplierPairs.Length <= 0)
+                    return rc;
+
+                // 10. Цикл дальнейшего построения
+                rc = 10;
+                GeoYandexIterationData[] iterationData = new GeoYandexIterationData[originRemainder * destinationRemainder];
+                iterationData[0] = new GeoYandexIterationData(originStartIndex, originRemainder, destinationStartIndex, destinationRemainder);
+                int iterDataCount = 1;
+
+                while (iterDataCount > 0)
+                {
+                    // 10.0 Извлекаем параметры для очередной итерации
+                    rc = 100;
+                    GeoYandexIterationData data = iterationData[--iterDataCount];
+                    originRemainder = data.OriginRemainder;
+                    destinationRemainder = data.DestinationRemainder;
+                    if (originRemainder <= 0 || destinationRemainder <= 0)
+                        continue;
+                    originStartIndex = data.OriginStartIndex;
+                    destinationStartIndex = data.DestinationStartIndex;
+
+                    // 10.1 Два частных случая - один или два запроса
+                    rc = 101;
+                    size = originRemainder * destinationRemainder;
+
+                    if (size <= pairLimit)
+                    {
+                        result[count++] = new GeoYandexRequestData(origins, originStartIndex, originRemainder, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                        continue;
+                    }
+                    else if (size <= pairLimit2)
+                    {
+                        if ((originRemainder % 2) == 0)
+                        {
+                            int length = originRemainder / 2;
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex, length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex + length, originRemainder - length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                            continue;
+                        }
+                        else if ((destinationCount % 2) == 0)
+                        {
+                            int length = destinationRemainder / 2;
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex, originRemainder, destinations, destinationStartIndex, length, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex, originRemainder, destinations, destinationStartIndex + length, destinationRemainder - length, modes, geoData);
+                            continue;
+                        }
+                        //else
+                        //{
+                        //    int length = originRemainder / 2;
+                        //    result[count++] = new GeoYandexRequestData(origins, originStartIndex, length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                        //    result[count++] = new GeoYandexRequestData(origins, originStartIndex + length, originRemainder - length, destinations, destinationStartIndex, destinationRemainder, modes, geoData);
+                        //}
+                    }
+
+                    // originReminder * destinationReminder > 2 * pairLimit
+
+                    // 10.2 Считаем допустимые потери
+                    rc = 102;
+                    //int allowableLosses = (size / pairLimit);
+                    int allowableLosses = (size % pairLimit);
+                    if (allowableLosses > 0)
+                        allowableLosses = pairLimit - allowableLosses;
+
+                    // 10.3 Частный случай: допустимые потери = 0, т.е originReminder * destinationReminder = m * pairLimit
+                    rc = 103;
+                    if (allowableLosses == 0)
+                    {
+                        for (int i = 0; i < multiplierPairs.Length; i++)
+                        {
+                            int x = multiplierPairs[i].X;
+                            int y = multiplierPairs[i].Y;
+                            if ((pairLimit - x * y) != 0)
+                                continue;
+
+                            if ((originRemainder % x) == 0 && (destinationRemainder % y) == 0)
+                            {
+                                for (int j = originStartIndex; j < originStartIndex + originRemainder; j += x)
+                                {
+                                    for (int k = destinationStartIndex; k < destinationStartIndex + destinationRemainder; k += y)
+                                    {
+                                        result[count++] = new GeoYandexRequestData(origins, j, x, destinations, k, y, modes, geoData);
+                                    }
+                                }
+
+                                goto WhileEnd;
+                            }
+                            else if ((originRemainder % y) == 0 && (destinationRemainder % x) == 0)
+                            {
+                                for (int j = originStartIndex; j < originStartIndex + originRemainder; j += y)
+                                {
+                                    for (int k = destinationStartIndex; k < destinationStartIndex + destinationRemainder; k += x)
+                                    {
+                                        result[count++] = new GeoYandexRequestData(origins, j, y, destinations, k, x, modes, geoData);
+                                    }
+                                }
+
+                                goto WhileEnd;
+                            }
+                        }
+                    }
+
+                    // 10.4 Делаем шаг вперед с минимальными потерями
+                    rc = 104;
+                    int minLosses = int.MaxValue;
+                    int losses = 0;
+                    int minX = 0;
+                    int minY = 0;
+                    int caseXY = -1;
+
+                    for (int i = 0; i < multiplierPairs.Length; i++)
+                    {
+                        // 10.4.1 Извлекаем множители
+                        rc = 1041;
+                        int x = multiplierPairs[i].X;
+                        int y = multiplierPairs[i].Y;
+
+                        // 10.4.2 Потери за x * y пар
+                        rc = 1042;
+                        int opLosses = pairLimit - x * y;
+                        losses = -1;
+
+                        // 10.4.3 Случай
+                        //               originReminder = n1 * x + r1
+                        //               destinationReminder = n2 * y + r2
+                        rc = 1043;
+                        if (originRemainder >= x && destinationRemainder >= y)
+                        {
+                            // 10.4.3.1 Раскладываем по множителю
+                            int n1 = originRemainder / x;
+                            int r1 = originRemainder % x;
+                            int n2 = destinationRemainder / y;
+                            int r2 = destinationRemainder % y;
+                            losses = opLosses * n1 * n2;
+
+                            // 10.4.3.2 Считаем потери для варианта 1:
+                            //          (originReminder = n1 * x + r1  --> r2  && r1 --> n2 * y)
+                            int losses1 = (originRemainder * r2) % pairLimit;
+                            if (losses1 > 0)
+                                losses1 = pairLimit - losses1;
+                            int r = (r1 * n2 * y) % pairLimit;
+                            if (r > 0)
+                                losses1 += (pairLimit - r);
+
+                            // 10.4.3.3 Считаем потери для варианта 2:
+                            //          (n1 * x  --> r2  && r1 --> destinationReminder = n2 * y + r2)
+                            int losses2 = (n1 * x * r2) % pairLimit;
+                            if (losses2 > 0)
+                                losses2 = pairLimit - losses2;
+                            r = (r1 * destinationRemainder) % pairLimit;
+                            if (r > 0)
+                                losses2 += (pairLimit - r);
+
+                            // 10.4.3.4 Подсчитываем общие потери
+                            losses += (losses2 <= losses1 ? losses2 : losses1);
+
+                            // 10.4.3.5 Выбираме наилучший вариант
+                            if (losses < minLosses)
+                            {
+                                minLosses = losses;
+                                minX = x;
+                                minY = y;
+                                caseXY = (losses2 <= losses1 ? 1 : 0);
+                            }
+                        }
+
+                        // 10.4.4 Случай
+                        //               originReminder = n1 * y + r1
+                        //               destinationReminder = n2 * x + r2
+                        if (x != y && originRemainder >= y && destinationRemainder >= x)
+                        {
+                            // 10.4.4.0 Меняем x и y местами
+                            losses = x;
+                            x = y;
+                            y = losses;
+
+                            // 10.4.4.1 Раскладываем по множителю
+                            int n1 = originRemainder / x;
+                            int r1 = originRemainder % x;
+                            int n2 = destinationRemainder / y;
+                            int r2 = destinationRemainder % y;
+                            losses = opLosses * n1 * n2;
+
+                            // 10.4.4.2 Считаем потери для варианта 1:
+                            //          (originReminder = n1 * x + r1  --> r2  && r1 --> n2 * y)
+                            int losses1 = (originRemainder * r2) % pairLimit;
+                            if (losses1 > 0)
+                                losses1 = pairLimit - losses1;
+                            int r = (r1 * n2 * y) % pairLimit;
+                            if (r > 0)
+                                losses1 += (pairLimit - r);
+
+                            // 10.4.4.3 Считаем потери для варианта 2:
+                            //          (n1 * x  --> r2  && r1 --> destinationReminder = n2 * y + r2)
+                            int losses2 = (n1 * x * r2) % pairLimit;
+                            if (losses2 > 0)
+                                losses2 = pairLimit - losses2;
+                            r = (r1 * destinationRemainder) % pairLimit;
+                            if (r > 0)
+                                losses2 += (pairLimit - r);
+
+                            // 10.4.4.4 Подсчитываем общие потери
+                            losses += (losses2 <= losses1 ? losses2 : losses2);
+
+                            // 10.4.4.5 Выбираме наилучший вариант
+                            if (losses < minLosses)
+                            {
+                                minLosses = losses;
+                                minX = x;
+                                minY = y;
+                                caseXY = (losses2 <= losses1 ? 1 : 0);
+                            }
+                        }
+                    }
+
+                    // 10.5 Делаем шаг вперед
+                    rc = 105;
+
+                    if (minLosses == int.MaxValue)
+                    {
+                        losses = losses;
+                    }
+                    else
+                    {
+                        int n1 = originRemainder / minX;
+                        int r1 = originRemainder % minX;
+                        int n2 = destinationRemainder / minY;
+                        int r2 = destinationRemainder % minY;
+
+                        int originEndIndex = originStartIndex + n1 * minX;
+                        int destinatioEndIndex = destinationStartIndex + n2 * minY;
+
+                        for (int i = originStartIndex; i < originEndIndex; i += minX)
+                        {
+                            for (int j = destinationStartIndex; j < destinatioEndIndex; j += minY)
+                            {
+                                result[count++] = new GeoYandexRequestData(origins, i, minX, destinations, j, minY, modes, geoData);
+                            }
+                        }
+
+                        if (caseXY == 0)
+                        {
+                            // 10.5.1 Вариант 1: originReminder = n1 * x + r1  --> r2  && r1 --> n2 * y
+                            rc = 1051;
+
+                            if (r2 > 0)
+                            {
+                                // originReminder = n1 * x + r1  --> r2
+                                int destinationStartIndex1 = destinationStartIndex + n2 * minY;
+                                int destinationRemainder1 = r2;
+                                iterationData[iterDataCount++] = new GeoYandexIterationData(originStartIndex, originRemainder, destinationStartIndex1, destinationRemainder1);
+                            }
+
+                            if (r1 > 0)
+                            {
+                                // 11.5.1.2 r1 --> n2 * y
+                                int originStartIndex1 = originStartIndex + n1 * minX;
+                                int originRemainder1 = r1;
+                                int destinationRemainder2 = n2 * minY;
+                                iterationData[iterDataCount++] = new GeoYandexIterationData(originStartIndex1, originRemainder1, destinationStartIndex, destinationRemainder2);
+                            }
+                        }
+                        else
+                        {
+                            // 10.5.2  Вариант 2: n1 * x  --> r2  && r1 --> destinationReminder = n2 * y + r2
+                            rc = 1052;
+                            if (r2 > 0)
+                            {
+                                // 11.5.2.1 n1 * x  --> r2
+                                int originStartIndex1 = originStartIndex;
+                                int originRemainder1 = n1 * minX;
+                                int destinationStartIndex1 = destinationStartIndex + n2 * minY;
+                                int destinationRemainder1 = r2;
+                                iterationData[iterDataCount++] = new GeoYandexIterationData(originStartIndex1, originRemainder1, destinationStartIndex1, destinationRemainder1);
+                            }
+
+                            if (r1 > 0)
+                            {
+                                // 10.5.2.2 r1 --> destinationReminder = n2 * y + r2
+                                int originStartIndex2 = originStartIndex + n1 * minX;
+                                int originRemainder2 = r1;
+                                iterationData[iterDataCount++] = new GeoYandexIterationData(originStartIndex2, originRemainder2, destinationStartIndex, destinationRemainder);
+                            }
+                        }
+                    }
+
+                    WhileEnd: ;
+                }
+
+                // 11. Завершение обработки
+                Fin:
+                rc = 11;
+                if (count < result.Length)
+                {
+                    Array.Resize(ref result, count);
+                }
+
+                geoContext = result;
+
+                // 12. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Построение контекстов запросов к Yandex
+        /// в специальных случаях точного миимального решения
+        /// </summary>
+        /// <param name="requestArgs">Данные для запросов</param>
+        /// <param name="pairLimit">Максимальное количество пар в одном запросе</param>
+        /// <param name="geoContext">Результат - контексты запросов</param>
+        /// <returns>0 - контексты построены; контексты не построены</returns>
+        private static int GetGeoContextSpecialCase(GeoYandexRequest requestArgs, int pairLimit, out GeoYandexRequestData[] geoContext)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            geoContext = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (pairLimit <= 0)
+                    return rc;
+                if (requestArgs.Origins == null || requestArgs.Origins.Length <= 0)
+                    return rc;
+                if (requestArgs.Destinations == null || requestArgs.Destinations.Length <= 0)
+                    return rc;
+                if (requestArgs.Modes == null || requestArgs.Modes.Length <= 0)
+                    return rc;
+
+                // 3. Извлекаем счетчики и миималное количество запросов
+                rc = 3;
+                int originCount = requestArgs.Origins.Length;
+                int destinationCount = requestArgs.Destinations.Length;
+                if (originCount > pairLimit && destinationCount > pairLimit)
+                    return rc;
+                if (originCount * destinationCount <= pairLimit)
+                {
+                    GeoPoint[] origins = requestArgs.Origins;
+                    GeoPoint[] destinations = requestArgs.Destinations;
+                    string[] modes = requestArgs.Modes;
+                    int modeCount = modes.Length;
+                    Point[,,] geoData = new Point[originCount, destinationCount, modeCount];
+                    geoContext = new GeoYandexRequestData[] { new GeoYandexRequestData(origins, 0, originCount, destinations, 0, destinationCount, modes, geoData) };
+                    return rc = 0;
+                }
+
+                int minReqestCount = (originCount * destinationCount + pairLimit - 1) / pairLimit;
+
+                // 4. Случай (origins1 + ... + originsk) -> destinations,  originsi * destinations ≤ pairLimit, k = minReqestCount
+                rc = 4;
+                int n2 = pairLimit / destinationCount;
+                if (originCount <= n2 * minReqestCount)
+                {
+                    geoContext = new GeoYandexRequestData[minReqestCount];
+                    int k = 0;
+                    GeoPoint[] origins = requestArgs.Origins;
+                    GeoPoint[] destinations = requestArgs.Destinations;
+                    string[] modes = requestArgs.Modes;
+                    int modeCount = modes.Length;
+                    Point[,,] geoData = new Point[originCount, destinationCount, modeCount];
+
+                    for (int originsStartIndex = 0; originsStartIndex < originCount; originsStartIndex += n2)
+                    {
+                        int length = originCount - originsStartIndex;
+                        if (length > n2) length = n2;
+                        geoContext[k++] = new GeoYandexRequestData(origins, originsStartIndex, length, destinations, 0, destinationCount, modes, geoData);
+                    }
+
+                    return rc = 0;
+                }
+
+                // 5. Случай origins -> (destinations1 + ... + destinationsk),  origins * destinationsi ≤ pairLimit, k = minReqestCount
+                rc = 5;
+                int n1 = pairLimit / originCount;
+                if (destinationCount <= n1 * minReqestCount)
+                {
+                    geoContext = new GeoYandexRequestData[minReqestCount];
+                    int k = 0;
+                    GeoPoint[] origins = requestArgs.Origins;
+                    GeoPoint[] destinations = requestArgs.Destinations;
+                    string[] modes = requestArgs.Modes;
+                    int modeCount = modes.Length;
+                    Point[,,] geoData = new Point[originCount, destinationCount, modeCount];
+
+                    for (int destinationsStartIndex = 0; destinationsStartIndex < destinationCount; destinationsStartIndex += n1)
+                    {
+                        int length = destinationCount - destinationsStartIndex;
+                        if (length > n1) length = n1;
+                        geoContext[k++] = new GeoYandexRequestData(origins, 0, originCount, destinations, destinationsStartIndex, length, modes, geoData);
+                    }
+
+                    return rc = 0;
+                }
+
+                // 6. Выход
+                rc = 6;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
+        /// <summary>
+        /// Построение контекстов запросов к Yandex
+        /// в специальных случаях точного миимального решения
+        /// </summary>
+        /// <param name="requestArgs">Данные для запросов</param>
+        /// <param name="pairLimit">Максимальное количество пар в одном запросе</param>
+        /// <param name="geoContext">Результат - контексты запросов</param>
+        /// <returns>0 - контексты построены; контексты не построены</returns>
+        private static int GetGeoContextSpecialCase(GeoYandexRequest requestArgs,
+                                                    int originStartIndex, int originLength,
+                                                    int destinationStartIndex, int destinationLength,
+                                                    int pairLimit, out GeoYandexRequestData[] geoContext)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            geoContext = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (pairLimit <= 0)
+                    return rc;
+                if (requestArgs.Origins == null || requestArgs.Origins.Length <= 0)
+                    return rc;
+                if (requestArgs.Destinations == null || requestArgs.Destinations.Length <= 0)
+                    return rc;
+                if (requestArgs.Modes == null || requestArgs.Modes.Length <= 0)
+                    return rc;
+
+                // 3. Извлекаем счетчики и миималное количество запросов
+                rc = 3;
+                int originCount = requestArgs.Origins.Length;
+                int destinationCount = requestArgs.Destinations.Length;
+                if (originCount > pairLimit && destinationCount > pairLimit)
+                    return rc;
+                if (originCount * destinationCount <= pairLimit)
+                {
+                    GeoPoint[] origins = requestArgs.Origins;
+                    GeoPoint[] destinations = requestArgs.Destinations;
+                    string[] modes = requestArgs.Modes;
+                    int modeCount = modes.Length;
+                    Point[,,] geoData = new Point[originCount, destinationCount, modeCount];
+                    geoContext = new GeoYandexRequestData[] { new GeoYandexRequestData(origins, 0, originCount, destinations, 0, destinationCount, modes, geoData) };
+                    return rc = 0;
+                }
+
+                int minReqestCount = (originCount * destinationCount + pairLimit - 1) / pairLimit;
+
+                // 4. Случай (origins1 + ... + originsk) -> destinations,  originsi * destinations ≤ pairLimit, k = minReqestCount
+                rc = 4;
+                int n2 = pairLimit / destinationCount;
+                if (originCount <= n2 * minReqestCount)
+                {
+                    geoContext = new GeoYandexRequestData[minReqestCount];
+                    int k = 0;
+                    GeoPoint[] origins = requestArgs.Origins;
+                    GeoPoint[] destinations = requestArgs.Destinations;
+                    string[] modes = requestArgs.Modes;
+                    int modeCount = modes.Length;
+                    Point[,,] geoData = new Point[originCount, destinationCount, modeCount];
+
+                    for (int originsStartIndex = 0; originsStartIndex < originCount; originsStartIndex += n2)
+                    {
+                        int length = originCount - originsStartIndex;
+                        if (length > n2) length = n2;
+                        geoContext[k++] = new GeoYandexRequestData(origins, originsStartIndex, length, destinations, 0, destinationCount, modes, geoData);
+                    }
+
+                    return rc = 0;
+                }
+
+                // 5. Случай origins -> (destinations1 + ... + destinationsk),  origins * destinationsi ≤ pairLimit, k = minReqestCount
+                rc = 5;
+                int n1 = pairLimit / originCount;
+                if (destinationCount <= n1 * minReqestCount)
+                {
+                    geoContext = new GeoYandexRequestData[minReqestCount];
+                    int k = 0;
+                    GeoPoint[] origins = requestArgs.Origins;
+                    GeoPoint[] destinations = requestArgs.Destinations;
+                    string[] modes = requestArgs.Modes;
+                    int modeCount = modes.Length;
+                    Point[,,] geoData = new Point[originCount, destinationCount, modeCount];
+
+                    for (int destinationsStartIndex = 0; destinationsStartIndex < destinationCount; destinationsStartIndex += n1)
+                    {
+                        int length = destinationCount - destinationsStartIndex;
+                        if (length > n1) length = n1;
+                        geoContext[k++] = new GeoYandexRequestData(origins, 0, originCount, destinations, destinationsStartIndex, length, modes, geoData);
+                    }
+
+                    return rc = 0;
+                }
+
+                // 6. Выход
+                rc = 6;
+                return rc;
+            }
+            catch
+            {
+                return rc;
+            }
+        }
+
 
         /// <summary>
         /// Для заданного целого n нахождение всех пар n1 и n2,
