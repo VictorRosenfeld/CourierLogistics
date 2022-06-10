@@ -86,6 +86,7 @@
     <Compile Include="Geo\Yandex\GeoYandexReqestData.cs" />
     <Compile Include="Geo\Yandex\GeoYandexResponseItem.cs" />
     <Compile Include="Geo\Yandex\GeoYandexResponseParser.cs" />
+    <Compile Include="Geo\Yandex\RangeMap.cs" />
     <Compile Include="LogisticsService.cs" />
     <Compile Include="Geo\Cache\GeoCache.cs" />
     <Compile Include="Log\Logger.cs" />
