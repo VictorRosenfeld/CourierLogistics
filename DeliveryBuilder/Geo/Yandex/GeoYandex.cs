@@ -1470,7 +1470,7 @@ namespace DeliveryBuilder.Geo.Yandex
                         for (int i = 0; i < map.Length; i++)
                         {
                             RangeMap rm = map[i];
-                            geoContext[count++] = new GeoYandexRequestData(origins, originStartIndex + rm.OriginStartIndex, rm.OriginLength, destinations, destinationStartIndex + rm.DestiationStartIndex, rm.DestinationLength, modes, geoData);
+                            result[count++] = new GeoYandexRequestData(origins, originStartIndex + rm.OriginStartIndex, rm.OriginLength, destinations, destinationStartIndex + rm.DestiationStartIndex, rm.DestinationLength, modes, geoData);
                         }
                         continue;
                     }
