@@ -161,5 +161,8 @@ namespace DeliveryBuilder.Log
         internal const string MSG_123 = @"GeoYandex.GeoThread. mode = {0}, origins = {1}, destinations = {2}, Url = {3}";
         internal const string MSG_124 = @"GeoYandex.GeoThread. Yandex Http status = {0}, error_description = {1}";
         internal const string MSG_125 = @"Thread Pool Info. available = ({0}, {1}), min_max_workers = ({2}, {3}), min_max_ports = ({4}, {5})";
+
+        internal const string MSG_126 = @"RouteBuilder.Build Enter. vehicle_id = {0}, order_count = {1}, level = {2}, subsets = {3}, init_subset = {4}";
+        internal const string MSG_127 = @"RouteBuilder.Build Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, subsets = {4}, init_subset = {5}, elapsed_time = {6}, delivery_count = {7}";
     }
 }

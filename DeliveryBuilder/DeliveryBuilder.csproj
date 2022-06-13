@@ -108,6 +108,8 @@
     <Compile Include="Recalc\RouteBuilder.cs" />
     <Compile Include="Recalc\ThreadContext.cs" />
     <Compile Include="Recalc\ThreadContextEx.cs" />
+    <Compile Include="Recalc\ThreadContextR.cs" />
+    <Compile Include="Recalc\ThreadSubsetRange.cs" />
     <Compile Include="SalesmanProblemLevels\SalesmanLevels.cs" />
     <Compile Include="Shops\AllShops.cs" />
     <Compile Include="Shops\Shop.cs" />

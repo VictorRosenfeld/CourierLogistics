@@ -1234,6 +1234,191 @@ namespace DeliveryBuilder.Recalc
         }
 
         /// <summary>
+        /// Контекст-построитель отгрузок
+        /// полным перебором в отдельном потоке
+        /// </summary>
+        /// <param name="callback">Метод построения отгрузок</param>
+        /// <param name="status">Контекст потока</param>
+        private static void CalcThreadNew(WaitCallback callback, object status)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            DateTime startTime = DateTime.Now;
+            ThreadContext context = status as ThreadContext;
+            ThreadContextR[] allCountextEx = null;
+            int threadCount = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (context == null ||
+                    context.OrderCount <= 0 ||
+                    context.ShopCourier == null ||
+                    context.ShopFrom == null ||
+                    context.Orders == null || context.Orders.Length <= 0 ||
+                    context.MaxRouteLength < 1 || context.MaxRouteLength > 8)
+                    return;
+                Logger.WriteToLog(66, MessageSeverity.Info, string.Format(Messages.MSG_066, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
+
+                // 3. Определяем число потоков для обработки
+                rc = 3;
+                int level = context.MaxRouteLength;
+                int orderCount = context.Orders.Length;
+                long cnt = orderCount;
+                long size = cnt;
+                if (orderCount >= 8 && level >= 8)
+                { size += (cnt - 7) * (cnt - 6) * (cnt - 5) * (cnt - 4) * (cnt - 3) * (cnt - 2) * (cnt - 1) * cnt; }
+                if (orderCount >= 7 && level >= 7)
+                { size += (cnt - 6) * (cnt - 5) * (cnt - 4) * (cnt - 3) * (cnt - 2) * (cnt - 1) * cnt; }
+                if (orderCount >= 6 && level >= 6)
+                { size += (cnt - 5) * (cnt - 4) * (cnt - 3) * (cnt - 2) * (cnt - 1) * cnt; }
+                if (orderCount >= 5 && level >= 5)
+                { size += (cnt - 4) * (cnt - 3) * (cnt - 2) * (cnt - 1) * cnt; }
+                if (orderCount >= 4 && level >= 4)
+                { size += (cnt - 3) * (cnt - 2) * (cnt - 1) * cnt; }
+                if (orderCount >= 3 && level >= 3)
+                { size += (cnt - 2) * (cnt - 1) * cnt; }
+                if (orderCount >= 2 && level >= 2)
+                { size += (cnt - 1) * cnt; }
+
+                threadCount = (int)(size + DELIVERIES_PER_THREAD - 1) / DELIVERIES_PER_THREAD;
+                if (threadCount > MAX_DELIVERY_THREADS)
+                    threadCount = MAX_DELIVERY_THREADS;
+
+                // 4. Делим проверяемые наборы заказов на диапазны одинакового размера  
+                rc = 4;
+                ThreadSubsetRange[] threadRanges;
+                int rc1 = GetThreadSubsetRanges(orderCount, level, threadCount, out threadRanges);
+                if (rc1 != 0)
+                {
+                    rc = 100 * rc + rc1;
+                    return;
+                }
+
+                // 5. Требуется всего один поток
+                rc = 5;
+                if (threadCount <= 1)
+                {
+                    ThreadContextR contextEx = new ThreadContextR(context, null, threadRanges[0].FirstSubset, threadRanges[0].SubsetCount);
+                    allCountextEx = new ThreadContextR[] { contextEx };
+                    RouteBuilder.Build(contextEx);
+                }
+                else
+                {
+                    // 6. Требуется несколько потоков
+                    rc = 6;
+                    allCountextEx = new ThreadContextR[threadCount];
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        ManualResetEvent syncEvent = new ManualResetEvent(false);
+                        int k = i;
+                        ThreadContextR contextEx = new ThreadContextR(context, syncEvent, threadRanges[k].FirstSubset, threadRanges[k].SubsetCount);
+                        allCountextEx[k] = contextEx;
+                        ThreadPool.QueueUserWorkItem(RouteBuilder.Build, contextEx);
+                    }
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        allCountextEx[i].SyncEvent.WaitOne();
+                        allCountextEx[i].SyncEvent.Dispose();
+                        allCountextEx[i].SyncEvent = null;
+                    }
+                }
+
+                // 7. Строим общий результат
+                rc = 7;
+                CourierDeliveryInfo[] deliveries = null;
+                rc1 = 0;
+
+                if (threadCount <= 1)
+                {
+                    deliveries = allCountextEx[0].Deliveries;
+                    rc1 = allCountextEx[0].ExitCode;
+                }
+                else
+                {
+                    // 7.1 Подсчитываем число отгрузок
+                    rc = 71;
+                    size = 0;
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        var contextEx = allCountextEx[i];
+                        if (contextEx.ExitCode != 0)
+                        {
+                            rc1 = contextEx.ExitCode;
+                        }
+                        else
+                        {
+                            size += contextEx.DeliveryCount;
+                        }
+                    }
+
+                    // 7.2 Объединяем все отгрузки
+                    rc = 72;
+
+                    if (size > 0)
+                    {
+                        deliveries = new CourierDeliveryInfo[size];
+                        size = 0;
+
+                        for (int i = 0; i < threadCount; i++)
+                        {
+                            var contextEx = allCountextEx[i];
+                            if (contextEx.ExitCode == 0 && contextEx.DeliveryCount > 0)
+                            {
+                                contextEx.Deliveries.CopyTo(deliveries, size);
+                                size += contextEx.DeliveryCount;
+                            }
+                        }
+                    }
+                }
+
+                context.Deliveries = deliveries;
+                allCountextEx = null;
+
+                if (rc1 != 0)
+                {
+                    rc = 100000 * rc + rc1;
+                    return;
+                }
+
+                // 8. Выход - Ok
+                rc = 0;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.CalcThread)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+            }
+            finally
+            {
+                if (context != null)
+                {
+                    context.ExitCode = rc;
+
+                    if (allCountextEx != null && allCountextEx.Length > 0)
+                    {
+                        for (int i = 0; i < allCountextEx.Length; i++)
+                        {
+                            ThreadContextR contextEx = allCountextEx[i];
+                            ManualResetEvent syncEvent = contextEx.SyncEvent;
+                            if (syncEvent != null)
+                            {
+                                try { syncEvent.Dispose(); } catch { }
+                                contextEx.SyncEvent = null;
+                            }
+                        }
+                    }
+
+                    if (context.SyncEvent != null)
+                        context.SyncEvent.Set();
+                    Logger.WriteToLog(67, rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_067, rc, (int) (DateTime.Now -startTime).TotalMilliseconds, threadCount, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
+                }
+            }
+        }
+
+        /// <summary>
         /// Убираем дубли отгрузок
         /// </summary>
         /// <param name="deliveries">Отгрузки</param>
@@ -2174,6 +2359,245 @@ namespace DeliveryBuilder.Recalc
             catch
             {
                 return null;
+            }
+        }
+
+
+        /// <summary>
+        /// Разбиеие всех подмножеств размера не более level
+        /// из множества с числом элементов orderCount
+        ///       1 ≤ orderCount ≤ 2^16
+        ///       1 ≤ level ≤ 8
+        /// на заданое число групп с одинаковым числом элементов      
+        /// </summary>
+        /// <param name="orderCount">Число элементов в можестве</param>
+        /// <param name="level">Максималый размер выбираемых подмножеств</param>
+        /// <param name="threadCount">Число групп</param>
+        /// <param name="ranges">Построенные диапазоны</param>
+        /// <returns>0 - диапазоны построены; иначе - диапазоны не построены</returns>
+        private static int GetThreadSubsetRanges(int orderCount, int level, int threadCount, out ThreadSubsetRange[] ranges)
+        {
+            // 1. Инициализация
+            int rc = 1;
+            ranges = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (orderCount <= 0 || orderCount > short.MaxValue)
+                    return rc;
+                if (level < 1 || level > 8)
+                    return rc;
+                if (threadCount <= 0)
+                    return rc;
+
+                // 3. Подсчитываем общее число подмножеств
+                rc = 3;
+                long cnt = orderCount;
+                long size = cnt;
+                if (orderCount >= 8 && level >= 8)
+                { size += ((cnt - 7) * (cnt - 6) * (cnt - 5) * (cnt - 4) * (cnt - 3) * (cnt - 2) * (cnt - 1) * cnt) / 40320; }
+                if (orderCount >= 7 && level >= 7)
+                { size += ((cnt - 6) * (cnt - 5) * (cnt - 4) * (cnt - 3) * (cnt - 2) * (cnt - 1) * cnt) / 5040; }
+                if (orderCount >= 6 && level >= 6)
+                { size += ((cnt - 5) * (cnt - 4) * (cnt - 3) * (cnt - 2) * (cnt - 1) * cnt) / 720; }
+                if (orderCount >= 5 && level >= 5)
+                { size += ((cnt - 4) * (cnt - 3) * (cnt - 2) * (cnt - 1) * cnt) / 120; }
+                if (orderCount >= 4 && level >= 4)
+                { size += ((cnt - 3) * (cnt - 2) * (cnt - 1) * cnt) / 24; }
+                if (orderCount >= 3 && level >= 3)
+                { size += ((cnt - 2) * (cnt - 1) * cnt) / 6; }
+                if (orderCount >= 2 && level >= 2)
+                { size += ((cnt - 1) * cnt) / 2; }
+
+                if (size > int.MaxValue)
+                    return rc;
+
+                // 4. Если требуется один диапазн
+                rc = 4;
+                if (threadCount <= 1 || orderCount <= 1)
+                {
+                    int[] firstSubset = new int[level];
+                    ranges = new ThreadSubsetRange[] { new ThreadSubsetRange(firstSubset, (int)size) };
+                    return rc = 0;
+                }
+
+                // 5. Вычисляем число элементов в диапазне
+                rc = 5;
+                int length = (int)((size + threadCount - 1) / threadCount);
+
+                // 6. Построение результата
+                rc = 6;
+                ranges = new ThreadSubsetRange[threadCount];
+                int count = length - 1;
+                int k = 0;
+
+                for (int i1 = 0; i1 < orderCount; i1++)
+                {
+                    if (++count >= length)
+                    {
+                        int[] firstSubset = new int[level];
+                        firstSubset[0] = i1;
+                        ranges[k++] = new ThreadSubsetRange(firstSubset, length);
+                        if (k >= threadCount)
+                            goto Fin;
+                        count = 0;
+                    }
+
+                    if (level >= 2)
+                    {
+                        for (int i2 = i1 + 1; i2 < orderCount; i2++)
+                        {
+                            if (++count >= length)
+                            {
+                                int[] firstSubset = new int[level];
+                                firstSubset[0] = i1;
+                                firstSubset[1] = i2;
+                                ranges[k++] = new ThreadSubsetRange(firstSubset, length);
+                                if (k >= threadCount)
+                                    goto Fin;
+                                count = 0;
+                            }
+
+                            if (level >= 3)
+                            {
+                                for (int i3 = i2 + 1; i3 < orderCount; i3++)
+                                {
+                                    if (++count >= length)
+                                    {
+                                        int[] firstSubset = new int[level];
+                                        firstSubset[0] = i1;
+                                        firstSubset[1] = i2;
+                                        firstSubset[2] = i3;
+                                        ranges[k++] = new ThreadSubsetRange(firstSubset, length);
+                                        if (k >= threadCount)
+                                            goto Fin;
+                                        count = 0;
+                                    }
+
+                                    if (level >= 4)
+                                    {
+                                        for (int i4 = i3 + 1; i4 < orderCount; i4++)
+                                        {
+                                            if (++count >= length)
+                                            {
+                                                int[] firstSubset = new int[level];
+                                                firstSubset[0] = i1;
+                                                firstSubset[1] = i2;
+                                                firstSubset[2] = i3;
+                                                firstSubset[3] = i4;
+                                                ranges[k++] = new ThreadSubsetRange(firstSubset, length);
+                                                if (k >= threadCount)
+                                                    goto Fin;
+                                                count = 0;
+                                            }
+
+                                            if (level >= 5)
+                                            {
+                                                for (int i5 = i4 + 1; i5 < orderCount; i5++)
+                                                {
+                                                    if (++count >= length)
+                                                    {
+                                                        int[] firstSubset = new int[level];
+                                                        firstSubset[0] = i1;
+                                                        firstSubset[1] = i2;
+                                                        firstSubset[2] = i3;
+                                                        firstSubset[3] = i4;
+                                                        firstSubset[4] = i5;
+                                                        ranges[k++] = new ThreadSubsetRange(firstSubset, length);
+                                                        if (k >= threadCount)
+                                                            goto Fin;
+                                                        count = 0;
+                                                    }
+
+                                                    if (level >= 6)
+                                                    {
+                                                        for (int i6 = i5 + 1; i6 < orderCount; i6++)
+                                                        {
+                                                            if (++count >= length)
+                                                            {
+                                                                int[] firstSubset = new int[level];
+                                                                firstSubset[0] = i1;
+                                                                firstSubset[1] = i2;
+                                                                firstSubset[2] = i3;
+                                                                firstSubset[3] = i4;
+                                                                firstSubset[4] = i5;
+                                                                firstSubset[5] = i6;
+                                                                ranges[k++] = new ThreadSubsetRange(firstSubset, length);
+                                                                if (k >= threadCount)
+                                                                    goto Fin;
+                                                                count = 0;
+                                                            }
+
+                                                            if (level >= 7)
+                                                            {
+                                                                for (int i7 = i6 + 1; i7 < orderCount; i7++)
+                                                                {
+                                                                    if (++count >= length)
+                                                                    {
+                                                                        int[] firstSubset = new int[level];
+                                                                        firstSubset[0] = i1;
+                                                                        firstSubset[1] = i2;
+                                                                        firstSubset[2] = i3;
+                                                                        firstSubset[3] = i4;
+                                                                        firstSubset[4] = i5;
+                                                                        firstSubset[5] = i6;
+                                                                        firstSubset[6] = i7;
+                                                                        ranges[k++] = new ThreadSubsetRange(firstSubset, length);
+                                                                        if (k >= threadCount)
+                                                                            goto Fin;
+                                                                        count = 0;
+                                                                    }
+
+                                                                    if (level >= 8)
+                                                                    {
+                                                                        for (int i8 = i7 + 1; i8 < orderCount; i8++)
+                                                                        {
+                                                                            if (++count >= length)
+                                                                            {
+                                                                                int[] firstSubset = new int[level];
+                                                                                firstSubset[0] = i1;
+                                                                                firstSubset[1] = i2;
+                                                                                firstSubset[2] = i3;
+                                                                                firstSubset[3] = i4;
+                                                                                firstSubset[4] = i5;
+                                                                                firstSubset[5] = i6;
+                                                                                firstSubset[6] = i7;
+                                                                                firstSubset[7] = i8;
+                                                                                ranges[k++] = new ThreadSubsetRange(firstSubset, length);
+                                                                                if (k >= threadCount)
+                                                                                    goto Fin;
+                                                                                count = 0;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Fin:
+                int lastLength = (int)(size - (threadCount - 1) * length);
+                if (lastLength != length)
+                { ranges[ranges.Length - 1].SubsetCount = lastLength; }
+
+                // 7. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch
+            {
+                return rc;
             }
         }
     }

@@ -671,17 +671,18 @@ namespace DeliveryBuilder
             }
             finally
             {
-                if (isCatched)
-                {
-                    try { syncMutex.ReleaseMutex(); } catch { }
-                    isCatched = false;
-                }
                 if (db != null)
                 {
                     try { db.Close(); } catch { }
                     db = null;
                 }
                 SaveOrders(serviceId, orders);
+                if (isCatched)
+                {
+                    try { syncMutex.ReleaseMutex(); } catch { }
+                    isCatched = false;
+                }
+                GC.Collect();
             }
         }
 
