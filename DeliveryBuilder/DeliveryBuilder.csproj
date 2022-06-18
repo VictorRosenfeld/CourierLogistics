@@ -104,12 +104,14 @@
     <Compile Include="Recalc\CalcThreadContext.cs" />
     <Compile Include="Recalc\CourierDeliveryInfo.cs" />
     <Compile Include="Recalc\DilateRoutesContext.cs" />
+    <Compile Include="Recalc\OuelletConvexHullCpp.cs" />
     <Compile Include="Recalc\Permutations.cs" />
     <Compile Include="Recalc\RouteBuilder.cs" />
     <Compile Include="Recalc\ThreadContext.cs" />
     <Compile Include="Recalc\ThreadContextEx.cs" />
     <Compile Include="Recalc\ThreadContextR.cs" />
     <Compile Include="Recalc\ThreadSubsetRange.cs" />
+    <Compile Include="Recalc\TspSolver.cs" />
     <Compile Include="SalesmanProblemLevels\SalesmanLevels.cs" />
     <Compile Include="Shops\AllShops.cs" />
     <Compile Include="Shops\Shop.cs" />

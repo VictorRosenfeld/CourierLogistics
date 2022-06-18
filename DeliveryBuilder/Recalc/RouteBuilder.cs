@@ -7540,8 +7540,8 @@ namespace DeliveryBuilder.Recalc
                             break;
                     }
 
-                    // 4.0 Продвиаемся к следующему набору индексов
-                    rc = 40;
+                    // 4.2 Продвигаемся к следующему набору индексов
+                    rc = 42;
                     int index = orderIndex[pointer];
 
                     if (index < cnt)
@@ -7623,6 +7623,961 @@ namespace DeliveryBuilder.Recalc
             }
             sb.Append("]");
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Построение всех возможных отгрузок длины
+        /// не более заданной
+        /// </summary>
+        /// <param name="status">Контекст построения</param>
+        /// <returns>0 - отгрузки построены; иначе - отгрузки не построены</returns>
+        public static void OuelletBuild(object status)
+        {
+            // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            int rc = 1;
+            ThreadContextR context = status as ThreadContextR;
+            int count = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (context == null)
+                    return;
+                context.Deliveries = null;
+                Point[,] geoData = context.GeoData;
+                if (geoData == null)
+                    return;
+                Logger.WriteToLog(126, MessageSeverity.Info, string.Format(Messages.MSG_126, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.SubsetCount, ArrayToString(context.InitOrderIndexes)));
+
+                // 3. Извлекаем и проверяем данные из контекста
+                rc = 3;
+                int level = context.MaxRouteLength;
+                if (level < 1 || level > 8)
+                    return;
+                DateTime calcTime = context.CalcTime;
+                Order[] contextOrders = context.Orders;
+                if (contextOrders == null || contextOrders.Length <= 0)
+                    return;
+                int[] orderIndex = context.InitOrderIndexes;
+                if (orderIndex == null || orderIndex.Length != level)
+                    return;
+                int subsetCount = context.SubsetCount;
+                if (subsetCount <= 0)
+                    return;
+
+                int orderCount = contextOrders.Length;
+                Shop contextShop = context.ShopFrom;
+                if (contextShop == null)
+                    return;
+                Courier contextCourier = context.ShopCourier;
+                if (contextCourier == null)
+                    return;
+
+                int pointer = 0;
+                for (int i = 1; i < level && orderIndex[i] != 0; i++)
+                { pointer = i; }
+
+                // 4. Выбираем координаты заказов и магазина
+                rc = 4;
+                GeoPoint[] points = new GeoPoint[orderCount];
+                for (int i = 0; i < orderCount; i++)
+                {
+                    points[i] = new GeoPoint(contextOrders[i].Latitude, contextOrders[i].Longitude);
+                }
+
+                GeoPoint shopPoint = new GeoPoint(contextShop.Latitude, contextShop.Longitude);
+
+                // 5. Цикл выбора допустимых маршрутов
+                rc = 5;
+                int cnt = orderCount - 1;
+                int lev = level - 1;
+                CourierDeliveryInfo[] deliveries = new CourierDeliveryInfo[subsetCount];
+                Order[] orders = new Order[level];
+                int[] orderGeoIndex = new int[level + 1];
+                GeoPoint[] subsetPoints = new GeoPoint[level + 1];
+                int[] subsetPath = new int[level + 1];
+                subsetPoints[0] = points[orderCount];
+                bool isLoop = !contextCourier.IsTaxi;
+                int shopIndex = orderCount;
+                CourierDeliveryInfo delivery;
+                CourierDeliveryInfo delivery1;
+                CourierDeliveryInfo delivery2;
+                CourierDeliveryInfo delivery3;
+                CourierDeliveryInfo delivery4;
+                CourierDeliveryInfo delivery5;
+                CourierDeliveryInfo delivery6;
+                CourierDeliveryInfo delivery7;
+                CourierDeliveryInfo delivery8;
+
+                TspSolver tspSolver = new TspSolver(); 
+
+                int i1 = 0;
+                int i2 = 0;
+                int i3 = 0;
+                int i4 = 0;
+                int i5 = 0;
+                int i6 = 0;
+                int i7 = 0;
+                int i8 = 0;
+
+                for (int i = 0; i < subsetCount; i++)
+                {
+                    // 5.1 Обрабатываем по количеству заказов
+                    rc = 51;
+                    switch (pointer)
+                    {
+                        case 0:
+                            // 1
+                            i1 = orderIndex[0];
+                            orderGeoIndex[0] = i1;
+                            orderGeoIndex[1] = shopIndex;
+                            orders[0] = contextOrders[i1];
+                            int rcFind = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 1, isLoop, geoData, out delivery);
+                            if (rcFind == 0)
+                                deliveries[count++] = delivery;
+                            break;
+                        case 1:
+                            // 1 2
+                            i1 = orderIndex[0];
+                            i2 = orderIndex[1];
+                            orderGeoIndex[0] = i1;
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = shopIndex;
+                            orders[0] = contextOrders[i1];
+                            orders[1] = contextOrders[i2];
+                            int rcFind1 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 2, isLoop, geoData, out delivery1);
+
+                            // 2 1
+                            orderGeoIndex[0] = i2;
+                            orderGeoIndex[1] = i1;
+                            orders[0] = contextOrders[i2];
+                            orders[1] = contextOrders[i1];
+                            int rcFind2 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 2, isLoop, geoData, out delivery2);
+
+                            if (rcFind1 == 0)
+                            {
+                                if (rcFind2 == 0)
+                                { deliveries[count++] = (delivery1.Cost <= delivery2.Cost ? delivery1 : delivery2); }
+                                else
+                                { deliveries[count++] = delivery1; }
+                            }
+                            else if (rcFind2 == 0)
+                            { deliveries[count++] = delivery2; }
+                            break;
+                        case 2:
+                            i1 = orderIndex[0];
+                            i2 = orderIndex[1];
+                            i3 = orderIndex[2];
+                            delivery = null;
+
+                            // 1 2 3
+                            orderGeoIndex[0] = i1;
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = shopIndex;
+                            orders[0] = contextOrders[i1];
+                            orders[1] = contextOrders[i2];
+                            orders[2] = contextOrders[i3];
+                            int rcFind3 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery3);
+                            if (rcFind3 == 0)
+                            { delivery = delivery3; }
+
+                            // 1 3 2
+                            orderGeoIndex[1] = i3;
+                            orderGeoIndex[2] = i2;
+                            orders[0] = contextOrders[i1];
+                            orders[1] = contextOrders[i3];
+                            orders[2] = contextOrders[i2];
+                            rcFind3 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery3);
+                            if (rcFind3 == 0 && (delivery == null || delivery3.Cost < delivery.Cost))
+                            { delivery = delivery3; }
+
+                            // 2 1 3
+                            orderGeoIndex[0] = i2;
+                            orderGeoIndex[1] = i1;
+                            orderGeoIndex[2] = i3;
+                            orders[0] = contextOrders[i2];
+                            orders[1] = contextOrders[i1];
+                            orders[2] = contextOrders[i3];
+                            rcFind3 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery3);
+                            if (rcFind3 == 0 && (delivery == null || delivery3.Cost < delivery.Cost))
+                            { delivery = delivery3; }
+
+                            // 2 3 1
+                            orderGeoIndex[1] = i3;
+                            orderGeoIndex[2] = i1;
+                            orders[0] = contextOrders[i2];
+                            orders[1] = contextOrders[i3];
+                            orders[2] = contextOrders[i1];
+                            rcFind3 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery3);
+                            if (rcFind3 == 0 && (delivery == null || delivery3.Cost < delivery.Cost))
+                            { delivery = delivery3; }
+
+                            // 3 1 2
+                            orderGeoIndex[0] = i3;
+                            orderGeoIndex[1] = i1;
+                            orderGeoIndex[2] = i2;
+                            orders[0] = contextOrders[i3];
+                            orders[1] = contextOrders[i1];
+                            orders[2] = contextOrders[i2];
+                            rcFind3 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery3);
+                            if (rcFind3 == 0 && (delivery == null || delivery3.Cost < delivery.Cost))
+                            { delivery = delivery3; }
+
+                            // 3 2 1
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = i1;
+                            orders[0] = contextOrders[i3];
+                            orders[1] = contextOrders[i2];
+                            orders[2] = contextOrders[i1];
+                            rcFind3 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 3, isLoop, geoData, out delivery3);
+                            if (rcFind3 == 0 && (delivery == null || delivery3.Cost < delivery.Cost))
+                            { delivery = delivery3; }
+
+                            if (delivery != null)
+                            { deliveries[count++] = delivery; }
+                            break;
+                        case 3:
+                            i1 = orderIndex[0];
+                            i2 = orderIndex[1];
+                            i3 = orderIndex[2];
+                            i4 = orderIndex[3];
+                            delivery = null;
+
+                            subsetPoints[0] = points[i1];
+                            subsetPoints[1] = points[i2];
+                            subsetPoints[2] = points[i3];
+                            subsetPoints[3] = points[i4];
+                            subsetPoints[4] = shopPoint;
+
+                            int rc1 = tspSolver.Solve(subsetPoints, 5, ref subsetPath);
+                            if (rc1 != 0)
+                                break;
+
+                            if (subsetPath[0] == 4)
+                            {
+                                i1 = subsetPath[1];
+                                i2 = subsetPath[2];
+                                i3 = subsetPath[3];
+                                i4 = subsetPath[4];
+                            }
+                            else if (subsetPath[1] == 4)
+                            {
+                                i1 = subsetPath[2];
+                                i2 = subsetPath[3];
+                                i3 = subsetPath[4];
+                                i4 = subsetPath[0];
+                            }
+                            else if (subsetPath[2] == 4)
+                            {
+                                i1 = subsetPath[3];
+                                i2 = subsetPath[4];
+                                i3 = subsetPath[0];
+                                i4 = subsetPath[1];
+                            }
+                            else if (subsetPath[3] == 4)
+                            {
+                                i1 = subsetPath[4];
+                                i2 = subsetPath[0];
+                                i3 = subsetPath[1];
+                                i4 = subsetPath[2];
+                            }
+                            else if (subsetPath[4] == 4)
+                            {
+                                i1 = subsetPath[0];
+                                i2 = subsetPath[1];
+                                i3 = subsetPath[2];
+                                i4 = subsetPath[3];
+                            }
+                            else
+                            { break; }
+
+                            i1 = orderIndex[i1];
+                            i2 = orderIndex[i2];
+                            i3 = orderIndex[i3];
+                            i4 = orderIndex[i4];
+
+                            // 1 2 3 4
+                            orderGeoIndex[0] = i1;
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = i4;
+                            orderGeoIndex[4] = shopIndex;
+                            orders[0] = contextOrders[i1];
+                            orders[1] = contextOrders[i2];
+                            orders[2] = contextOrders[i3];
+                            orders[3] = contextOrders[i4];
+                            int rcFind4 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 4, isLoop, geoData, out delivery4);
+                            if (rcFind4 == 0)
+                            { delivery = delivery4; }
+
+                            // 4 3 2 1
+                            orderGeoIndex[0] = i4;
+                            orderGeoIndex[1] = i3;
+                            orderGeoIndex[2] = i2;
+                            orderGeoIndex[3] = i1;
+                            orders[0] = contextOrders[i4];
+                            orders[1] = contextOrders[i3];
+                            orders[2] = contextOrders[i2];
+                            orders[3] = contextOrders[i1];
+                            rcFind4 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 4, isLoop, geoData, out delivery4);
+                            if (rcFind4 == 0 && (delivery == null || delivery4.Cost < delivery.Cost))
+                            { delivery = delivery4; }
+
+                            if (delivery != null)
+                            { deliveries[count++] = delivery; }
+
+                            break;
+                        case 4:
+                            i1 = orderIndex[0];
+                            i2 = orderIndex[1];
+                            i3 = orderIndex[2];
+                            i4 = orderIndex[3];
+                            i5 = orderIndex[4];
+                            delivery = null;
+
+                            subsetPoints[0] = points[i1];
+                            subsetPoints[1] = points[i2];
+                            subsetPoints[2] = points[i3];
+                            subsetPoints[3] = points[i4];
+                            subsetPoints[4] = points[i5];
+                            subsetPoints[5] = shopPoint;
+
+                            rc1 = tspSolver.Solve(subsetPoints, 6, ref subsetPath);
+                            if (rc1 != 0)
+                                break;
+
+                            if (subsetPath[0] == 5)
+                            {
+                                i1 = subsetPath[1];
+                                i2 = subsetPath[2];
+                                i3 = subsetPath[3];
+                                i4 = subsetPath[4];
+                                i5 = subsetPath[5];
+                            }
+                            else if (subsetPath[1] == 5)
+                            {
+                                i1 = subsetPath[2];
+                                i2 = subsetPath[3];
+                                i3 = subsetPath[4];
+                                i4 = subsetPath[5];
+                                i5 = subsetPath[0];
+                            }
+                            else if (subsetPath[2] == 5)
+                            {
+                                i1 = subsetPath[3];
+                                i2 = subsetPath[4];
+                                i3 = subsetPath[5];
+                                i4 = subsetPath[0];
+                                i5 = subsetPath[1];
+                            }
+                            else if (subsetPath[3] == 5)
+                            {
+                                i1 = subsetPath[4];
+                                i2 = subsetPath[5];
+                                i3 = subsetPath[0];
+                                i4 = subsetPath[1];
+                                i5 = subsetPath[2];
+                            }
+                            else if (subsetPath[4] == 5)
+                            {
+                                i1 = subsetPath[5];
+                                i2 = subsetPath[0];
+                                i3 = subsetPath[1];
+                                i4 = subsetPath[2];
+                                i5 = subsetPath[3];
+                            }
+                            else if (subsetPath[5] == 5)
+                            {
+                                i1 = subsetPath[0];
+                                i2 = subsetPath[1];
+                                i3 = subsetPath[2];
+                                i4 = subsetPath[3];
+                                i5 = subsetPath[4];
+                            }
+                            else
+                            { break; }
+
+                            i1 = orderIndex[i1];
+                            i2 = orderIndex[i2];
+                            i3 = orderIndex[i3];
+                            i4 = orderIndex[i4];
+                            i5 = orderIndex[i5];
+
+                            // 1 2 3 4 5
+                            orderGeoIndex[0] = i1;
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = i4;
+                            orderGeoIndex[4] = i5;
+                            orderGeoIndex[5] = shopIndex;
+                            orders[0] = contextOrders[i1];
+                            orders[1] = contextOrders[i2];
+                            orders[2] = contextOrders[i3];
+                            orders[3] = contextOrders[i4];
+                            orders[4] = contextOrders[i5];
+                            int rcFind5 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 5, isLoop, geoData, out delivery5);
+                            if (rcFind5 == 0)
+                            { delivery = delivery5; }
+
+                            // 5 4 3 2 1
+                            orderGeoIndex[0] = i5;
+                            orderGeoIndex[1] = i4;
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = i2;
+                            orderGeoIndex[4] = i1;
+                            orders[0] = contextOrders[i5];
+                            orders[1] = contextOrders[i4];
+                            orders[2] = contextOrders[i3];
+                            orders[3] = contextOrders[i2];
+                            orders[4] = contextOrders[i1];
+                            rcFind5 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 5, isLoop, geoData, out delivery5);
+                            if (rcFind5 == 0 && (delivery == null || delivery5.Cost < delivery.Cost))
+                            { delivery = delivery5; }
+
+                            if (delivery != null)
+                            { deliveries[count++] = delivery; }
+
+                            break;
+                        case 5:
+                            i1 = orderIndex[0];
+                            i2 = orderIndex[1];
+                            i3 = orderIndex[2];
+                            i4 = orderIndex[3];
+                            i5 = orderIndex[4];
+                            i6 = orderIndex[5];
+                            delivery = null;
+
+                            subsetPoints[0] = points[i1];
+                            subsetPoints[1] = points[i2];
+                            subsetPoints[2] = points[i3];
+                            subsetPoints[3] = points[i4];
+                            subsetPoints[4] = points[i5];
+                            subsetPoints[5] = points[i6];
+                            subsetPoints[6] = shopPoint;
+
+                            rc1 = tspSolver.Solve(subsetPoints, 7, ref subsetPath);
+                            if (rc1 != 0)
+                                break;
+
+                            if (subsetPath[0] == 6)
+                            {
+                                i1 = subsetPath[1];
+                                i2 = subsetPath[2];
+                                i3 = subsetPath[3];
+                                i4 = subsetPath[4];
+                                i5 = subsetPath[5];
+                                i6 = subsetPath[6];
+                            }
+                            else if (subsetPath[1] == 6)
+                            {
+                                i1 = subsetPath[2];
+                                i2 = subsetPath[3];
+                                i3 = subsetPath[4];
+                                i4 = subsetPath[5];
+                                i5 = subsetPath[6];
+                                i6 = subsetPath[0];
+                            }
+                            else if (subsetPath[2] == 6)
+                            {
+                                i1 = subsetPath[3];
+                                i2 = subsetPath[4];
+                                i3 = subsetPath[5];
+                                i4 = subsetPath[6];
+                                i5 = subsetPath[0];
+                                i6 = subsetPath[1];
+                            }
+                            else if (subsetPath[3] == 6)
+                            {
+                                i1 = subsetPath[4];
+                                i2 = subsetPath[5];
+                                i3 = subsetPath[6];
+                                i4 = subsetPath[0];
+                                i5 = subsetPath[1];
+                                i6 = subsetPath[2];
+                            }
+                            else if (subsetPath[4] == 6)
+                            {
+                                i1 = subsetPath[5];
+                                i2 = subsetPath[6];
+                                i3 = subsetPath[0];
+                                i4 = subsetPath[1];
+                                i5 = subsetPath[2];
+                                i6 = subsetPath[3];
+                            }
+                            else if (subsetPath[5] == 6)
+                            {
+                                i1 = subsetPath[6];
+                                i2 = subsetPath[0];
+                                i3 = subsetPath[1];
+                                i4 = subsetPath[2];
+                                i5 = subsetPath[3];
+                                i6 = subsetPath[4];
+                            }
+                            else if (subsetPath[6] == 6)
+                            {
+                                i1 = subsetPath[0];
+                                i2 = subsetPath[1];
+                                i3 = subsetPath[2];
+                                i4 = subsetPath[3];
+                                i5 = subsetPath[4];
+                                i6 = subsetPath[5];
+                            }
+                            else
+                            { break; }
+
+                            i1 = orderIndex[i1];
+                            i2 = orderIndex[i2];
+                            i3 = orderIndex[i3];
+                            i4 = orderIndex[i4];
+                            i5 = orderIndex[i5];
+                            i6 = orderIndex[i6];
+
+                            // 1 2 3 4 5 6
+                            orderGeoIndex[0] = i1;
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = i4;
+                            orderGeoIndex[4] = i5;
+                            orderGeoIndex[5] = i6;
+                            orderGeoIndex[6] = shopIndex;
+                            orders[0] = contextOrders[i1];
+                            orders[1] = contextOrders[i2];
+                            orders[2] = contextOrders[i3];
+                            orders[3] = contextOrders[i4];
+                            orders[4] = contextOrders[i5];
+                            orders[5] = contextOrders[i6];
+                            int rcFind6 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 6, isLoop, geoData, out delivery6);
+                            if (rcFind6 == 0)
+                            { delivery = delivery6; }
+
+                            // 6 5 4 3 2 1
+                            orderGeoIndex[0] = i6;
+                            orderGeoIndex[1] = i5;
+                            orderGeoIndex[2] = i4;
+                            orderGeoIndex[3] = i3;
+                            orderGeoIndex[4] = i2;
+                            orderGeoIndex[5] = i1;
+                            orders[0] = contextOrders[i6];
+                            orders[1] = contextOrders[i5];
+                            orders[2] = contextOrders[i4];
+                            orders[3] = contextOrders[i3];
+                            orders[4] = contextOrders[i2];
+                            orders[5] = contextOrders[i1];
+                            rcFind6 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 6, isLoop, geoData, out delivery6);
+                            if (rcFind6 == 0 && (delivery == null || delivery6.Cost < delivery.Cost))
+                            { delivery = delivery6; }
+
+                            if (delivery != null)
+                            { deliveries[count++] = delivery; }
+
+                            break;
+                        case 6:
+                            i1 = orderIndex[0];
+                            i2 = orderIndex[1];
+                            i3 = orderIndex[2];
+                            i4 = orderIndex[3];
+                            i5 = orderIndex[4];
+                            i6 = orderIndex[5];
+                            i7 = orderIndex[6];
+                            delivery = null;
+
+                            subsetPoints[0] = points[i1];
+                            subsetPoints[1] = points[i2];
+                            subsetPoints[2] = points[i3];
+                            subsetPoints[3] = points[i4];
+                            subsetPoints[4] = points[i5];
+                            subsetPoints[5] = points[i6];
+                            subsetPoints[6] = points[i7];
+                            subsetPoints[7] = shopPoint;
+
+                            rc1 = tspSolver.Solve(subsetPoints, 8, ref subsetPath);
+                            if (rc1 != 0)
+                                break;
+
+                            if (subsetPath[0] == 7)
+                            {
+                                i1 = subsetPath[1];
+                                i2 = subsetPath[2];
+                                i3 = subsetPath[3];
+                                i4 = subsetPath[4];
+                                i5 = subsetPath[5];
+                                i6 = subsetPath[6];
+                                i7 = subsetPath[7];
+                            }
+                            else if (subsetPath[1] == 7)
+                            {
+                                i1 = subsetPath[2];
+                                i2 = subsetPath[3];
+                                i3 = subsetPath[4];
+                                i4 = subsetPath[5];
+                                i5 = subsetPath[6];
+                                i6 = subsetPath[7];
+                                i7 = subsetPath[0];
+                            }
+                            else if (subsetPath[2] == 7)
+                            {
+                                i1 = subsetPath[3];
+                                i2 = subsetPath[4];
+                                i3 = subsetPath[5];
+                                i4 = subsetPath[6];
+                                i5 = subsetPath[7];
+                                i6 = subsetPath[0];
+                                i7 = subsetPath[1];
+                            }
+                            else if (subsetPath[3] == 7)
+                            {
+                                i1 = subsetPath[4];
+                                i2 = subsetPath[5];
+                                i3 = subsetPath[6];
+                                i4 = subsetPath[7];
+                                i5 = subsetPath[0];
+                                i6 = subsetPath[1];
+                                i7 = subsetPath[2];
+                            }
+                            else if (subsetPath[4] == 7)
+                            {
+                                i1 = subsetPath[5];
+                                i2 = subsetPath[6];
+                                i3 = subsetPath[7];
+                                i4 = subsetPath[0];
+                                i5 = subsetPath[1];
+                                i6 = subsetPath[2];
+                                i7 = subsetPath[3];
+                            }
+                            else if (subsetPath[5] == 7)
+                            {
+                                i1 = subsetPath[6];
+                                i2 = subsetPath[7];
+                                i3 = subsetPath[0];
+                                i4 = subsetPath[1];
+                                i5 = subsetPath[2];
+                                i6 = subsetPath[3];
+                                i7 = subsetPath[4];
+                            }
+                            else if (subsetPath[6] == 7)
+                            {
+                                i1 = subsetPath[7];
+                                i2 = subsetPath[0];
+                                i3 = subsetPath[1];
+                                i4 = subsetPath[2];
+                                i5 = subsetPath[3];
+                                i6 = subsetPath[4];
+                                i7 = subsetPath[5];
+                            }
+                            else if (subsetPath[7] == 7)
+                            {
+                                i1 = subsetPath[0];
+                                i2 = subsetPath[1];
+                                i3 = subsetPath[2];
+                                i4 = subsetPath[3];
+                                i5 = subsetPath[4];
+                                i6 = subsetPath[5];
+                                i7 = subsetPath[6];
+                            }
+                            else
+                            { break; }
+
+                            i1 = orderIndex[i1];
+                            i2 = orderIndex[i2];
+                            i3 = orderIndex[i3];
+                            i4 = orderIndex[i4];
+                            i5 = orderIndex[i5];
+                            i6 = orderIndex[i6];
+                            i7 = orderIndex[i7];
+
+                            // 1 2 3 4 5 6 7
+                            orderGeoIndex[0] = i1;
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = i4;
+                            orderGeoIndex[4] = i5;
+                            orderGeoIndex[5] = i6;
+                            orderGeoIndex[6] = i7;
+                            orderGeoIndex[7] = shopIndex;
+                            orders[0] = contextOrders[i1];
+                            orders[1] = contextOrders[i2];
+                            orders[2] = contextOrders[i3];
+                            orders[3] = contextOrders[i4];
+                            orders[4] = contextOrders[i5];
+                            orders[5] = contextOrders[i6];
+                            orders[6] = contextOrders[i7];
+                            int rcFind7 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 7, isLoop, geoData, out delivery7);
+                            if (rcFind7 == 0)
+                            { delivery = delivery7; }
+
+                            // 7 6 5 4 3 2 1
+                            orderGeoIndex[0] = i7;
+                            orderGeoIndex[1] = i6;
+                            orderGeoIndex[2] = i5;
+                            orderGeoIndex[3] = i4;
+                            orderGeoIndex[4] = i3;
+                            orderGeoIndex[5] = i2;
+                            orderGeoIndex[6] = i1;
+                            orders[0] = contextOrders[i7];
+                            orders[1] = contextOrders[i6];
+                            orders[2] = contextOrders[i5];
+                            orders[3] = contextOrders[i4];
+                            orders[4] = contextOrders[i3];
+                            orders[5] = contextOrders[i2];
+                            orders[6] = contextOrders[i1];
+                            rcFind7 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 7, isLoop, geoData, out delivery7);
+                            if (rcFind7 == 0 && (delivery == null || delivery7.Cost < delivery.Cost))
+                            { delivery = delivery7; }
+
+                            if (delivery != null)
+                            { deliveries[count++] = delivery; }
+
+                            break;
+                        case 7:
+                            i1 = orderIndex[0];
+                            i2 = orderIndex[1];
+                            i3 = orderIndex[2];
+                            i4 = orderIndex[3];
+                            i5 = orderIndex[4];
+                            i6 = orderIndex[5];
+                            i7 = orderIndex[6];
+                            i8 = orderIndex[7];
+                            delivery = null;
+
+                            subsetPoints[0] = points[i1];
+                            subsetPoints[1] = points[i2];
+                            subsetPoints[2] = points[i3];
+                            subsetPoints[3] = points[i4];
+                            subsetPoints[4] = points[i5];
+                            subsetPoints[5] = points[i6];
+                            subsetPoints[6] = points[i7];
+                            subsetPoints[7] = points[i8];
+                            subsetPoints[8] = shopPoint;
+
+                            rc1 = tspSolver.Solve(subsetPoints, 9, ref subsetPath);
+                            if (rc1 != 0)
+                                break;
+
+                            if (subsetPath[0] == 8)
+                            {
+                                i1 = subsetPath[1];
+                                i2 = subsetPath[2];
+                                i3 = subsetPath[3];
+                                i4 = subsetPath[4];
+                                i5 = subsetPath[5];
+                                i6 = subsetPath[6];
+                                i7 = subsetPath[7];
+                                i8 = subsetPath[8];
+                            }
+                            else if (subsetPath[1] == 8)
+                            {
+                                i1 = subsetPath[2];
+                                i2 = subsetPath[3];
+                                i3 = subsetPath[4];
+                                i4 = subsetPath[5];
+                                i5 = subsetPath[6];
+                                i6 = subsetPath[7];
+                                i7 = subsetPath[8];
+                                i8 = subsetPath[0];
+                            }
+                            else if (subsetPath[2] == 8)
+                            {
+                                i1 = subsetPath[3];
+                                i2 = subsetPath[4];
+                                i3 = subsetPath[5];
+                                i4 = subsetPath[6];
+                                i5 = subsetPath[7];
+                                i6 = subsetPath[8];
+                                i7 = subsetPath[0];
+                                i8 = subsetPath[1];
+                            }
+                            else if (subsetPath[3] == 8)
+                            {
+                                i1 = subsetPath[4];
+                                i2 = subsetPath[5];
+                                i3 = subsetPath[6];
+                                i4 = subsetPath[7];
+                                i5 = subsetPath[8];
+                                i6 = subsetPath[0];
+                                i7 = subsetPath[1];
+                                i8 = subsetPath[2];
+                            }
+                            else if (subsetPath[4] == 8)
+                            {
+                                i1 = subsetPath[5];
+                                i2 = subsetPath[6];
+                                i3 = subsetPath[7];
+                                i4 = subsetPath[8];
+                                i5 = subsetPath[0];
+                                i6 = subsetPath[1];
+                                i7 = subsetPath[2];
+                                i8 = subsetPath[3];
+                            }
+                            else if (subsetPath[5] == 8)
+                            {
+                                i1 = subsetPath[6];
+                                i2 = subsetPath[7];
+                                i3 = subsetPath[8];
+                                i4 = subsetPath[0];
+                                i5 = subsetPath[1];
+                                i6 = subsetPath[2];
+                                i7 = subsetPath[3];
+                                i8 = subsetPath[4];
+                            }
+                            else if (subsetPath[6] == 8)
+                            {
+                                i1 = subsetPath[7];
+                                i2 = subsetPath[8];
+                                i3 = subsetPath[0];
+                                i4 = subsetPath[1];
+                                i5 = subsetPath[2];
+                                i6 = subsetPath[3];
+                                i7 = subsetPath[4];
+                                i8 = subsetPath[5];
+                            }
+                            else if (subsetPath[7] == 8)
+                            {
+                                i1 = subsetPath[8];
+                                i2 = subsetPath[0];
+                                i3 = subsetPath[1];
+                                i4 = subsetPath[2];
+                                i5 = subsetPath[3];
+                                i6 = subsetPath[4];
+                                i7 = subsetPath[5];
+                                i8 = subsetPath[6];
+                            }
+                            else if (subsetPath[8] == 8)
+                            {
+                                i1 = subsetPath[0];
+                                i2 = subsetPath[1];
+                                i3 = subsetPath[2];
+                                i4 = subsetPath[3];
+                                i5 = subsetPath[4];
+                                i6 = subsetPath[5];
+                                i7 = subsetPath[6];
+                                i8 = subsetPath[7];
+                            }
+                            else
+                            { break; }
+
+                            i1 = orderIndex[i1];
+                            i2 = orderIndex[i2];
+                            i3 = orderIndex[i3];
+                            i4 = orderIndex[i4];
+                            i5 = orderIndex[i5];
+                            i6 = orderIndex[i6];
+                            i7 = orderIndex[i7];
+                            i8 = orderIndex[i8];
+
+                            // 1 2 3 4 5 6 7 8
+                            orderGeoIndex[0] = i1;
+                            orderGeoIndex[1] = i2;
+                            orderGeoIndex[2] = i3;
+                            orderGeoIndex[3] = i4;
+                            orderGeoIndex[4] = i5;
+                            orderGeoIndex[5] = i6;
+                            orderGeoIndex[6] = i7;
+                            orderGeoIndex[7] = i8;
+                            orderGeoIndex[8] = shopIndex;
+                            orders[0] = contextOrders[i1];
+                            orders[1] = contextOrders[i2];
+                            orders[2] = contextOrders[i3];
+                            orders[3] = contextOrders[i4];
+                            orders[4] = contextOrders[i5];
+                            orders[5] = contextOrders[i6];
+                            orders[6] = contextOrders[i7];
+                            orders[7] = contextOrders[i8];
+                            int rcFind8 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 8, isLoop, geoData, out delivery8);
+                            if (rcFind8 == 0)
+                            { delivery = delivery8; }
+
+                            // 8 7 6 5 4 3 2 1
+                            orderGeoIndex[0] = i8;
+                            orderGeoIndex[1] = i7;
+                            orderGeoIndex[2] = i6;
+                            orderGeoIndex[3] = i5;
+                            orderGeoIndex[4] = i4;
+                            orderGeoIndex[5] = i3;
+                            orderGeoIndex[6] = i2;
+                            orderGeoIndex[7] = i1;
+                            orders[0] = contextOrders[i8];
+                            orders[1] = contextOrders[i7];
+                            orders[2] = contextOrders[i6];
+                            orders[3] = contextOrders[i5];
+                            orders[4] = contextOrders[i4];
+                            orders[5] = contextOrders[i3];
+                            orders[6] = contextOrders[i2];
+                            orders[7] = contextOrders[i1];
+                            rcFind8 = contextCourier.DeliveryCheck(calcTime, contextShop, orders, orderGeoIndex, 8, isLoop, geoData, out delivery8);
+                            if (rcFind8 == 0 && (delivery == null || delivery8.Cost < delivery.Cost))
+                            { delivery = delivery8; }
+
+                            if (delivery != null)
+                            { deliveries[count++] = delivery; }
+
+                            break;
+                    }
+
+                    // 5.2 Продвигаемся к следующему набору индексов
+                    rc = 52;
+                    int index = orderIndex[pointer];
+
+                    if (index < cnt)
+                    {
+                        if (pointer >= lev)
+                        { orderIndex[pointer] = index + 1; }
+                        else
+                        { orderIndex[++pointer] = index + 1; }
+                    }
+                    else
+                    {
+                        orderIndex[pointer] = 0;
+                        bool pointerChanged = false;
+
+                        for (int j = pointer - 1; j >= 0; j--)
+                        {
+                            if (orderIndex[j] < cnt)
+                            {
+                                orderIndex[j]++;
+                                pointer = j;
+                                pointerChanged = true;
+                                break;
+                            }
+                            else
+                            { orderIndex[j] = 0; }
+                        }
+
+                        if (!pointerChanged)
+                            break;
+                    }
+                }
+
+                if (count < deliveries.Length)
+                { Array.Resize(ref deliveries, count); }
+
+                context.Deliveries = deliveries;
+
+                // 6. Выход - Ok
+                rc = 0;
+                return;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(RouteBuilder)}.{nameof(RouteBuilder.OuelletBuild)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                return;
+            }
+            finally
+            {
+                if (context != null)
+                {
+                    context.ExitCode = rc;
+                    ManualResetEvent syncEvent = context.SyncEvent;
+                    if (syncEvent != null)
+                    {
+                        syncEvent.Set();
+                    }
+                    Logger.WriteToLog(127, rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_127, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.SubsetCount, ArrayToString(context.InitOrderIndexes), sw.ElapsedMilliseconds, count));
+                }
+            }
         }
     }
 }
