@@ -2,6 +2,7 @@
 namespace DeliveryBuilder.Recalc
 {
     using DeliveryBuilder.Geo;
+    using DeliveryBuilder.Log;
     using System;
     using System.Collections.Generic;
 
@@ -42,7 +43,6 @@ namespace DeliveryBuilder.Recalc
         {
             // 1. Инициализация
             int rc = 1;
-            tourIndices = null;
 
             try
             {
@@ -115,7 +115,7 @@ namespace DeliveryBuilder.Recalc
                 {
                     // 7.1 Выбираем точки не входящие в обход
                     rc = 71;
-                    Array.Clear(isTourPoint, 0, isTourPoint.Length);
+                    //Array.Clear(isTourPoint, 0, isTourPoint.Length); // Можно удалить !
                     levelPointsCount = 0;
                     tourCount = tour.Count;
 
@@ -353,10 +353,11 @@ namespace DeliveryBuilder.Recalc
                                 {
                                     // Добавление точек к текущему ребру обхода
                                     int length = endIndex - startIndex + 1;
-                                    PointEx[] addPts = new PointEx[length];
-                                    Array.Copy(pts, startIndex, addPts, 0, length);
-                                    InsertTourNodesEx insertNodes1 = new InsertTourNodesEx(currentEdgeIndex + offset, addPts, 0);
-                                    AddNodes(tour, insertNodes1, level);
+                                    //PointEx[] addPts = new PointEx[length];
+                                    //Array.Copy(pts, startIndex, addPts, 0, length);
+                                    //InsertTourNodesEx insertNodes1 = new InsertTourNodesEx(currentEdgeIndex + offset, addPts, 0);
+                                    //AddNodes(tour, insertNodes1, level);
+                                    AddNodes(tour, pts, startIndex, length, currentEdgeIndex + offset, level);
 
                                     // Переход к следующему ребру обхода
                                     currentEdgeIndex = edgeIndex;
@@ -368,10 +369,11 @@ namespace DeliveryBuilder.Recalc
 
                             // Обработка последнего ребра
                             int length2 = endIndex - startIndex + 1;
-                            PointEx[] addPts2 = new PointEx[length2];
-                            Array.Copy(pts, startIndex, addPts2, 0, length2);
-                            InsertTourNodesEx insertNodes2 = new InsertTourNodesEx(currentEdgeIndex + offset, addPts2, 0);
-                            AddNodes(tour, insertNodes2, level);
+                            //PointEx[] addPts2 = new PointEx[length2];
+                            //Array.Copy(pts, startIndex, addPts2, 0, length2);
+                            //InsertTourNodesEx insertNodes2 = new InsertTourNodesEx(currentEdgeIndex + offset, addPts2, 0);
+                            //AddNodes(tour, insertNodes2, level);
+                            AddNodes(tour, pts, startIndex, length2, currentEdgeIndex + offset, level);
                         }
 
                         if (count == 0)
@@ -424,8 +426,9 @@ namespace DeliveryBuilder.Recalc
                 rc = 0;
                 return rc;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(TspSolver)}.{nameof(this.Solve)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
                 return rc;
             }
         }
@@ -719,6 +722,52 @@ namespace DeliveryBuilder.Recalc
                 tour.InsertRange(afterIndex + 1, addNodes);
 
                 // 5. Выхд - Ok
+                return true;
+            }
+            catch
+            { return false; }
+        }
+
+        /// <summary>
+        /// Вставка новых вершин в обход
+        /// </summary>
+        /// <param name="tour">Обход</param>
+        /// <param name="points">Массив с добавляемыми точками</param>
+        /// <param name="startIndex">Индекс первой добавляемой точки</param>
+        /// <param name="pointCount">Количество добавляемых точек</param>
+        /// <param name="afterIndex">Индекс вершины обхода, после которой вставляются точки</param>
+        /// <param name="level">Уровень добавляемых вершин</param>
+        /// <returns>true - вершины вставлены; false - вершины не вставлены</returns>
+        private static bool AddNodes(List<TourNodeEx> tour, PointEx[] points, int startIndex, int pointCount, int afterIndex, int level)
+        {
+            // 1. Инициализация
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                if (tour == null || tour.Count <= 0)
+                    return false;
+                if (points == null || points.Length <= 0)
+                    return false;
+                if (startIndex < 0)
+                    return false;
+                if (pointCount <= 0 || startIndex + pointCount > points.Length)
+                    return false;
+                if (afterIndex < 0 || afterIndex >= tour.Count)
+                    return false;
+
+                // 3. Создаём добавляемые элементы
+                TourNodeEx[] addNodes = new TourNodeEx[pointCount];
+
+                for (int i = startIndex; i < startIndex + pointCount; i++)
+                {
+                    addNodes[i] = new TourNodeEx(points[i], level);
+                }
+
+                // 4. Вставляем элементы
+                tour.InsertRange(afterIndex + 1, addNodes);
+
+                // 5. Выход - Ok
                 return true;
             }
             catch

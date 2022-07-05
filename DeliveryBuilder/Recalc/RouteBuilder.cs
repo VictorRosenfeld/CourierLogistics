@@ -6090,9 +6090,9 @@ namespace DeliveryBuilder.Recalc
                 // 4. Цикл выбора допустимых маршрутов
                 rc = 4;
                 CourierDeliveryInfo[] deliveries = new CourierDeliveryInfo[subsetCount / step + 1];
-                int[] orderIndex = new int[7];
-                Order[] orders = new Order[7];
-                int[] orderGeoIndex = new int[8];
+                int[] orderIndex = new int[8];
+                Order[] orders = new Order[8];
+                int[] orderGeoIndex = new int[9];
                 bool isLoop = !contextCourier.IsTaxi;
                 int shopIndex = orderCount;
                 CourierDeliveryInfo delivery;
@@ -7699,7 +7699,6 @@ namespace DeliveryBuilder.Recalc
                 int[] orderGeoIndex = new int[level + 1];
                 GeoPoint[] subsetPoints = new GeoPoint[level + 1];
                 int[] subsetPath = new int[level + 1];
-                subsetPoints[0] = points[orderCount];
                 bool isLoop = !contextCourier.IsTaxi;
                 int shopIndex = orderCount;
                 CourierDeliveryInfo delivery;
