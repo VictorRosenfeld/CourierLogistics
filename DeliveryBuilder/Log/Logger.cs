@@ -20,6 +20,11 @@ namespace DeliveryBuilder.Log
         private const string MESSAGE_NUMBER_PROPERTY = "msgNo";
 
         /// <summary>
+        /// Объект синхронизации
+        /// </summary>
+        private static object syncRoot = new object();
+
+        /// <summary>
         /// Флаг: true - логгер создан; false - логгер не создан
         /// </summary>
         public static bool IsCreated { get; private set; }
@@ -180,34 +185,37 @@ namespace DeliveryBuilder.Log
         /// <param name="message"></param>
         public static void WriteToLog(int msgNo, MessageSeverity severity, string message)
         {
-            try
+            lock (syncRoot)
             {
-                // 2. Проверяем исходные данные
-                if (!IsCreated)
-                    return;
-                if (string.IsNullOrWhiteSpace(message))
-                    return;
-
-                // 3. Печатаем сообщение
-                GlobalContext.Properties[MESSAGE_NUMBER_PROPERTY] = msgNo;
-                switch (severity)
+                try
                 {
-                    case MessageSeverity.Info:
-                        log.Info(message);
-                        break;
-                    case MessageSeverity.Warn:
-                        log.Warn(message);
-                        break;
-                    case MessageSeverity.Error:
-                        log.Error(message);
-                        break;
-                    default:
-                        log.Info(message);
-                        break;
+                    // 2. Проверяем исходные данные
+                    if (!IsCreated)
+                        return;
+                    if (string.IsNullOrWhiteSpace(message))
+                        return;
+
+                    // 3. Печатаем сообщение
+                    GlobalContext.Properties[MESSAGE_NUMBER_PROPERTY] = msgNo;
+                    switch (severity)
+                    {
+                        case MessageSeverity.Info:
+                            log.Info(message);
+                            break;
+                        case MessageSeverity.Warn:
+                            log.Warn(message);
+                            break;
+                        case MessageSeverity.Error:
+                            log.Error(message);
+                            break;
+                        default:
+                            log.Info(message);
+                            break;
+                    }
                 }
+                catch
+                { }
             }
-            catch
-            { }
         }
 
         /// <summary>

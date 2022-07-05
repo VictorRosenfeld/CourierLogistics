@@ -159,7 +159,7 @@ namespace DeliveryBuilder.Couriers
                 if (param == null)
                     return int.MinValue;
 
-                // 3. Преобразуем значение параметра из string в double
+                // 3. Преобразуем значение параметра из string в int
                 return int.Parse(param.Value, System.Globalization.CultureInfo.InvariantCulture);
             }
             catch
