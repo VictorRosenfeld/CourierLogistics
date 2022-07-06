@@ -1016,7 +1016,7 @@ namespace DeliveryBuilder.Recalc
         /// </summary>
         /// <param name="callback">Метод построения отгрузок</param>
         /// <param name="status">Контекст потока</param>
-        private static void CalcThread_05_08_2022(WaitCallback callback, object status)
+        private static void CalcThread_05_07_2022(WaitCallback callback, object status)
         {
             // 1. Инициализация
             int rc = 1;
@@ -1308,7 +1308,7 @@ namespace DeliveryBuilder.Recalc
                     { RouteBuilder.Build6(contextEx); }
                     else if (level == 7)
                     { RouteBuilder.Build7(contextEx); }
-                    else if (level == 8)
+                    else /*if (level == 8)*/
                     { RouteBuilder.Build8(contextEx); }
                     //callback(contextEx);
                 }
@@ -1324,7 +1324,7 @@ namespace DeliveryBuilder.Recalc
                         int k = i;
                         ThreadContextEx contextEx = new ThreadContextEx(context, syncEvent, subsets, k, threadCount);
                         allCountextEx[k] = contextEx;
-                        ThreadPool.QueueUserWorkItem(callback, contextEx);
+                        //ThreadPool.QueueUserWorkItem(callback, contextEx);
 
                         //Thread th;
 
@@ -1774,9 +1774,10 @@ namespace DeliveryBuilder.Recalc
 
                 for (int i = 0; i < deliveries.Length; i++)
                 {
-                    if (deliveries[i].OrderCount == fromLevel)
+                    CourierDeliveryInfo di = deliveries[i];
+                    if (di.OrderCount == fromLevel)
                     {
-                        iterDelivery[count++] = deliveries[i];
+                        iterDelivery[count++] = di;
                     }
                 }
 

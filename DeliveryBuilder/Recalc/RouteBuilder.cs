@@ -4668,7 +4668,6 @@ namespace DeliveryBuilder.Recalc
                     {
                         syncEvent.Set();
                     }
-
                     Logger.WriteToLog(105, MessageSeverity.Info, string.Format(Messages.MSG_105, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
                 }
             }
