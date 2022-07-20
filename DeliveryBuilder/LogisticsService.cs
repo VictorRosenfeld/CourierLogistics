@@ -274,6 +274,10 @@ namespace DeliveryBuilder
                     return rc;
                 }
 
+                // 7+  Создаём объект для работы с ExternalDb
+                rc = 70;
+                externalDb = new ExternalDb(config.Parameters.ExternalDb.СonnectionString);
+
                 // 8. Создаём объект для работы гео-данными
                 rc = 8;
                 geoData = new GeoData();
@@ -580,7 +584,7 @@ namespace DeliveryBuilder
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             // 1. Иициализация
-            ExternalDb db = null;
+            //ExternalDb db = null;
             bool isCatched = false;
             hearbeatTickCount--;
             geoTickCount--;
@@ -595,17 +599,20 @@ namespace DeliveryBuilder
                     return;
 
                 // 1. Открываем соединение с ExternalDb
-                db = new ExternalDb(config.Parameters.ExternalDb.СonnectionString);
-                db.Open();
-                if (!db.IsOpen())
+                //db = new ExternalDb(config.Parameters.ExternalDb.СonnectionString);
+                //db.Open();
+                //if (!db.IsOpen())
+                ExternalDb db = externalDb;
+
+                if (!db.TestConnection())
                 {
                     connectionBrokenCount++;
-                    string exceptionMessage = lsDataDb.GetLastErrorMessage();
+                    string exceptionMessage = db.GetLastErrorMessage();
                     if (string.IsNullOrEmpty(exceptionMessage))
                     { Logger.WriteToLog(35, MessageSeverity.Error, string.Format(Messages.MSG_035, connectionBrokenCount)); }
                     else
                     { Logger.WriteToLog(36, MessageSeverity.Error, string.Format(Messages.MSG_036, connectionBrokenCount, exceptionMessage)); }
-                    db.Close();
+                    //db.Close();
                     return;
                 }
 
@@ -671,18 +678,18 @@ namespace DeliveryBuilder
             }
             finally
             {
-                if (db != null)
-                {
-                    try { db.Close(); } catch { }
-                    db = null;
-                }
+                //if (db != null)
+                //{
+                //    try { db.Close(); } catch { }
+                //    db = null;
+                //}
                 SaveOrders(serviceId, orders);
                 if (isCatched)
                 {
                     try { syncMutex.ReleaseMutex(); } catch { }
                     isCatched = false;
+                    GC.Collect();
                 }
-                GC.Collect();
             }
         }
 

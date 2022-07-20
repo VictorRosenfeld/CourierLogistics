@@ -79,13 +79,9 @@ namespace DeliveryBuilder.Db
         {
             if (connection != null)
             {
-                try
-                {
-                    connection.Dispose();
-                    connection = null;
-                }
-                catch
-                { }
+                try { connection.Dispose(); }
+                catch { }
+                connection = null;
             }
         }
 
@@ -101,6 +97,39 @@ namespace DeliveryBuilder.Db
             { return LastException.Message; }
 
             return LastException.InnerException.Message;
+        }
+
+        /// <summary>
+        /// Проверка наличия соединения
+        /// </summary>
+        /// <returns></returns>
+        public bool TestConnection()
+        {
+            // 1. Инициализация
+            LastException = null;
+
+            try
+            {
+                // 2. Если сединение не открыто
+                if (!IsOpen())
+                {
+                    Open();
+                    return IsOpen();
+                }
+
+                // 3. Посылаем простую команду
+                using (SqlCommand cmd = new SqlCommand("SELECT 1", connection))
+                {
+                    var response = cmd.ExecuteScalar();
+                }
+
+                return true;
+            }
+            catch
+            {
+                Open();
+                return IsOpen();
+            }
         }
 
         /// <summary>
