@@ -166,6 +166,8 @@ namespace DeliveryBuilder.Recalc
             copy.NodeDeliveryTime = NodeDeliveryTime;
             copy.Priority = Priority;
             copy.Cause = Cause;
+            copy.EventTime = EventTime;
+            copy.IsReceipted = IsReceipted;
         }
     }
 }

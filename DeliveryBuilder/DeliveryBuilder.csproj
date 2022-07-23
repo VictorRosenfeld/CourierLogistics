@@ -90,6 +90,7 @@
     <Compile Include="LogisticsService.cs" />
     <Compile Include="Geo\Cache\GeoCache.cs" />
     <Compile Include="Log\Logger.cs" />
+    <Compile Include="Log\LoggerEx.cs" />
     <Compile Include="Log\Messages.cs" />
     <Compile Include="Orders\AllOrdersEx.cs" />
     <Compile Include="Orders\Order.cs" />
