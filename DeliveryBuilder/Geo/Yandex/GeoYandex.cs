@@ -151,7 +151,7 @@ namespace DeliveryBuilder.Geo.Yandex
         /// </summary>
         /// <param name="request">Исходные данные запроса</param>
         /// <returns>0 - результат получен; иначе - результат не получен</returns>
-        public int Request(GeoYandexRequest request)
+        public int Request_old(GeoYandexRequest request)
         {
             // 1. Инициализация
             Stopwatch sw = new Stopwatch();
@@ -262,6 +262,110 @@ namespace DeliveryBuilder.Geo.Yandex
                     (request == null || request.Destinations == null ? 0 : request.Destinations.Length), 
                     sw.ElapsedMilliseconds));
 
+            }
+        }
+
+        /// <summary>
+        /// Запрос гео-данных Yandex
+        /// </summary>
+        /// <param name="request">Исходные данные запроса</param>
+        /// <returns>0 - результат получен; иначе - результат не получен</returns>
+        public int Request(GeoYandexRequest request)
+        {
+            // 1. Инициализация
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            int rc = 1;
+            int rc1 = 1;
+            request.Result = null;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (!IsCreated)
+                    return rc;
+                if (request.Modes == null || request.Modes.Length <= 0)
+                    return rc;
+                if (request.Origins == null || request.Origins.Length <= 0)
+                    return rc;
+                if (request.Destinations == null || request.Destinations.Length <= 0)
+                    return rc;
+
+                Logger.WriteToLog(98, MessageSeverity.Info, string.Format(Messages.MSG_098, request.Modes.Length, request.Origins.Length, request.Destinations.Length));
+
+                // 4. Строим контексты запросов
+                rc = 4;
+                GeoYandexRequestData[] requestData;
+                rc1 = GetGeoContext(request, pairLimit, out requestData);
+                if (rc1 != 0)
+                    return rc = 10000 * rc + rc1;
+
+                Point[,,] geoData = requestData[0].GeoData;
+
+                // 5. Определяем число потоков
+                rc = 5;
+                int requestPerThread = 4;
+                int threadCount = (requestData.Length + requestPerThread - 1) / requestPerThread;
+                if (threadCount < 1)
+                { threadCount = 1; }
+                else if (threadCount > 8)
+                { threadCount = 8; }
+
+                // 6. Запускаем обработку и дожидаемся её завершения
+                rc = 6;
+                if (threadCount <= 1)
+                {
+                    GeoYandexThreadContext context = new GeoYandexThreadContext(url, apiKey, requestData, 0, 1, null, responseTimeout);
+                    GeoThread(context);
+                    rc1 = context.ExitCode;
+                }
+                else
+                {
+                    GeoYandexThreadContext[] contexts = new GeoYandexThreadContext[threadCount];
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        int m = i;
+                        contexts[m] = new GeoYandexThreadContext(url, apiKey, requestData, m, threadCount, null, responseTimeout);
+                        ThreadPool.QueueUserWorkItem(GeoThread, contexts[m]);
+                    }
+
+                    rc1 = 0;
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        while(!contexts[i].Completed)
+                        { Thread.Sleep(20); }
+                        if (contexts[i].ExitCode != 0)
+                            rc1 = contexts[i].ExitCode;
+                    }
+
+                    contexts = null;
+                }
+
+                // 7. Если во время обработки произошли ошибки
+                rc = 7;
+                if (rc1 != 0)
+                    return rc = 1000000 * rc + rc1;
+                request.Result = geoData;
+
+                // 8. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(GeoYandex)}.{nameof(this.Request)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                return rc;
+            }
+            finally
+            {
+                Logger.WriteToLog(99, MessageSeverity.Info, string.Format(Messages.MSG_099, rc, 
+                    (request == null || request.Modes == null ? 0 : request.Modes.Length), 
+                    (request == null || request.Origins == null ? 0 : request.Origins.Length), 
+                    (request == null || request.Destinations == null ? 0 : request.Destinations.Length), 
+                    sw.ElapsedMilliseconds));
             }
         }
 
@@ -2221,6 +2325,7 @@ namespace DeliveryBuilder.Geo.Yandex
                     context.ExitCode = rc;
                     if (context.SyncEvent != null)
                         context.SyncEvent.Set();
+                    context.Completed = true;
                 }
             }
         }

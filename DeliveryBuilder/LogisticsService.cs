@@ -591,6 +591,7 @@ namespace DeliveryBuilder
             recalcTickCount--;
             queueTickCount--;
             Logger.WriteToLog(73, MessageSeverity.Info, string.Format(Messages.MSG_073, hearbeatTickCount, geoTickCount, recalcTickCount, queueTickCount));
+            long mem0 = GC.GetTotalMemory(false);
 
             try
             {
@@ -659,7 +660,7 @@ namespace DeliveryBuilder
                     if (rc1 == 0 && dataRecords != null && dataRecords.Length > 0)
                     { UpdateData(dataRecords); }
 
-                    // 7. Пересчиываем отгрузки
+                    // 7. Пересчитываем отгрузки !!!+++
                     RecalcDeliveries(db);
                     SaveGeoCache(serviceId, geoData.Cache);
                 }
@@ -688,7 +689,12 @@ namespace DeliveryBuilder
                 {
                     try { syncMutex.ReleaseMutex(); } catch { }
                     isCatched = false;
+                    long mem1 = GC.GetTotalMemory(false);
                     GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    long mem2 = GC.GetTotalMemory(false);
+                    Logger.WriteToLog(128, MessageSeverity.Info, string.Format(Messages.MSG_128, mem0, mem1, mem2, mem2 - mem0));
                 }
             }
         }
@@ -1704,7 +1710,7 @@ namespace DeliveryBuilder
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        private int RecalcDeliveries(ExternalDb db)
+        private int RecalcDeliveries_old(ExternalDb db)
         {
             // 1. Иициализация
             int rc = 1;
@@ -1959,6 +1965,206 @@ namespace DeliveryBuilder
                     }
                 }
 
+                // Сбрасываем флаг Updated у магазинов
+                ResetShopUpdated(recalcShops, recalcOrders, shops, queue);
+
+                // Финальное сообщение
+                sw.Stop();
+                MessageSeverity severity = (rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn);
+                Logger.WriteToLog(52, severity, string.Format(Messages.MSG_052, serviceId, rc, recalcShopCount, recalcOrderCount, sw.ElapsedMilliseconds));
+            }
+        }
+
+        /// <summary>
+        /// Пересчет покрытий для магазинов
+        /// с установленным флагом Updated
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        private int RecalcDeliveries(ExternalDb db)
+        {
+            // 1. Иициализация
+            int rc = 1;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            LastException = null;
+            DateTime calcTime = DateTime.Now;
+            int recalcShopCount = 0;
+            int recalcOrderCount = 0;
+            Order[] recalcOrders = null;
+            Shop[] recalcShops = null;
+
+            try
+            {
+                // 2. Сообщение о начале пересчета
+                rc = 2;
+                Logger.WriteToLog(51, MessageSeverity.Info, string.Format(Messages.MSG_051, serviceId));
+
+                // 3. Выбираем магазины требующие пересчета
+                rc = 3;
+                recalcShops = shops.GetUpdated();
+                if (recalcShops == null || recalcShops.Length <= 0)
+                    return rc = 0;
+
+                recalcShopCount = recalcShops.Length;
+
+                // 3. Выбираем заказы требующие пересчета
+                rc = 3;
+                int[] recalcShopId = new int[recalcShopCount];
+                for (int i = 0; i < recalcShopCount; i++)
+                { recalcShopId[i] = recalcShops[i].Id; }
+
+                recalcOrders = orders.GetShopOrders(recalcShopId);
+                if (recalcOrders == null || recalcOrders.Length <= 0)
+                {
+                    queue.Update(recalcShopId, null);
+                    return rc = 0;
+                }
+
+                recalcOrderCount = recalcOrders.Length;
+
+                // 4. Строим порции расчетов (ThreadContext), выполняемые в одном потоке
+                //    (порция - это все заказы для одного способа доставки (курьера) в одном магазине)
+                rc = 4;
+                CalcThreadContext[] context = Calcs.GetCalcThreadContext(serviceId, calcTime, recalcShops, orders, couriers, geoData, limitations);
+                if (context == null || context.Length <= 0)
+                {
+                    Logger.WriteToLog(64, MessageSeverity.Warn, string.Format(Messages.MSG_064, recalcShopCount, recalcOrderCount));
+                    OrderRejectionCause[] rOrders;
+                    CreateCover.TestNotCoveredOrders(calcTime, recalcOrders, shops, couriers, geoData, out rOrders);
+                    if (rOrders != null && rOrders.Length > 0)
+                    {
+                        RejectOrders(rOrders, serviceId, config.Parameters.ExternalDb.CmdService.Cmd3MessageType, orders, db);
+                    }
+
+                    return rc = 0;
+                }
+
+
+                for (int i = 0; i < context.Length; i++)
+                { context[i].Config = config; }
+
+                // 5. Сортируем контексты по убыванию числа заказов
+                rc = 5;
+                Array.Sort(context, CompareCalcContextByOrderCount);
+
+                // 6. Запускаем threadCount- потоков
+                rc = 6;
+                int threadCount = context.Length;
+
+                for (int i = 0; i < threadCount; i++)
+                {
+                    int m = i;
+                    CalcThreadContext threadContext = context[m];
+                    ThreadPool.QueueUserWorkItem(Calcs.CalcThreadEs, threadContext);
+                }
+
+                // 7. Дожидаемся завершения обработки во всех потоках
+                rc = 7;
+
+                for (int i = 0; i < threadCount; i++)
+                {
+                    while(!context[i].Completed)
+                    { Thread.Sleep(333); }
+                }
+
+                // 8. Подсчитываем число построенных отгрузок
+                rc = 8;
+                int errorCount = 0;
+                int deliveryCount = 0;
+
+                for (int i = 0; i < threadCount; i++)
+                {
+                    CalcThreadContext threadContext = context[i];
+                    if (threadContext.ExitCode != 0)
+                    {  errorCount++; }
+                    else
+                    { deliveryCount += threadContext.DeliveryCount; }
+                }
+
+                // 9. Если не построена ни одна отгрузка
+                rc = 9;
+                OrderRejectionCause[] rejectedOrders;
+
+                if (deliveryCount <= 0)
+                {
+                    int rc2 = CreateCover.TestNotCoveredOrders(calcTime, recalcOrders, shops, couriers, geoData, out rejectedOrders);
+                    if (rejectedOrders != null && rejectedOrders.Length > 0)
+                    {
+                        RejectOrders(rejectedOrders, serviceId, config.Parameters.ExternalDb.CmdService.Cmd3MessageType, orders, db);
+                    }
+
+                    return rc = 0;
+                }
+
+                // 10. Собираем все построенные отгрузки в один массив
+                rc = 10;
+                CourierDeliveryInfo[] allDeliveries = new CourierDeliveryInfo[deliveryCount];
+                deliveryCount = 0;
+
+                for (int i = 0; i < threadCount; i++)
+                {
+                    CalcThreadContext threadContext = context[i];
+                    if (threadContext.ExitCode == 0 && threadContext.DeliveryCount > 0)
+                    {
+                        threadContext.Deliveries.CopyTo(allDeliveries, deliveryCount);
+                        deliveryCount += threadContext.DeliveryCount;
+                    }
+                }
+
+                // 11. Строим покрытия
+                rc = 11;
+                CourierDeliveryInfo[] recomendations;
+                CourierDeliveryInfo[] covers;
+
+                int rc1 = CreateCover.Create(allDeliveries, orders, couriers, geoData, out recomendations, out covers, out rejectedOrders);
+                if (rc1 != 0)
+                {
+                    Logger.WriteToLog(65, MessageSeverity.Warn, string.Format(Messages.MSG_065, rc1, recalcShopCount, recalcOrderCount));
+                    return rc = 1000000 * rc + rc1;
+                }
+
+                // 12. Отменяем заказы, которые не вошли в покрытие
+                rc = 12;
+                if (rejectedOrders != null && rejectedOrders.Length > 0)
+                {
+                    RejectOrders(rejectedOrders, serviceId, config.Parameters.ExternalDb.CmdService.Cmd3MessageType, orders, db);
+                }
+
+                // 13 Отправляем рекомендации
+                rc = 13;
+                if (recomendations != null && recomendations.Length > 0)
+                {
+                    SendDeliveries(serviceId, recomendations, 0, config.Parameters.ExternalDb.CmdService.Cmd1MessageType, couriers, db);
+                }
+
+                // 14. Добавляем отгрузки в очередь
+                rc = 14;
+                if (covers != null && covers.Length > 0)
+                {
+                    rc1 = UpdateQueue(serviceId, recalcShopId, covers, config, couriers, db, queue);
+                    if (rc1 != 0)
+                    {
+                        Logger.WriteToLog(63, MessageSeverity.Warn, string.Format(Messages.MSG_063, rc1));
+                    }
+                }
+                else
+                {
+                    queue.Update(recalcShopId, null);
+                }
+
+                // 15. Выход - Ok
+                rc = 0;
+                return rc;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(LogisticsService)}.{nameof(this.RecalcDeliveries)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+                LastException = ex;
+                return rc;
+            }
+            finally
+            {
                 // Сбрасываем флаг Updated у магазинов
                 ResetShopUpdated(recalcShops, recalcOrders, shops, queue);
 

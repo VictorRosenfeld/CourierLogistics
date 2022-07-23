@@ -49,6 +49,11 @@ namespace DeliveryBuilder.Geo.Yandex
         public int ExitCode { get; set; }
 
         /// <summary>
+        /// Флаг завершения работы потока: false - поток выполняется; true - поток завершен
+        /// </summary>
+        public bool Completed { get; set; }
+
+        /// <summary>
         /// Параметрический конструктор класса GeoThreadContext
         /// </summary>
         /// <param name="getUrl">Url запроса Yandex</param>
@@ -68,6 +73,7 @@ namespace DeliveryBuilder.Geo.Yandex
             SyncEvent = syncEvent;
             ResponseTimeout = responseTimeout;
             ExitCode = -1;
+            Completed = false;
         }
     }
 }

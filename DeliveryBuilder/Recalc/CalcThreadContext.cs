@@ -88,6 +88,11 @@ namespace DeliveryBuilder.Recalc
         /// </summary>
         public int ExitCode { get; set; }
 
+        /// <summary>
+        /// Флаг завершения работы потока: false - поток выполняется; true - поток завершен
+        /// </summary>
+        public bool Completed { get; set; }
+
         #endregion Результат работы построителя отгрузок
 
         /// <summary>
@@ -113,6 +118,7 @@ namespace DeliveryBuilder.Recalc
             Limitations = limitations;
             SyncEvent = syncEvent;
             ExitCode = -1;
+            Completed = false;
         }
     }
 }

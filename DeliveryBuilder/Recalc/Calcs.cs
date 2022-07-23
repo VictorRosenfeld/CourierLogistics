@@ -163,8 +163,9 @@ namespace DeliveryBuilder.Recalc
                                 contextOrders = FilterOrdersOnMaxWeight(courier.MaxOrderWeight, contextOrders);
                                 if (contextOrders != null && contextOrders.Length > 0)
                                 {
-                                    Point[,] geoData;
+                                    Point[,] geoData = null;
                                     int rc1 = geoMng.Select(courier.YandexType, shop, contextOrders, out geoData);
+                                    //int rc1 = 0;
                                     if (rc1 == 0)
                                     {
                                         context[contextCount++] = new CalcThreadContext(serviceId, calcTime, shop, contextOrders, courier, geoMng, limitations, null);
@@ -229,6 +230,7 @@ namespace DeliveryBuilder.Recalc
                     return;
 
                 Logger.WriteToLog(118, MessageSeverity.Info, string.Format(Messages.MSG_118, calcContext.ShopFrom.Id, calcContext.OrderCount, calcContext.ShopCourier.VehicleID, calcContext.ShopCourier.MaxOrderCount));
+            //return;
 
                 // 3. Анализируем состояние
                 rc = 3;
@@ -482,10 +484,10 @@ namespace DeliveryBuilder.Recalc
                 if (calcContext != null)
                 {
                     calcContext.ExitCode = rc;
-
                     if (calcContext.SyncEvent != null)
                         calcContext.SyncEvent.Set();
                     Logger.WriteToLog(119, MessageSeverity.Info, string.Format(Messages.MSG_119, rc, calcContext.ShopFrom.Id, calcContext.OrderCount, calcContext.ShopCourier.VehicleID, calcContext.ShopCourier.MaxOrderCount, sw.ElapsedMilliseconds));
+                    calcContext.Completed = true;
                 }
             }
         }
@@ -597,6 +599,8 @@ namespace DeliveryBuilder.Recalc
                         { context.SyncEvent.Set(); }
                         catch { }
                     }
+
+                    context.Completed = true;
                 }
             }
         }
@@ -1239,7 +1243,7 @@ namespace DeliveryBuilder.Recalc
         /// </summary>
         /// <param name="callback">Метод построения отгрузок</param>
         /// <param name="status">Контекст потока</param>
-        private static void CalcThread(WaitCallback callback, object status)
+        private static void CalcThread_old23(WaitCallback callback, object status)
         {
             // 1. Инициализация
             int rc = 1;
@@ -1459,6 +1463,210 @@ namespace DeliveryBuilder.Recalc
                     if (context.SyncEvent != null)
                         context.SyncEvent.Set();
                     Logger.WriteToLog(67, rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_067, rc, (int) (DateTime.Now -startTime).TotalMilliseconds, threadCount, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Контекст-построитель отгрузок
+        /// полным перебором в отдельном потоке
+        /// </summary>
+        /// <param name="status">Контекст потока</param>
+        private static void CalcThread(WaitCallback callback, object status)
+        {
+            // 1. Инициализация
+            int rc = 1; 
+            DateTime startTime = DateTime.Now;
+            ThreadContext context = status as ThreadContext;
+            int threadCount = 0;
+
+            try
+            {
+                // 2. Проверяем исходные данные
+                rc = 2;
+                if (context == null ||
+                    context.OrderCount <= 0 ||
+                    context.ShopCourier == null ||
+                    context.ShopFrom == null ||
+                    context.Orders == null || context.Orders.Length <= 0 ||
+                    context.MaxRouteLength < 1 || context.MaxRouteLength > 10)
+                    return;
+                Logger.WriteToLog(66, MessageSeverity.Info, string.Format(Messages.MSG_066, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
+
+                // 3. Генерируем все наборы заказов из orderCount заказов длиной не более level 
+                rc = 3;
+                int level = context.MaxRouteLength;
+                int orderCount = context.Orders.Length;
+                short[] subsets = GenerateSubsets(orderCount, level);
+                int subsetCount = subsets.Length;
+
+                // 4. Определяем число потоков для обработки
+                rc = 4;
+                long size = orderCount;
+                if (orderCount >= 8 && level >= 8)
+                { size += (orderCount - 7) * (orderCount - 6) * (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                if (orderCount >= 7 && level >= 7)
+                { size += (orderCount - 6) * (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                if (orderCount >= 6 && level >= 6)
+                { size += (orderCount - 5) * (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                if (orderCount >= 5 && level >= 5)
+                { size += (orderCount - 4) * (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                if (orderCount >= 4 && level >= 4)
+                { size += (orderCount - 3) * (orderCount - 2) * (orderCount - 1) * orderCount; }
+                if (orderCount >= 3 && level >= 3)
+                { size += (orderCount - 2) * (orderCount - 1) * orderCount; }
+                if (orderCount >= 2 && level >= 2)
+                { size += (orderCount - 1) * orderCount; }
+
+                threadCount = (int)(size + DELIVERIES_PER_THREAD - 1) / DELIVERIES_PER_THREAD;
+                if (threadCount > MAX_DELIVERY_THREADS)
+                    threadCount = MAX_DELIVERY_THREADS;
+
+                // 5. Требуется всего один поток
+                rc = 5;
+                ThreadContextEx[] allCountextEx = null;
+
+                if (threadCount <= 1)
+                {
+                    ThreadContextEx contextEx = new ThreadContextEx(context, null, subsets, 0, 1);
+                    allCountextEx = new ThreadContextEx[] { contextEx };
+                    if (level <= 2)
+                    { RouteBuilder.Build2(contextEx); }
+                    else if (level == 3)
+                    { RouteBuilder.Build3(contextEx); }
+                    else if (level == 4)
+                    { RouteBuilder.Build4(contextEx); }
+                    else if (level == 5)
+                    { RouteBuilder.Build5(contextEx); }
+                    else if (level == 6)
+                    { RouteBuilder.Build6(contextEx); }
+                    else if (level == 7)
+                    { RouteBuilder.Build7(contextEx); }
+                    else /*if (level == 8)*/
+                    { RouteBuilder.Build8(contextEx); }
+                    //callback(contextEx);
+                }
+                else
+                {
+                    // 6. Требуется несколько потоков
+                    rc = 6;
+                    allCountextEx = new ThreadContextEx[threadCount];
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        int k = i;
+                        ThreadContextEx contextEx = new ThreadContextEx(context, null, subsets, k, threadCount);
+                        allCountextEx[k] = contextEx;
+
+                        switch (level)
+                        {
+                            case 1:
+                            case 2:
+                                ThreadPool.QueueUserWorkItem(RouteBuilder.Build2, contextEx);
+                                break;
+                            case 3:
+                                ThreadPool.QueueUserWorkItem(RouteBuilder.Build3, contextEx);
+                                break;
+                            case 4:
+                                ThreadPool.QueueUserWorkItem(RouteBuilder.Build4, contextEx);
+                                break;
+                            case 5:
+                                ThreadPool.QueueUserWorkItem(RouteBuilder.Build5, contextEx);
+                                break;
+                            case 6:
+                                ThreadPool.QueueUserWorkItem(RouteBuilder.Build6, contextEx);
+                                break;
+                            case 7:
+                                ThreadPool.QueueUserWorkItem(RouteBuilder.Build7, contextEx);
+                                break;
+                            //case 8:
+                            default:
+                                ThreadPool.QueueUserWorkItem(RouteBuilder.Build8, contextEx);
+                                break;
+                        }
+                    }
+
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        while (!allCountextEx[i].Completed)
+                        { Thread.Sleep(250); }
+                    }
+                }
+
+                // 7. Строим общий результат
+                rc = 7;
+                CourierDeliveryInfo[] deliveries = null;
+                int rc1 = 0;
+
+                if (threadCount <= 1)
+                {
+                    deliveries = allCountextEx[0].Deliveries;
+                    rc1 = allCountextEx[0].ExitCode;
+                }
+                else
+                {
+                    // 6.1 Подсчитываем число отгрузок
+                    rc = 61;
+                    size = 0;
+                    for (int i = 0; i < threadCount; i++)
+                    {
+                        var contextEx = allCountextEx[i];
+                        if (contextEx.ExitCode != 0)
+                        {
+                            rc1 = contextEx.ExitCode;
+                        }
+                        else
+                        {
+                            size += contextEx.DeliveryCount;
+                        }
+                    }
+
+                    // 6.2 Объединяем все отгрузки
+                    rc = 62;
+
+                    if (size > 0)
+                    {
+                        deliveries = new CourierDeliveryInfo[size];
+                        size = 0;
+
+                        for (int i = 0; i < threadCount; i++)
+                        {
+                            var contextEx = allCountextEx[i];
+                            if (contextEx.ExitCode == 0 && contextEx.DeliveryCount > 0)
+                            {
+                                contextEx.Deliveries.CopyTo(deliveries, size);
+                                size += contextEx.DeliveryCount;
+                            }
+                        }
+                    }
+                }
+
+                context.Deliveries = deliveries;
+                allCountextEx = null;
+
+                if (rc1 != 0)
+                {
+                    rc = 100000 * rc + rc1;
+                    return;
+                }
+
+                // 7. Выход - Ok
+                rc = 0;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteToLog(669, MessageSeverity.Error, string.Format(Messages.MSG_669, $"{nameof(Calcs)}.{nameof(Calcs.CalcThread)}", rc, (ex.InnerException == null ? ex.Message : ex.InnerException.Message)));
+            }
+            finally
+            {
+                if (context != null)
+                {
+                    context.ExitCode = rc;
+
+                    if (context.SyncEvent != null)
+                        context.SyncEvent.Set();
+                    Logger.WriteToLog(67, rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_067, rc, (int) (DateTime.Now -startTime).TotalMilliseconds, threadCount, context.ServiceId, context.ShopFrom.Id, context.OrderCount, context.MaxRouteLength, context.ShopCourier.Id, context.ShopCourier.VehicleID));
+                    context.Completed = true;
                 }
             }
         }

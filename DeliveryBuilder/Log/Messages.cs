@@ -164,5 +164,6 @@ namespace DeliveryBuilder.Log
 
         internal const string MSG_126 = @"RouteBuilder.Build Enter. vehicle_id = {0}, order_count = {1}, level = {2}, subsets = {3}, init_subset = {4}";
         internal const string MSG_127 = @"RouteBuilder.Build Exit rc = {0}. vehicle_id = {1}, order_count = {2}, level = {3}, subsets = {4}, init_subset = {5}, elapsed_time = {6}, delivery_count = {7}";
+        internal const string MSG_128 = @"Timer_Elapsed. mem0 = {0}, mem1 = {1}, mem2 = {2}, dm = {3}";
     }
 }

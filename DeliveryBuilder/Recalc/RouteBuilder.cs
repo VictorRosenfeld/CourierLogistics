@@ -3279,6 +3279,7 @@ namespace DeliveryBuilder.Recalc
                         syncEvent.Set();
                     }
                     Logger.WriteToLog(111, MessageSeverity.Info, string.Format(Messages.MSG_111, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
+                    context.Completed = true;
                 }
             }
         }
@@ -3510,6 +3511,7 @@ namespace DeliveryBuilder.Recalc
                     }
 
                     Logger.WriteToLog(109, MessageSeverity.Info, string.Format(Messages.MSG_105, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
+                    context.Completed = true;
                 }
             }
         }
@@ -4067,6 +4069,7 @@ namespace DeliveryBuilder.Recalc
                     }
 
                     Logger.WriteToLog(107, MessageSeverity.Info, string.Format(Messages.MSG_107, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
+                    context.Completed = true;
                 }
             }
         }
@@ -4669,6 +4672,7 @@ namespace DeliveryBuilder.Recalc
                         syncEvent.Set();
                     }
                     Logger.WriteToLog(105, MessageSeverity.Info, string.Format(Messages.MSG_105, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
+                    context.Completed = true;
                 }
             }
         }
@@ -5321,6 +5325,7 @@ namespace DeliveryBuilder.Recalc
                     }
 
                     Logger.WriteToLog(113, MessageSeverity.Info, string.Format(Messages.MSG_113, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
+                    context.Completed = true;
                 }
             }
         }
@@ -6026,6 +6031,7 @@ namespace DeliveryBuilder.Recalc
                     }
 
                     Logger.WriteToLog(115, MessageSeverity.Info, string.Format(Messages.MSG_115, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
+                    context.Completed = true;
                 }
             }
         }
@@ -6788,6 +6794,7 @@ namespace DeliveryBuilder.Recalc
                     }
 
                     Logger.WriteToLog(117, MessageSeverity.Info, string.Format(Messages.MSG_117, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.StartOrderIndex, context.OrderIndexStep, sw.ElapsedMilliseconds, count));
+                    context.Completed = true;
                 }
             }
         }
@@ -7598,6 +7605,7 @@ namespace DeliveryBuilder.Recalc
                         syncEvent.Set();
                     }
                     Logger.WriteToLog(127, rc == 0 ? MessageSeverity.Info : MessageSeverity.Warn, string.Format(Messages.MSG_127, rc, context.ShopCourier.VehicleID, context.OrderCount, context.MaxRouteLength, context.SubsetCount, ArrayToString(context.InitOrderIndexes), sw.ElapsedMilliseconds, count));
+                    context.Completed = true;
                 }
             }
         }
