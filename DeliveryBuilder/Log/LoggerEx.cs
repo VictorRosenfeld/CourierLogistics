@@ -130,6 +130,7 @@ namespace DeliveryBuilder.Log
                             messageType = "WARN";
                             break;
                         case MessageSeverity.Error:
+                            messageType = "ERROR";
                             break;
                         default:
                             messageType = "INFO";

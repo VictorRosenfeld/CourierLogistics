@@ -613,7 +613,8 @@ namespace DeliveryBuilder.Couriers
                             continue;
                         }
                         CourierBase baseType = baseTypes[baseTypeIndex];
-                        courier = new Courier(vehicleId, baseType);
+                        //courier = new Courier(vehicleId, baseType);
+                        courier = new Courier(courierUpdates.CourierId, baseType);
                         courier.Status = status;
                         courier.AverageOrderCost = threshold;
                         courier.LastDeliveryStart = DateTime.Now;
@@ -628,7 +629,8 @@ namespace DeliveryBuilder.Couriers
                         courier.WorkEnd = courierUpdates.WorkEnd.TimeOfDay;
                         courier.Latitude = courierUpdates.Latitude;
                         courier.Longitude = courierUpdates.Longitude;
-                        couriers.Add(courier.VehicleID, courier);
+                        //couriers.Add(courier.VehicleID, courier);
+                        couriers.Add(courier.Id, courier);
                     }
 
                     if (courierUpdates.ShopId != TAXI_SHOP_ID)
