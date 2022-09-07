@@ -1533,7 +1533,7 @@ namespace DeliveryBuilder
             if (record1.QueuingOrder < record2.QueuingOrder)
                 return -1;
             if (record1.QueuingOrder > record2.QueuingOrder)
-                return -1;
+                return 1;
             return 0;
         }
 
